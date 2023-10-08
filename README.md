@@ -5,7 +5,7 @@ http://localhost:9090/swagger-ui.html
 
 ## Run Locally on Intellij
 1. Set the password in dev.properties
-![intellij_password.png](misc%2Fimages%2Fintellij_password.png)
+![intellij_password.png](misc/images/intellij_password.png)
 
 
 
