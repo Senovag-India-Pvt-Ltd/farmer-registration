@@ -23,7 +23,7 @@ jobs:
       uses: whelk-io/maven-settings-xml-action@v4
       with:
         repositories: '[{ "id": "central", "name": "central", "url": "https://repo1.maven.org/maven2", "releases": { "enabled": "true" }, "snapshots": { "enabled": "false" } }, { "id": "github", "name": "github", "url": "https://maven.pkg.github.com/Senovag-India-Pvt-Ltd/maven-repo", "releases": { "enabled": "true" }, "snapshots": { "enabled": "false" } }]'
-        servers: '[{ "id": "github", "username": "jaibharata", "password": "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" }]'        
+        servers: '[{ "id": "github", "username": "jaibharata", "password": "${{secrets.PA_TOKEN}}" }]'        
     - name: Print settings.        
       run: mvn help:effective-settings --settings /home/runner/.m2/settings.xml
     - name: Build with Maven
