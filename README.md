@@ -13,4 +13,7 @@ http://localhost:9090/swagger-ui.html
 3.Swagger UI
    ![Swagger_ui.png](./misc/images/Swagger_ui.png)
 
+## Postman collection
+   check misc/postman
+
 
