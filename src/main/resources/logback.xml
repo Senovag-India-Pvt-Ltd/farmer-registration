@@ -18,7 +18,7 @@
         <encoder
                 class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>
-                %cyan(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%class{36}.%M %L) : %boldWhite(%msg%n%throwable)
+                %d{ISO8601} %-5level [%t] %class{36}.%M %L : %msg%n%throwable
             </pattern>
         </encoder>
 
