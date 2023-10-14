@@ -1,6 +1,7 @@
 package com.sericulture.registration.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,8 @@ public class Education extends BaseEntity{
     @Column(name = "EDUCATION_ID")
     private Long id;
 
+
+    @Size(min = 2, max = 250 , message = "Name should be more than 1 characters.")
     @Column(name = "EDUCATION_NAME")
     private String name;
 

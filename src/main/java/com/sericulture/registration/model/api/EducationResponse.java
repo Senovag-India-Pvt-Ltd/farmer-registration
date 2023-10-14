@@ -3,20 +3,20 @@ package com.sericulture.registration.model.api;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sericulture.registration.model.BaseResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EducationResponse extends BaseResponse {
 
-    @Schema(name = "name", example = "Bachelor of Engineering", required = true)
+    @Schema(name="id", example = "1")
+    int id;
+    @Schema(name = "name", example = "Bachelor of Engineering")
     String name;
-    @Schema(name = "code", example = "BE", required = true)
+    @Schema(name = "code", example = "BE")
     String code;
 }

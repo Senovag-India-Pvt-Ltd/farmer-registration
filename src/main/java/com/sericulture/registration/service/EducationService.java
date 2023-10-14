@@ -7,9 +7,16 @@ import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.EducationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -21,18 +28,45 @@ public class EducationService {
     @Autowired
     Mapper mapper;
 
+    @Autowired
+    CustomValidator validator;
+
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public EducationResponse getEducationDetails(String code) {
-
         Education education = educationRepository.findByCode(code);
         log.info("The entity is:", education);
         return mapper.educationEntityToObject(education, EducationResponse.class);
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional
     public void insertEducationDetails(EducationRequest request) {
         Education education = mapper.educationObjectToEntity(request, Education.class);
-        educationRepository.save(education);
+        //validating the class
+        validator.validate(education);
+        if(!educationRepository.existsByName(education.getName())) {
+            educationRepository.save(education);
+        }
         log.info("The entity is:", education);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String, Object> getPaginatedEducationDetails(final Pageable pageable) {
+        return convertToMapResponse(educationRepository.getPaginatedEducationDetails(pageable));
+    }
+
+    private Map<String, Object> convertToMapResponse(final Page<Education> pageEducationDetails) {
+        Map<String, Object> response = new HashMap<>();
+
+        List<EducationResponse> educationList = pageEducationDetails.getContent()
+                .stream()
+                .map(education -> mapper.educationEntityToObject(education, EducationResponse.class))
+                .collect(Collectors.toList());
+
+
+        response.put("education", educationList);
+        response.put("currentPage", pageEducationDetails.getNumber());
+        response.put("totalItems", pageEducationDetails.getTotalElements());
+        response.put("totalPages", pageEducationDetails.getTotalPages());
+        return response;
     }
 }

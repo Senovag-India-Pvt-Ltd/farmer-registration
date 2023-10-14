@@ -41,7 +41,7 @@
     </root>
 
     <!-- LOG "com.sericulture" at TRACE level -->
-    <logger name="com.sericulture" level="trace" additivity="false">
+    <logger name="com.sericulture" level="INFO" additivity="false">
         <appender-ref ref="RollingFile" />
         <appender-ref ref="Console" />
     </logger>
