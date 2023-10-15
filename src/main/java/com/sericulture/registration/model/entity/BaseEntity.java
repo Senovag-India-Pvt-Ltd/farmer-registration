@@ -42,6 +42,5 @@ public class BaseEntity {
     public void preUpdate() {
         if(active == null)
             active = true;
-        //modifiedDate = new Timestamp()
     }
 }

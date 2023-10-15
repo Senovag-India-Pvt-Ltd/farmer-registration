@@ -1,5 +1,6 @@
 package com.sericulture.registration.service;
 
+import com.sericulture.registration.model.api.EditEducationRequest;
 import com.sericulture.registration.model.api.EducationRequest;
 import com.sericulture.registration.model.api.EducationResponse;
 import com.sericulture.registration.model.entity.Education;
@@ -84,7 +85,7 @@ public class EducationService {
     }
 
     @Transactional
-    public void updateEducationDetails(EducationRequest educationRequest) {
+    public void updateEducationDetails(EditEducationRequest educationRequest) {
         Education education = educationRepository.findById(educationRequest.getId());
         if (Objects.nonNull(education)) {
             education.setName(educationRequest.getName());
