@@ -3,6 +3,7 @@ package com.sericulture.registration.service;
 import com.sericulture.registration.model.api.EducationRequest;
 import com.sericulture.registration.model.api.EducationResponse;
 import com.sericulture.registration.model.entity.Education;
+import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.EducationRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,5 +70,26 @@ public class EducationService {
         response.put("totalItems", pageEducationDetails.getTotalElements());
         response.put("totalPages", pageEducationDetails.getTotalPages());
         return response;
+    }
+
+    @Transactional
+    public void deleteEducationDetails(int id) {
+        Education education = educationRepository.findById(id);
+        if (Objects.nonNull(education)) {
+            education.setActive(false);
+            educationRepository.save(education);
+        } else {
+            throw new ValidationException("Invalid Id");
+        }
+    }
+
+    @Transactional
+    public void updateEducationDetails(EducationRequest educationRequest) {
+        Education education = educationRepository.findById(educationRequest.getId());
+        if (Objects.nonNull(education)) {
+            education.setName(educationRequest.getName());
+        } else {
+            throw new ValidationException("Invalid Id");
+        }
     }
 }

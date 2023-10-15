@@ -1,13 +1,14 @@
 package com.sericulture.registration.model.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.*;
 
+import java.sql.Timestamp;
 import java.util.Date;
-
 @MappedSuperclass
+@FilterDef(name = "activeEducationFilter", parameters = @ParamDef(name = "active", type = Boolean.class))
 public class BaseEntity {
 
     @Column(name = "CREATED_BY")
@@ -26,4 +27,21 @@ public class BaseEntity {
     @Column(name = "MODIFIED_DATE")
     private Date modifiedDate;
 
+    @Getter
+    @Setter
+    @Column(name = "ACTIVE", columnDefinition = "TINYINT")
+    private Boolean active;
+
+    @PrePersist
+    public void prePersist() {
+        if(active == null)
+            active = true;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        if(active == null)
+            active = true;
+        //modifiedDate = new Timestamp()
+    }
 }

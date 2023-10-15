@@ -6,13 +6,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
+import java.io.Serializable;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Education extends BaseEntity{
+@Where(clause = "active=1")
+public class Education extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EDUCATION_SEQ")
     @SequenceGenerator(name = "EDUCATION_SEQ", sequenceName = "EDUCATION_SEQ", allocationSize = 1)
@@ -26,4 +31,6 @@ public class Education extends BaseEntity{
 
     @Column(name = "EDUCATION_CODE")
     private String code;
+
+
 }

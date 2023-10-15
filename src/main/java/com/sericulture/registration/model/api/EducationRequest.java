@@ -9,6 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class EducationRequest extends RequestBody {
+    @Schema(name = "id", example = "1")
+    Integer id;
     @Schema(name = "name", example = "Bachelor of Engineering", required = true)
     String name;
 }

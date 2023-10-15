@@ -38,7 +38,7 @@ public class EducationController {
 
     @GetMapping("/list")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "No Content - inserted successfully",content =
+            @ApiResponse(responseCode = "204", description = "No Content - inserted successfully",content =
                     {
                             @Content(mediaType = "application/json", schema =
                             @Schema(example = "{\"totalItems\":2,\"education\":[{\"id\":1,\"name\":\"Bachelor of Engineering\",\"code\":\"BE\"},{\"id\":2,\"name\":\"Bachelor of Arts\",\"code\":\"BA\"}],\"totalPages\":1,\"currentPage\":0}"))
@@ -58,4 +58,11 @@ public class EducationController {
         return ResponseEntity.ok(educationService.getPaginatedEducationDetails(PageRequest.of(pageNumber, size)));
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteEducationDetails(
+            @PathVariable final Integer id
+    ) {
+        educationService.deleteEducationDetails(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
