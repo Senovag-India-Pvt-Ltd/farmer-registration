@@ -1,7 +1,9 @@
 package com.sericulture.registration.model.api;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sericulture.registration.model.exceptions.Message;
 import lombok.*;
+import org.modelmapper.internal.bytebuddy.implementation.bind.annotation.SuperCall;
+
 
 import java.util.List;
 
@@ -9,9 +11,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class ErrorResponse extends ResponseBody {
-    List<String> Message;
+    List<? extends Message> Message;
 
     ErrorType errorType;
 

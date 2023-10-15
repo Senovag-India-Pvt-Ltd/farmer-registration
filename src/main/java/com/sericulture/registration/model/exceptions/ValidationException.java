@@ -5,28 +5,27 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Getter
 public class ValidationException extends RuntimeException{
 
-    private List<String> errorMessages = new ArrayList<>();
+
+
+    private List<Message> errorMessages = new ArrayList<>();
 
     public ValidationException(String errorMessage) {
-        errorMessages.add(errorMessage);
+        errorMessages.add(new ValidationMessage(MessageLabelType.NON_LABEL_MESSAGE.name(), errorMessage));
     }
 
-    public ValidationException(List<String> errorMessage) {
+    public ValidationException(List<ValidationMessage> errorMessage) {
         errorMessages.addAll(errorMessage);
     }
-    public ValidationException(Set<String> errorMessage) {
+    public ValidationException(Set<ValidationMessage> errorMessage) {
         errorMessages.addAll(errorMessage);
     }
     @Override
     public String getMessage() {
 
-        String msg = errorMessages.stream()
-                .collect(Collectors.joining(", ", "[", "]"));
-        return msg;
+        return errorMessages.toString();
     }
 }

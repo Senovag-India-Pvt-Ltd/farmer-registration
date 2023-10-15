@@ -22,7 +22,12 @@ public class EducationController {
     @Operation(summary = "Insert Education Details", description = "Creates Education Details in to DB")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "No Content - inserted successfully"),
-            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                    {
+                            @Content(mediaType = "application/json", schema =
+                            @Schema(example = "{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Name should be more than 1 characters.\",\"label\":\"name\",\"locale\":null}]}"))
+                    }),
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
     @PostMapping("/add")
@@ -38,7 +43,12 @@ public class EducationController {
                             @Content(mediaType = "application/json", schema =
                             @Schema(example = "{\"totalItems\":2,\"education\":[{\"id\":1,\"name\":\"Bachelor of Engineering\",\"code\":\"BE\"},{\"id\":2,\"name\":\"Bachelor of Arts\",\"code\":\"BA\"}],\"totalPages\":1,\"currentPage\":0}"))
                     }),
-            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Name should be more than 1 characters.\",\"label\":\"name\",\"locale\":null}]}"))
+                            }),
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
     public ResponseEntity<?> getPaginatedEducationDetails(
