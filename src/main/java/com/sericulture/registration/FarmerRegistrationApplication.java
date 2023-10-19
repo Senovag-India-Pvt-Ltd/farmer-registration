@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class FarmerRegistrationApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(FarmerRegistrationApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(FarmerRegistrationApplication.class, args);
+    }
 
 }

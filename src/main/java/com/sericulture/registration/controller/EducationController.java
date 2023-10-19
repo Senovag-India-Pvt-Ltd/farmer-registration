@@ -1,9 +1,8 @@
 package com.sericulture.registration.controller;
 
 import com.sericulture.registration.model.ResponseWrapper;
-import com.sericulture.registration.model.api.EditEducationRequest;
-import com.sericulture.registration.model.api.EducationRequest;
-import com.sericulture.registration.model.exceptions.ValidationException;
+import com.sericulture.registration.model.api.education.EditEducationRequest;
+import com.sericulture.registration.model.api.education.EducationRequest;
 import com.sericulture.registration.service.EducationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

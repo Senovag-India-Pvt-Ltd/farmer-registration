@@ -1,8 +1,7 @@
 package com.sericulture.registration.model.mapper;
 
-import com.sericulture.registration.model.api.EducationRequest;
+import com.sericulture.registration.model.api.education.EducationRequest;
 import com.sericulture.registration.model.entity.Education;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

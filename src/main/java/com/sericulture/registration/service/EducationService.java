@@ -1,8 +1,8 @@
 package com.sericulture.registration.service;
 
-import com.sericulture.registration.model.api.EditEducationRequest;
-import com.sericulture.registration.model.api.EducationRequest;
-import com.sericulture.registration.model.api.EducationResponse;
+import com.sericulture.registration.model.api.education.EditEducationRequest;
+import com.sericulture.registration.model.api.education.EducationRequest;
+import com.sericulture.registration.model.api.education.EducationResponse;
 import com.sericulture.registration.model.entity.Education;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;

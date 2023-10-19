@@ -1,5 +1,6 @@
-package com.sericulture.registration.model.api;
+package com.sericulture.registration.model.api.education;
 
+import com.sericulture.registration.model.api.RequestBody;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -8,7 +9,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
-public class EditEducationRequest extends RequestBody{
+public class EditEducationRequest extends RequestBody {
 
     @Schema(name = "id", example = "1")
     Integer id;

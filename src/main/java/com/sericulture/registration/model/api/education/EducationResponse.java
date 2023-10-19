@@ -1,4 +1,4 @@
-package com.sericulture.registration.model.api;
+package com.sericulture.registration.model.api.education;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sericulture.registration.model.BaseResponse;
