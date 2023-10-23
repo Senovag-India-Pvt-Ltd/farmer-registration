@@ -16,7 +16,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Getter
 @Setter
-@Where(clause = "active=1")
+//@Where(clause = "active=1")
 public class Education extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EDUCATION_SEQ")

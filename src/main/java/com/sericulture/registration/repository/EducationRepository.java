@@ -10,29 +10,21 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Set;
+
 @Repository
 public interface EducationRepository extends PagingAndSortingRepository<Education, Long> {
 
     public Education findByCode(String code);
 
-    public Education findById(long id);
+    public Education findByIdAndActive(long id, boolean isActive);
 
-    @Query(value = """
-                    SELECT
-                        CASE WHEN EXISTS (
-                            SELECT 1
-                            FROM education e where e.education_name =:name
-                            and e.active in (1, 0)
-                        )
-                        THEN 'true'
-                        ELSE 'false'
-                        END
-            """, nativeQuery = true)
-    public boolean existsByName(@Param("name") String name);
-    @Query(value = "SELECT e FROM Education e")
-    Page<Education> getPaginatedEducationDetails(final Pageable pageable);
+    public List<Education> findByNameAndActiveIn(@Param("name") String name, @Param("active") Set<Boolean> active);
+    public Education findByIdAndActiveIn(@Param("id") long id, @Param("active") Set<Boolean> active);
+    Page<Education> findByActiveOrderByIdAsc(boolean isActive, final Pageable pageable);
 
-    public void save(Education education);
+    public Education save(Education education);
 
 
 }

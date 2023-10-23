@@ -15,10 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,19 +40,25 @@ public class EducationService {
     }
 
     @Transactional
-    public void insertEducationDetails(EducationRequest request) {
+    public EducationResponse insertEducationDetails(EducationRequest request) {
         Education education = mapper.educationObjectToEntity(request, Education.class);
         //validating the class
         validator.validate(education);
-        if(!educationRepository.existsByName(education.getName())) {
-            educationRepository.save(education);
+        List<Education> educations = educationRepository.findByNameAndActiveIn(education.getName(), Set.of(true,false));
+        if(!educations.isEmpty() && educations.stream().filter(Education::getActive).findAny().isPresent()) {
+            EducationResponse educationResponse = mapper.educationEntityToObject(educations.stream().filter(Education::getActive).findAny().get(), EducationResponse.class);
+            return educationResponse;
+        } else if(!educations.isEmpty() && educations.stream().filter(Predicate.not(Education::getActive)).findAny().isPresent()) {
+            throw new ValidationException("Name already exists in Inactive State.");
         }
-        log.info("The entity is:", education);
+        else {
+           return mapper.educationEntityToObject(educationRepository.save(education), EducationResponse.class);
+        }
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> getPaginatedEducationDetails(final Pageable pageable) {
-        return convertToMapResponse(educationRepository.getPaginatedEducationDetails(pageable));
+        return convertToMapResponse(educationRepository.findByActiveOrderByIdAsc( true, pageable));
     }
 
     private Map<String, Object> convertToMapResponse(final Page<Education> pageEducationDetails) {
@@ -74,8 +78,8 @@ public class EducationService {
     }
 
     @Transactional
-    public void deleteEducationDetails(int id) {
-        Education education = educationRepository.findById(id);
+    public void deleteEducationDetails(long id) {
+        Education education = educationRepository.findByIdAndActive(id, true);
         if (Objects.nonNull(education)) {
             education.setActive(false);
             educationRepository.save(education);
@@ -85,12 +89,20 @@ public class EducationService {
     }
 
     @Transactional
-    public void updateEducationDetails(EditEducationRequest educationRequest) {
-        Education education = educationRepository.findById(educationRequest.getId());
+    public EducationResponse updateEducationDetails(EditEducationRequest educationRequest) {
+        List<Education> educations = educationRepository.findByNameAndActiveIn(educationRequest.getName(), Set.of(true,false));
+        if(!educations.isEmpty()) {
+            throw new ValidationException("Name already exists, duplicates are not allowed.");
+        }
+
+        Education education = educationRepository.findByIdAndActiveIn(educationRequest.getId(), Set.of(true,false));
         if (Objects.nonNull(education)) {
             education.setName(educationRequest.getName());
-        } else {
-            throw new ValidationException("Invalid Id");
+            education.setActive(true);
         }
+        else {
+
+        }
+        return mapper.educationEntityToObject(education, EducationResponse.class);
     }
 }
