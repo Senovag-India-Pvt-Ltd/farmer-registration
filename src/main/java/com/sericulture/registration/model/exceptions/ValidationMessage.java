@@ -11,6 +11,8 @@ public class ValidationMessage extends Message{
     private String label;
     private String locale;
 
+    private String code;
+
     public ValidationMessage(String label, String message){
         super(message);
         this.label = label;

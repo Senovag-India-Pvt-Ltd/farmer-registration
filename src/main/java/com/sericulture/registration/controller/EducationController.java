@@ -4,7 +4,6 @@ import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.education.EditEducationRequest;
 import com.sericulture.registration.model.api.education.EducationRequest;
 import com.sericulture.registration.model.api.education.EducationResponse;
-import com.sericulture.registration.model.entity.Education;
 import com.sericulture.registration.service.EducationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,7 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@RestController("/v1/education")
+@RestController
+@RequestMapping("education")
 public class EducationController {
 
     @Autowired
@@ -30,14 +30,14 @@ public class EducationController {
             @ApiResponse(responseCode = "200", description = "Ok Response"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
                     content =
-                    {
-                            @Content(mediaType = "application/json", schema =
-                            @Schema(example = "{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Name should be more than 1 characters.\",\"label\":\"name\",\"locale\":null}]}"))
-                    }),
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Name should be more than 1 characters.\",\"label\":\"name\",\"locale\":null}]}"))
+                            }),
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
     @PostMapping("/add")
-    public ResponseEntity<?> getEducationDetails(@RequestBody EducationRequest educationRequest){
+    public ResponseEntity<?> getEducationDetails(@RequestBody EducationRequest educationRequest) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(EducationResponse.class);
 
         rw.setContent(educationService.insertEducationDetails(educationRequest));
@@ -47,7 +47,7 @@ public class EducationController {
 
     @GetMapping("/list")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "No Content - inserted successfully",content =
+            @ApiResponse(responseCode = "204", description = "No Content - inserted successfully", content =
                     {
                             @Content(mediaType = "application/json", schema =
                             @Schema(example = "{\"content\":{\"totalItems\":6,\"education\":[{\"id\":10,\"name\":\"\",\"code\":null},{\"id\":11,\"name\":\"SA\",\"code\":null},{\"id\":13,\"name\":\"SAC\",\"code\":null},{\"id\":14,\"name\":\"Bachelor of Engineeringsssssssssssssssss\",\"code\":null},{\"id\":15,\"name\":\"Bachelor of Engg\",\"code\":null}],\"totalPages\":2,\"currentPage\":0},\"errorMessages\":[]}"))
@@ -68,6 +68,7 @@ public class EducationController {
         rw.setContent(educationService.getPaginatedEducationDetails(PageRequest.of(pageNumber, size)));
         return ResponseEntity.ok(rw);
     }
+
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "No Content - deleted successfully"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
