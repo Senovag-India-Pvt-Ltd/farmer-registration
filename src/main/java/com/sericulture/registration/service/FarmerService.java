@@ -97,11 +97,11 @@ public class FarmerService {
 
     @Transactional
     public FarmerResponse updateFarmerDetails(EditFarmerRequest farmerRequest){
-        List<Farmer> farmerList = farmerRepository.findByFarmerNumber(farmerRequest.getFarmerNumber());
+        /*List<Farmer> farmerList = farmerRepository.findByFarmerNumber(farmerRequest.getFarmerNumber());
         if(farmerList.size()>0){
             throw new ValidationException("farmer already exists with this name, duplicates are not allowed.");
         }
-
+*/
         Farmer farmer = farmerRepository.findByFarmerIdAndActiveIn(farmerRequest.getFarmerId(), Set.of(true,false));
         if(Objects.nonNull(farmer)){
             farmer.setFarmerNumber(farmerRequest.getFarmerNumber());
