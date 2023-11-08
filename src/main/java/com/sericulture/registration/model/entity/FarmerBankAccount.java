@@ -22,16 +22,16 @@ public class FarmerBankAccount extends BaseEntity implements Serializable {
     private Long farmerBankAccountId;
 
     @Size(min = 2, max = 250, message = "FARMER_BANK_ACCOUNT name should be more than 1 characters.")
-    @Column(name = "FARMER_BANK_NAME", unique = true)
+    @Column(name = "FARMER_BANK_NAME")
     private String farmerBankName;
 
-    @Column(name = "FARMER_BANK_ACCOUNT_NUMBER", unique = true)
+    @Column(name = "FARMER_BANK_ACCOUNT_NUMBER")
     private String farmerBankAccountNumber;
 
-    @Column(name = "FARMER_BANK_BRANCH_NAME", unique = true)
+    @Column(name = "FARMER_BANK_BRANCH_NAME")
     private String farmerBankBranchName;
 
-    @Column(name = "FARMER_BANK_IFSC_CODE", unique = true)
+    @Column(name = "FARMER_BANK_IFSC_CODE")
     private String farmerBankIfscCode;
 
     @Column(name = "FARMER_ID")

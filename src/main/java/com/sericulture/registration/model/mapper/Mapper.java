@@ -6,6 +6,8 @@ import com.sericulture.registration.model.api.farmerAddress.FarmerAddressRequest
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountRequest;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyRequest;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsRequest;
+import com.sericulture.registration.model.api.reeler.ReelerRequest;
+import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountRequest;
 import com.sericulture.registration.model.entity.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -138,5 +140,45 @@ public class Mapper {
     public <T> T farmerLandDetailsObjectToEntity(FarmerLandDetailsRequest farmerLandDetailsRequest, Class<T> claaz) {
         log.info("Value of mapper is:",mapper, farmerLandDetailsRequest);
         return (T) mapper.map(farmerLandDetailsRequest, claaz);
+    }
+
+    /**
+     * Maps Reeler Entity to Reeler Response Object
+     * @param reelerEntity
+     * @param <T>
+     */
+    public <T> T reelerEntityToObject(Reeler reelerEntity, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, reelerEntity);
+        return (T) mapper.map(reelerEntity, claaz);
+    }
+
+    /**
+     * Maps Reeler Object to Reeler Response Entity
+     * @param reelerRequest
+     * @param <T>
+     */
+    public <T> T reelerObjectToEntity(ReelerRequest reelerRequest, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, reelerRequest);
+        return (T) mapper.map(reelerRequest, claaz);
+    }
+
+    /**
+     * Maps ReelerVirtualBankAccount Entity to ReelerVirtualBankAccount Response Object
+     * @param reelerVirtualBankAccountEntity
+     * @param <T>
+     */
+    public <T> T reelerVirtualBankAccountEntityToObject(ReelerVirtualBankAccount reelerVirtualBankAccountEntity, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, reelerVirtualBankAccountEntity);
+        return (T) mapper.map(reelerVirtualBankAccountEntity, claaz);
+    }
+
+    /**
+     * Maps ReelerVirtualBankAccount Object to ReelerVirtualBankAccount Response Entity
+     * @param reelerVirtualBankAccountRequest
+     * @param <T>
+     */
+    public <T> T reelerVirtualBankAccountObjectToEntity(ReelerVirtualBankAccountRequest reelerVirtualBankAccountRequest, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, reelerVirtualBankAccountRequest);
+        return (T) mapper.map(reelerVirtualBankAccountRequest, claaz);
     }
 }

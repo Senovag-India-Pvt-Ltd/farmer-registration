@@ -22,7 +22,7 @@ public class FarmerFamily extends BaseEntity implements Serializable {
     private Long farmerFamilyId;
 
     @Size(min = 2, max = 250, message = "FARMER_FAMILY name should be more than 1 characters.")
-    @Column(name = "FARMER_FAMILY_NAME", unique = true)
+    @Column(name = "FARMER_FAMILY_NAME")
     private String farmerFamilyName;
 
     @Column(name = "RELATIONSHIP_ID")

@@ -1,10 +1,10 @@
 package com.sericulture.registration.controller;
 
 import com.sericulture.registration.model.ResponseWrapper;
-import com.sericulture.registration.model.api.farmer.EditFarmerRequest;
-import com.sericulture.registration.model.api.farmer.FarmerRequest;
-import com.sericulture.registration.model.api.farmer.FarmerResponse;
-import com.sericulture.registration.service.FarmerService;
+import com.sericulture.registration.model.api.reelerVirtualBankAccount.EditReelerVirtualBankAccountRequest;
+import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountRequest;
+import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountResponse;
+import com.sericulture.registration.service.ReelerVirtualBankAccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,28 +19,28 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/v1/farmer")
-public class FarmerController {
+@RequestMapping("/v1/reeler-virtual-bank-account")
+public class ReelerVirtualBankAccountController {
 
     @Autowired
-    FarmerService farmerService;
+    ReelerVirtualBankAccountService reelerVirtualBankAccountService;
 
-    @Operation(summary = "Insert Farmer Details", description = "Creates Farmer Details in to DB")
+    @Operation(summary = "Insert ReelerVirtualBankAccount Details", description = "Creates ReelerVirtualBankAccount Details in to DB")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ok Response"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
                     content =
                             {
                                     @Content(mediaType = "application/json", schema =
-                                    @Schema(example = "{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Farmer name should be more than 1 characters.\",\"label\":\"name\",\"locale\":null}]}"))
+                                    @Schema(example = "{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"ReelerVirtualBankAccount name should be more than 1 characters.\",\"label\":\"name\",\"locale\":null}]}"))
                             }),
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
     @PostMapping("/add")
-    public ResponseEntity<?> addFarmerDetails(@RequestBody FarmerRequest farmerRequest){
-        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerResponse.class);
+    public ResponseEntity<?> addReelerVirtualBankAccountDetails(@RequestBody ReelerVirtualBankAccountRequest reelerVirtualBankAccountRequest){
+        ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerVirtualBankAccountResponse.class);
 
-        rw.setContent(farmerService.insertFarmerDetails(farmerRequest));
+        rw.setContent(reelerVirtualBankAccountService.insertReelerVirtualBankAccountDetails(reelerVirtualBankAccountRequest));
         return ResponseEntity.ok(rw);
     }
 
@@ -52,57 +52,25 @@ public class FarmerController {
                             @Schema(example = "{\n" +
                                     "  \"content\": {\n" +
                                     "    \"totalItems\": 2,\n" +
-                                    "    \"totalPages\": 1,\n" +
-                                    "    \"farmer\": [\n" +
+                                    "    \"reelerVirtualBankAccount\": [\n" +
                                     "      {\n" +
-                                    "        \"farmerId\": 1,\n" +
-                                    "        \"farmerNumber\": \"12345fggv\",\n" +
-                                    "        \"fruitsId\": \"1\",\n" +
-                                    "        \"firstName\": \"First name\",\n" +
-                                    "        \"middleName\": \"Middle name\",\n" +
-                                    "        \"lastName\": \"Last name\",\n" +
-                                    "        \"dob\": \"2023-11-07T11:29:33.397+00:00\",\n" +
-                                    "        \"genderId\": 1,\n" +
-                                    "        \"casteId\": 1,\n" +
-                                    "        \"differentlyAbled\": false,\n" +
-                                    "        \"email\": \"example@xyz.com\",\n" +
-                                    "        \"mobileNumber\": \"9876543210\",\n" +
-                                    "        \"aadhaarNumber\": \"111122223333\",\n" +
-                                    "        \"epicNumber\": \"1\",\n" +
-                                    "        \"rationCardNumber\": \"12345\",\n" +
-                                    "        \"totalLandHolding\": \"100\",\n" +
-                                    "        \"passbookNumber\": \"1001001000100\",\n" +
-                                    "        \"landHoldingCategoryId\": 1,\n" +
-                                    "        \"educationId\": 1,\n" +
-                                    "        \"representativeId\": 1,\n" +
-                                    "        \"khazaneRecipientId\": \"1\",\n" +
-                                    "        \"photoPath\": \"/example.jpg\"\n" +
+                                    "        \"reelerVirtualBankAccountId\": 2,\n" +
+                                    "        \"reelerId\": 3,\n" +
+                                    "        \"virtualAccountNumber\": \"3654643675\",\n" +
+                                    "        \"branchName\": \"Bengaluru\",\n" +
+                                    "        \"ifscCode\": \"SBI00457\",\n" +
+                                    "        \"marketMasterId\": 1\n" +
                                     "      },\n" +
                                     "      {\n" +
-                                    "        \"farmerId\": 2,\n" +
-                                    "        \"farmerNumber\": \"123457\",\n" +
-                                    "        \"fruitsId\": \"1\",\n" +
-                                    "        \"firstName\": \"First name\",\n" +
-                                    "        \"middleName\": \"Middle name\",\n" +
-                                    "        \"lastName\": \"Last name\",\n" +
-                                    "        \"dob\": \"2023-11-07T11:58:15.537+00:00\",\n" +
-                                    "        \"genderId\": 1,\n" +
-                                    "        \"casteId\": 1,\n" +
-                                    "        \"differentlyAbled\": false,\n" +
-                                    "        \"email\": \"example@xyz.com\",\n" +
-                                    "        \"mobileNumber\": \"9876543210\",\n" +
-                                    "        \"aadhaarNumber\": \"111122223333\",\n" +
-                                    "        \"epicNumber\": \"1\",\n" +
-                                    "        \"rationCardNumber\": \"12345\",\n" +
-                                    "        \"totalLandHolding\": \"100\",\n" +
-                                    "        \"passbookNumber\": \"1001001000100\",\n" +
-                                    "        \"landHoldingCategoryId\": 1,\n" +
-                                    "        \"educationId\": 1,\n" +
-                                    "        \"representativeId\": 1,\n" +
-                                    "        \"khazaneRecipientId\": \"1\",\n" +
-                                    "        \"photoPath\": \"/example.jpg\"\n" +
+                                    "        \"reelerVirtualBankAccountId\": 4,\n" +
+                                    "        \"reelerId\": 3,\n" +
+                                    "        \"virtualAccountNumber\": \"36546436744589636574655\",\n" +
+                                    "        \"branchName\": \"Bengaluru\",\n" +
+                                    "        \"ifscCode\": \"SBI00457\",\n" +
+                                    "        \"marketMasterId\": 1\n" +
                                     "      }\n" +
                                     "    ],\n" +
+                                    "    \"totalPages\": 1,\n" +
                                     "    \"currentPage\": 0\n" +
                                     "  },\n" +
                                     "  \"errorMessages\": []\n" +
@@ -121,7 +89,7 @@ public class FarmerController {
             @RequestParam(defaultValue = "5") final Integer size
     ) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(Map.class);
-        rw.setContent(farmerService.getPaginatedFarmerDetails(PageRequest.of(pageNumber, size)));
+        rw.setContent(reelerVirtualBankAccountService.getPaginatedReelerVirtualBankAccountDetails(PageRequest.of(pageNumber, size)));
         return ResponseEntity.ok(rw);
     }
 
@@ -136,10 +104,10 @@ public class FarmerController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteFarmerDetails(
+    public ResponseEntity<?> deleteReelerVirtualBankAccountDetails(
             @PathVariable final Integer id
     ) {
-        farmerService.deleteFarmerDetails(id);
+        reelerVirtualBankAccountService.deleteReelerVirtualBankAccountDetails(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -154,11 +122,11 @@ public class FarmerController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
     @PostMapping("/edit")
-    public ResponseEntity<?> editFarmerDetails(
-            @RequestBody final EditFarmerRequest editFarmerRequest
+    public ResponseEntity<?> editReelerVirtualBankAccountDetails(
+            @RequestBody final EditReelerVirtualBankAccountRequest editReelerVirtualBankAccountRequest
     ) {
-        ResponseWrapper<FarmerResponse> rw = ResponseWrapper.createWrapper(FarmerResponse.class);
-        rw.setContent(farmerService.updateFarmerDetails(editFarmerRequest));
+        ResponseWrapper<ReelerVirtualBankAccountResponse> rw = ResponseWrapper.createWrapper(ReelerVirtualBankAccountResponse.class);
+        rw.setContent(reelerVirtualBankAccountService.updateReelerVirtualBankAccountDetails(editReelerVirtualBankAccountRequest));
         return ResponseEntity.ok(rw);
     }
 
@@ -176,10 +144,9 @@ public class FarmerController {
     public ResponseEntity<?> getById(
             @PathVariable final Integer id
     ) {
-        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerResponse.class);
+        ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerVirtualBankAccountResponse.class);
 
-        rw.setContent(farmerService.getById(id));
+        rw.setContent(reelerVirtualBankAccountService.getById(id));
         return ResponseEntity.ok(rw);
     }
-
 }
