@@ -1,10 +1,7 @@
 package com.sericulture.registration.controller;
 
 import com.sericulture.registration.model.ResponseWrapper;
-import com.sericulture.registration.model.api.reeler.EditReelerRequest;
-import com.sericulture.registration.model.api.reeler.ReelerRequest;
-import com.sericulture.registration.model.api.reeler.ReelerResponse;
-import com.sericulture.registration.model.api.reeler.UpdateReelerStatusRequest;
+import com.sericulture.registration.model.api.reeler.*;
 import com.sericulture.registration.service.ReelerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -319,13 +316,51 @@ public class ReelerController {
     })
     @PostMapping("/update-status")
     public ResponseEntity<?> updateReelerStatus(
-//            @PathVariable final Integer id,
-//            @PathVariable final Integer status
             @RequestBody final UpdateReelerStatusRequest updateReelerStatusRequest
     ) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerResponse.class);
 
         rw.setContent(reelerService.updateReelerStatus(updateReelerStatusRequest));
+        return ResponseEntity.ok(rw);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @PostMapping("/update-reeler-license")
+    public ResponseEntity<?> updateReelerLicense(
+            @RequestBody final UpdateReelerLicenseRequest updateReelerLicenseRequest
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerResponse.class);
+
+        rw.setContent(reelerService.updateReelerLicense(updateReelerLicenseRequest));
+        return ResponseEntity.ok(rw);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @GetMapping("/get-by-reeling-license-number/{reelingLicenseNumber}")
+    public ResponseEntity<?> getByReelingLicenseNumber(
+            @PathVariable final String reelingLicenseNumber
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerResponse.class);
+
+        rw.setContent(reelerService.getByReelingLicenseNumber(reelingLicenseNumber));
         return ResponseEntity.ok(rw);
     }
 }

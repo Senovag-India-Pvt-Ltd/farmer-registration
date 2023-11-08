@@ -1,12 +1,11 @@
 package com.sericulture.registration.service;
 
-import com.sericulture.registration.model.api.reeler.EditReelerRequest;
-import com.sericulture.registration.model.api.reeler.ReelerRequest;
-import com.sericulture.registration.model.api.reeler.ReelerResponse;
-import com.sericulture.registration.model.api.reeler.UpdateReelerStatusRequest;
+import com.sericulture.registration.model.api.reeler.*;
 import com.sericulture.registration.model.entity.Reeler;
+import com.sericulture.registration.model.entity.ReelerLicenseTransaction;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
+import com.sericulture.registration.repository.ReelerLicenseTransactionRepository;
 import com.sericulture.registration.repository.ReelerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +25,9 @@ public class ReelerService {
 
     @Autowired
     ReelerRepository reelerRepository;
+
+    @Autowired
+    ReelerLicenseTransactionRepository reelerLicenseTransactionRepository;
 
     @Autowired
     Mapper mapper;
@@ -92,6 +94,29 @@ public class ReelerService {
         if (Objects.nonNull(reeler)) {
             reeler.setStatus(updateReelerStatusRequest.getStatus());
             reelerRepository.save(reeler);
+        } else {
+            throw new ValidationException("Invalid Id");
+        }
+        return mapper.reelerEntityToObject(reeler,ReelerResponse.class);
+    }
+
+    @Transactional
+    public ReelerResponse updateReelerLicense(UpdateReelerLicenseRequest updateReelerLicenseRequest) {
+        Reeler reeler = reelerRepository.findByReelerIdAndActive(updateReelerLicenseRequest.getReelerId(), true);
+        if (Objects.nonNull(reeler)) {
+            reeler.setStatus(updateReelerLicenseRequest.getStatus());
+            reeler.setFeeAmount(updateReelerLicenseRequest.getFeeAmount());
+            reeler.setLicenseRenewalDate(updateReelerLicenseRequest.getLicenseRenewalDate());
+            reeler.setLicenseExpiryDate(updateReelerLicenseRequest.getLicenseExpiryDate());
+            Reeler savedReeler = reelerRepository.save(reeler);
+
+            //Save record to reeler license transaction table
+            ReelerLicenseTransaction reelerLicenseTransaction = new ReelerLicenseTransaction();
+            reelerLicenseTransaction.setReelerId(savedReeler.getReelerId());
+            reelerLicenseTransaction.setExpirationDate(savedReeler.getLicenseExpiryDate());
+            reelerLicenseTransaction.setRenewedDate(savedReeler.getLicenseRenewalDate());
+            reelerLicenseTransaction.setFeeAmount(savedReeler.getFeeAmount());
+            reelerLicenseTransactionRepository.save(reelerLicenseTransaction);
         } else {
             throw new ValidationException("Invalid Id");
         }
@@ -172,4 +197,13 @@ public class ReelerService {
         return mapper.reelerEntityToObject(reelerRepository.save(reeler),ReelerResponse.class);
     }
 
+    @Transactional
+    public ReelerResponse getByReelingLicenseNumber(String reelingLicenseNumber){
+        Reeler reeler = reelerRepository.findByReelingLicenseNumberAndActive(reelingLicenseNumber,true);
+        if(reeler == null){
+            throw new ValidationException("Invalid Id");
+        }
+        log.info("Entity is ",reeler);
+        return mapper.reelerEntityToObject(reeler,ReelerResponse.class);
+    }
 }

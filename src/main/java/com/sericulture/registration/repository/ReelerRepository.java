@@ -20,4 +20,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
     public Reeler findByReelerIdAndActive(long id, boolean isActive);
 
     public Reeler findByReelerIdAndActiveIn(@Param("ReelerId") long ReelerId, @Param("active") Set<Boolean> active);
+
+    public Reeler findByReelingLicenseNumberAndActive(String reelingLicenseNumber, boolean isActive);
+
 }
