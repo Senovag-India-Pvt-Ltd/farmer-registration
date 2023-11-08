@@ -7,8 +7,10 @@ import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccoun
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyRequest;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsRequest;
 import com.sericulture.registration.model.api.reeler.ReelerRequest;
+import com.sericulture.registration.model.api.reelerLicenseTransaction.ReelerLicenseTransactionRequest;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountRequest;
 import com.sericulture.registration.model.entity.*;
+import com.sericulture.registration.repository.ReelerLicenseTransactionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -180,5 +182,25 @@ public class Mapper {
     public <T> T reelerVirtualBankAccountObjectToEntity(ReelerVirtualBankAccountRequest reelerVirtualBankAccountRequest, Class<T> claaz) {
         log.info("Value of mapper is:",mapper, reelerVirtualBankAccountRequest);
         return (T) mapper.map(reelerVirtualBankAccountRequest, claaz);
+    }
+
+    /**
+     * Maps ReelerLicenseTransaction Entity to ReelerLicenseTransaction Response Object
+     * @param reelerLicenseTransactionEntity
+     * @param <T>
+     */
+    public <T> T reelerLicenseTransactionEntityToObject(ReelerLicenseTransaction reelerLicenseTransactionEntity, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, reelerLicenseTransactionEntity);
+        return (T) mapper.map(reelerLicenseTransactionEntity, claaz);
+    }
+
+    /**
+     * Maps ReelerLicenseTransaction Object to ReelerLicenseTransaction Response Entity
+     * @param reelerLicenseTransactionEntityRequest
+     * @param <T>
+     */
+    public <T> T reelerLicenseTransactionObjectToEntity(ReelerLicenseTransactionRequest reelerLicenseTransactionEntityRequest, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, reelerLicenseTransactionEntityRequest);
+        return (T) mapper.map(reelerLicenseTransactionEntityRequest, claaz);
     }
 }
