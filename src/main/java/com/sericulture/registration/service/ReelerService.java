@@ -3,6 +3,7 @@ package com.sericulture.registration.service;
 import com.sericulture.registration.model.api.reeler.EditReelerRequest;
 import com.sericulture.registration.model.api.reeler.ReelerRequest;
 import com.sericulture.registration.model.api.reeler.ReelerResponse;
+import com.sericulture.registration.model.api.reeler.UpdateReelerStatusRequest;
 import com.sericulture.registration.model.entity.Reeler;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
@@ -82,6 +83,18 @@ public class ReelerService {
             throw new ValidationException("Invalid Id");
         }
         log.info("Entity is ",reeler);
+        return mapper.reelerEntityToObject(reeler,ReelerResponse.class);
+    }
+
+    @Transactional
+    public ReelerResponse updateReelerStatus(UpdateReelerStatusRequest updateReelerStatusRequest) {
+        Reeler reeler = reelerRepository.findByReelerIdAndActive(updateReelerStatusRequest.getReelerId(), true);
+        if (Objects.nonNull(reeler)) {
+            reeler.setStatus(updateReelerStatusRequest.getStatus());
+            reelerRepository.save(reeler);
+        } else {
+            throw new ValidationException("Invalid Id");
+        }
         return mapper.reelerEntityToObject(reeler,ReelerResponse.class);
     }
 
