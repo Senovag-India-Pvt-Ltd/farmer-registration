@@ -149,6 +149,8 @@ public class ReelerService {
             reeler.setBankAccountNumber(reelerRequest.getBankAccountNumber());
             reeler.setBranchName(reelerRequest.getBranchName());
             reeler.setIfscCode(reelerRequest.getIfscCode());
+            reeler.setStatus(reelerRequest.getStatus());
+            reeler.setLicenseRenewalDate(reelerRequest.getLicenseRenewalDate());
 
             reeler.setActive(true);
         }else{

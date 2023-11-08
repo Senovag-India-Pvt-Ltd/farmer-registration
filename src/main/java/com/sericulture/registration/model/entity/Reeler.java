@@ -187,4 +187,11 @@ public class Reeler extends BaseEntity implements Serializable {
 
     @Column(name = "ifsc_code")
     private String ifscCode;
+
+    @Column(name = "status")
+    private int status;
+
+    @Column(name = "license_renewal_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date licenseRenewalDate;
 }

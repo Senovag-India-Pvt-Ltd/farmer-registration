@@ -173,4 +173,10 @@ public class ReelerRequest extends RequestBody {
 
     @Schema(name = "ifscCode", example = "SBI3748")
     String ifscCode;
+
+    @Schema(name = "status", example = "1")
+    int status;
+
+    @Schema(name = "licenseRenewalDate", example = "2023-11-03 16:27:35.907")
+    Date licenseRenewalDate;
 }
