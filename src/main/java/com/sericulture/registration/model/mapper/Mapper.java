@@ -1,6 +1,7 @@
 package com.sericulture.registration.model.mapper;
 
 import com.sericulture.registration.model.api.education.EducationRequest;
+import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationRequest;
 import com.sericulture.registration.model.api.farmer.FarmerRequest;
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressRequest;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountRequest;
@@ -9,6 +10,7 @@ import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetail
 import com.sericulture.registration.model.api.reeler.ReelerRequest;
 import com.sericulture.registration.model.api.reelerLicenseTransaction.ReelerLicenseTransactionRequest;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountRequest;
+import com.sericulture.registration.model.api.traderLicense.TraderLicenseRequest;
 import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.repository.ReelerLicenseTransactionRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -202,5 +204,45 @@ public class Mapper {
     public <T> T reelerLicenseTransactionObjectToEntity(ReelerLicenseTransactionRequest reelerLicenseTransactionEntityRequest, Class<T> claaz) {
         log.info("Value of mapper is:",mapper, reelerLicenseTransactionEntityRequest);
         return (T) mapper.map(reelerLicenseTransactionEntityRequest, claaz);
+    }
+
+    /**
+     * Maps TraderLicense Entity to TraderLicense Response Object
+     * @param traderLicenseTransactionEntity
+     * @param <T>
+     */
+    public <T> T traderLicenseEntityToObject(TraderLicense traderLicenseTransactionEntity, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, traderLicenseTransactionEntity);
+        return (T) mapper.map(traderLicenseTransactionEntity, claaz);
+    }
+
+    /**
+     * Maps TraderLicense Object to TraderLicense Response Entity
+     * @param traderLicenseRequest
+     * @param <T>
+     */
+    public <T> T traderLicenseObjectToEntity(TraderLicenseRequest traderLicenseRequest, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, traderLicenseRequest);
+        return (T) mapper.map(traderLicenseRequest, claaz);
+    }
+
+    /**
+     * Maps ExternalUnitRegistration Entity to ExternalUnitRegistration Response Object
+     * @param externalUnitRegistrationEntity
+     * @param <T>
+     */
+    public <T> T externalUnitRegistrationEntityToObject(ExternalUnitRegistration externalUnitRegistrationEntity, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, externalUnitRegistrationEntity);
+        return (T) mapper.map(externalUnitRegistrationEntity, claaz);
+    }
+
+    /**
+     * Maps ExternalUnitRegistration Object to ExternalUnitRegistration Response Entity
+     * @param externalUnitRegistrationEntityRequest
+     * @param <T>
+     */
+    public <T> T externalUnitRegistrationObjectToEntity(ExternalUnitRegistrationRequest externalUnitRegistrationEntityRequest, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, externalUnitRegistrationEntityRequest);
+        return (T) mapper.map(externalUnitRegistrationEntityRequest, claaz);
     }
 }
