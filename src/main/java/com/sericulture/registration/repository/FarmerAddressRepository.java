@@ -19,4 +19,6 @@ public interface FarmerAddressRepository extends PagingAndSortingRepository<Farm
     public FarmerAddress findByFarmerAddressIdAndActive(long id, boolean isActive);
 
     public FarmerAddress findByFarmerAddressIdAndActiveIn(@Param("farmerAddressId") long farmerAddressId, @Param("active") Set<Boolean> active);
+
+    List<FarmerAddress> findByFarmerIdAndActive(long id, boolean isActive);
 }

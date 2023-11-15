@@ -22,4 +22,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
     public Farmer findByFarmerIdAndActive(long id, boolean isActive);
 
     public Farmer findByFarmerIdAndActiveIn(@Param("farmerId") long farmerId, @Param("active") Set<Boolean> active);
+
+    public Farmer findByFruitsIdAndActive(String fruitsid, boolean isActive);
+
 }

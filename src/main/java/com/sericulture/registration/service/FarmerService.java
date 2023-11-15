@@ -1,12 +1,11 @@
 package com.sericulture.registration.service;
 
-import com.sericulture.registration.model.api.farmer.EditFarmerRequest;
-import com.sericulture.registration.model.api.farmer.FarmerRequest;
-import com.sericulture.registration.model.api.farmer.FarmerResponse;
-import com.sericulture.registration.model.entity.Farmer;
+import com.sericulture.registration.model.api.farmer.*;
+import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
+import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
-import com.sericulture.registration.repository.FarmerRepository;
+import com.sericulture.registration.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,20 +26,22 @@ public class FarmerService {
     FarmerRepository farmerRepository;
 
     @Autowired
+    FarmerAddressRepository farmerAddressRepository;
+
+    @Autowired
+    FarmerLandDetailsRepository farmerLandDetailsRepository;
+
+    @Autowired
+    FarmerFamilyRepository farmerFamilyRepository;
+
+    @Autowired
+    FarmerBankAccountRepository farmerBankAccountRepository;
+
+    @Autowired
     Mapper mapper;
 
     @Autowired
     CustomValidator validator;
-
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public FarmerResponse getFarmerDetails(String farmerNumber){
-        Farmer farmer = null;
-        if(farmer==null){
-            farmer = farmerRepository.findByFarmerNumberAndActive(farmerNumber,true);
-        }
-        log.info("Entity is ",farmer);
-        return mapper.farmerEntityToObject(farmer,FarmerResponse.class);
-    }
 
     @Transactional
     public FarmerResponse insertFarmerDetails(FarmerRequest farmerRequest){
@@ -110,6 +111,27 @@ public class FarmerService {
             throw new ValidationException("Error occurred while fetching farmer");
         }
         return mapper.farmerEntityToObject(farmerRepository.save(farmer),FarmerResponse.class);
+    }
+
+    @Transactional
+    public GetFarmerResponse getFarmerDetails(GetFarmerRequest getFarmerRequest){
+        Farmer farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(),true);
+        if(farmer == null){
+            throw new ValidationException("Invalid fruits id");
+        }
+        List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+        List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+        List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+        FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+
+        GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
+        getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer,FarmerResponse.class));
+        getFarmerResponse.setFarmerAddressList(farmerAddressList);
+        getFarmerResponse.setFarmerFamilyList(farmerFamilyList);
+        getFarmerResponse.setFarmerLandDetailsList(farmerLandDetailsList);
+        getFarmerResponse.setFarmerBankAccount(farmerBankAccount);
+
+        return getFarmerResponse;
     }
 
 }
