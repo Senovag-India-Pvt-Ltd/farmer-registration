@@ -7,6 +7,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -18,4 +19,7 @@ public interface ReelerVirtualBankAccountRepository extends PagingAndSortingRepo
     public ReelerVirtualBankAccount findByReelerVirtualBankAccountIdAndActive(long id, boolean isActive);
 
     public ReelerVirtualBankAccount findByReelerVirtualBankAccountIdAndActiveIn(@Param("reelerVirtualBankAccountId") long ReelerVirtualBankAccountId, @Param("active") Set<Boolean> active);
+
+    public List<ReelerVirtualBankAccount> findByReelerIdAndActive(long reelerId, boolean isActive);
+
 }

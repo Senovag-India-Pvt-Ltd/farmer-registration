@@ -1,6 +1,8 @@
 package com.sericulture.registration.controller;
 
 import com.sericulture.registration.model.ResponseWrapper;
+import com.sericulture.registration.model.api.farmer.GetFarmerRequest;
+import com.sericulture.registration.model.api.farmer.GetFarmerResponse;
 import com.sericulture.registration.model.api.reeler.*;
 import com.sericulture.registration.service.ReelerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -361,6 +363,25 @@ public class ReelerController {
         ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerResponse.class);
 
         rw.setContent(reelerService.getByReelingLicenseNumber(reelingLicenseNumber));
+        return ResponseEntity.ok(rw);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @PostMapping("/get-reeler-details")
+    public ResponseEntity<?> getReelerDetails(
+            @RequestBody GetReelerRequest getReelerRequest
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(GetFarmerResponse.class);
+        rw.setContent(reelerService.getReelerDetails(getReelerRequest));
         return ResponseEntity.ok(rw);
     }
 }

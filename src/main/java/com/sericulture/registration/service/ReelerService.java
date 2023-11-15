@@ -1,12 +1,15 @@
 package com.sericulture.registration.service;
 
+import com.sericulture.registration.model.api.farmer.FarmerResponse;
+import com.sericulture.registration.model.api.farmer.GetFarmerRequest;
+import com.sericulture.registration.model.api.farmer.GetFarmerResponse;
 import com.sericulture.registration.model.api.reeler.*;
-import com.sericulture.registration.model.entity.Reeler;
-import com.sericulture.registration.model.entity.ReelerLicenseTransaction;
+import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.ReelerLicenseTransactionRepository;
 import com.sericulture.registration.repository.ReelerRepository;
+import com.sericulture.registration.repository.ReelerVirtualBankAccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,6 +37,9 @@ public class ReelerService {
 
     @Autowired
     CustomValidator validator;
+
+    @Autowired
+    ReelerVirtualBankAccountRepository reelerVirtualBankAccountRepository;
 
     @Transactional
     public ReelerResponse insertReelerDetails(ReelerRequest reelerRequest){
@@ -205,5 +211,20 @@ public class ReelerService {
         }
         log.info("Entity is ",reeler);
         return mapper.reelerEntityToObject(reeler,ReelerResponse.class);
+    }
+
+    @Transactional
+    public GetReelerResponse getReelerDetails(GetReelerRequest getReelerRequest){
+        Reeler reeler = reelerRepository.findByReelerIdAndActive(getReelerRequest.getReelerId(),true);
+        if(reeler == null){
+            throw new ValidationException("Invalid reeler id");
+        }
+        List<ReelerVirtualBankAccount> reelerVirtualBankAccountList = reelerVirtualBankAccountRepository.findByReelerIdAndActive(reeler.getReelerId(), true);
+
+        GetReelerResponse getReelerResponse = new GetReelerResponse();
+        getReelerResponse.setReelerResponse(mapper.reelerEntityToObject(reeler, ReelerResponse.class));
+        getReelerResponse.setReelerVirtualBankAccountList(reelerVirtualBankAccountList);
+
+        return getReelerResponse;
     }
 }
