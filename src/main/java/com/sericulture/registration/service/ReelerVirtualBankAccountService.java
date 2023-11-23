@@ -86,6 +86,16 @@ public class ReelerVirtualBankAccountService {
     }
 
     @Transactional
+    public ReelerVirtualBankAccountResponse getByReelerId(int id){
+        ReelerVirtualBankAccount reelerVirtualBankAccount = reelerVirtualBankAccountRepository.findByReelerId(id);
+        if(reelerVirtualBankAccount == null){
+            throw new ValidationException("Invalid Id");
+        }
+        log.info("Entity is ",reelerVirtualBankAccount);
+        return mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccount,ReelerVirtualBankAccountResponse.class);
+    }
+
+    @Transactional
     public ReelerVirtualBankAccountResponse updateReelerVirtualBankAccountDetails(EditReelerVirtualBankAccountRequest reelerVirtualBankAccountRequest){
        /* List<ReelerVirtualBankAccount> reelerVirtualBankAccountList = reelerVirtualBankAccountRepository.findByReelerVirtualBankAccountName(reelerVirtualBankAccountRequest.getReelerVirtualBankAccountName());
         if(reelerVirtualBankAccountList.size()>0){
