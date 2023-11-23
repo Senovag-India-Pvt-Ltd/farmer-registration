@@ -85,14 +85,13 @@ public class ReelerVirtualBankAccountService {
         return mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccount,ReelerVirtualBankAccountResponse.class);
     }
 
-    @Transactional
-    public ReelerVirtualBankAccountResponse getByReelerId(int id){
-        ReelerVirtualBankAccount reelerVirtualBankAccount = reelerVirtualBankAccountRepository.findByReelerId(id);
-        if(reelerVirtualBankAccount == null){
-            throw new ValidationException("Invalid Id");
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> getByReelerId(int ReelerId){
+        List<ReelerVirtualBankAccount> reelerList = reelerVirtualBankAccountRepository.findByReelerIdAndActive(ReelerId, true);
+        if(reelerList.isEmpty()){
+            throw new ValidationException("Virtual Bank Account not found by ReelerId");
         }
-        log.info("Entity is ",reelerVirtualBankAccount);
-        return mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccount,ReelerVirtualBankAccountResponse.class);
+        return convertListToMapResponse(reelerList);
     }
 
     @Transactional
@@ -115,6 +114,15 @@ public class ReelerVirtualBankAccountService {
             throw new ValidationException("Error occurred while fetching reelerVirtualBankAccount");
         }
         return mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccountRepository.save(reelerVirtualBankAccount),ReelerVirtualBankAccountResponse.class);
+    }
+
+    private Map<String, Object> convertListToMapResponse(List<ReelerVirtualBankAccount> reelerVirtualBankAccountList) {
+        Map<String, Object> response = new HashMap<>();
+        List<ReelerVirtualBankAccountResponse> reelerVBAccountResponse = reelerVirtualBankAccountList.stream()
+                .map(reelerVirtualBankAccount -> mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccount,ReelerVirtualBankAccountResponse.class)).collect(Collectors.toList());
+        response.put("reelerVirtualBankAccounts",reelerVBAccountResponse);
+        response.put("totalItems", reelerVirtualBankAccountList.size());
+        return response;
     }
 
 }
