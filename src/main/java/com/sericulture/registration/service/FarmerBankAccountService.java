@@ -96,6 +96,16 @@ public class FarmerBankAccountService {
     }
 
     @Transactional
+    public FarmerBankAccountResponse getByFarmerId(int id){
+        FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerIdAndActive(id,true);
+        if(farmerBankAccount == null){
+            throw new ValidationException("Invalid Id");
+        }
+        log.info("Entity is ",farmerBankAccount);
+        return mapper.farmerBankAccountEntityToObject(farmerBankAccount,FarmerBankAccountResponse.class);
+    }
+
+    @Transactional
     public FarmerBankAccountResponse updateFarmerBankAccountDetails(EditFarmerBankAccountRequest farmerBankAccountRequest){
         List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerBankAccountRequest.getFarmerBankAccountNumber());
         if(farmerBankAccountList.size()>0){

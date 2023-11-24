@@ -4,6 +4,7 @@ import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.farmerLandDetails.EditFarmerLandDetailsRequest;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsRequest;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
+import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountResponse;
 import com.sericulture.registration.service.FarmerLandDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -122,6 +123,26 @@ public class FarmerLandDetailsController {
         ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerLandDetailsResponse.class);
 
         rw.setContent(farmerLandDetailsService.getById(id));
+        return ResponseEntity.ok(rw);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @GetMapping("/get-by-farmer-id/{id}")
+    public ResponseEntity<?> getByFarmerId(
+            @PathVariable final Integer id
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerLandDetailsResponse.class);
+
+        rw.setContent(farmerLandDetailsService.getByFarmerId(id));
         return ResponseEntity.ok(rw);
     }
 }

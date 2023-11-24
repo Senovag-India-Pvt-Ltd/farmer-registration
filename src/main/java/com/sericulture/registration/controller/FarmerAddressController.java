@@ -136,13 +136,13 @@ public class FarmerAddressController {
                             }),
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
-    @GetMapping("/get-by-reeler-id/{id}")
-    public ResponseEntity<?> getByReelerId(
+    @GetMapping("/get-by-farmer-id/{id}")
+    public ResponseEntity<?> getByFarmerId(
             @PathVariable final Integer id
     ) {
-        ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerVirtualBankAccountResponse.class);
+        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerAddressResponse.class);
 
-        rw.setContent(farmerAddressService.getByReelerId(id));
+        rw.setContent(farmerAddressService.getByFarmerId(id));
         return ResponseEntity.ok(rw);
     }
 

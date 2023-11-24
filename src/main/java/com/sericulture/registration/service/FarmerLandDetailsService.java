@@ -84,6 +84,24 @@ public class FarmerLandDetailsService {
         return mapper.farmerLandDetailsEntityToObject(farmerLandDetails,FarmerLandDetailsResponse.class);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> getByFarmerId(int farmerId){
+        List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmerId, true);
+        if(farmerLandDetailsList.isEmpty()){
+            throw new ValidationException("Virtual Bank Account not found by ReelerId");
+        }
+        return convertListToMapResponse(farmerLandDetailsList);
+    }
+
+    private Map<String, Object> convertListToMapResponse(List<FarmerLandDetails> farmerLandDetailsList) {
+        Map<String, Object> response = new HashMap<>();
+        List<FarmerLandDetailsResponse> farmerLandDetailsResponses = farmerLandDetailsList.stream()
+                .map(farmerLandDetails -> mapper.farmerLandDetailsEntityToObject(farmerLandDetails,FarmerLandDetailsResponse.class)).collect(Collectors.toList());
+        response.put("farmerLandDetails",farmerLandDetailsResponses);
+        response.put("totalItems", farmerLandDetailsList.size());
+        return response;
+    }
+
     @Transactional
     public FarmerLandDetailsResponse updateFarmerLandDetailsDetails(EditFarmerLandDetailsRequest farmerLandDetailsRequest){
        /* List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerLandDetailsName(farmerLandDetailsRequest.getFarmerLandDetailsName());

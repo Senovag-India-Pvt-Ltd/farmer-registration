@@ -98,10 +98,10 @@ public class FarmerFamilyService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Map<String,Object> getByReelerId(int ReelerId){
-        List<FarmerFamily> familyList = farmerFamilyRepository.findByReelerIdAndActive(ReelerId, true);
+    public Map<String,Object> getByFarmerId(int farmerId){
+        List<FarmerFamily> familyList = farmerFamilyRepository.findByFarmerIdAndActive(farmerId, true);
         if(familyList.isEmpty()){
-            throw new ValidationException("Farmer Family Members not found by ReelerId");
+            throw new ValidationException("Farmer Family Members not found by farmer Id");
         }
         return convertListToMapResponse(familyList);
     }
