@@ -89,11 +89,11 @@ public class FarmerAddressService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByFarmerId(int farmerId){
-        List<FarmerAddress> familyList = farmerAddressRepository.findByFarmerIdAndActive(farmerId, true);
-        if(familyList.isEmpty()){
+        List<FarmerAddress> farmerAddress = farmerAddressRepository.findByFarmerIdAndActive(farmerId, true);
+        if(farmerAddress.isEmpty()){
             throw new ValidationException("Farmer Address not found by Farmer Id");
         }
-        return convertListToMapResponse(familyList);
+        return convertListToMapResponse(farmerAddress);
     }
 
     @Transactional
@@ -121,12 +121,12 @@ public class FarmerAddressService {
         return mapper.farmerAddressEntityToObject(farmerAddressRepository.save(farmerAddress),FarmerAddressResponse.class);
     }
 
-    private Map<String, Object> convertListToMapResponse(List<FarmerAddress> familyList) {
+    private Map<String, Object> convertListToMapResponse(List<FarmerAddress> farmerAddressList) {
         Map<String, Object> response = new HashMap<>();
-        List<FarmerAddressResponse> farmerAddressResponse = familyList.stream()
-                .map(farmerFamily -> mapper.farmerAddressEntityToObject(farmerFamily, FarmerAddressResponse.class)).collect(Collectors.toList());
-        response.put("farmerFamily", farmerAddressResponse);
-        response.put("totalItems", familyList.size());
+        List<FarmerAddressResponse> farmerAddressResponse = farmerAddressList.stream()
+                .map(farmerAddress -> mapper.farmerAddressEntityToObject(farmerAddress, FarmerAddressResponse.class)).collect(Collectors.toList());
+        response.put("farmerAddress", farmerAddressResponse);
+        response.put("totalItems", farmerAddressList.size());
         return response;
     }
 
