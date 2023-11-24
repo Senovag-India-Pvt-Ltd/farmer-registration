@@ -17,7 +17,6 @@ public interface ReelerVirtualBankAccountRepository extends PagingAndSortingRepo
     public ReelerVirtualBankAccount save(ReelerVirtualBankAccount ReelerVirtualBankAccount);
 
     public ReelerVirtualBankAccount findByReelerVirtualBankAccountIdAndActive(long id, boolean isActive);
-    public ReelerVirtualBankAccount findByReelerId(long id);
 
     public ReelerVirtualBankAccount findByReelerVirtualBankAccountIdAndActiveIn(@Param("reelerVirtualBankAccountId") long ReelerVirtualBankAccountId, @Param("active") Set<Boolean> active);
 
