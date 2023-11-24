@@ -1,6 +1,7 @@
 package com.sericulture.registration.repository;
 
 import com.sericulture.registration.model.entity.FarmerFamily;
+import com.sericulture.registration.model.entity.ReelerVirtualBankAccount;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -25,4 +26,6 @@ public interface FarmerFamilyRepository extends PagingAndSortingRepository<Farme
     public FarmerFamily findByFarmerFamilyIdAndActiveIn(@Param("farmerFamilyId") long farmerFamilyId, @Param("active") Set<Boolean> active);
 
     public List<FarmerFamily> findByFarmerIdAndActive(long farmerId, boolean isActive);
+
+    public List<FarmerFamily> findByReelerIdAndActive(long reelerId, boolean isActive);
 }

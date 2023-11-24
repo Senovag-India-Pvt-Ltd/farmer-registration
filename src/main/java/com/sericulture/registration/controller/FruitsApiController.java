@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("fuitsapi")
+@RequestMapping("fuits-api")
 public class FruitsApiController {
 
     @Autowired
@@ -30,7 +30,7 @@ public class FruitsApiController {
                             }),
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
-    @PostMapping("/gettoken")
+    @PostMapping("/get-token")
     public ResponseEntity<?> getToken(@RequestBody FruitsTokenDTO body) {
         try{
 
@@ -53,4 +53,28 @@ public class FruitsApiController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    @Operation(summary = "Get Fruits Token", description = "Get Token From Fruits API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"error\":\"0\",\"error_description\":\" Username or password is incorrect \"}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @PostMapping("/get-farmer-by-fid")
+    public ResponseEntity<?> getFarmerByFid(@RequestBody FruitsTokenDTO body) {
+        try{
+            return fruitsApiService.getToken(body);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

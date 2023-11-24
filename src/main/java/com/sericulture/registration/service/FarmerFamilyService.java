@@ -3,7 +3,9 @@ package com.sericulture.registration.service;
 import com.sericulture.registration.model.api.farmerFamily.EditFarmerFamilyRequest;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyRequest;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
+import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountResponse;
 import com.sericulture.registration.model.entity.FarmerFamily;
+import com.sericulture.registration.model.entity.ReelerVirtualBankAccount;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.FarmerFamilyRepository;
@@ -95,6 +97,15 @@ public class FarmerFamilyService {
         return mapper.farmerFamilyEntityToObject(farmerFamily,FarmerFamilyResponse.class);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> getByReelerId(int ReelerId){
+        List<FarmerFamily> familyList = farmerFamilyRepository.findByReelerIdAndActive(ReelerId, true);
+        if(familyList.isEmpty()){
+            throw new ValidationException("Farmer Family Members not found by ReelerId");
+        }
+        return convertListToMapResponse(familyList);
+    }
+
     @Transactional
     public FarmerFamilyResponse updateFarmerFamilyDetails(EditFarmerFamilyRequest farmerFamilyRequest){
         List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerFamilyName(farmerFamilyRequest.getFarmerFamilyName());
@@ -112,6 +123,15 @@ public class FarmerFamilyService {
             throw new ValidationException("Error occurred while fetching farmerFamily");
         }
         return mapper.farmerFamilyEntityToObject(farmerFamilyRepository.save(farmerFamily),FarmerFamilyResponse.class);
+    }
+
+    private Map<String, Object> convertListToMapResponse(List<FarmerFamily> familyList) {
+        Map<String, Object> response = new HashMap<>();
+        List<FarmerFamilyResponse> reelerVBAccountResponse = familyList.stream()
+                .map(farmerFamily -> mapper.farmerFamilyEntityToObject(farmerFamily,FarmerFamilyResponse.class)).collect(Collectors.toList());
+        response.put("farmerFamily",reelerVBAccountResponse);
+        response.put("totalItems", familyList.size());
+        return response;
     }
 
 }
