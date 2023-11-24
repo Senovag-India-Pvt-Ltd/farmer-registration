@@ -3,7 +3,9 @@ package com.sericulture.registration.service;
 import com.sericulture.registration.model.api.farmerAddress.EditFarmerAddressRequest;
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressRequest;
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
+import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
 import com.sericulture.registration.model.entity.FarmerAddress;
+import com.sericulture.registration.model.entity.FarmerFamily;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.FarmerAddressRepository;
@@ -85,6 +87,15 @@ public class FarmerAddressService {
         return mapper.farmerAddressEntityToObject(farmerAddress,FarmerAddressResponse.class);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> getByReelerId(int ReelerId){
+        List<FarmerAddress> familyList = farmerAddressRepository.findByReelerIdAndActive(ReelerId, true);
+        if(familyList.isEmpty()){
+            throw new ValidationException("Farmer Family Members not found by ReelerId");
+        }
+        return convertListToMapResponse(familyList);
+    }
+
     @Transactional
     public FarmerAddressResponse updateFarmerAddressDetails(EditFarmerAddressRequest farmerAddressRequest){
        /* List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerAddressName(farmerAddressRequest.getFarmerAddressName());
@@ -108,6 +119,15 @@ public class FarmerAddressService {
             throw new ValidationException("Error occurred while fetching farmerAddress");
         }
         return mapper.farmerAddressEntityToObject(farmerAddressRepository.save(farmerAddress),FarmerAddressResponse.class);
+    }
+
+    private Map<String, Object> convertListToMapResponse(List<FarmerAddress> familyList) {
+        Map<String, Object> response = new HashMap<>();
+        List<FarmerAddressResponse> farmerAddressResponse = familyList.stream()
+                .map(farmerFamily -> mapper.farmerAddressEntityToObject(farmerFamily, FarmerAddressResponse.class)).collect(Collectors.toList());
+        response.put("farmerFamily", farmerAddressResponse);
+        response.put("totalItems", familyList.size());
+        return response;
     }
 
 }

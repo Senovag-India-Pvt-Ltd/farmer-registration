@@ -1,6 +1,7 @@
 package com.sericulture.registration.repository;
 
 import com.sericulture.registration.model.entity.FarmerAddress;
+import com.sericulture.registration.model.entity.FarmerFamily;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -21,4 +22,6 @@ public interface FarmerAddressRepository extends PagingAndSortingRepository<Farm
     public FarmerAddress findByFarmerAddressIdAndActiveIn(@Param("farmerAddressId") long farmerAddressId, @Param("active") Set<Boolean> active);
 
     List<FarmerAddress> findByFarmerIdAndActive(long id, boolean isActive);
+
+    public List<FarmerAddress> findByReelerIdAndActive(long reelerId, boolean isActive);
 }

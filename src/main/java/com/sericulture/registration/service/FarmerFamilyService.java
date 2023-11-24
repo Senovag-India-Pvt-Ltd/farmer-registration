@@ -127,9 +127,9 @@ public class FarmerFamilyService {
 
     private Map<String, Object> convertListToMapResponse(List<FarmerFamily> familyList) {
         Map<String, Object> response = new HashMap<>();
-        List<FarmerFamilyResponse> reelerVBAccountResponse = familyList.stream()
+        List<FarmerFamilyResponse> familyResponse = familyList.stream()
                 .map(farmerFamily -> mapper.farmerFamilyEntityToObject(farmerFamily,FarmerFamilyResponse.class)).collect(Collectors.toList());
-        response.put("farmerFamily",reelerVBAccountResponse);
+        response.put("farmerFamily", familyResponse);
         response.put("totalItems", familyList.size());
         return response;
     }
