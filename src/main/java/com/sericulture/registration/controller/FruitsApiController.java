@@ -1,6 +1,7 @@
 package com.sericulture.registration.controller;
 
-import com.sericulture.registration.model.dto.FruitsTokenDTO;
+import com.sericulture.registration.model.api.fruitsApi.GetFruitsTokenResponse;
+import com.sericulture.registration.model.dto.fruitsApi.FruitsTokenDTO;
 import com.sericulture.registration.service.FruitsApiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,7 +32,8 @@ public class FruitsApiController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
     @PostMapping("/get-token")
-    public ResponseEntity<?> getToken(@RequestBody FruitsTokenDTO body) {
+    public GetFruitsTokenResponse getToken(@RequestBody FruitsTokenDTO body) {
+        GetFruitsTokenResponse getFruitsTokenResponse = new GetFruitsTokenResponse();
         try{
 
             return fruitsApiService.getToken(body);
@@ -49,8 +51,10 @@ public class FruitsApiController {
 //            return new ResponseEntity<>( status == 200 ? "Airline created successfully" : "Airline Not created successfully",status == 200 ? HttpStatus.OK: HttpStatus.BAD_REQUEST);
 
         }catch (Exception e){
-            e.printStackTrace();
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            getFruitsTokenResponse.setError(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+            getFruitsTokenResponse.setError_description(e.getMessage());
+            return getFruitsTokenResponse;
+            //return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -69,7 +73,8 @@ public class FruitsApiController {
     @PostMapping("/get-farmer-by-fid")
     public ResponseEntity<?> getFarmerByFid(@RequestBody FruitsTokenDTO body) {
         try{
-            return fruitsApiService.getToken(body);
+            return new ResponseEntity<>("TODO", HttpStatus.OK);
+            // return fruitsApiService.getToken(body);
 
         }catch (Exception e){
             e.printStackTrace();

@@ -1,4 +1,4 @@
-package com.sericulture.registration.model.dto;
+package com.sericulture.registration.model.dto.fruitsApi;
 
 import lombok.Data;
 

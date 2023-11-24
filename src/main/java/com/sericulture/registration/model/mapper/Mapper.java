@@ -11,6 +11,7 @@ import com.sericulture.registration.model.api.reeler.ReelerRequest;
 import com.sericulture.registration.model.api.reelerLicenseTransaction.ReelerLicenseTransactionRequest;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseRequest;
+import com.sericulture.registration.model.dto.fruitsApi.GetFruitsTokenDTO;
 import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.repository.ReelerLicenseTransactionRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -244,5 +245,15 @@ public class Mapper {
     public <T> T externalUnitRegistrationObjectToEntity(ExternalUnitRegistrationRequest externalUnitRegistrationEntityRequest, Class<T> claaz) {
         log.info("Value of mapper is:",mapper, externalUnitRegistrationEntityRequest);
         return (T) mapper.map(externalUnitRegistrationEntityRequest, claaz);
+    }
+
+    /**
+     * Maps GetFruitsTokenDTO to GetFruitsToken Response Object
+     * @param getFruitsTokenDTO
+     * @param <T>
+     */
+    public <T> T getFruitsTokenEntityToObject(GetFruitsTokenDTO getFruitsTokenDTO, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, getFruitsTokenDTO);
+        return (T) mapper.map(getFruitsTokenDTO, claaz);
     }
 }

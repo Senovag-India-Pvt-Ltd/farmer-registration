@@ -1,7 +1,12 @@
 package com.sericulture.registration.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sericulture.registration.model.dto.FruitsTokenDTO;
+import com.sericulture.registration.model.ResponseWrapper;
+import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
+import com.sericulture.registration.model.api.fruitsApi.GetFruitsTokenResponse;
+import com.sericulture.registration.model.api.reeler.ReelerResponse;
+import com.sericulture.registration.model.dto.fruitsApi.FruitsTokenDTO;
+import com.sericulture.registration.model.dto.fruitsApi.GetFruitsTokenDTO;
 import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.utils.ObjectToUrlEncodedConverter;
 import lombok.extern.slf4j.Slf4j;
@@ -16,29 +21,25 @@ public class FruitsApiService {
     @Autowired
     Mapper mapper;
 
-    public ResponseEntity<?> getToken(FruitsTokenDTO body) {
+    public GetFruitsTokenResponse getToken(FruitsTokenDTO body) {
+        GetFruitsTokenResponse getFruitsTokenResponse = new GetFruitsTokenResponse();
         try{
             String uri = "https://fruits-services.karnataka.gov.in/FRUITS_Sericulture/Token";
-            // log.info("REQUEST BODY :" + ConvertToJson.setJsonString(body));
             log.info("FRUITS GET TOKEN REQUEST BODY :" + body.toString());
 
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-//            headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<FruitsTokenDTO> request = new HttpEntity<>(body, headers);
 
-            // restTemplate.getMessageConverters().add(new org.springframework.http.converter.FormHttpMessageConverter.FormHttpMessageConverter());
-            ObjectMapper mapper = new ObjectMapper();
-            restTemplate.getMessageConverters().add(new ObjectToUrlEncodedConverter(mapper));
+            ObjectMapper mapper1 = new ObjectMapper();
+            restTemplate.getMessageConverters().add(new ObjectToUrlEncodedConverter(mapper1));
 
-            ResponseEntity<String> result = restTemplate.postForEntity(uri, request, String.class);
+            ResponseEntity<GetFruitsTokenResponse> result = restTemplate.postForEntity(uri, request, GetFruitsTokenResponse.class);
 
-            return new ResponseEntity<>( result.getStatusCodeValue() == 200 ? "Got Fruits Token Successfully" : "Getting Fruits Token Failed", HttpStatus.OK);
+            return result.getBody();
 
-
-//
 //            HttpRequest results =   HttpRequest.post(uri)
 //                    .header("Content-Type", "application/json")
 //                    .send(ConvertToJson.setJsonString(body)) ;
@@ -51,7 +52,10 @@ public class FruitsApiService {
         }catch (Exception e){
             e.printStackTrace();
             log.error("FRUITS API ERROR - GET TOKEN: " + e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            getFruitsTokenResponse.setError(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+            getFruitsTokenResponse.setError_description(e.getMessage());
+            return getFruitsTokenResponse;
+            //return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
