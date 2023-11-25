@@ -106,6 +106,27 @@ public class FarmerService {
         Farmer farmer = farmerRepository.findByFarmerIdAndActiveIn(farmerRequest.getFarmerId(), Set.of(true,false));
         if(Objects.nonNull(farmer)){
             farmer.setFarmerNumber(farmerRequest.getFarmerNumber());
+            farmer.setFruitsId(farmerRequest.getFruitsId());
+            farmer.setFirstName(farmerRequest.getFirstName());
+            farmer.setMiddleName(farmerRequest.getMiddleName());
+            farmer.setLastName(farmerRequest.getLastName());
+            farmer.setDob(farmerRequest.getDob());
+            farmer.setGenderId(farmerRequest.getGenderId());
+            farmer.setGenderId(farmerRequest.getGenderId());
+            farmer.setCasteId(farmerRequest.getCasteId());
+            farmer.setDifferentlyAbled(farmerRequest.getDifferentlyAbled());
+            farmer.setEmail(farmerRequest.getEmail());
+            farmer.setMobileNumber(farmerRequest.getMobileNumber());
+            farmer.setAadhaarNumber(farmerRequest.getAadhaarNumber());
+            farmer.setEpicNumber(farmerRequest.getEpicNumber());
+            farmer.setRationCardNumber(farmerRequest.getRationCardNumber());
+            farmer.setTotalLandHolding(farmerRequest.getTotalLandHolding());
+            farmer.setPassbookNumber(farmerRequest.getPassbookNumber());
+            farmer.setLandHoldingCategoryId(farmerRequest.getLandHoldingCategoryId());
+            farmer.setEducationId(farmerRequest.getEducationId());
+            farmer.setRepresentativeId(farmerRequest.getRepresentativeId());
+            farmer.setKhazaneRecipientId(farmerRequest.getKhazaneRecipientId());
+            farmer.setPhotoPath(farmerRequest.getPhotoPath());
             farmer.setActive(true);
         }else{
             throw new ValidationException("Error occurred while fetching farmer");
