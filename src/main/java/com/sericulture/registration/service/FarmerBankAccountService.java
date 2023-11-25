@@ -107,10 +107,10 @@ public class FarmerBankAccountService {
 
     @Transactional
     public FarmerBankAccountResponse updateFarmerBankAccountDetails(EditFarmerBankAccountRequest farmerBankAccountRequest){
-        List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerBankAccountRequest.getFarmerBankAccountNumber());
-        if(farmerBankAccountList.size()>0){
-            throw new ValidationException("FarmerBankAccount already exists with this name, duplicates are not allowed.");
-        }
+//        List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerBankAccountRequest.getFarmerBankAccountNumber());
+//        if(farmerBankAccountList.size()>0){
+//            throw new ValidationException("FarmerBankAccount already exists with this name, duplicates are not allowed.");
+//        }
 
         FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerBankAccountIdAndActiveIn(farmerBankAccountRequest.getFarmerBankAccountId(), Set.of(true,false));
         if(Objects.nonNull(farmerBankAccount)){
