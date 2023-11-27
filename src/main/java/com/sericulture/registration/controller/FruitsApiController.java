@@ -1,6 +1,7 @@
 package com.sericulture.registration.controller;
 
 import com.sericulture.registration.model.api.fruitsApi.GetFruitsTokenResponse;
+import com.sericulture.registration.model.dto.fruitsApi.FruitsFarmerDTO;
 import com.sericulture.registration.model.dto.fruitsApi.FruitsTokenDTO;
 import com.sericulture.registration.service.FruitsApiService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,7 +60,7 @@ public class FruitsApiController {
     }
 
 
-    @Operation(summary = "Get Fruits Token", description = "Get Token From Fruits API")
+    @Operation(summary = "Get Farmer Details By Fruit ID", description = "Get Farmer Details From Fruits API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ok Response"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
@@ -71,10 +72,10 @@ public class FruitsApiController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
     @PostMapping("/get-farmer-by-fid")
-    public ResponseEntity<?> getFarmerByFid(@RequestBody FruitsTokenDTO body) {
+    public ResponseEntity<?> getFarmerByFid(@RequestBody FruitsFarmerDTO body) {
         try{
-            return new ResponseEntity<>("TODO", HttpStatus.OK);
-            // return fruitsApiService.getToken(body);
+            // return new ResponseEntity<>("TODO", HttpStatus.OK);
+            return fruitsApiService.getFarmerByFruitsId(body);
 
         }catch (Exception e){
             e.printStackTrace();
