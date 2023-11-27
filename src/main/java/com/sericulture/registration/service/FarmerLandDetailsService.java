@@ -88,7 +88,7 @@ public class FarmerLandDetailsService {
     public Map<String,Object> getByFarmerId(int farmerId){
         List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmerId, true);
         if(farmerLandDetailsList.isEmpty()){
-            throw new ValidationException("Virtual Bank Account not found by ReelerId");
+            throw new ValidationException("Farmer Land Details not found by Farmer Id");
         }
         return convertListToMapResponse(farmerLandDetailsList);
     }
