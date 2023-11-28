@@ -1,19 +1,29 @@
 package com.sericulture.registration.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.farmer.*;
+import com.sericulture.registration.model.api.fruitsApi.GetFruitsResponse;
+import com.sericulture.registration.model.api.fruitsApi.GetLandDetailsResponse;
+import com.sericulture.registration.model.dto.caste.CasteDTO;
+import com.sericulture.registration.model.dto.fruitsApi.FruitsFarmerDTO;
+import com.sericulture.registration.model.dto.village.VillageDTO;
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.*;
+import com.sericulture.registration.utils.ObjectToUrlEncodedConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -37,6 +47,9 @@ public class FarmerService {
 
     @Autowired
     FarmerBankAccountRepository farmerBankAccountRepository;
+
+    @Autowired
+    FruitsApiService fruitsApiService;
 
     @Autowired
     Mapper mapper;
@@ -158,4 +171,132 @@ public class FarmerService {
         return getFarmerResponse;
     }
 
+    @Transactional
+    public GetFarmerResponse getFarmerDetailsByFruitsId(GetFarmerRequest getFarmerRequest){
+        GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
+        Farmer farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(),true);
+        if(farmer == null){
+            FruitsFarmerDTO fruitsFarmerDTO = new FruitsFarmerDTO();
+            fruitsFarmerDTO.setFarmerId(getFarmerRequest.getFruitsId());
+
+            GetFruitsResponse getFruitsResponse = fruitsApiService.getFarmerByFruitsIdWithResponse(fruitsFarmerDTO);
+            Farmer farmer1 = new Farmer();
+            farmer1.setFruitsId(getFruitsResponse.getFarmerID());
+            farmer1.setFirstName(getFruitsResponse.getName());
+            farmer1.setMiddleName(getFruitsResponse.getFatherName());
+
+            if(getFruitsResponse.getGender().equals("Male")){
+                farmer1.setGenderId(1L);
+            }else if(getFruitsResponse.getGender().equals("Female")){
+                farmer1.setGenderId(2L);
+            }else{
+                farmer1.setGenderId(3L);
+            }
+            CasteDTO casteDTO = new CasteDTO();
+            casteDTO.setCaste(getFruitsResponse.getCaste());
+            ResponseWrapper responseWrapper = getCaste(casteDTO);
+
+            farmer1.setCasteId(Long.valueOf(((LinkedHashMap) responseWrapper.getContent()).get("id").toString()));
+
+            if(getFruitsResponse.getPhysicallyChallenged().equals("No")){
+                farmer1.setDifferentlyAbled(false);
+            }else{
+                farmer1.setDifferentlyAbled(true);
+            }
+            getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer, FarmerResponse.class));
+
+            List<FarmerAddress> farmerAddressList = new ArrayList<>();
+            FarmerAddress farmerAddress = new FarmerAddress();
+            farmerAddress.setAddressText(getFruitsResponse.getResidentialAddress());
+            farmerAddress.setPincode(getFruitsResponse.getPincode());
+            farmerAddressList.add(farmerAddress);
+            getFarmerResponse.setFarmerAddressList(farmerAddressList);
+
+
+            List<FarmerLandDetails> farmerLandDetailsList = new ArrayList<>();
+            for(GetLandDetailsResponse getLandDetailsResponse: getFruitsResponse.getLanddata()){
+                FarmerLandDetails farmerLandDetails = new FarmerLandDetails();
+                VillageDTO villageDTO = new VillageDTO();
+                villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
+                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
+                farmerLandDetails.setVillageId(Long.valueOf(((LinkedHashMap) responseWrapper1.getContent()).get("villageId").toString()));
+                farmerLandDetails.setHobliId(Long.valueOf(((LinkedHashMap) responseWrapper1.getContent()).get("hobliId").toString()));
+                farmerLandDetails.setTalukId(Long.valueOf(((LinkedHashMap) responseWrapper1.getContent()).get("talukId").toString()));
+                farmerLandDetails.setDistrictId(Long.valueOf(((LinkedHashMap) responseWrapper1.getContent()).get("districtId").toString()));
+                farmerLandDetails.setStateId(Long.valueOf(((LinkedHashMap) responseWrapper1.getContent()).get("stateId").toString()));
+                farmerLandDetailsList.add(farmerLandDetails);
+            }
+            getFarmerResponse.setFarmerLandDetailsList(farmerLandDetailsList);
+            getFarmerResponse.setIsFruitService(1);
+        }else {
+            List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+            List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+            List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+
+            getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer, FarmerResponse.class));
+            getFarmerResponse.setFarmerAddressList(farmerAddressList);
+            getFarmerResponse.setFarmerFamilyList(farmerFamilyList);
+            getFarmerResponse.setFarmerLandDetailsList(farmerLandDetailsList);
+            getFarmerResponse.setIsFruitService(0);
+        }
+
+        return getFarmerResponse;
+    }
+
+    public ResponseWrapper getCaste(CasteDTO body) {
+        ResponseWrapper responseWrapper = new ResponseWrapper();
+        try{
+            String uri = "http://localhost:8001/master-data/v1/" + "caste/get-by-title";
+            //String uri = "http://13.200.62.144:8001/master-data/v1/" + "caste/get-by-title";
+
+            log.info("Caste REQUEST BODY :" + body.toString());
+
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            ObjectMapper mapper1 = new ObjectMapper();
+
+            HttpEntity<String> request = new HttpEntity<>(mapper1.writeValueAsString(body), headers);
+
+            restTemplate.getMessageConverters().add(new ObjectToUrlEncodedConverter(mapper1));
+
+            ResponseEntity<ResponseWrapper> result = restTemplate.postForEntity(uri, request, ResponseWrapper.class);
+
+            return result.getBody();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error("CASTE ERROR: " + e.getMessage());
+            return responseWrapper;
+        }
+    }
+
+    public ResponseWrapper getVillageDetails(VillageDTO body) {
+        ResponseWrapper responseWrapper = new ResponseWrapper();
+        try{
+            String uri = "http://localhost:8001/master-data/v1/" + "village/get-details-by-village-name";
+            //String uri = "http://13.200.62.144:8001/master-data/v1/" + "village/get-details-by-village-name";
+            log.info("Caste REQUEST BODY :" + body.toString());
+
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            ObjectMapper mapper1 = new ObjectMapper();
+
+            HttpEntity<String> request = new HttpEntity<>(mapper1.writeValueAsString(body), headers);
+
+            restTemplate.getMessageConverters().add(new ObjectToUrlEncodedConverter(mapper1));
+
+            ResponseEntity<ResponseWrapper> result = restTemplate.postForEntity(uri, request, ResponseWrapper.class);
+
+            return result.getBody();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error("VILLAGE ERROR: " + e.getMessage());
+            return responseWrapper;
+        }
+    }
 }

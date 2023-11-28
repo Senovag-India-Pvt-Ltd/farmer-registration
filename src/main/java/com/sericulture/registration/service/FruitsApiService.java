@@ -3,6 +3,7 @@ package com.sericulture.registration.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
+import com.sericulture.registration.model.api.fruitsApi.GetFruitsResponse;
 import com.sericulture.registration.model.api.fruitsApi.GetFruitsTokenResponse;
 import com.sericulture.registration.model.api.reeler.ReelerResponse;
 import com.sericulture.registration.model.dto.fruitsApi.FruitsFarmerDTO;
@@ -87,6 +88,36 @@ public class FruitsApiService {
         }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>("Error!, Please try again", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public GetFruitsResponse getFarmerByFruitsIdWithResponse(FruitsFarmerDTO body) {
+        GetFruitsResponse getFruitsResponse = new GetFruitsResponse();
+        try{
+            String uri = "https://fruits-services.karnataka.gov.in/FRUITS_Sericulture/FRUITSData/GetFarmerByFID";
+
+            FruitsTokenDTO fruitsTokenDTO = new FruitsTokenDTO("Sericulture", "ZIy5S72oUvn4a1Tice9vSA==", "password");
+            GetFruitsTokenResponse getFruitsTokenResponse = this.getToken(fruitsTokenDTO);
+            String access_token = getFruitsTokenResponse.getAccess_token();
+
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            // headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            headers.setBearerAuth(access_token);
+
+            HttpEntity<FruitsFarmerDTO> request = new HttpEntity<>(body, headers);
+
+            // restTemplate.getMessageConverters().add(new org.springframework.http.converter.FormHttpMessageConverter.FormHttpMessageConverter());
+            ObjectMapper mapper1 = new ObjectMapper();
+            restTemplate.getMessageConverters().add(new ObjectToUrlEncodedConverter(mapper1));
+            ResponseEntity<GetFruitsResponse> result = restTemplate.postForEntity(uri, request, GetFruitsResponse.class);
+            return result.getBody();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            getFruitsResponse.setError(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+            getFruitsResponse.setError_description(e.getMessage());
+            return getFruitsResponse;
         }
     }
 
