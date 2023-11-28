@@ -4,6 +4,7 @@ import com.sericulture.registration.model.api.farmerAddress.EditFarmerAddressReq
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressRequest;
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
+import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.entity.FarmerAddress;
 import com.sericulture.registration.model.entity.FarmerFamily;
 import com.sericulture.registration.model.exceptions.ValidationException;
@@ -94,6 +95,16 @@ public class FarmerAddressService {
             throw new ValidationException("Farmer Address not found by Farmer Id");
         }
         return convertListToMapResponse(farmerAddress);
+    }
+
+    @Transactional
+    public FarmerAddressResponse getByIdJoin(int id){
+        FarmerAddressDTO farmerAddressDTO = farmerAddressRepository.getByFarmerAddressIdAndActive(id,true);
+        if(farmerAddressDTO == null){
+            throw new ValidationException("Invalid Id");
+        }
+        // log.info("Entity is ", farmerAddressDTO);
+        return mapper.farmerAddressDTOToObject(farmerAddressDTO, FarmerAddressResponse.class);
     }
 
     @Transactional

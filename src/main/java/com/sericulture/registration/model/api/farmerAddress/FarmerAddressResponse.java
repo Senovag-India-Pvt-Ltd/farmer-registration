@@ -41,4 +41,19 @@ public class FarmerAddressResponse {
 
     @Schema(name = "defaultAddress", example = "0")
     Boolean defaultAddress;
+
+    @Schema(name="stateName", example = "karnaa")
+    String stateName;
+
+    @Schema(name="districtName", example = "Udupi")
+    String districtName;
+
+    @Schema(name="talukName", example = "kundapurr")
+    String talukName;
+
+    @Schema(name = "hobliName", example = "Kasaba")
+    String hobliName;
+
+    @Schema(name = "villageName", example = "Hodla")
+    String villageName;
 }
