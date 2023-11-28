@@ -48,9 +48,9 @@ public class FarmerFamilyService {
     public FarmerFamilyResponse insertFarmerFamilyDetails(FarmerFamilyRequest farmerFamilyRequest){
         FarmerFamily farmerFamily = mapper.farmerFamilyObjectToEntity(farmerFamilyRequest,FarmerFamily.class);
         validator.validate(farmerFamily);
-        List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerFamilyNameAndFarmerIdAndActive(farmerFamilyRequest.getFarmerFamilyName());
-        if(farmerFamilyList.isEmpty()){
-            throw new ValidationException("Farmer Family Members not found by farmer Id");
+        List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerFamilyNameAndFarmerIdAndActive(farmerFamilyRequest.getFarmerFamilyName(), farmerFamilyRequest.getFarmerId(), true);
+        if(!farmerFamilyList.isEmpty()){
+            throw new ValidationException("Farmer Family name already exist");
         }
 //        if(!farmerFamilyList.isEmpty() && farmerFamilyList.stream().filter(FarmerFamily::getActive).findAny().isPresent()){
 //            throw new ValidationException("FarmerFamily name already exist");
