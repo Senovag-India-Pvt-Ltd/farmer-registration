@@ -5,6 +5,7 @@ import com.sericulture.registration.model.api.farmerAddress.FarmerAddressRespons
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
+import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.entity.FarmerAddress;
 import com.sericulture.registration.model.entity.FarmerBankAccount;
 import com.sericulture.registration.model.entity.FarmerFamily;
@@ -29,6 +30,9 @@ public class GetFarmerResponse {
 
     @Schema(name = "farmerAddressList")
     List<FarmerAddress> farmerAddressList;
+
+    @Schema(name = "farmerAddressDTOList")
+    List<FarmerAddressDTO> farmerAddressDTOList;
 
     @Schema(name = "farmerLandDetailsList")
     List<FarmerLandDetails> farmerLandDetailsList;

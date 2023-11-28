@@ -167,4 +167,24 @@ public class FarmerAddressController {
         return ResponseEntity.ok(rw);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @GetMapping("/get-by-farmer-id-join/{id}")
+    public ResponseEntity<?> getByFarmerIdJoin(
+            @PathVariable final Integer id
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerAddressResponse.class);
+
+        rw.setContent(farmerAddressService.getByFarmerIdJoin(id));
+        return ResponseEntity.ok(rw);
+    }
+
 }

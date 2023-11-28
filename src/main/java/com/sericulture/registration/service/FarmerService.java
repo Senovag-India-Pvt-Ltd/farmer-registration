@@ -2,6 +2,7 @@ package com.sericulture.registration.service;
 
 import com.sericulture.registration.model.api.farmer.*;
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
+import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
@@ -141,6 +142,7 @@ public class FarmerService {
             throw new ValidationException("Invalid fruits id");
         }
         List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+        List<FarmerAddressDTO> farmerAddressDTOList = farmerAddressRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
         List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
         List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
         FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
@@ -148,6 +150,7 @@ public class FarmerService {
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
         getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer,FarmerResponse.class));
         getFarmerResponse.setFarmerAddressList(farmerAddressList);
+        getFarmerResponse.setFarmerAddressDTOList(farmerAddressDTOList);
         getFarmerResponse.setFarmerFamilyList(farmerFamilyList);
         getFarmerResponse.setFarmerLandDetailsList(farmerLandDetailsList);
         getFarmerResponse.setFarmerBankAccount(farmerBankAccount);

@@ -15,6 +15,9 @@ import java.util.Set;
 public interface FarmerFamilyRepository extends PagingAndSortingRepository<FarmerFamily, Long> {
     public List<FarmerFamily> findByFarmerFamilyName(String farmerFamilyName);
 
+    public List<FarmerFamily> findByFarmerFamilyNameAndFarmerIdAndActive(String farmerFamilyName);
+
+
     public FarmerFamily findByFarmerFamilyNameAndActive(String farmerFamilyName, boolean isActive);
 
     public Page<FarmerFamily> findByActiveOrderByFarmerFamilyIdAsc(boolean isActive, final Pageable pageable);

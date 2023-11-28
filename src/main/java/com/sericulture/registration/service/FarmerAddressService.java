@@ -141,4 +141,23 @@ public class FarmerAddressService {
         return response;
     }
 
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> getByFarmerIdJoin(int farmerId){
+        List<FarmerAddressDTO> farmerAddressDTO = farmerAddressRepository.getByFarmerIdAndActive(farmerId, true);
+        if(farmerAddressDTO.isEmpty()){
+            throw new ValidationException("Farmer Address not found by Farmer Id");
+        }
+        return convertListDTOToMapResponse(farmerAddressDTO);
+    }
+
+    private Map<String, Object> convertListDTOToMapResponse(List<FarmerAddressDTO> farmerAddressDTOList) {
+        Map<String, Object> response = new HashMap<>();
+        List<FarmerAddressResponse> farmerAddressResponse = farmerAddressDTOList.stream()
+                .map(farmerAddressDTO -> mapper.farmerAddressDTOToObject(farmerAddressDTO, FarmerAddressResponse.class)).collect(Collectors.toList());
+        response.put("farmerAddress", farmerAddressResponse);
+        response.put("totalItems", farmerAddressDTOList.size());
+        return response;
+    }
+
 }

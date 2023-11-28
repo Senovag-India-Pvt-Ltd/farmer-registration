@@ -48,13 +48,16 @@ public class FarmerFamilyService {
     public FarmerFamilyResponse insertFarmerFamilyDetails(FarmerFamilyRequest farmerFamilyRequest){
         FarmerFamily farmerFamily = mapper.farmerFamilyObjectToEntity(farmerFamilyRequest,FarmerFamily.class);
         validator.validate(farmerFamily);
-        List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerFamilyName(farmerFamilyRequest.getFarmerFamilyName());
-        if(!farmerFamilyList.isEmpty() && farmerFamilyList.stream().filter(FarmerFamily::getActive).findAny().isPresent()){
-            throw new ValidationException("FarmerFamily name already exist");
+        List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerFamilyNameAndFarmerIdAndActive(farmerFamilyRequest.getFarmerFamilyName());
+        if(farmerFamilyList.isEmpty()){
+            throw new ValidationException("Farmer Family Members not found by farmer Id");
         }
-        if(!farmerFamilyList.isEmpty() && farmerFamilyList.stream().filter(Predicate.not(FarmerFamily::getActive)).findAny().isPresent()){
-            throw new ValidationException("FarmerFamily name already exist with inactive state");
-        }
+//        if(!farmerFamilyList.isEmpty() && farmerFamilyList.stream().filter(FarmerFamily::getActive).findAny().isPresent()){
+//            throw new ValidationException("FarmerFamily name already exist");
+//        }
+//        if(!farmerFamilyList.isEmpty() && farmerFamilyList.stream().filter(Predicate.not(FarmerFamily::getActive)).findAny().isPresent()){
+//            throw new ValidationException("FarmerFamily name already exist with inactive state");
+//        }
         return mapper.farmerFamilyEntityToObject(farmerFamilyRepository.save(farmerFamily),FarmerFamilyResponse.class);
     }
 

@@ -56,4 +56,35 @@ public interface FarmerAddressRepository extends PagingAndSortingRepository<Farm
             "where farmerAddress.active = :isActive AND farmerAddress.farmerAddressId = :id")
     public FarmerAddressDTO getByFarmerAddressIdAndActive(@Param("id") long id, @Param("isActive") boolean isActive);
 
+    @Query("select new com.sericulture.registration.model.dto.farmer.FarmerAddressDTO(" +
+            " farmerAddress.farmerAddressId, " +
+            " farmerAddress.farmerId, " +
+            " farmerAddress.addressText, " +
+            " farmerAddress.pincode, " +
+            " farmerAddress.defaultAddress, " +
+            " farmerAddress.stateId, " +
+            " farmerAddress.districtId, " +
+            " farmerAddress.talukId, " +
+            " farmerAddress.hobliId, " +
+            " farmerAddress.villageId, " +
+            " state.stateName, " +
+            " district.districtName, " +
+            " taluk.talukName, " +
+            " hobli.hobliName, " +
+            " village.villageName" +
+            ") " +
+            "from FarmerAddress farmerAddress " +
+            "left join State state " +
+            "on farmerAddress.stateId = state.stateId " +
+            "left join District district " +
+            "on farmerAddress.districtId = district.districtId " +
+            "left join Taluk taluk " +
+            "on farmerAddress.talukId = taluk.talukId " +
+            "left join Hobli hobli " +
+            "on farmerAddress.hobliId = hobli.hobliId " +
+            "left join Village village " +
+            "on farmerAddress.villageId = village.villageId " +
+            "where farmerAddress.active = :isActive AND farmerAddress.farmerId = :id")
+    public List <FarmerAddressDTO> getByFarmerIdAndActive(@Param("id") long id, @Param("isActive") boolean isActive);
+
 }
