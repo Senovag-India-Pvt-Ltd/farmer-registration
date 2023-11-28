@@ -35,4 +35,7 @@ public class GetFarmerResponse {
 
     @Schema(name = "farmerBankAccount")
     FarmerBankAccount farmerBankAccount;
+
+    @Schema(name = "isFruitService")
+    Integer isFruitService;
 }
