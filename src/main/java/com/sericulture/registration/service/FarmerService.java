@@ -1,5 +1,6 @@
 package com.sericulture.registration.service;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.farmer.*;
@@ -325,5 +326,71 @@ public class FarmerService {
             log.error("VILLAGE ERROR: " + e.getMessage());
             return responseWrapper;
         }
+    }
+
+    @Transactional
+    public GetFarmerResponse test() throws Exception {
+        GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
+        String input = "{\n" +
+                "    \"StatusCode\": 1,\n" +
+                "    \"StatusText\": \"Success\",\n" +
+                "    \"FarmerID\": \"FID2806000009439\",\n" +
+                "    \"name\": \"MUNIHANUMAPPA\",\n" +
+                "    \"NameKan\": \"MUNIHANUMAPPA\",\n" +
+                "    \"FatherName\": \"Munivenkatappa\",\n" +
+                "    \"FatherNameKan\": \"Munivenkatappa\",\n" +
+                "    \"Gender\": \"Male\",\n" +
+                "    \"GenderStatus\": \"Declared\",\n" +
+                "    \"Caste\": \"SC\",\n" +
+                "    \"CasteStatus\": \"Declared\",\n" +
+                "    \"RDNumber\": \"\",\n" +
+                "    \"PhysicallyChallenged\": \"No\",\n" +
+                "    \"Minority\": \"No\",\n" +
+                "    \"FarmerType\": \"Margin Farmer\",\n" +
+                "    \"ResidentialAddress\": \"Kempadenahlli  Village ambajidurga Hobli Chintamani Taluk\",\n" +
+                "    \"Pincode\": \"\",\n" +
+                "    \"Landdata\": [\n" +
+                "        {\n" +
+                "            \"DistrictName\": \"Chikkaballapur\",\n" +
+                "            \"TalukName\": \"Chinthamani\",\n" +
+                "            \"HobliName\": \"Ambajidurga\",\n" +
+                "            \"VillageName\": \"Kempadenahalli\",\n" +
+                "            \"OwnerName\": \"ಮುನಿಹನುಮಪ್ಪ\", \n" +
+                "            \"NameScore\": 100,\n" +
+                "            \"Surveyno\": 37, \n" +
+                "            \"Surnoc\": \"*\",\n" +
+                "            \"Hissano\": \"*\",\n" +
+                "            \"OwnerNo\": 16,\n" +
+                "            \"MainOwnerNo\": 16,\n" +
+                "            \"Acre\": 0,\n" +
+                "            \"Gunta\": 26,\n" +
+                "            \"Fgunta\": 10.67\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"DistrictName\": \"Chikkaballapur\",\n" +
+                "            \"TalukName\": \"Chinthamani\",\n" +
+                "            \"HobliName\": \"Ambajidurga\",\n" +
+                "            \"VillageName\": \"Kempadenahalli\",\n" +
+                "            \"OwnerName\": \"ಮುನಿಹನುಮಪ್ಪ\",\n" +
+                "            \"NameScore\": 100,\n" +
+                "            \"Surveyno\": 37,\n" +
+                "            \"Surnoc\": \"*\",\n" +
+                "            \"Hissano\": \"*\",\n" +
+                "            \"OwnerNo\": 42,\n" +
+                "            \"MainOwnerNo\": 42,\n" +
+                "            \"Acre\": 1,\n" +
+                "            \"Gunta\": 0,\n" +
+                "            \"Fgunta\": 0\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+        GetFruitsResponse getFruitsResponse = objectMapper.readValue(input, GetFruitsResponse.class);
+
+        String name = getFruitsResponse.getName();
+
+        return getFarmerResponse;
     }
 }
