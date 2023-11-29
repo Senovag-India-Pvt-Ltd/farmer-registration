@@ -111,6 +111,9 @@ public class FruitsApiService {
             ObjectMapper mapper1 = new ObjectMapper();
             restTemplate.getMessageConverters().add(new ObjectToUrlEncodedConverter(mapper1));
             ResponseEntity<GetFruitsResponse> result = restTemplate.postForEntity(uri, request, GetFruitsResponse.class);
+
+            log.info("PRINT ERROR result: " + result.getBody());
+
             return result.getBody();
 
         }catch (Exception e){

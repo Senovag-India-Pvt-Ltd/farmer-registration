@@ -185,6 +185,12 @@ public class FarmerService {
             farmer1.setFirstName(getFruitsResponse.getName());
             farmer1.setMiddleName(getFruitsResponse.getFatherName());
 
+
+            log.info("getFruitsResponse: " + getFruitsResponse);
+            log.info("ERROR FINDER getFruitsResponse.getGender(): " + getFruitsResponse.getGender());
+            log.info("ERROR FINDER getFruitsResponse.getName(): " + getFruitsResponse.getName());
+            log.info("ERROR FINDER typeOf: " + getFruitsResponse.getGender().getClass().getName() );
+
             if(getFruitsResponse.getGender().equals("Male")){
                 farmer1.setGenderId(1L);
             }else if(getFruitsResponse.getGender().equals("Female")){
@@ -227,6 +233,27 @@ public class FarmerService {
                 farmerLandDetailsList.add(farmerLandDetails);
             }
             getFarmerResponse.setFarmerLandDetailsList(farmerLandDetailsList);
+            getFarmerResponse.setIsFruitService(1);
+        }else {
+            List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+            List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+            List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+
+            getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer, FarmerResponse.class));
+            getFarmerResponse.setFarmerAddressList(farmerAddressList);
+            getFarmerResponse.setFarmerFamilyList(farmerFamilyList);
+            getFarmerResponse.setFarmerLandDetailsList(farmerLandDetailsList);
+            getFarmerResponse.setIsFruitService(0);
+        }
+
+        return getFarmerResponse;
+    }
+
+    @Transactional
+    public GetFarmerResponse getFarmerDetailsByFruitsIdTest(GetFarmerRequest getFarmerRequest){
+        GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
+        Farmer farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(),true);
+        if(farmer == null){
             getFarmerResponse.setIsFruitService(1);
         }else {
             List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
