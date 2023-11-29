@@ -55,6 +55,9 @@ public class FarmerService {
     FruitsApiService fruitsApiService;
 
     @Autowired
+    FarmerTypeRepository farmerTypeRepository;
+
+    @Autowired
     Mapper mapper;
 
     @Autowired
@@ -144,6 +147,15 @@ public class FarmerService {
             farmer.setRepresentativeId(farmerRequest.getRepresentativeId());
             farmer.setKhazaneRecipientId(farmerRequest.getKhazaneRecipientId());
             farmer.setPhotoPath(farmerRequest.getPhotoPath());
+            farmer.setFarmerTypeId(farmerRequest.getFarmerTypeId());
+            farmer.setMinority(farmerRequest.getMinority());
+            farmer.setRdNumber(farmerRequest.getRdNumber());
+            farmer.setCasteStatus(farmerRequest.getCasteStatus());
+            farmer.setGenderStatus(farmerRequest.getGenderStatus());
+            farmer.setFatherNameKan(farmerRequest.getFatherNameKan());
+            farmer.setFatherName(farmerRequest.getFatherName());
+            farmer.setNameKan(farmerRequest.getNameKan());
+
             farmer.setActive(true);
         }else{
             throw new ValidationException("Error occurred while fetching farmer");
@@ -196,6 +208,18 @@ public class FarmerService {
             farmer1.setFirstName(getFruitsResponse.getName());
             farmer1.setMiddleName(getFruitsResponse.getFatherName());
 
+            List<FarmerType> farmerTypeList = farmerTypeRepository.findByNameAndActive(getFruitsResponse.getFarmerType(), true);
+            if(farmerTypeList.size()>0){
+                farmer1.setFarmerTypeId(farmerTypeList.get(0).getFarmerTypeId());
+            }
+
+            farmer1.setMinority(getFruitsResponse.getMinority());
+            farmer1.setRdNumber(getFruitsResponse.getRDNumber());
+            farmer1.setCasteStatus(getFruitsResponse.getCasteStatus());
+            farmer1.setGenderStatus(getFruitsResponse.getGenderStatus());
+            farmer1.setFatherNameKan(getFruitsResponse.getFatherNameKan());
+            farmer1.setFatherName(getFruitsResponse.getFatherName());
+            farmer1.setNameKan(getFruitsResponse.getNameKan());
 
             log.info("getFruitsResponse: " + getFruitsResponse);
             log.info("ERROR FINDER getFruitsResponse.getGender(): " + getFruitsResponse.getGender());
@@ -244,6 +268,15 @@ public class FarmerService {
 
                 farmerLandDetails.setHissa(getLandDetailsResponse.getHissano());
                 farmerLandDetails.setSurveyNumber(String.valueOf(getLandDetailsResponse.getSurveyno()));
+
+                farmerLandDetails.setOwnerName(getLandDetailsResponse.getOwnerName());
+                farmerLandDetails.setSurNoc(String.valueOf(getLandDetailsResponse.getSurnoc()));
+                farmerLandDetails.setAcre(Long.valueOf(getLandDetailsResponse.getAcre()));
+                farmerLandDetails.setNameScore(Long.valueOf(getLandDetailsResponse.getNameScore()));
+                farmerLandDetails.setOwnerNo(Long.valueOf(getLandDetailsResponse.getOwnerNo()));
+                farmerLandDetails.setMainOwnerNo(Long.valueOf(String.valueOf(getLandDetailsResponse.getMainOwnerNo())));
+                farmerLandDetails.setGunta(Long.valueOf(getLandDetailsResponse.getGunta()));
+                farmerLandDetails.setFGunta(Double.valueOf(getLandDetailsResponse.getFgunta()));
 
                 farmerLandDetailsList.add(farmerLandDetails);
             }

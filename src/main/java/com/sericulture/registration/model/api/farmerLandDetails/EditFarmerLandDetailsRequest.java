@@ -113,4 +113,28 @@ public class EditFarmerLandDetailsRequest extends RequestBody {
 
     @Schema(name = "pincode", example = "135345")
     private String pincode;
+
+    @Schema(name = "ownerName", example = "Test")
+    private String ownerName;
+
+    @Schema(name = "surNoc", example = "135345")
+    private String surNoc;
+
+    @Schema(name = "nameScore", example = "1")
+    private Long nameScore;
+
+    @Schema(name = "ownerNo", example = "1")
+    private Long ownerNo;
+
+    @Schema(name = "mainOwnerNo", example = "1")
+    private Long mainOwnerNo;
+
+    @Schema(name = "acre", example = "1")
+    private Long acre;
+
+    @Schema(name = "gunta", example = "1")
+    private Long gunta;
+
+    @Schema(name = "fGunta", example = "1")
+    private Double fGunta;
 }
