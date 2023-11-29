@@ -1,5 +1,6 @@
 package com.sericulture.registration.service;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
@@ -109,6 +110,7 @@ public class FruitsApiService {
 
             // restTemplate.getMessageConverters().add(new org.springframework.http.converter.FormHttpMessageConverter.FormHttpMessageConverter());
             ObjectMapper mapper1 = new ObjectMapper();
+            mapper1.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
             restTemplate.getMessageConverters().add(new ObjectToUrlEncodedConverter(mapper1));
             ResponseEntity<GetFruitsResponse> result = restTemplate.postForEntity(uri, request, GetFruitsResponse.class);
 

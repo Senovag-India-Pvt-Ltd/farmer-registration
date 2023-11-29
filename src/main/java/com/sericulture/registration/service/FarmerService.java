@@ -1,5 +1,6 @@
 package com.sericulture.registration.service;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.farmer.*;
@@ -176,14 +177,20 @@ public class FarmerService {
     }
 
     @Transactional
-    public GetFarmerResponse getFarmerDetailsByFruitsId(GetFarmerRequest getFarmerRequest){
+    public GetFarmerResponse getFarmerDetailsByFruitsId(GetFarmerRequest getFarmerRequest) throws Exception {
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
         Farmer farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(),true);
         if(farmer == null){
             FruitsFarmerDTO fruitsFarmerDTO = new FruitsFarmerDTO();
             fruitsFarmerDTO.setFarmerId(getFarmerRequest.getFruitsId());
 
-            GetFruitsResponse getFruitsResponse = fruitsApiService.getFarmerByFruitsIdWithResponse(fruitsFarmerDTO);
+          //  GetFruitsResponse getFruitsResponse = fruitsApiService.getFarmerByFruitsIdWithResponse(fruitsFarmerDTO);
+            String inputData = String.valueOf(fruitsApiService.getFarmerByFruitsId(fruitsFarmerDTO));
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+            GetFruitsResponse getFruitsResponse = objectMapper.readValue(inputData, GetFruitsResponse.class);
+
             Farmer farmer1 = new Farmer();
             farmer1.setFruitsId(getFruitsResponse.getFarmerID());
             farmer1.setFirstName(getFruitsResponse.getName());
@@ -213,7 +220,7 @@ public class FarmerService {
             }else{
                 farmer1.setDifferentlyAbled(true);
             }
-            getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer, FarmerResponse.class));
+            getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer1, FarmerResponse.class));
 
             List<FarmerAddress> farmerAddressList = new ArrayList<>();
             FarmerAddress farmerAddress = new FarmerAddress();
@@ -234,6 +241,10 @@ public class FarmerService {
                 farmerLandDetails.setTalukId(Long.valueOf(((LinkedHashMap) responseWrapper1.getContent()).get("talukId").toString()));
                 farmerLandDetails.setDistrictId(Long.valueOf(((LinkedHashMap) responseWrapper1.getContent()).get("districtId").toString()));
                 farmerLandDetails.setStateId(Long.valueOf(((LinkedHashMap) responseWrapper1.getContent()).get("stateId").toString()));
+
+                farmerLandDetails.setHissa(getLandDetailsResponse.getHissano());
+                farmerLandDetails.setSurveyNumber(String.valueOf(getLandDetailsResponse.getSurveyno()));
+
                 farmerLandDetailsList.add(farmerLandDetails);
             }
             getFarmerResponse.setFarmerLandDetailsList(farmerLandDetailsList);
@@ -329,5 +340,71 @@ public class FarmerService {
             log.error("VILLAGE ERROR: " + e.getMessage());
             return responseWrapper;
         }
+    }
+
+    @Transactional
+    public GetFarmerResponse test() throws Exception {
+        GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
+        String input = "{\n" +
+                "    \"StatusCode\": 1,\n" +
+                "    \"StatusText\": \"Success\",\n" +
+                "    \"FarmerID\": \"FID2806000009439\",\n" +
+                "    \"name\": \"MUNIHANUMAPPA\",\n" +
+                "    \"NameKan\": \"MUNIHANUMAPPA\",\n" +
+                "    \"FatherName\": \"Munivenkatappa\",\n" +
+                "    \"FatherNameKan\": \"Munivenkatappa\",\n" +
+                "    \"Gender\": \"Male\",\n" +
+                "    \"GenderStatus\": \"Declared\",\n" +
+                "    \"Caste\": \"SC\",\n" +
+                "    \"CasteStatus\": \"Declared\",\n" +
+                "    \"RDNumber\": \"\",\n" +
+                "    \"PhysicallyChallenged\": \"No\",\n" +
+                "    \"Minority\": \"No\",\n" +
+                "    \"FarmerType\": \"Margin Farmer\",\n" +
+                "    \"ResidentialAddress\": \"Kempadenahlli  Village ambajidurga Hobli Chintamani Taluk\",\n" +
+                "    \"Pincode\": \"\",\n" +
+                "    \"Landdata\": [\n" +
+                "        {\n" +
+                "            \"DistrictName\": \"Chikkaballapur\",\n" +
+                "            \"TalukName\": \"Chinthamani\",\n" +
+                "            \"HobliName\": \"Ambajidurga\",\n" +
+                "            \"VillageName\": \"Kempadenahalli\",\n" +
+                "            \"OwnerName\": \"ಮುನಿಹನುಮಪ್ಪ\", \n" +
+                "            \"NameScore\": 100,\n" +
+                "            \"Surveyno\": 37, \n" +
+                "            \"Surnoc\": \"*\",\n" +
+                "            \"Hissano\": \"*\",\n" +
+                "            \"OwnerNo\": 16,\n" +
+                "            \"MainOwnerNo\": 16,\n" +
+                "            \"Acre\": 0,\n" +
+                "            \"Gunta\": 26,\n" +
+                "            \"Fgunta\": 10.67\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"DistrictName\": \"Chikkaballapur\",\n" +
+                "            \"TalukName\": \"Chinthamani\",\n" +
+                "            \"HobliName\": \"Ambajidurga\",\n" +
+                "            \"VillageName\": \"Kempadenahalli\",\n" +
+                "            \"OwnerName\": \"ಮುನಿಹನುಮಪ್ಪ\",\n" +
+                "            \"NameScore\": 100,\n" +
+                "            \"Surveyno\": 37,\n" +
+                "            \"Surnoc\": \"*\",\n" +
+                "            \"Hissano\": \"*\",\n" +
+                "            \"OwnerNo\": 42,\n" +
+                "            \"MainOwnerNo\": 42,\n" +
+                "            \"Acre\": 1,\n" +
+                "            \"Gunta\": 0,\n" +
+                "            \"Fgunta\": 0\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+        GetFruitsResponse getFruitsResponse = objectMapper.readValue(input, GetFruitsResponse.class);
+
+        String name = getFruitsResponse.getName();
+
+        return getFarmerResponse;
     }
 }

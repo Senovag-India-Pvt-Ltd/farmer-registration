@@ -211,7 +211,7 @@ public class FarmerController {
     @PostMapping("/get-farmer-details-by-fruits-id")
     public ResponseEntity<?> getFarmerDetailsByFruitsId(
             @RequestBody GetFarmerRequest getFarmerRequest
-    ) {
+    ) throws Exception {
         ResponseWrapper rw = ResponseWrapper.createWrapper(GetFarmerResponse.class);
         rw.setContent(farmerService.getFarmerDetailsByFruitsId(getFarmerRequest));
         return ResponseEntity.ok(rw);
@@ -236,4 +236,22 @@ public class FarmerController {
         return ResponseEntity.ok(rw);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @GetMapping("/test")
+    public ResponseEntity<?> test(
+
+    ) throws Exception {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(GetFarmerResponse.class);
+        rw.setContent(farmerService.test());
+        return ResponseEntity.ok(rw);
+    }
 }
