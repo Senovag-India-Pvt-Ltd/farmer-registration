@@ -6,7 +6,9 @@ import com.sericulture.registration.model.api.farmer.*;
 import com.sericulture.registration.model.api.fruitsApi.GetFruitsResponse;
 import com.sericulture.registration.model.api.fruitsApi.GetLandDetailsResponse;
 import com.sericulture.registration.model.dto.caste.CasteDTO;
+import com.sericulture.registration.model.dto.farmer.FarmerFamilyDTO;
 import com.sericulture.registration.model.dto.fruitsApi.FruitsFarmerDTO;
+import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.dto.village.VillageDTO;
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
@@ -158,6 +160,7 @@ public class FarmerService {
         List<FarmerAddressDTO> farmerAddressDTOList = farmerAddressRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
         List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
         List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+        List<FarmerFamilyDTO> farmerFamilyDTOList = farmerFamilyRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
         FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
 
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
@@ -165,6 +168,7 @@ public class FarmerService {
         getFarmerResponse.setFarmerAddressList(farmerAddressList);
         getFarmerResponse.setFarmerAddressDTOList(farmerAddressDTOList);
         getFarmerResponse.setFarmerFamilyList(farmerFamilyList);
+        getFarmerResponse.setFarmerFamilyDTOList(farmerFamilyDTOList);
         getFarmerResponse.setFarmerLandDetailsList(farmerLandDetailsList);
         getFarmerResponse.setFarmerBankAccount(farmerBankAccount);
 

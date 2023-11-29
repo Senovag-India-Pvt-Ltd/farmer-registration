@@ -1,9 +1,12 @@
 package com.sericulture.registration.service;
 
+import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
 import com.sericulture.registration.model.api.farmerFamily.EditFarmerFamilyRequest;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyRequest;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountResponse;
+import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
+import com.sericulture.registration.model.dto.farmer.FarmerFamilyDTO;
 import com.sericulture.registration.model.entity.FarmerFamily;
 import com.sericulture.registration.model.entity.ReelerVirtualBankAccount;
 import com.sericulture.registration.model.exceptions.ValidationException;
@@ -110,6 +113,17 @@ public class FarmerFamilyService {
     }
 
     @Transactional
+    public FarmerFamilyResponse getByIdJoin(int id){
+        FarmerFamilyDTO farmerFamilyDTO = farmerFamilyRepository.getByFarmerFamilyIdAndActive(id,true);
+        if(farmerFamilyDTO == null){
+            throw new ValidationException("Invalid Id");
+        }
+        // log.info("Entity is ", farmerAddressDTO);
+        return mapper.farmerFamilyDTOToObject(farmerFamilyDTO, FarmerFamilyResponse.class);
+    }
+
+
+    @Transactional
     public FarmerFamilyResponse updateFarmerFamilyDetails(EditFarmerFamilyRequest farmerFamilyRequest){
         List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerFamilyName(farmerFamilyRequest.getFarmerFamilyName());
         if(farmerFamilyList.size()>0){
@@ -136,5 +150,24 @@ public class FarmerFamilyService {
         response.put("totalItems", familyList.size());
         return response;
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> getByFarmerIdJoin(int farmerId){
+        List<FarmerFamilyDTO> farmerFamilyDTO = farmerFamilyRepository.getByFarmerIdAndActive(farmerId, true);
+        if(farmerFamilyDTO.isEmpty()){
+            throw new ValidationException("Farmer Family not found by Farmer Id");
+        }
+        return convertListDTOToMapResponse(farmerFamilyDTO);
+    }
+
+    private Map<String, Object> convertListDTOToMapResponse(List<FarmerFamilyDTO> farmerFamilyDTOList) {
+        Map<String, Object> response = new HashMap<>();
+        List<FarmerFamilyResponse> farmerFamilyResponse = farmerFamilyDTOList.stream()
+                .map(farmerFamilyDTO -> mapper.farmerFamilyDTOToObject(farmerFamilyDTO, FarmerFamilyResponse.class)).collect(Collectors.toList());
+        response.put("farmerFamily", farmerFamilyResponse);
+        response.put("totalItems", farmerFamilyDTOList.size());
+        return response;
+    }
+
 
 }

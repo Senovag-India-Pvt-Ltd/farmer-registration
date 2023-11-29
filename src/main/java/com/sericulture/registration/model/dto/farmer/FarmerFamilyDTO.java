@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FarmerFamilyDTO {
     private Long farmerFamilyId;
+    private Long farmerId;
     private String farmerFamilyName;
     private Long relationshipId;
-    private Long farmerId;
     private String relationshipName;
 }

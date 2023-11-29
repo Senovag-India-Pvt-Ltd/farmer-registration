@@ -23,4 +23,7 @@ public class FarmerFamilyResponse {
 
     @Schema(name = "farmerFamilyName", example = "Latha")
     String farmerFamilyName;
+
+    @Schema(name="relationshipName", example = "1")
+    String relationshipName;
 }
