@@ -211,7 +211,7 @@ public class FarmerController {
     @PostMapping("/get-farmer-details-by-fruits-id")
     public ResponseEntity<?> getFarmerDetailsByFruitsId(
             @RequestBody GetFarmerRequest getFarmerRequest
-    ) {
+    ) throws Exception {
         ResponseWrapper rw = ResponseWrapper.createWrapper(GetFarmerResponse.class);
         rw.setContent(farmerService.getFarmerDetailsByFruitsId(getFarmerRequest));
         return ResponseEntity.ok(rw);

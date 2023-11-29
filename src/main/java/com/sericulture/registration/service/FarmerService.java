@@ -173,14 +173,20 @@ public class FarmerService {
     }
 
     @Transactional
-    public GetFarmerResponse getFarmerDetailsByFruitsId(GetFarmerRequest getFarmerRequest){
+    public GetFarmerResponse getFarmerDetailsByFruitsId(GetFarmerRequest getFarmerRequest) throws Exception {
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
         Farmer farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(),true);
         if(farmer == null){
             FruitsFarmerDTO fruitsFarmerDTO = new FruitsFarmerDTO();
             fruitsFarmerDTO.setFarmerId(getFarmerRequest.getFruitsId());
 
-            GetFruitsResponse getFruitsResponse = fruitsApiService.getFarmerByFruitsIdWithResponse(fruitsFarmerDTO);
+          //  GetFruitsResponse getFruitsResponse = fruitsApiService.getFarmerByFruitsIdWithResponse(fruitsFarmerDTO);
+            String inputData = String.valueOf(fruitsApiService.getFarmerByFruitsId(fruitsFarmerDTO));
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+            GetFruitsResponse getFruitsResponse = objectMapper.readValue(inputData, GetFruitsResponse.class);
+
             Farmer farmer1 = new Farmer();
             farmer1.setFruitsId(getFruitsResponse.getFarmerID());
             farmer1.setFirstName(getFruitsResponse.getName());
