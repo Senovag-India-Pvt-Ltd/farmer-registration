@@ -25,17 +25,38 @@ public class GetFruitsResponse {
     @Schema(name = "Name", example = "MUNIHANUMAPPA")
     String Name;
 
+    @Schema(name = "NameKan", example = "munireddy")
+    String NameKan;
+
     @Schema(name = "FatherName", example = "Munivenkatappa")
     String FatherName;
+
+    @Schema(name = "FatherNameKan", example = "Munivenkatappa")
+    String FatherNameKan;
 
     @Schema(name = "Gender", example = "Male")
     String Gender;
 
+    @Schema(name = "GenderStatus", example = "Declared")
+    String GenderStatus;
+
     @Schema(name = "Caste", example = "SC")
     String Caste;
 
+    @Schema(name = "CasteStatus", example = "SC")
+    String CasteStatus;
+
+    @Schema(name = "RDNumber", example = "SC")
+    String RDNumber;
+
     @Schema(name = "PhysicallyChallenged", example = "No")
     String PhysicallyChallenged;
+
+    @Schema(name = "Minority", example = "No")
+    String Minority;
+
+    @Schema(name = "FarmerType", example = "No")
+    String FarmerType;
 
     @Schema(name = "ResidentialAddress", example = "Kempadenahlli  Village ambajidurga Hobli Chintamani Taluk")
     String ResidentialAddress;
