@@ -28,4 +28,7 @@ public class ReelerVirtualBankAccountResponse {
 
     @Schema(name = "marketMasterId", example = "1")
     Long marketMasterId;
+
+    @Schema(name = "marketMasterName", example = "1")
+    String marketMasterName;
 }

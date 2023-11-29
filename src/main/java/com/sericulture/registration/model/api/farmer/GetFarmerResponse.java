@@ -34,6 +34,9 @@ public class GetFarmerResponse {
     @Schema(name = "farmerAddressDTOList")
     List<FarmerAddressDTO> farmerAddressDTOList;
 
+//    @Schema(name = "farmerAddressDTOList")
+//    List<FarmerLandDetailsDTO> farmerLandDetailsDTOList;
+
     @Schema(name = "farmerLandDetailsList")
     List<FarmerLandDetails> farmerLandDetailsList;
 

@@ -4,6 +4,8 @@ import com.sericulture.registration.model.api.farmer.FarmerResponse;
 import com.sericulture.registration.model.api.farmer.GetFarmerRequest;
 import com.sericulture.registration.model.api.farmer.GetFarmerResponse;
 import com.sericulture.registration.model.api.reeler.*;
+import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
+import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
@@ -220,10 +222,12 @@ public class ReelerService {
             throw new ValidationException("Invalid reeler id");
         }
         List<ReelerVirtualBankAccount> reelerVirtualBankAccountList = reelerVirtualBankAccountRepository.findByReelerIdAndActive(reeler.getReelerId(), true);
+        List<ReelerVirtualBankAccountDTO> reelerVirtualBankAccountDTOList = reelerVirtualBankAccountRepository.getByReelerIdAndActive(reeler.getReelerId(), true);
 
         GetReelerResponse getReelerResponse = new GetReelerResponse();
         getReelerResponse.setReelerResponse(mapper.reelerEntityToObject(reeler, ReelerResponse.class));
         getReelerResponse.setReelerVirtualBankAccountList(reelerVirtualBankAccountList);
+        getReelerResponse.setReelerVirtualBankAccountDTOList(reelerVirtualBankAccountDTOList);
 
         return getReelerResponse;
     }

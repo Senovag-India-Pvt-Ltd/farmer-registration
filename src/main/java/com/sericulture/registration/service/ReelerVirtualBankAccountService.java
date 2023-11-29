@@ -1,8 +1,11 @@
 package com.sericulture.registration.service;
 
+import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.EditReelerVirtualBankAccountRequest;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountRequest;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountResponse;
+import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
+import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.entity.ReelerVirtualBankAccount;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
@@ -95,6 +98,16 @@ public class ReelerVirtualBankAccountService {
     }
 
     @Transactional
+    public ReelerVirtualBankAccountResponse getByIdJoin(int id){
+        ReelerVirtualBankAccountDTO reelerVirtualBankAccountDTO = reelerVirtualBankAccountRepository.getByReelerVirtualBankAccountIdAndActive(id,true);
+        if(reelerVirtualBankAccountDTO == null){
+            throw new ValidationException("Invalid Id");
+        }
+        // log.info("Entity is ", farmerAddressDTO);
+        return mapper.reelerVirtualBankAccountDTOToObject(reelerVirtualBankAccountDTO, ReelerVirtualBankAccountResponse.class);
+    }
+
+    @Transactional
     public ReelerVirtualBankAccountResponse updateReelerVirtualBankAccountDetails(EditReelerVirtualBankAccountRequest reelerVirtualBankAccountRequest){
        /* List<ReelerVirtualBankAccount> reelerVirtualBankAccountList = reelerVirtualBankAccountRepository.findByReelerVirtualBankAccountName(reelerVirtualBankAccountRequest.getReelerVirtualBankAccountName());
         if(reelerVirtualBankAccountList.size()>0){
@@ -122,6 +135,23 @@ public class ReelerVirtualBankAccountService {
                 .map(reelerVirtualBankAccount -> mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccount,ReelerVirtualBankAccountResponse.class)).collect(Collectors.toList());
         response.put("reelerVirtualBankAccounts",reelerVBAccountResponse);
         response.put("totalItems", reelerVirtualBankAccountList.size());
+        return response;
+    }
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> getByReelerIdJoin(int reelerID){
+        List<ReelerVirtualBankAccountDTO> reelerVirtualBankAccountDTO = reelerVirtualBankAccountRepository.getByReelerIdAndActive(reelerID, true);
+        if(reelerVirtualBankAccountDTO.isEmpty()){
+            throw new ValidationException("Reeler VirtualBank Account not found by Reeler Id");
+        }
+        return convertListDTOToMapResponse(reelerVirtualBankAccountDTO);
+    }
+
+    private Map<String, Object> convertListDTOToMapResponse(List<ReelerVirtualBankAccountDTO> reelerVirtualBankAccountDTOList) {
+        Map<String, Object> response = new HashMap<>();
+        List<ReelerVirtualBankAccountResponse> reelerVirtualBankAccountResponse = reelerVirtualBankAccountDTOList.stream()
+                .map(reelerVirtualBankAccountDTO -> mapper.reelerVirtualBankAccountDTOToObject(reelerVirtualBankAccountDTO, ReelerVirtualBankAccountResponse.class)).collect(Collectors.toList());
+        response.put("reelerVirtualBankAccount", reelerVirtualBankAccountResponse);
+        response.put("totalItems", reelerVirtualBankAccountDTOList.size());
         return response;
     }
 

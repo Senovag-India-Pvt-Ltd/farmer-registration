@@ -13,6 +13,7 @@ import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVir
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseRequest;
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.dto.fruitsApi.GetFruitsTokenDTO;
+import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.repository.ReelerLicenseTransactionRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -186,6 +187,16 @@ public class Mapper {
     public <T> T reelerVirtualBankAccountEntityToObject(ReelerVirtualBankAccount reelerVirtualBankAccountEntity, Class<T> claaz) {
         log.info("Value of mapper is:",mapper, reelerVirtualBankAccountEntity);
         return (T) mapper.map(reelerVirtualBankAccountEntity, claaz);
+    }
+
+    /**
+     * Maps ReelerVirtualBankAccount DTO to ReelerVirtualBankAccount Response Object
+     * @param reelerVirtualBankAccountDTO
+     * @param <T>
+     */
+    public <T> T reelerVirtualBankAccountDTOToObject(ReelerVirtualBankAccountDTO reelerVirtualBankAccountDTO, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, reelerVirtualBankAccountDTO);
+        return (T) mapper.map(reelerVirtualBankAccountDTO, claaz);
     }
 
     /**
