@@ -216,7 +216,7 @@ public class FarmerService {
             }else{
                 farmer1.setDifferentlyAbled(true);
             }
-            getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer, FarmerResponse.class));
+            getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer1, FarmerResponse.class));
 
             List<FarmerAddress> farmerAddressList = new ArrayList<>();
             FarmerAddress farmerAddress = new FarmerAddress();
@@ -237,6 +237,10 @@ public class FarmerService {
                 farmerLandDetails.setTalukId(Long.valueOf(((LinkedHashMap) responseWrapper1.getContent()).get("talukId").toString()));
                 farmerLandDetails.setDistrictId(Long.valueOf(((LinkedHashMap) responseWrapper1.getContent()).get("districtId").toString()));
                 farmerLandDetails.setStateId(Long.valueOf(((LinkedHashMap) responseWrapper1.getContent()).get("stateId").toString()));
+
+                farmerLandDetails.setHissa(getLandDetailsResponse.getHissano());
+                farmerLandDetails.setSurveyNumber(String.valueOf(getLandDetailsResponse.getSurveyno()));
+
                 farmerLandDetailsList.add(farmerLandDetails);
             }
             getFarmerResponse.setFarmerLandDetailsList(farmerLandDetailsList);
