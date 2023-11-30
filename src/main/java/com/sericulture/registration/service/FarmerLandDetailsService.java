@@ -156,6 +156,14 @@ public class FarmerLandDetailsService {
             farmerLandDetails.setVillageId(farmerLandDetailsRequest.getVillageId());
             farmerLandDetails.setAddress(farmerLandDetailsRequest.getAddress());
             farmerLandDetails.setPincode(farmerLandDetailsRequest.getPincode());
+            farmerLandDetails.setOwnerName(farmerLandDetailsRequest.getOwnerName());
+            farmerLandDetails.setSurNoc(farmerLandDetails.getSurNoc());
+            farmerLandDetails.setNameScore(farmerLandDetailsRequest.getNameScore());
+            farmerLandDetails.setOwnerNo(farmerLandDetails.getMainOwnerNo());
+            farmerLandDetails.setMainOwnerNo(farmerLandDetailsRequest.getMainOwnerNo());
+            farmerLandDetails.setAcre(farmerLandDetailsRequest.getAcre());
+            farmerLandDetails.setGunta(farmerLandDetailsRequest.getGunta());
+            farmerLandDetails.setFGunta(farmerLandDetailsRequest.getFGunta());
 
             farmerLandDetails.setActive(true);
         }else{

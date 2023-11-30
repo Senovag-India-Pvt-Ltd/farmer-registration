@@ -117,4 +117,28 @@ public class FarmerLandDetails extends BaseEntity implements Serializable {
 
     @Column(name = "pincode")
     private String pincode;
+
+    @Column(name = "owner_name")
+    private String ownerName;
+
+    @Column(name = "sur_noc")
+    private String surNoc;
+
+    @Column(name = "name_score")
+    private Long nameScore;
+
+    @Column(name = "owner_no")
+    private Long ownerNo;
+
+    @Column(name = "main_owner_no")
+    private Long mainOwnerNo;
+
+    @Column(name = "acre")
+    private Long acre;
+
+    @Column(name = "gunta")
+    private Long gunta;
+
+    @Column(name = "f_gunta")
+    private Double fGunta;
 }

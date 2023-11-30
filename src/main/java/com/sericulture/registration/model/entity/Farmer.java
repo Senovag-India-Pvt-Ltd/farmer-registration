@@ -84,4 +84,28 @@ public class Farmer extends BaseEntity implements Serializable {
 
     @Column(name = "PHOTO_PATH")
     private String photoPath;
+
+    @Column(name = "farmer_type_id")
+    private Long farmerTypeId;
+
+    @Column(name = "minority")
+    private String minority;
+
+    @Column(name = "rd_number")
+    private String rdNumber;
+
+    @Column(name = "caste_status")
+    private String casteStatus;
+
+    @Column(name = "gender_status")
+    private String genderStatus;
+
+    @Column(name = "father_name_kan")
+    private String fatherNameKan;
+
+    @Column(name = "father_name")
+    private String fatherName;
+
+    @Column(name = "name_kan")
+    private String nameKan;
 }

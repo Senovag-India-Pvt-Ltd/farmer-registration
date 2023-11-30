@@ -74,4 +74,28 @@ public class FarmerRequest extends RequestBody {
 
     @Schema(name = "photoPath", example = "/example.jpg")
     String photoPath;
+
+    @Schema(name = "farmerTypeId", example = "1")
+    private Long farmerTypeId;
+
+    @Schema(name = "minority", example = "test")
+    private String minority;
+
+    @Schema(name = "rdNumber", example = "12097")
+    private String rdNumber;
+
+    @Schema(name = "casteStatus", example = "Declared")
+    private String casteStatus;
+
+    @Schema(name = "genderStatus", example = "Declared")
+    private String genderStatus;
+
+    @Schema(name = "fatherNameKan", example = "test")
+    private String fatherNameKan;
+
+    @Schema(name = "fatherName", example = "test")
+    private String fatherName;
+
+    @Schema(name = "nameKan", example = "test")
+    private String nameKan;
 }
