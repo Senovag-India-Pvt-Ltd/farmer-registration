@@ -41,14 +41,14 @@ public class GetFarmerResponse {
     @Schema(name = "farmerFamilyDTOList")
     List<FarmerFamilyDTO> farmerFamilyDTOList;
 
-    @Schema(name = "farmerAddressDTOList")
+    @Schema(name = "farmerLandDetailsDTOList")
     List<FarmerLandDetailsDTO> farmerLandDetailsDTOList;
 
     @Schema(name = "farmerLandDetailsList")
     List<FarmerLandDetails> farmerLandDetailsList;
 
-    @Schema(name = "farmerLandDetailsDTOList")
-    List<FarmerLandDetailsDTO> farmerLandDetailsDTOList;
+//    @Schema(name = "farmerLandDetailsDTOList")
+//    List<FarmerLandDetailsDTO> farmerLandDetailsDTOList;
 
     @Schema(name = "farmerBankAccount")
     FarmerBankAccount farmerBankAccount;

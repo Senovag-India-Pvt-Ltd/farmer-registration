@@ -43,6 +43,14 @@ public class FarmerLandDetailsDTO {
     private Long villageId;
     private String address;
     private String pincode;
+    private String ownerName;
+    private String surNoc;
+    private Long nameScore;
+    private Long ownerNo;
+    private Long mainOwnerNo;
+    private Long acre;
+    private Long gunta;
+    private Double fGunta;
     private String landOwnershipName;
     private String soilTypeName;
     private String mulberrySourceName;
@@ -53,15 +61,6 @@ public class FarmerLandDetailsDTO {
     private String roofTypeName;
     private String silkWormVarietyName;
     private String subsidyName;
-    private String ownerName;
-    private String surNoc;
-    private Long nameScore;
-    private Long ownerNo;
-    private Long mainOwnerNo;
-    private Long acre;
-    private Long gunta;
-    private Double fGunta;
-
     private String stateName;
     private String districtName;
     private String talukName;
