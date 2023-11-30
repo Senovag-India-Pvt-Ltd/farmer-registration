@@ -28,7 +28,7 @@ public class FarmerLandDetails extends BaseEntity implements Serializable {
     private String categoryNumber;
 
     @Column(name = "land_ownership_id")
-    private Long landOwnerShipId;
+    private Long landOwnershipId;
 
     @Column(name = "soil_type_id")
     private Long soilTypeId;
@@ -80,7 +80,7 @@ public class FarmerLandDetails extends BaseEntity implements Serializable {
     private Boolean subsidyAvailed;
 
     @Column(name = "subsidy_master_id")
-    private Long subsidyMasterId;
+    private Long subsidyId;
 
     @Column(name = "loan_details")
     private String loanDetails;

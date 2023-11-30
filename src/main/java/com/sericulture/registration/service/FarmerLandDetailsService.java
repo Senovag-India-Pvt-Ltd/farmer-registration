@@ -3,6 +3,9 @@ package com.sericulture.registration.service;
 import com.sericulture.registration.model.api.farmerLandDetails.EditFarmerLandDetailsRequest;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsRequest;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
+import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountResponse;
+import com.sericulture.registration.model.dto.farmer.FarmerLandDetailsDTO;
+import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.entity.FarmerLandDetails;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
@@ -103,6 +106,16 @@ public class FarmerLandDetailsService {
     }
 
     @Transactional
+    public FarmerLandDetailsResponse getByIdJoin(int id){
+        FarmerLandDetailsDTO farmerLandDetailsDTO = farmerLandDetailsRepository.getByFarmerLandDetailsIdAndActive(id,true);
+        if(farmerLandDetailsDTO == null){
+            throw new ValidationException("Invalid Id");
+        }
+        // log.info("Entity is ", farmerAddressDTO);
+        return mapper.farmerLandDetailsDTOToObject(farmerLandDetailsDTO, FarmerLandDetailsResponse.class);
+    }
+
+    @Transactional
     public FarmerLandDetailsResponse updateFarmerLandDetailsDetails(EditFarmerLandDetailsRequest farmerLandDetailsRequest){
        /* List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerLandDetailsName(farmerLandDetailsRequest.getFarmerLandDetailsName());
         if(farmerLandDetailsList.size()>0){
@@ -113,7 +126,7 @@ public class FarmerLandDetailsService {
         if(Objects.nonNull(farmerLandDetails)){
             farmerLandDetails.setFarmerId(farmerLandDetailsRequest.getFarmerId());
             farmerLandDetails.setCategoryNumber(farmerLandDetailsRequest.getCategoryNumber());
-            farmerLandDetails.setLandOwnerShipId(farmerLandDetailsRequest.getLandOwnerShipId());
+            farmerLandDetails.setLandOwnershipId(farmerLandDetailsRequest.getLandOwnershipId());
             farmerLandDetails.setSoilTypeId(farmerLandDetailsRequest.getSoilTypeId());
             farmerLandDetails.setHissa(farmerLandDetailsRequest.getHissa());
             farmerLandDetails.setMulberryArea(farmerLandDetailsRequest.getMulberryArea());
@@ -130,7 +143,7 @@ public class FarmerLandDetailsService {
             farmerLandDetails.setRearingCapacityCrops(farmerLandDetailsRequest.getRearingCapacityCrops());
             farmerLandDetails.setRearingCapacityDlf(farmerLandDetailsRequest.getRearingCapacityDlf());
             farmerLandDetails.setSubsidyAvailed(farmerLandDetailsRequest.getSubsidyAvailed());
-            farmerLandDetails.setSubsidyMasterId(farmerLandDetailsRequest.getSubsidyMasterId());
+            farmerLandDetails.setSubsidyId(farmerLandDetailsRequest.getSubsidyId());
             farmerLandDetails.setLoanDetails(farmerLandDetailsRequest.getLoanDetails());
             farmerLandDetails.setEquipmentDetails(farmerLandDetailsRequest.getEquipmentDetails());
             farmerLandDetails.setGpsLat(farmerLandDetailsRequest.getGpsLat());
@@ -149,6 +162,24 @@ public class FarmerLandDetailsService {
             throw new ValidationException("Error occurred while fetching farmerLandDetails");
         }
         return mapper.farmerLandDetailsEntityToObject(farmerLandDetailsRepository.save(farmerLandDetails),FarmerLandDetailsResponse.class);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> getByFarmerIdJoin(int farmerId){
+        List<FarmerLandDetailsDTO> farmerLandDetailsDTO = farmerLandDetailsRepository.getByFarmerIdAndActive(farmerId, true);
+        if(farmerLandDetailsDTO.isEmpty()){
+            throw new ValidationException("Farmer Land Details not found by Farmer Id");
+        }
+        return convertListDTOToMapResponse(farmerLandDetailsDTO);
+    }
+
+    private Map<String, Object> convertListDTOToMapResponse(List<FarmerLandDetailsDTO> farmerLandDetailsDTOList) {
+        Map<String, Object> response = new HashMap<>();
+        List<FarmerLandDetailsResponse> farmerLandDetailsResponse = farmerLandDetailsDTOList.stream()
+                .map(farmerLandDetailsDTO -> mapper.farmerLandDetailsDTOToObject(farmerLandDetailsDTO, FarmerLandDetailsResponse.class)).collect(Collectors.toList());
+        response.put("farmerLandDetails", farmerLandDetailsResponse);
+        response.put("totalItems", farmerLandDetailsDTOList.size());
+        return response;
     }
 
 }

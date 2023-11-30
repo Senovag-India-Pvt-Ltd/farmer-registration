@@ -20,8 +20,8 @@ public class FarmerLandDetailsRequest extends RequestBody {
     @Schema(name = "categoryNumber", example = "1")
     private String categoryNumber;
 
-    @Schema(name = "landOwnerShipId", example = "1")
-    private Long landOwnerShipId;
+    @Schema(name = "landOwnershipId", example = "1")
+    private Long landOwnershipId;
 
     @Schema(name = "soilTypeId", example = "1")
     private Long soilTypeId;
@@ -72,8 +72,8 @@ public class FarmerLandDetailsRequest extends RequestBody {
     @Schema(name = "subsidyAvailed", example = "1")
     private Boolean subsidyAvailed;
 
-    @Schema(name = "subsidyMasterId", example = "1")
-    private Long subsidyMasterId;
+    @Schema(name = "subsidyId", example = "1")
+    private Long subsidyId;
 
     @Schema(name = "loanDetails", example = "test")
     private String loanDetails;

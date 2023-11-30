@@ -8,6 +8,7 @@ import com.sericulture.registration.model.api.fruitsApi.GetFruitsResponse;
 import com.sericulture.registration.model.api.fruitsApi.GetLandDetailsResponse;
 import com.sericulture.registration.model.dto.caste.CasteDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerFamilyDTO;
+import com.sericulture.registration.model.dto.farmer.FarmerLandDetailsDTO;
 import com.sericulture.registration.model.dto.fruitsApi.FruitsFarmerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.dto.village.VillageDTO;
@@ -160,6 +161,7 @@ public class FarmerService {
         List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
         List<FarmerAddressDTO> farmerAddressDTOList = farmerAddressRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
         List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+        List<FarmerLandDetailsDTO> farmerLandDetailsDTOList = farmerLandDetailsRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
         List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
         List<FarmerFamilyDTO> farmerFamilyDTOList = farmerFamilyRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
         FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
@@ -171,6 +173,7 @@ public class FarmerService {
         getFarmerResponse.setFarmerFamilyList(farmerFamilyList);
         getFarmerResponse.setFarmerFamilyDTOList(farmerFamilyDTOList);
         getFarmerResponse.setFarmerLandDetailsList(farmerLandDetailsList);
+        getFarmerResponse.setFarmerLandDetailsDTOList(farmerLandDetailsDTOList);
         getFarmerResponse.setFarmerBankAccount(farmerBankAccount);
 
         return getFarmerResponse;

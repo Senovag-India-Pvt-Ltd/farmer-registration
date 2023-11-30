@@ -25,8 +25,8 @@ public class FarmerLandDetailsResponse {
     @Schema(name = "categoryNumber", example = "1")
     private String categoryNumber;
 
-    @Schema(name = "landOwnerShipId", example = "1")
-    private Long landOwnerShipId;
+    @Schema(name = "landOwnershipId", example = "1")
+    private Long landOwnershipId;
 
     @Schema(name = "soilTypeId", example = "1")
     private Long soilTypeId;
@@ -77,8 +77,8 @@ public class FarmerLandDetailsResponse {
     @Schema(name = "subsidyAvailed", example = "1")
     private Boolean subsidyAvailed;
 
-    @Schema(name = "subsidyMasterId", example = "1")
-    private Long subsidyMasterId;
+    @Schema(name = "subsidyId", example = "1")
+    private Long subsidyId;
 
     @Schema(name = "loanDetails", example = "test")
     private String loanDetails;
@@ -115,4 +115,49 @@ public class FarmerLandDetailsResponse {
 
     @Schema(name = "pincode", example = "135345")
     private String pincode;
+
+    @Schema(name="landOwnershipName", example = "karnaa")
+    private String landOwnershipName;
+
+    @Schema(name="soilTypeName", example = "Udupi")
+    private String soilTypeName;
+
+    @Schema(name="mulberrySourceName", example = "kundapurr")
+    private String mulberrySourceName;
+
+    @Schema(name = "mulberryVarietyName", example = "Kasaba")
+    private String mulberryVarietyName;
+
+    @Schema(name = "plantationTypeName", example = "Hodla")
+    private String plantationTypeName;
+
+    @Schema(name="irrigationSourceName", example = "karnaa")
+    private String irrigationSourceName;
+
+    @Schema(name="irrigationTypeName", example = "Udupi")
+    private String irrigationTypeName;
+
+    @Schema(name="roofTypeName", example = "kundapurr")
+    private String roofTypeName;
+
+    @Schema(name = "silkWormVarietyName", example = "Kasaba")
+    private String silkWormVarietyName;
+
+    @Schema(name = "subsidyName", example = "Hodla")
+    private String subsidyName;
+
+    @Schema(name="stateName", example = "karnaa")
+    private String stateName;
+
+    @Schema(name="districtName", example = "Udupi")
+    private String districtName;
+
+    @Schema(name="talukName", example = "kundapurr")
+    private String talukName;
+
+    @Schema(name = "hobliName", example = "Kasaba")
+    private String hobliName;
+
+    @Schema(name = "villageName", example = "Hodla")
+    private String villageName;
 }
