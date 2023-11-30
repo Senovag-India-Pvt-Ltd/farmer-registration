@@ -8,6 +8,7 @@ import com.sericulture.registration.model.api.fruitsApi.GetFruitsResponse;
 import com.sericulture.registration.model.api.fruitsApi.GetLandDetailsResponse;
 import com.sericulture.registration.model.dto.caste.CasteDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerFamilyDTO;
+import com.sericulture.registration.model.dto.farmer.FarmerLandDetailsDTO;
 import com.sericulture.registration.model.dto.fruitsApi.FruitsFarmerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.dto.village.VillageDTO;
@@ -254,9 +255,9 @@ public class FarmerService {
             getFarmerResponse.setFarmerAddressList(farmerAddressList);
 
 
-            List<FarmerLandDetails> farmerLandDetailsList = new ArrayList<>();
+            List<FarmerLandDetailsDTO> farmerLandDetailsList = new ArrayList<>();
             for(GetLandDetailsResponse getLandDetailsResponse: getFruitsResponse.getLanddata()){
-                FarmerLandDetails farmerLandDetails = new FarmerLandDetails();
+                FarmerLandDetailsDTO farmerLandDetails = new FarmerLandDetailsDTO();
                 VillageDTO villageDTO = new VillageDTO();
                 villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
                 ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
@@ -280,17 +281,18 @@ public class FarmerService {
 
                 farmerLandDetailsList.add(farmerLandDetails);
             }
-            getFarmerResponse.setFarmerLandDetailsList(farmerLandDetailsList);
+            getFarmerResponse.setFarmerLandDetailsDTOList(farmerLandDetailsList);
             getFarmerResponse.setIsFruitService(1);
         }else {
             List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
             List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+            List<FarmerLandDetailsDTO> farmerLandDetailsDTOS = farmerLandDetailsRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
             List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
 
             getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer, FarmerResponse.class));
             getFarmerResponse.setFarmerAddressList(farmerAddressList);
             getFarmerResponse.setFarmerFamilyList(farmerFamilyList);
-            getFarmerResponse.setFarmerLandDetailsList(farmerLandDetailsList);
+            getFarmerResponse.setFarmerLandDetailsDTOList(farmerLandDetailsDTOS);
             getFarmerResponse.setIsFruitService(0);
         }
 
