@@ -197,6 +197,7 @@ public class ReelerService {
             reeler.setIfscCode(reelerRequest.getIfscCode());
             reeler.setStatus(reelerRequest.getStatus());
             reeler.setLicenseRenewalDate(reelerRequest.getLicenseRenewalDate());
+            reeler.setFruitsId(reelerRequest.getFruitsId());
 
             reeler.setActive(true);
         }else{
@@ -218,6 +219,23 @@ public class ReelerService {
     @Transactional
     public GetReelerResponse getReelerDetails(GetReelerRequest getReelerRequest){
         Reeler reeler = reelerRepository.findByReelerIdAndActive(getReelerRequest.getReelerId(),true);
+        if(reeler == null){
+            throw new ValidationException("Invalid reeler id");
+        }
+        List<ReelerVirtualBankAccount> reelerVirtualBankAccountList = reelerVirtualBankAccountRepository.findByReelerIdAndActive(reeler.getReelerId(), true);
+        List<ReelerVirtualBankAccountDTO> reelerVirtualBankAccountDTOList = reelerVirtualBankAccountRepository.getByReelerIdAndActive(reeler.getReelerId(), true);
+
+        GetReelerResponse getReelerResponse = new GetReelerResponse();
+        getReelerResponse.setReelerResponse(mapper.reelerEntityToObject(reeler, ReelerResponse.class));
+        getReelerResponse.setReelerVirtualBankAccountList(reelerVirtualBankAccountList);
+        getReelerResponse.setReelerVirtualBankAccountDTOList(reelerVirtualBankAccountDTOList);
+
+        return getReelerResponse;
+    }
+
+    @Transactional
+    public GetReelerResponse getReelerDetailsByFruitsId(GetFruitsIdRequest getFruitsIdRequest){
+        Reeler reeler = reelerRepository.findByFruitsIdAndActive(getFruitsIdRequest.getFruitsId(),true);
         if(reeler == null){
             throw new ValidationException("Invalid reeler id");
         }

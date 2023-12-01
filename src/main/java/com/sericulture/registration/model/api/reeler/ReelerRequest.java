@@ -179,4 +179,7 @@ public class ReelerRequest extends RequestBody {
 
     @Schema(name = "licenseRenewalDate", example = "2023-11-03 16:27:35.907")
     Date licenseRenewalDate;
+
+    @Schema(name = "fruitsId", example = "35")
+    String fruitsId;
 }

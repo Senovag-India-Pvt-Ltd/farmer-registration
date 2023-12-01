@@ -384,4 +384,23 @@ public class ReelerController {
         rw.setContent(reelerService.getReelerDetails(getReelerRequest));
         return ResponseEntity.ok(rw);
     }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @PostMapping("/get-reeler-details-by-fruits-id")
+    public ResponseEntity<?> getReelerDetailsByFruitsId(
+            @RequestBody GetFruitsIdRequest getFruitsIdRequest
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(GetFarmerResponse.class);
+        rw.setContent(reelerService.getReelerDetailsByFruitsId(getFruitsIdRequest));
+        return ResponseEntity.ok(rw);
+    }
 }

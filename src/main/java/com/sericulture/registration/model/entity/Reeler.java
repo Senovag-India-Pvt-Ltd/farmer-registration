@@ -194,4 +194,8 @@ public class Reeler extends BaseEntity implements Serializable {
     @Column(name = "license_renewal_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date licenseRenewalDate;
+
+    @Column(name = "fruits_id")
+    private String fruitsId;
+
 }
