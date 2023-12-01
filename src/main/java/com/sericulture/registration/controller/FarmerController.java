@@ -2,6 +2,7 @@ package com.sericulture.registration.controller;
 
 import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.farmer.*;
+import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
 import com.sericulture.registration.service.FarmerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -252,6 +253,26 @@ public class FarmerController {
     ) throws Exception {
         ResponseWrapper rw = ResponseWrapper.createWrapper(GetFarmerResponse.class);
         rw.setContent(farmerService.test());
+        return ResponseEntity.ok(rw);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @GetMapping("/get-by-farmer-id-join/{id}")
+    public ResponseEntity<?> getByFarmerIdJoin(
+            @PathVariable final Integer id
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerResponse.class);
+
+        rw.setContent(farmerService.getByFarmerIdJoin(id));
         return ResponseEntity.ok(rw);
     }
 }

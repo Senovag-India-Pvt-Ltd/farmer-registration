@@ -24,7 +24,7 @@ public class FarmerType extends BaseEntity implements Serializable {
 
     @Size(min = 2, max = 250, message = "Farmer type name should be more than 1 characters.")
     @Column(name = "NAME")
-    private String name;
+    private String farmerTypeName;
 
 }
 

@@ -15,9 +15,9 @@ import java.util.Set;
 
 @Repository
 public interface FarmerTypeRepository extends PagingAndSortingRepository<FarmerType, Long> {
-    public List<FarmerType> findByName(String farmerTypeName);
+    public List<FarmerType> findByFarmerTypeName(String farmerTypeName);
 
-    public List<FarmerType> findByNameAndActive(String name,boolean isActive);
+    public List<FarmerType> findByFarmerTypeNameAndActive(String farmerTypeName,boolean isActive);
 
     public Page<FarmerType> findByActiveOrderByFarmerTypeIdAsc(boolean isActive, final Pageable pageable);
 

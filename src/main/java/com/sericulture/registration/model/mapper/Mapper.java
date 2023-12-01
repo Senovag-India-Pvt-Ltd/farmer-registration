@@ -13,6 +13,7 @@ import com.sericulture.registration.model.api.reelerLicenseTransaction.ReelerLic
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseRequest;
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
+import com.sericulture.registration.model.dto.farmer.FarmerDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerFamilyDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerLandDetailsDTO;
 import com.sericulture.registration.model.dto.fruitsApi.GetFruitsTokenDTO;
@@ -60,6 +61,16 @@ public class Mapper {
     public <T> T farmerEntityToObject(Farmer farmerEntity, Class<T> claaz) {
         log.info("Value of mapper is:",mapper, farmerEntity);
         return (T) mapper.map(farmerEntity, claaz);
+    }
+
+    /**
+     * Maps FarmerAddress DTO to FarmerAddress Response Object
+     * @param farmerDTO
+     * @param <T>
+     */
+    public <T> T farmerDTOToObject(FarmerDTO farmerDTO, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, farmerDTO);
+        return (T) mapper.map(farmerDTO, claaz);
     }
 
     /**

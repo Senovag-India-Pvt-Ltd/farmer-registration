@@ -35,7 +35,7 @@ public class FarmerTypeService {
     public FarmerTypeResponse insertFarmerTypeDetails(FarmerTypeRequest farmerTypeRequest){
         FarmerType farmerType = mapper.farmerTypeObjectToEntity(farmerTypeRequest,FarmerType.class);
         validator.validate(farmerType);
-        List<FarmerType> farmerTypeList = farmerTypeRepository.findByNameAndActive(farmerTypeRequest.getName(),true);
+        List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeNameAndActive(farmerTypeRequest.getFarmerTypeName(),true);
         if(!farmerTypeList.isEmpty()){
             throw new ValidationException("Farmer Type name already exist");
         }
@@ -89,14 +89,14 @@ public class FarmerTypeService {
 
     @Transactional
     public FarmerTypeResponse updateFarmerTypeDetails(EditFarmerTypeRequest farmerTypeRequest){
-        List<FarmerType> farmerTypeList = farmerTypeRepository.findByName(farmerTypeRequest.getName());
+        List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeName(farmerTypeRequest.getFarmerTypeName());
         if(farmerTypeList.size()>0){
             throw new ValidationException("FarmerType already exists with this name, duplicates are not allowed.");
         }
 
         FarmerType farmerType = farmerTypeRepository.findByFarmerTypeIdAndActiveIn(farmerTypeRequest.getFarmerTypeId(), Set.of(true,false));
         if(Objects.nonNull(farmerType)){
-            farmerType.setName(farmerTypeRequest.getName());
+            farmerType.setFarmerTypeName(farmerTypeRequest.getFarmerTypeName());
             farmerType.setActive(true);
         }else{
             throw new ValidationException("Error occurred while fetching farmerType");

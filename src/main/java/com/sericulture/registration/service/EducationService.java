@@ -58,7 +58,7 @@ public class EducationService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> getPaginatedEducationDetails(final Pageable pageable) {
-        return convertToMapResponse(educationRepository.findByActiveOrderByIdAsc( true, pageable));
+        return convertToMapResponse(educationRepository.findByActiveOrderByEducationIdAsc( true, pageable));
     }
 
     private Map<String, Object> convertToMapResponse(final Page<Education> pageEducationDetails) {
@@ -79,7 +79,7 @@ public class EducationService {
 
     @Transactional
     public void deleteEducationDetails(long id) {
-        Education education = educationRepository.findByIdAndActive(id, true);
+        Education education = educationRepository.findByEducationIdAndActive(id, true);
         if (Objects.nonNull(education)) {
             education.setActive(false);
             educationRepository.save(education);
@@ -95,7 +95,7 @@ public class EducationService {
             throw new ValidationException("Name already exists, duplicates are not allowed.");
         }
 
-        Education education = educationRepository.findByIdAndActiveIn(educationRequest.getId(), Set.of(true,false));
+        Education education = educationRepository.findByEducationIdAndActiveIn(educationRequest.getId(), Set.of(true,false));
         if (Objects.nonNull(education)) {
             education.setName(educationRequest.getName());
             education.setActive(true);

@@ -64,8 +64,8 @@ public class FarmerResponse {
     @Schema(name = "passbookNumber", example = "1001001000100")
     String passbookNumber;
 
-    @Schema(name = "landHoldingCategoryId", example = "1")
-    Long landHoldingCategoryId;
+    @Schema(name = "landCategoryId", example = "1")
+    Long landCategoryId;
 
     @Schema(name = "educationId", example = "1")
     Long educationId;
@@ -102,4 +102,16 @@ public class FarmerResponse {
 
     @Schema(name = "nameKan", example = "test")
     private String nameKan;
+
+    @Schema(name = "title", example = "OBC")
+    private String title;
+
+    @Schema(name = "title", example = "OBC")
+    private String landCategoryName;
+
+    @Schema(name = "title", example = "OBC")
+    private String farmerTypeName;
+
+    @Schema(name = "title", example = "OBC")
+    private String name;
 }
