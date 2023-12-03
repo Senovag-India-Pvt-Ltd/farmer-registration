@@ -204,7 +204,7 @@ public class FarmerService {
             fruitsFarmerDTO.setFarmerId(getFarmerRequest.getFruitsId());
 
           //  GetFruitsResponse getFruitsResponse = fruitsApiService.getFarmerByFruitsIdWithResponse(fruitsFarmerDTO);
-            String inputData = String.valueOf(fruitsApiService.getFarmerByFruitsId(fruitsFarmerDTO));
+            String inputData = String.valueOf(fruitsApiService.getFarmerByFruitsId(fruitsFarmerDTO).getBody());
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
@@ -228,10 +228,10 @@ public class FarmerService {
             farmer1.setFatherName(getFruitsResponse.getFatherName());
             farmer1.setNameKan(getFruitsResponse.getNameKan());
 
-            log.info("getFruitsResponse: " + getFruitsResponse);
-            log.info("ERROR FINDER getFruitsResponse.getGender(): " + getFruitsResponse.getGender());
-            log.info("ERROR FINDER getFruitsResponse.getName(): " + getFruitsResponse.getName());
-            log.info("ERROR FINDER typeOf: " + getFruitsResponse.getGender().getClass().getName() );
+            // log.info("getFruitsResponse: " + getFruitsResponse);
+            // log.info("ERROR FINDER getFruitsResponse.getGender(): " + getFruitsResponse.getGender());
+            // log.info("ERROR FINDER getFruitsResponse.getName(): " + getFruitsResponse.getName());
+            // log.info("ERROR FINDER typeOf: " + getFruitsResponse.getGender().getClass().getName() );
 
             if(getFruitsResponse.getGender().equals("Male")){
                 farmer1.setGenderId(1L);
