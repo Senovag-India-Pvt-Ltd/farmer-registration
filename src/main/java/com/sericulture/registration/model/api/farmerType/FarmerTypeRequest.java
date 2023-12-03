@@ -15,5 +15,5 @@ import java.util.Date;
 @EqualsAndHashCode
 public class FarmerTypeRequest extends RequestBody {
     @Schema(name = "name", example = "Margin farmer")
-    String name;
+    String farmerTypeName;
 }

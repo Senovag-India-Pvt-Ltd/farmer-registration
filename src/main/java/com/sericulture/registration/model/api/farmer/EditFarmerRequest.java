@@ -63,8 +63,8 @@ public class EditFarmerRequest extends RequestBody {
     @Schema(name = "passbookNumber", example = "1001001000100")
     String passbookNumber;
 
-    @Schema(name = "landHoldingCategoryId", example = "1")
-    Long landHoldingCategoryId;
+    @Schema(name = "landCategoryId", example = "1")
+    Long landCategoryId;
 
     @Schema(name = "educationId", example = "1")
     Long educationId;

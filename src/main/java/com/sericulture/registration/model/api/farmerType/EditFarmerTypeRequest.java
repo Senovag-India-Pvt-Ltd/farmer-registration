@@ -14,5 +14,5 @@ public class EditFarmerTypeRequest extends RequestBody {
     Long farmerTypeId;
 
     @Schema(name = "name", example = "Margin farmer")
-    String name;
+    String farmerTypeName;
 }

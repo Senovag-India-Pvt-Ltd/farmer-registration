@@ -71,7 +71,7 @@ public class Farmer extends BaseEntity implements Serializable {
     private String passbookNumber;
 
     @Column(name = "LANDHOLDING_CATEGORY_ID")
-    private Long landHoldingCategoryId;
+    private Long landCategoryId;
 
     @Column(name = "EDUCATION_ID")
     private Long educationId;

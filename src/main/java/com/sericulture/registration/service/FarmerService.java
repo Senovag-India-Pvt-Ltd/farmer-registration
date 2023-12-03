@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.farmer.*;
+import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
 import com.sericulture.registration.model.api.fruitsApi.GetFruitsResponse;
 import com.sericulture.registration.model.api.fruitsApi.GetLandDetailsResponse;
 import com.sericulture.registration.model.dto.caste.CasteDTO;
+import com.sericulture.registration.model.dto.farmer.FarmerDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerFamilyDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerLandDetailsDTO;
 import com.sericulture.registration.model.dto.fruitsApi.FruitsFarmerDTO;
@@ -143,7 +145,7 @@ public class FarmerService {
             farmer.setRationCardNumber(farmerRequest.getRationCardNumber());
             farmer.setTotalLandHolding(farmerRequest.getTotalLandHolding());
             farmer.setPassbookNumber(farmerRequest.getPassbookNumber());
-            farmer.setLandHoldingCategoryId(farmerRequest.getLandHoldingCategoryId());
+            farmer.setLandCategoryId(farmerRequest.getLandCategoryId());
             farmer.setEducationId(farmerRequest.getEducationId());
             farmer.setRepresentativeId(farmerRequest.getRepresentativeId());
             farmer.setKhazaneRecipientId(farmerRequest.getKhazaneRecipientId());
@@ -170,6 +172,7 @@ public class FarmerService {
         if(farmer == null){
             throw new ValidationException("Invalid fruits id");
         }
+        FarmerDTO farmerDTO = farmerRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
         List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
         List<FarmerAddressDTO> farmerAddressDTOList = farmerAddressRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
         List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
@@ -180,6 +183,7 @@ public class FarmerService {
 
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
         getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer,FarmerResponse.class));
+        getFarmerResponse.setFarmerDTO(farmerDTO);
         getFarmerResponse.setFarmerAddressList(farmerAddressList);
         getFarmerResponse.setFarmerAddressDTOList(farmerAddressDTOList);
         getFarmerResponse.setFarmerFamilyList(farmerFamilyList);
@@ -211,7 +215,7 @@ public class FarmerService {
             farmer1.setFirstName(getFruitsResponse.getName());
             farmer1.setMiddleName(getFruitsResponse.getFatherName());
 
-            List<FarmerType> farmerTypeList = farmerTypeRepository.findByNameAndActive(getFruitsResponse.getFarmerType(), true);
+            List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeNameAndActive(getFruitsResponse.getFarmerType(), true);
             if(farmerTypeList.size()>0){
                 farmer1.setFarmerTypeId(farmerTypeList.get(0).getFarmerTypeId());
             }
@@ -450,4 +454,13 @@ public class FarmerService {
 
         return getFarmerResponse;
     }
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public FarmerResponse getByFarmerIdJoin(int farmerId){
+        FarmerDTO farmerDTO = farmerRepository.getByFarmerIdAndActive(farmerId, true);
+        if(farmerDTO==null){
+            throw new ValidationException("Farmer Family not found by Farmer Id");
+        }
+        return mapper.farmerDTOToObject(farmerDTO,FarmerResponse.class);
+    }
+
 }
