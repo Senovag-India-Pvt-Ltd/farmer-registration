@@ -5,6 +5,8 @@ import com.sericulture.registration.model.api.farmer.GetFarmerRequest;
 import com.sericulture.registration.model.api.farmer.GetFarmerResponse;
 import com.sericulture.registration.model.api.reeler.*;
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
+import com.sericulture.registration.model.dto.farmer.FarmerDTO;
+import com.sericulture.registration.model.dto.reeler.ReelerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.model.exceptions.ValidationException;
@@ -140,7 +142,7 @@ public class ReelerService {
 
         Reeler reeler = reelerRepository.findByReelerIdAndActiveIn(reelerRequest.getReelerId(), Set.of(true,false));
         if(Objects.nonNull(reeler)){
-            reeler.setName(reelerRequest.getName());
+            reeler.setReelerName(reelerRequest.getReelerName());
             reeler.setWardNumber(reelerRequest.getWardNumber());
             reeler.setPassbookNumber(reelerRequest.getPassbookNumber());
             reeler.setFatherName(reelerRequest.getFatherName());
@@ -222,11 +224,13 @@ public class ReelerService {
         if(reeler == null){
             throw new ValidationException("Invalid reeler id");
         }
+        ReelerDTO reelerDTO = reelerRepository.getByReelerIdAndActive(reeler.getReelerId(), true);
         List<ReelerVirtualBankAccount> reelerVirtualBankAccountList = reelerVirtualBankAccountRepository.findByReelerIdAndActive(reeler.getReelerId(), true);
         List<ReelerVirtualBankAccountDTO> reelerVirtualBankAccountDTOList = reelerVirtualBankAccountRepository.getByReelerIdAndActive(reeler.getReelerId(), true);
 
         GetReelerResponse getReelerResponse = new GetReelerResponse();
         getReelerResponse.setReelerResponse(mapper.reelerEntityToObject(reeler, ReelerResponse.class));
+        getReelerResponse.setReelerDTO(reelerDTO);
         getReelerResponse.setReelerVirtualBankAccountList(reelerVirtualBankAccountList);
         getReelerResponse.setReelerVirtualBankAccountDTOList(reelerVirtualBankAccountDTOList);
 
@@ -248,5 +252,13 @@ public class ReelerService {
         getReelerResponse.setReelerVirtualBankAccountDTOList(reelerVirtualBankAccountDTOList);
 
         return getReelerResponse;
+    }
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ReelerResponse getByReelerIdJoin(int reelerId){
+        ReelerDTO reelerDTO = reelerRepository.getByReelerIdAndActive(reelerId, true);
+        if(reelerDTO==null){
+            throw new ValidationException("Reeler not found by Reeler Id");
+        }
+        return mapper.reelerDTOToObject(reelerDTO,ReelerResponse.class);
     }
 }

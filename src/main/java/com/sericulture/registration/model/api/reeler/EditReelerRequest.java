@@ -16,7 +16,7 @@ public class EditReelerRequest extends RequestBody {
     Long reelerId;
 
     @Schema(name = "name", example = "Test")
-    String name;
+    String reelerName;
 
     @Schema(name = "wardNumber", example = "Test")
     String wardNumber;

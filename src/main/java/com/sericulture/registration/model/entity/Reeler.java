@@ -22,7 +22,7 @@ public class Reeler extends BaseEntity implements Serializable {
     private Long reelerId;
 
     @Column(name = "name")
-    private String name;
+    private String reelerName;
 
     @Column(name = "ward_number")
     private String wardNumber;

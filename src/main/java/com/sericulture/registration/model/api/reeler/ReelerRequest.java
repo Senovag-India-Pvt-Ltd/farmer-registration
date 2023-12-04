@@ -13,7 +13,7 @@ import java.util.Date;
 @EqualsAndHashCode
 public class ReelerRequest extends RequestBody {
     @Schema(name = "name", example = "Test")
-    String name;
+    String reelerName;
 
     @Schema(name = "wardNumber", example = "Test")
     String wardNumber;

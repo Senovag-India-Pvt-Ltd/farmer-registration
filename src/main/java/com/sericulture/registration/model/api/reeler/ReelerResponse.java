@@ -16,8 +16,8 @@ public class ReelerResponse {
     @Schema(name = "reelerId", example = "1")
     Long reelerId;
 
-    @Schema(name = "name", example = "Test")
-    String name;
+    @Schema(name = "reelerName", example = "Test")
+    String reelerName;
 
     @Schema(name = "wardNumber", example = "Test")
     String wardNumber;
@@ -186,4 +186,28 @@ public class ReelerResponse {
 
     @Schema(name = "fruitsId", example = "35")
     String fruitsId;
+
+    @Schema(name = "title", example = "35")
+    String title;
+
+    @Schema(name = "name", example = "35")
+    String name;
+
+    @Schema(name = "machineTypeName", example = "35")
+    String machineTypeName;
+
+    @Schema(name = "stateName", example = "35")
+    String stateName;
+
+    @Schema(name = "districtName", example = "35")
+    String districtName;
+
+    @Schema(name = "talukName", example = "35")
+    String talukName;
+
+    @Schema(name = "hobliName", example = "35")
+    String hobliName;
+
+    @Schema(name = "villageName", example = "35")
+    String villageName;
 }
