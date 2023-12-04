@@ -279,6 +279,12 @@ public class FarmerService {
                     farmerLandDetails.setTalukName(((LinkedHashMap) responseWrapper1.getContent()).get("talukName").toString());
                     farmerLandDetails.setHobliName(((LinkedHashMap) responseWrapper1.getContent()).get("hobliName").toString());
                     farmerLandDetails.setVillageName(((LinkedHashMap) responseWrapper1.getContent()).get("villageName").toString());
+                } else {
+                    farmerLandDetails.setVillageId(null);
+                    farmerLandDetails.setHobliId(null);
+                    farmerLandDetails.setTalukId(null);
+                    farmerLandDetails.setDistrictId(null);
+                    farmerLandDetails.setStateId(null);
                 }
 
                 farmerLandDetails.setHissa(getLandDetailsResponse.getHissano());
