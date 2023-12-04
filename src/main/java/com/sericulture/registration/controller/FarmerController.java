@@ -3,6 +3,7 @@ package com.sericulture.registration.controller;
 import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.farmer.*;
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
+import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
 import com.sericulture.registration.service.FarmerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -275,4 +276,48 @@ public class FarmerController {
         rw.setContent(farmerService.getByFarmerIdJoin(id));
         return ResponseEntity.ok(rw);
     }
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Ok Response"),
+//            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+//                    content =
+//                            {
+//                                    @Content(mediaType = "application/json", schema =
+//                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+//                            }),
+//            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+//    })
+//    @GetMapping("/get-join/{id}")
+//    public ResponseEntity<?> getByIdJoin(
+//            @PathVariable final Integer id
+//    ) {
+//        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerResponse.class);
+//
+//        rw.setContent(farmerService.getByIdJoin(id));
+//        return ResponseEntity.ok(rw);
+//    }
+    @GetMapping("/list-with-join")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No Content - inserted successfully",content =
+                    {
+                            @Content(mediaType = "application/json", schema =
+                            @Schema(example = "{\"content\":{\"totalItems\":6,\"farmer\":[{\"id\":10,\"farmerName\":\"\",\"farmerId\":1,},{\"id\":11,\"farmerName\":\"Shimoga\",\"farmerId\":1,},{\"id\":13,\"farmerName\":\"Hubli\",\"farmerId\":1,}],\"totalPages\":1,\"currentPage\":0},\"errorMessages\":[]}"))
+                    }),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    public ResponseEntity<?> getPaginatedListWithJoin(
+            @RequestParam(defaultValue = "0") final Integer pageNumber,
+            @RequestParam(defaultValue = "5") final Integer size
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(Map.class);
+        rw.setContent(farmerService.getPaginatedFarmerDetailsWithJoin(PageRequest.of(pageNumber, size)));
+        return ResponseEntity.ok(rw);
+    }
+
+
 }
