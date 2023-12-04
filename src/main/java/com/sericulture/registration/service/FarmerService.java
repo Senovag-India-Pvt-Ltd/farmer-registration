@@ -267,7 +267,8 @@ public class FarmerService {
                 VillageDTO villageDTO = new VillageDTO();
                 villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
                 ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
-                if(responseWrapper1 != null) {
+               // if(responseWrapper1 != null) {
+                if(((LinkedHashMap) responseWrapper1.getContent()).get("success").equals(false)){
                     farmerLandDetails.setVillageId(Long.valueOf(((LinkedHashMap) responseWrapper1.getContent()).get("villageId").toString()));
                     farmerLandDetails.setHobliId(Long.valueOf(((LinkedHashMap) responseWrapper1.getContent()).get("hobliId").toString()));
                     farmerLandDetails.setTalukId(Long.valueOf(((LinkedHashMap) responseWrapper1.getContent()).get("talukId").toString()));
