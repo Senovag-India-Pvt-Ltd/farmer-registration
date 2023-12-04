@@ -261,4 +261,22 @@ public class ReelerService {
         }
         return mapper.reelerDTOToObject(reelerDTO,ReelerResponse.class);
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> getPaginatedReelerDetailsWithJoin(final Pageable pageable){
+        return convertDTOToMapResponse(reelerRepository.getByActiveOrderByReelerIdAsc( true, pageable));
+    }
+
+
+    private Map<String, Object> convertDTOToMapResponse(final Page<ReelerDTO> activeReelers) {
+        Map<String, Object> response = new HashMap<>();
+
+        List<ReelerResponse> reelerResponses = activeReelers.getContent().stream()
+                .map(reeler -> mapper.reelerDTOToObject(reeler,ReelerResponse.class)).collect(Collectors.toList());
+        response.put("reeler",reelerResponses);
+        response.put("currentPage", activeReelers.getNumber());
+        response.put("totalItems", activeReelers.getTotalElements());
+        response.put("totalPages", activeReelers.getTotalPages());
+        return response;
+    }
 }
