@@ -36,6 +36,7 @@ public class FarmerLandDetailsService {
 
     @Transactional
     public FarmerLandDetailsResponse insertFarmerLandDetailsDetails(FarmerLandDetailsRequest farmerLandDetailsRequest){
+        FarmerLandDetailsResponse farmerLandDetailsResponse = new FarmerLandDetailsResponse();
         FarmerLandDetails farmerLandDetails = mapper.farmerLandDetailsObjectToEntity(farmerLandDetailsRequest,FarmerLandDetails.class);
         validator.validate(farmerLandDetails);
         /*List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerLandDetailsName(farmerLandDetailsRequest.getFarmerLandDetailsName());
@@ -67,33 +68,49 @@ public class FarmerLandDetailsService {
     }
 
     @Transactional
-    public void deleteFarmerLandDetailsDetails(long id) {
+    public FarmerLandDetailsResponse deleteFarmerLandDetailsDetails(long id) {
+        FarmerLandDetailsResponse farmerLandDetailsResponse = new FarmerLandDetailsResponse();
         FarmerLandDetails farmerLandDetails = farmerLandDetailsRepository.findByFarmerLandDetailsIdAndActive(id, true);
         if (Objects.nonNull(farmerLandDetails)) {
             farmerLandDetails.setActive(false);
-            farmerLandDetailsRepository.save(farmerLandDetails);
+            farmerLandDetailsResponse = mapper.farmerLandDetailsEntityToObject(farmerLandDetailsRepository.save(farmerLandDetails), FarmerLandDetailsResponse.class);
+            farmerLandDetailsResponse.setError(false);
         } else {
-            throw new ValidationException("Invalid Id");
+            farmerLandDetailsResponse.setError(true);
+            farmerLandDetailsResponse.setError_description("Invalid Id");
+            // throw new ValidationException("Invalid Id");
         }
+        return farmerLandDetailsResponse;
     }
 
     @Transactional
     public FarmerLandDetailsResponse getById(int id){
+        FarmerLandDetailsResponse farmerLandDetailsResponse = new FarmerLandDetailsResponse();
         FarmerLandDetails farmerLandDetails = farmerLandDetailsRepository.findByFarmerLandDetailsIdAndActive(id,true);
         if(farmerLandDetails == null){
-            throw new ValidationException("Invalid Id");
+            farmerLandDetailsResponse.setError(true);
+            farmerLandDetailsResponse.setError_description("Invalid id");
+        }else{
+            farmerLandDetailsResponse =  mapper.farmerLandDetailsEntityToObject(farmerLandDetails,FarmerLandDetailsResponse.class);
+            farmerLandDetailsResponse.setError(false);
         }
         log.info("Entity is ",farmerLandDetails);
-        return mapper.farmerLandDetailsEntityToObject(farmerLandDetails,FarmerLandDetailsResponse.class);
+        return farmerLandDetailsResponse;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Map<String,Object> getByFarmerId(int farmerId){
+    public Map<String,Object> getByFarmerId(int farmerId) {
+        Map<String, Object> response = new HashMap<>();
         List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmerId, true);
-        if(farmerLandDetailsList.isEmpty()){
-            throw new ValidationException("Farmer Land Details not found by Farmer Id");
+        if (farmerLandDetailsList.isEmpty()) {
+            response.put("error", "Error");
+            response.put("error_description", "Invalid id");
+            return response;
+        } else {
+            log.info("Entity is ", farmerLandDetailsList);
+            response = convertListToMapResponse(farmerLandDetailsList);
+            return response;
         }
-        return convertListToMapResponse(farmerLandDetailsList);
     }
 
     private Map<String, Object> convertListToMapResponse(List<FarmerLandDetails> farmerLandDetailsList) {
@@ -107,16 +124,22 @@ public class FarmerLandDetailsService {
 
     @Transactional
     public FarmerLandDetailsResponse getByIdJoin(int id){
+        FarmerLandDetailsResponse farmerLandDetailsResponse = new FarmerLandDetailsResponse();
         FarmerLandDetailsDTO farmerLandDetailsDTO = farmerLandDetailsRepository.getByFarmerLandDetailsIdAndActive(id,true);
         if(farmerLandDetailsDTO == null){
-            throw new ValidationException("Invalid Id");
+            farmerLandDetailsResponse.setError(true);
+            farmerLandDetailsResponse.setError_description("Invalid id");
+        } else {
+            farmerLandDetailsResponse = mapper.farmerLandDetailsDTOToObject(farmerLandDetailsDTO, FarmerLandDetailsResponse.class);
+            farmerLandDetailsResponse.setError(false);
         }
-        // log.info("Entity is ", farmerAddressDTO);
-        return mapper.farmerLandDetailsDTOToObject(farmerLandDetailsDTO, FarmerLandDetailsResponse.class);
+        log.info("Entity is ", farmerLandDetailsDTO);
+        return farmerLandDetailsResponse;
     }
 
     @Transactional
     public FarmerLandDetailsResponse updateFarmerLandDetailsDetails(EditFarmerLandDetailsRequest farmerLandDetailsRequest){
+        FarmerLandDetailsResponse farmerLandDetailsResponse = new FarmerLandDetailsResponse();
        /* List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerLandDetailsName(farmerLandDetailsRequest.getFarmerLandDetailsName());
         if(farmerLandDetailsList.size()>0){
             throw new ValidationException("FarmerLandDetails already exists with this name, duplicates are not allowed.");
@@ -166,19 +189,31 @@ public class FarmerLandDetailsService {
             farmerLandDetails.setFGunta(farmerLandDetailsRequest.getFGunta());
 
             farmerLandDetails.setActive(true);
-        }else{
-            throw new ValidationException("Error occurred while fetching farmerLandDetails");
+            FarmerLandDetails farmerLandDetails1 = farmerLandDetailsRepository.save(farmerLandDetails);
+            farmerLandDetailsResponse = mapper.farmerLandDetailsEntityToObject(farmerLandDetails1, FarmerLandDetailsResponse.class);
+            farmerLandDetailsResponse.setError(false);
+        } else {
+            farmerLandDetailsResponse.setError(true);
+            farmerLandDetailsResponse.setError_description("Error occurred while fetching farmerLandDetails");
+            // throw new ValidationException("Error occurred while fetching village");
         }
-        return mapper.farmerLandDetailsEntityToObject(farmerLandDetailsRepository.save(farmerLandDetails),FarmerLandDetailsResponse.class);
+
+        return farmerLandDetailsResponse;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByFarmerIdJoin(int farmerId){
+        Map<String, Object> response = new HashMap<>();
         List<FarmerLandDetailsDTO> farmerLandDetailsDTO = farmerLandDetailsRepository.getByFarmerIdAndActive(farmerId, true);
         if(farmerLandDetailsDTO.isEmpty()){
-            throw new ValidationException("Farmer Land Details not found by Farmer Id");
+            response.put("error","Error");
+            response.put("error_description","Invalid id");
+            return response;
+        }else {
+            log.info("Entity is ", farmerLandDetailsDTO);
+            response = convertListDTOToMapResponse(farmerLandDetailsDTO);
+            return response;
         }
-        return convertListDTOToMapResponse(farmerLandDetailsDTO);
     }
 
     private Map<String, Object> convertListDTOToMapResponse(List<FarmerLandDetailsDTO> farmerLandDetailsDTOList) {

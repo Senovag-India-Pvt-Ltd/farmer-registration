@@ -2,6 +2,7 @@ package com.sericulture.registration.controller;
 
 import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
+import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
 import com.sericulture.registration.model.api.farmerLandDetails.EditFarmerLandDetailsRequest;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsRequest;
@@ -85,8 +86,10 @@ public class FarmerLandDetailsController {
     public ResponseEntity<?> deleteFarmerLandDetailsDetails(
             @PathVariable final Integer id
     ) {
-        farmerLandDetailsService.deleteFarmerLandDetailsDetails(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerBankAccountResponse.class);
+
+        rw.setContent(farmerLandDetailsService.deleteFarmerLandDetailsDetails(id));
+        return ResponseEntity.ok(rw);
     }
 
     @ApiResponses(value = {

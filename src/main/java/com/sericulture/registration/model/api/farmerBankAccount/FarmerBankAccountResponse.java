@@ -28,4 +28,10 @@ public class FarmerBankAccountResponse {
 
     @Schema(name = "farmerBankIfscCode", example = "SBI0005463")
     String farmerBankIfscCode;
+
+    @Schema(name = "error", example = "true")
+    Boolean error;
+
+    @Schema(name = "error_description", example = "Username or password is incorrect")
+    String error_description;
 }
