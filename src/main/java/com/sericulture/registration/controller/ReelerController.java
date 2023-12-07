@@ -264,8 +264,9 @@ public class ReelerController {
     public ResponseEntity<?> deleteReelerDetails(
             @PathVariable final Integer id
     ) {
-        reelerService.deleteReelerDetails(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseWrapper rw = ResponseWrapper.createWrapper(Map.class);
+        rw.setContent(reelerService.deleteReelerDetails(id));
+        return ResponseEntity.ok(rw);
     }
 
     @ApiResponses(value = {

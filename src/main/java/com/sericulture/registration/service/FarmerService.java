@@ -197,10 +197,12 @@ public class FarmerService {
         Farmer farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(),true);
         if (farmer == null) {
             // Log a message, provide a default value, or take other appropriate action
-            System.out.println("Invalid fruits id");
-
-            // You might want to return an empty response or some default response
-            return new GetFarmerResponse();
+//            System.out.println("Invalid fruits id");
+//
+//            // You might want to return an empty response or some default response
+//            return new GetFarmerResponse();
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Invalid fruits id");
         }
 //        FarmerDTO farmerDTO = farmerRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
 //        List<FarmerDTO> farmerDTOList = farmerRepository.getByIdAndActive(farmer.getFarmerId(), true);

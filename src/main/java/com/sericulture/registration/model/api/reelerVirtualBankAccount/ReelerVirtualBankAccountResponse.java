@@ -31,4 +31,10 @@ public class ReelerVirtualBankAccountResponse {
 
     @Schema(name = "marketMasterName", example = "1")
     String marketMasterName;
+
+    @Schema(name = "error", example = "true")
+    Boolean error;
+
+    @Schema(name = "error_description", example = "Username or password is incorrect")
+    String error_description;
 }

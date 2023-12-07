@@ -27,4 +27,10 @@ public class ReelerLicenseTransactionResponse {
 
     @Schema(name = "expirationDate", example = "2023-11-03 16:27:35.907")
     Date expirationDate;
+
+    @Schema(name = "error", example = "true")
+    Boolean error;
+
+    @Schema(name = "error_description", example = "Username or password is incorrect")
+    String error_description;
 }

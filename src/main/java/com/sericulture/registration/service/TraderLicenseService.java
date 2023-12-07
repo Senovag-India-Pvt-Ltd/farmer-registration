@@ -34,6 +34,7 @@ public class TraderLicenseService {
 
     @Transactional
     public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest traderLicenseRequest){
+        TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
         TraderLicense traderLicense = mapper.traderLicenseObjectToEntity(traderLicenseRequest,TraderLicense.class);
         validator.validate(traderLicense);
         /*List<TraderLicense> traderLicenseList = traderLicenseRepository.findByTraderLicenseNumber(traderLicenseRequest.getTraderLicenseNumber());
@@ -65,28 +66,40 @@ public class TraderLicenseService {
     }
 
     @Transactional
-    public void deleteTraderLicenseDetails(long id) {
+    public TraderLicenseResponse deleteTraderLicenseDetails(long id) {
+        TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
         TraderLicense traderLicense = traderLicenseRepository.findByTraderLicenseIdAndActive(id, true);
         if (Objects.nonNull(traderLicense)) {
             traderLicense.setActive(false);
-            traderLicenseRepository.save(traderLicense);
+            traderLicenseResponse = mapper.traderLicenseEntityToObject(traderLicenseRepository.save(traderLicense), TraderLicenseResponse.class);
+            traderLicenseResponse.setError(false);
         } else {
-            throw new ValidationException("Invalid Id");
+            traderLicenseResponse.setError(true);
+            traderLicenseResponse.setError_description("Invalid Id");
+            // throw new ValidationException("Invalid Id");
         }
+        return traderLicenseResponse;
     }
 
     @Transactional
     public TraderLicenseResponse getById(int id){
+        TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
         TraderLicense traderLicense = traderLicenseRepository.findByTraderLicenseIdAndActive(id,true);
         if(traderLicense == null){
-            throw new ValidationException("Invalid Id");
+            traderLicenseResponse.setError(true);
+            traderLicenseResponse.setError_description("Invalid id");
+        }else {
+            traderLicenseResponse = mapper.traderLicenseEntityToObject(traderLicense, TraderLicenseResponse.class);
+            traderLicenseResponse.setError(false);
         }
         log.info("Entity is ",traderLicense);
-        return mapper.traderLicenseEntityToObject(traderLicense,TraderLicenseResponse.class);
+//        return mapper.traderLicenseEntityToObject(traderLicense,TraderLicenseResponse.class);
+        return traderLicenseResponse;
     }
 
     @Transactional
     public TraderLicenseResponse updateTraderLicenseDetails(EditTraderLicenseRequest traderLicenseRequest){
+        TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
         /*List<TraderLicense> traderLicenseList = traderLicenseRepository.findByTraderLicenseNumber(traderLicenseRequest.getTraderLicenseNumber());
         if(traderLicenseList.size()>0){
             throw new ValidationException("traderLicense already exists with this name, duplicates are not allowed.");
@@ -117,10 +130,16 @@ public class TraderLicenseService {
            // traderLicense.setLicenseNumberSequence(traderLicenseRequest.getLicenseNumberSequence());
 
             traderLicense.setActive(true);
-        }else{
-            throw new ValidationException("Error occurred while fetching traderLicense");
+            TraderLicense traderLicense1 = traderLicenseRepository.save(traderLicense);
+            traderLicenseResponse = mapper.traderLicenseEntityToObject(traderLicense1, TraderLicenseResponse.class);
+            traderLicenseResponse.setError(false);
+        } else {
+            traderLicenseResponse.setError(true);
+            traderLicenseResponse.setError_description("Error occurred while fetching traderLicense");
+            // throw new ValidationException("Error occurred while fetching village");
         }
-        return mapper.traderLicenseEntityToObject(traderLicenseRepository.save(traderLicense),TraderLicenseResponse.class);
+
+        return traderLicenseResponse;
     }
 
 }

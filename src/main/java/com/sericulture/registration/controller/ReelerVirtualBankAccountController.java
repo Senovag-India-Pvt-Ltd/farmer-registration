@@ -108,8 +108,9 @@ public class ReelerVirtualBankAccountController {
     public ResponseEntity<?> deleteReelerVirtualBankAccountDetails(
             @PathVariable final Integer id
     ) {
-        reelerVirtualBankAccountService.deleteReelerVirtualBankAccountDetails(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseWrapper rw = ResponseWrapper.createWrapper(Map.class);
+        rw.setContent(reelerVirtualBankAccountService.deleteReelerVirtualBankAccountDetails(id));
+        return ResponseEntity.ok(rw);
     }
 
     @ApiResponses(value = {

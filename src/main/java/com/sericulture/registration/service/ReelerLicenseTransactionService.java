@@ -34,6 +34,7 @@ public class ReelerLicenseTransactionService {
 
     @Transactional
     public ReelerLicenseTransactionResponse insertReelerLicenseTransactionDetails(ReelerLicenseTransactionRequest reelerLicenseTransactionRequest){
+        ReelerLicenseTransactionResponse reelerLicenseTransactionResponse = new ReelerLicenseTransactionResponse();
         ReelerLicenseTransaction reelerLicenseTransaction = mapper.reelerLicenseTransactionObjectToEntity(reelerLicenseTransactionRequest,ReelerLicenseTransaction.class);
         validator.validate(reelerLicenseTransaction);
         /*List<ReelerLicenseTransaction> reelerLicenseTransactionList = reelerLicenseTransactionRepository.findByReelerLicenseTransactionName(reelerLicenseTransactionRequest.getReelerLicenseTransactionName());
@@ -65,44 +66,60 @@ public class ReelerLicenseTransactionService {
     }
 
     @Transactional
-    public void deleteReelerLicenseTransactionDetails(long id) {
+    public ReelerLicenseTransactionResponse deleteReelerLicenseTransactionDetails(long id) {
+        ReelerLicenseTransactionResponse reelerLicenseTransactionResponse = new ReelerLicenseTransactionResponse();
         ReelerLicenseTransaction reelerLicenseTransaction = reelerLicenseTransactionRepository.findByReelerLicenseTransactionIdAndActive(id, true);
         if (Objects.nonNull(reelerLicenseTransaction)) {
             reelerLicenseTransaction.setActive(false);
-            reelerLicenseTransactionRepository.save(reelerLicenseTransaction);
+            reelerLicenseTransactionResponse = mapper.reelerLicenseTransactionEntityToObject(reelerLicenseTransactionRepository.save(reelerLicenseTransaction), ReelerLicenseTransactionResponse.class);
+            reelerLicenseTransactionResponse.setError(false);
         } else {
-            throw new ValidationException("Invalid Id");
+            reelerLicenseTransactionResponse.setError(true);
+            reelerLicenseTransactionResponse.setError_description("Invalid Id");
+            // throw new ValidationException("Invalid Id");
         }
+        return reelerLicenseTransactionResponse;
     }
 
     @Transactional
     public ReelerLicenseTransactionResponse getById(int id){
+        ReelerLicenseTransactionResponse reelerLicenseTransactionResponse = new ReelerLicenseTransactionResponse();
         ReelerLicenseTransaction reelerLicenseTransaction = reelerLicenseTransactionRepository.findByReelerLicenseTransactionIdAndActive(id,true);
         if(reelerLicenseTransaction == null){
-            throw new ValidationException("Invalid Id");
+            reelerLicenseTransactionResponse.setError(true);
+            reelerLicenseTransactionResponse.setError_description("Invalid id");
+        }else{
+            reelerLicenseTransactionResponse =  mapper.reelerLicenseTransactionEntityToObject(reelerLicenseTransaction,ReelerLicenseTransactionResponse.class);
+            reelerLicenseTransactionResponse.setError(false);
         }
         log.info("Entity is ",reelerLicenseTransaction);
-        return mapper.reelerLicenseTransactionEntityToObject(reelerLicenseTransaction,ReelerLicenseTransactionResponse.class);
+        return reelerLicenseTransactionResponse;
     }
 
     @Transactional
     public ReelerLicenseTransactionResponse updateReelerLicenseTransactionDetails(EditReelerLicenseTransactionRequest reelerLicenseTransactionRequest){
+        ReelerLicenseTransactionResponse reelerLicenseTransactionResponse = new ReelerLicenseTransactionResponse();
         /*List<ReelerLicenseTransaction> reelerLicenseTransactionList = reelerLicenseTransactionRepository.findByReelerLicenseTransactionName(reelerLicenseTransactionRequest.getReelerLicenseTransactionName());
         if(reelerLicenseTransactionList.size()>0){
             throw new ValidationException("ReelerLicenseTransaction already exists with this name, duplicates are not allowed.");
         }*/
 
-        ReelerLicenseTransaction reelerLicenseTransaction = reelerLicenseTransactionRepository.findByReelerLicenseTransactionIdAndActiveIn(reelerLicenseTransactionRequest.getReelerLicenseTransactionId(), Set.of(true,false));
-        if(Objects.nonNull(reelerLicenseTransaction)){
-            reelerLicenseTransaction.setReelerId(reelerLicenseTransactionRequest.getReelerId());
-            reelerLicenseTransaction.setFeeAmount(reelerLicenseTransactionRequest.getFeeAmount());
-            reelerLicenseTransaction.setRenewedDate(reelerLicenseTransactionRequest.getRenewedDate());
-            reelerLicenseTransaction.setExpirationDate(reelerLicenseTransactionRequest.getExpirationDate());
-            reelerLicenseTransaction.setActive(true);
-        }else{
-            throw new ValidationException("Error occurred while fetching reelerLicenseTransaction");
-        }
-        return mapper.reelerLicenseTransactionEntityToObject(reelerLicenseTransactionRepository.save(reelerLicenseTransaction),ReelerLicenseTransactionResponse.class);
-    }
+            ReelerLicenseTransaction reelerLicenseTransaction = reelerLicenseTransactionRepository.findByReelerLicenseTransactionIdAndActiveIn(reelerLicenseTransactionRequest.getReelerLicenseTransactionId(), Set.of(true,false));
+            if(Objects.nonNull(reelerLicenseTransaction)){
+                reelerLicenseTransaction.setReelerId(reelerLicenseTransactionRequest.getReelerId());
+                reelerLicenseTransaction.setFeeAmount(reelerLicenseTransactionRequest.getFeeAmount());
+                reelerLicenseTransaction.setRenewedDate(reelerLicenseTransactionRequest.getRenewedDate());
+                reelerLicenseTransaction.setExpirationDate(reelerLicenseTransactionRequest.getExpirationDate());
+                reelerLicenseTransaction.setActive(true);
+                ReelerLicenseTransaction reelerLicenseTransaction1 = reelerLicenseTransactionRepository.save(reelerLicenseTransaction);
+                reelerLicenseTransactionResponse = mapper.reelerLicenseTransactionEntityToObject(reelerLicenseTransaction1, ReelerLicenseTransactionResponse.class);
+                reelerLicenseTransactionResponse.setError(false);
+            } else {
+                reelerLicenseTransactionResponse.setError(true);
+                reelerLicenseTransactionResponse.setError_description("Error occurred while fetching reelerLicenseTransaction");
+                // throw new ValidationException("Error occurred while fetching village");
+            }
 
+            return reelerLicenseTransactionResponse ;
+    }
 }
