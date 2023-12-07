@@ -115,8 +115,10 @@ public class ExternalUnitRegistrationController {
     public ResponseEntity<?> deleteExternalUnitRegistrationDetails(
             @PathVariable final Integer id
     ) {
-        externalUnitRegistrationService.deleteExternalUnitRegistrationDetails(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseWrapper rw = ResponseWrapper.createWrapper(ExternalUnitRegistrationResponse.class);
+
+        rw.setContent(externalUnitRegistrationService.deleteExternalUnitRegistrationDetails(id));
+        return ResponseEntity.ok(rw);
     }
 
     @ApiResponses(value = {

@@ -37,6 +37,7 @@ public class FarmerAddressService {
 
     @Transactional
     public FarmerAddressResponse insertFarmerAddressDetails(FarmerAddressRequest farmerAddressRequest){
+        FarmerAddressResponse farmerAddressResponse = new FarmerAddressResponse();
         FarmerAddress farmerAddress = mapper.farmerAddressObjectToEntity(farmerAddressRequest,FarmerAddress.class);
         validator.validate(farmerAddress);
         /*List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerAddressName(farmerAddressRequest.getFarmerAddressName());
@@ -47,7 +48,10 @@ public class FarmerAddressService {
             throw new ValidationException("FarmerAddress name already exist with inactive state");
         }*/
         return mapper.farmerAddressEntityToObject(farmerAddressRepository.save(farmerAddress),FarmerAddressResponse.class);
+
     }
+
+
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedFarmerAddressDetails(final Pageable pageable){
@@ -68,47 +72,69 @@ public class FarmerAddressService {
     }
 
     @Transactional
-    public void deleteFarmerAddressDetails(long id) {
+    public FarmerAddressResponse deleteFarmerAddressDetails(long id) {
+        FarmerAddressResponse farmerAddressResponse = new FarmerAddressResponse();
         FarmerAddress farmerAddress = farmerAddressRepository.findByFarmerAddressIdAndActive(id, true);
         if (Objects.nonNull(farmerAddress)) {
             farmerAddress.setActive(false);
-            farmerAddressRepository.save(farmerAddress);
+            farmerAddressResponse = mapper.farmerAddressEntityToObject(farmerAddressRepository.save(farmerAddress), FarmerAddressResponse.class);
+            farmerAddressResponse.setError(false);
         } else {
-            throw new ValidationException("Invalid Id");
+            farmerAddressResponse.setError(true);
+            farmerAddressResponse.setError_description("Invalid Id");
+            // throw new ValidationException("Invalid Id");
         }
+        return farmerAddressResponse;
     }
 
     @Transactional
     public FarmerAddressResponse getById(int id){
+        FarmerAddressResponse farmerAddressResponse = new FarmerAddressResponse();
         FarmerAddress farmerAddress = farmerAddressRepository.findByFarmerAddressIdAndActive(id,true);
         if(farmerAddress == null){
-            throw new ValidationException("Invalid Id");
+            farmerAddressResponse.setError(true);
+            farmerAddressResponse.setError_description("Invalid id");
+        }else{
+            farmerAddressResponse =  mapper.farmerAddressEntityToObject(farmerAddress,FarmerAddressResponse.class);
+            farmerAddressResponse.setError(false);
         }
         log.info("Entity is ",farmerAddress);
-        return mapper.farmerAddressEntityToObject(farmerAddress,FarmerAddressResponse.class);
+        return farmerAddressResponse;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByFarmerId(int farmerId){
+        Map<String, Object> response = new HashMap<>();
         List<FarmerAddress> farmerAddress = farmerAddressRepository.findByFarmerIdAndActive(farmerId, true);
         if(farmerAddress.isEmpty()){
-            throw new ValidationException("Farmer Address not found by Farmer Id");
+            response.put("error","Error");
+            response.put("error_description","Invalid id");
+            return response;
+        }else {
+            log.info("Entity is ", farmerAddress);
+            response = convertListToMapResponse(farmerAddress);
+            return response;
         }
-        return convertListToMapResponse(farmerAddress);
     }
 
     @Transactional
     public FarmerAddressResponse getByIdJoin(int id){
+        FarmerAddressResponse farmerAddressResponse = new FarmerAddressResponse();
         FarmerAddressDTO farmerAddressDTO = farmerAddressRepository.getByFarmerAddressIdAndActive(id,true);
         if(farmerAddressDTO == null){
-            throw new ValidationException("Invalid Id");
+            farmerAddressResponse.setError(true);
+            farmerAddressResponse.setError_description("Invalid id");
+        } else {
+            farmerAddressResponse = mapper.farmerAddressDTOToObject(farmerAddressDTO, FarmerAddressResponse.class);
+            farmerAddressResponse.setError(false);
         }
-        // log.info("Entity is ", farmerAddressDTO);
-        return mapper.farmerAddressDTOToObject(farmerAddressDTO, FarmerAddressResponse.class);
+        log.info("Entity is ", farmerAddressDTO);
+        return farmerAddressResponse;
     }
 
     @Transactional
     public FarmerAddressResponse updateFarmerAddressDetails(EditFarmerAddressRequest farmerAddressRequest){
+        FarmerAddressResponse farmerAddressResponse = new FarmerAddressResponse();
        /* List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerAddressName(farmerAddressRequest.getFarmerAddressName());
         if(farmerAddressList.size()>0){
             throw new ValidationException("FarmerAddress already exists with this name, duplicates are not allowed.");
@@ -126,10 +152,16 @@ public class FarmerAddressService {
             farmerAddress.setPincode(farmerAddressRequest.getPincode());
             farmerAddress.setDefaultAddress(farmerAddressRequest.getDefaultAddress());
             farmerAddress.setActive(true);
-        }else{
-            throw new ValidationException("Error occurred while fetching farmerAddress");
+            FarmerAddress farmerAddress1 = farmerAddressRepository.save(farmerAddress);
+            farmerAddressResponse = mapper.farmerAddressEntityToObject(farmerAddress1, FarmerAddressResponse.class);
+            farmerAddressResponse.setError(false);
+        } else {
+            farmerAddressResponse.setError(true);
+            farmerAddressResponse.setError_description("Error occurred while fetching farmerAddress");
+            // throw new ValidationException("Error occurred while fetching village");
         }
-        return mapper.farmerAddressEntityToObject(farmerAddressRepository.save(farmerAddress),FarmerAddressResponse.class);
+
+        return farmerAddressResponse;
     }
 
     private Map<String, Object> convertListToMapResponse(List<FarmerAddress> farmerAddressList) {
@@ -144,11 +176,17 @@ public class FarmerAddressService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByFarmerIdJoin(int farmerId){
+        Map<String, Object> response = new HashMap<>();
         List<FarmerAddressDTO> farmerAddressDTO = farmerAddressRepository.getByFarmerIdAndActive(farmerId, true);
         if(farmerAddressDTO.isEmpty()){
-            throw new ValidationException("Farmer Address not found by Farmer Id");
+            response.put("error","Error");
+            response.put("error_description","Invalid id");
+            return response;
+        }else {
+            log.info("Entity is ", farmerAddressDTO);
+            response = convertListDTOToMapResponse(farmerAddressDTO);
+            return response;
         }
-        return convertListDTOToMapResponse(farmerAddressDTO);
     }
 
     private Map<String, Object> convertListDTOToMapResponse(List<FarmerAddressDTO> farmerAddressDTOList) {

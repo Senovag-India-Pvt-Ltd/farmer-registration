@@ -1,6 +1,7 @@
 package com.sericulture.registration.controller;
 
 import com.sericulture.registration.model.ResponseWrapper;
+import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationResponse;
 import com.sericulture.registration.model.api.farmer.*;
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
@@ -139,8 +140,10 @@ public class FarmerController {
     public ResponseEntity<?> deleteFarmerDetails(
             @PathVariable final Integer id
     ) {
-        farmerService.deleteFarmerDetails(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseWrapper rw = ResponseWrapper.createWrapper(ExternalUnitRegistrationResponse.class);
+
+        rw.setContent(farmerService.deleteFarmerDetails(id));
+        return ResponseEntity.ok(rw);
     }
 
     @ApiResponses(value = {
