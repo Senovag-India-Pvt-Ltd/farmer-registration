@@ -157,8 +157,9 @@ public class TraderLicenseController {
     public ResponseEntity<?> deleteTraderLicenseDetails(
             @PathVariable final Integer id
     ) {
-        traderLicenseService.deleteTraderLicenseDetails(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseWrapper rw = ResponseWrapper.createWrapper(Map.class);
+        rw.setContent(traderLicenseService.deleteTraderLicenseDetails(id));
+        return ResponseEntity.ok(rw);
     }
 
     @ApiResponses(value = {

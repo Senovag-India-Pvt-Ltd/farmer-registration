@@ -69,16 +69,23 @@ public class FarmerService {
 
     @Transactional
     public FarmerResponse insertFarmerDetails(FarmerRequest farmerRequest){
+        FarmerResponse farmerResponse = new FarmerResponse();
         Farmer farmer = mapper.farmerObjectToEntity(farmerRequest,Farmer.class);
         validator.validate(farmer);
         List<Farmer> farmerList = farmerRepository.findByFarmerNumber(farmerRequest.getFarmerNumber());
         if(!farmerList.isEmpty() && farmerList.stream().filter(Farmer::getActive).findAny().isPresent()){
-            throw new ValidationException("Farmer number already exist");
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Farmer name already exist");
         }
-        if(!farmerList.isEmpty() && farmerList.stream().filter(Predicate.not(Farmer::getActive)).findAny().isPresent()){
-            throw new ValidationException("Farmer number already exist with inactive farmer");
+        else if(!farmerList.isEmpty() && farmerList.stream().filter(Predicate.not(Farmer::getActive)).findAny().isPresent()){
+            //throw new ValidationException("Village name already exist with inactive state");
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Farmer name already exist with inactive state");
+        }else {
+            farmerResponse = mapper.farmerEntityToObject(farmerRepository.save(farmer), FarmerResponse.class);
+            farmerResponse.setError(false);
         }
-        return mapper.farmerEntityToObject(farmerRepository.save(farmer),FarmerResponse.class);
+        return farmerResponse;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -100,28 +107,39 @@ public class FarmerService {
     }
 
     @Transactional
-    public void deleteFarmerDetails(long id) {
+    public FarmerResponse deleteFarmerDetails(long id) {
+        FarmerResponse farmerResponse = new FarmerResponse();
         Farmer farmer = farmerRepository.findByFarmerIdAndActive(id, true);
         if (Objects.nonNull(farmer)) {
             farmer.setActive(false);
-            farmerRepository.save(farmer);
+            farmerResponse = mapper.farmerEntityToObject(farmerRepository.save(farmer), FarmerResponse.class);
+            farmerResponse.setError(false);
         } else {
-            throw new ValidationException("Invalid Id");
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Invalid Id");
+            // throw new ValidationException("Invalid Id");
         }
+        return farmerResponse;
     }
 
     @Transactional
     public FarmerResponse getById(int id){
+        FarmerResponse farmerResponse = new FarmerResponse();
         Farmer farmer = farmerRepository.findByFarmerIdAndActive(id,true);
         if(farmer == null){
-            throw new ValidationException("Invalid Id");
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Invalid id");
+        }else{
+            farmerResponse =  mapper.farmerEntityToObject(farmer,FarmerResponse.class);
+            farmerResponse.setError(false);
         }
         log.info("Entity is ",farmer);
-        return mapper.farmerEntityToObject(farmer,FarmerResponse.class);
+        return farmerResponse;
     }
 
     @Transactional
     public FarmerResponse updateFarmerDetails(EditFarmerRequest farmerRequest){
+        FarmerResponse farmerResponse = new FarmerResponse();
         /*List<Farmer> farmerList = farmerRepository.findByFarmerNumber(farmerRequest.getFarmerNumber());
         if(farmerList.size()>0){
             throw new ValidationException("farmer already exists with this name, duplicates are not allowed.");
@@ -161,17 +179,30 @@ public class FarmerService {
             farmer.setNameKan(farmerRequest.getNameKan());
 
             farmer.setActive(true);
-        }else{
-            throw new ValidationException("Error occurred while fetching farmer");
+            Farmer farmer1 = farmerRepository.save(farmer);
+            farmerResponse = mapper.farmerEntityToObject(farmer1, FarmerResponse.class);
+            farmerResponse.setError(false);
+        } else {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Error occurred while fetching Farmer");
+            // throw new ValidationException("Error occurred while fetching village");
         }
-        return mapper.farmerEntityToObject(farmerRepository.save(farmer),FarmerResponse.class);
+
+        return farmerResponse ;
     }
 
     @Transactional
     public GetFarmerResponse getFarmerDetails(GetFarmerRequest getFarmerRequest){
+        FarmerResponse farmerResponse = new FarmerResponse();
         Farmer farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(),true);
-        if(farmer == null){
-            throw new ValidationException("Invalid fruits id");
+        if (farmer == null) {
+            // Log a message, provide a default value, or take other appropriate action
+//            System.out.println("Invalid fruits id");
+//
+//            // You might want to return an empty response or some default response
+//            return new GetFarmerResponse();
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Invalid fruits id");
         }
 //        FarmerDTO farmerDTO = farmerRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
 //        List<FarmerDTO> farmerDTOList = farmerRepository.getByIdAndActive(farmer.getFarmerId(), true);
@@ -467,12 +498,18 @@ public class FarmerService {
         return getFarmerResponse;
     }
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public FarmerResponse getByFarmerIdJoin(int farmerId){
+    public FarmerResponse getByFarmerIdJoin(int farmerId) {
+        FarmerResponse farmerResponse = new FarmerResponse();
         FarmerDTO farmerDTO = farmerRepository.getByFarmerIdAndActive(farmerId, true);
-        if(farmerDTO==null){
-            throw new ValidationException("Farmer Family not found by Farmer Id");
+        if (farmerDTO == null) {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Invalid id");
+        } else {
+            farmerResponse = mapper.farmerDTOToObject(farmerDTO, FarmerResponse.class);
+            farmerResponse.setError(false);
         }
-        return mapper.farmerDTOToObject(farmerDTO,FarmerResponse.class);
+        log.info("Entity is ", farmerDTO);
+        return farmerResponse;
     }
 //    @Transactional(isolation = Isolation.READ_COMMITTED)
 //    public Map<String,Object> getByIdJoin(int farmerId){

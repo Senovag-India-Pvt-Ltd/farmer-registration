@@ -105,8 +105,9 @@ public class ReelerLicenseTransactionController {
     public ResponseEntity<?> deleteReelerLicenseTransactionDetails(
             @PathVariable final Integer id
     ) {
-        reelerLicenseTransactionService.deleteReelerLicenseTransactionDetails(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseWrapper rw = ResponseWrapper.createWrapper(Map.class);
+        rw.setContent(reelerLicenseTransactionService.deleteReelerLicenseTransactionDetails(id));
+        return ResponseEntity.ok(rw);
     }
 
     @ApiResponses(value = {

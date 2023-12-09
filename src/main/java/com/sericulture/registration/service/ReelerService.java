@@ -47,6 +47,7 @@ public class ReelerService {
 
     @Transactional
     public ReelerResponse insertReelerDetails(ReelerRequest reelerRequest){
+        ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = mapper.reelerObjectToEntity(reelerRequest,Reeler.class);
         validator.validate(reeler);
         /*List<Reeler> reelerList = reelerRepository.findByReelerName(reelerRequest.getReelerName());
@@ -78,40 +79,60 @@ public class ReelerService {
     }
 
     @Transactional
-    public void deleteReelerDetails(long id) {
+    public ReelerResponse deleteReelerDetails(long id) {
+        ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = reelerRepository.findByReelerIdAndActive(id, true);
         if (Objects.nonNull(reeler)) {
             reeler.setActive(false);
-            reelerRepository.save(reeler);
+            reelerResponse = mapper.reelerEntityToObject(reelerRepository.save(reeler), ReelerResponse.class);
+            reelerResponse.setError(false);
         } else {
-            throw new ValidationException("Invalid Id");
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Invalid Id");
+            // throw new ValidationException("Invalid Id");
         }
+        return reelerResponse;
     }
 
     @Transactional
     public ReelerResponse getById(int id){
+        ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = reelerRepository.findByReelerIdAndActive(id,true);
         if(reeler == null){
-            throw new ValidationException("Invalid Id");
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Invalid id");
+        }else{
+            reelerResponse =  mapper.reelerEntityToObject(reeler,ReelerResponse.class);
+            reelerResponse.setError(false);
         }
         log.info("Entity is ",reeler);
-        return mapper.reelerEntityToObject(reeler,ReelerResponse.class);
+        return reelerResponse;
     }
-
     @Transactional
     public ReelerResponse updateReelerStatus(UpdateReelerStatusRequest updateReelerStatusRequest) {
+        ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = reelerRepository.findByReelerIdAndActive(updateReelerStatusRequest.getReelerId(), true);
         if (Objects.nonNull(reeler)) {
             reeler.setStatus(updateReelerStatusRequest.getStatus());
             reelerRepository.save(reeler);
+//        } else {
+//            throw new ValidationException("Invalid Id");
+//        }
+//        return mapper.reelerEntityToObject(reeler,ReelerResponse.class);
+            reelerResponse = mapper.reelerEntityToObject(reeler, ReelerResponse.class);
+            reelerResponse.setError(false);
         } else {
-            throw new ValidationException("Invalid Id");
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Invalid Id");
+            // throw new ValidationException("Error occurred while fetching village");
         }
-        return mapper.reelerEntityToObject(reeler,ReelerResponse.class);
+
+        return reelerResponse ;
     }
 
     @Transactional
     public ReelerResponse updateReelerLicense(UpdateReelerLicenseRequest updateReelerLicenseRequest) {
+        ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = reelerRepository.findByReelerIdAndActive(updateReelerLicenseRequest.getReelerId(), true);
         if (Objects.nonNull(reeler)) {
             reeler.setStatus(updateReelerLicenseRequest.getStatus());
@@ -127,14 +148,20 @@ public class ReelerService {
             reelerLicenseTransaction.setRenewedDate(savedReeler.getLicenseRenewalDate());
             reelerLicenseTransaction.setFeeAmount(savedReeler.getFeeAmount());
             reelerLicenseTransactionRepository.save(reelerLicenseTransaction);
+            reelerResponse = mapper.reelerEntityToObject(reeler, ReelerResponse.class);
+            reelerResponse.setError(false);
         } else {
-            throw new ValidationException("Invalid Id");
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Invalid Id");
+            // throw new ValidationException("Invalid Id");
         }
-        return mapper.reelerEntityToObject(reeler,ReelerResponse.class);
+
+        return reelerResponse;
     }
 
     @Transactional
     public ReelerResponse updateReelerDetails(EditReelerRequest reelerRequest){
+        ReelerResponse reelerResponse = new ReelerResponse();
         /*List<Reeler> reelerList = reelerRepository.findByReelerName(reelerRequest.getReelerName());
         if(reelerList.size()>0){
             throw new ValidationException("Reeler already exists with this name, duplicates are not allowed.");
@@ -202,27 +229,40 @@ public class ReelerService {
             reeler.setFruitsId(reelerRequest.getFruitsId());
 
             reeler.setActive(true);
-        }else{
-            throw new ValidationException("Error occurred while fetching reeler");
+            Reeler reeler1 = reelerRepository.save(reeler);
+            reelerResponse = mapper.reelerEntityToObject(reeler1, ReelerResponse.class);
+            reelerResponse.setError(false);
+        } else {
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Error occurred while fetching reeler");
+            // throw new ValidationException("Error occurred while fetching village");
         }
-        return mapper.reelerEntityToObject(reelerRepository.save(reeler),ReelerResponse.class);
+
+        return reelerResponse ;
     }
 
     @Transactional
     public ReelerResponse getByReelingLicenseNumber(String reelingLicenseNumber){
+        ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = reelerRepository.findByReelingLicenseNumberAndActive(reelingLicenseNumber,true);
         if(reeler == null){
-            throw new ValidationException("Invalid Id");
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Invalid id");
+        }else{
+            reelerResponse =  mapper.reelerEntityToObject(reeler,ReelerResponse.class);
+            reelerResponse.setError(false);
         }
         log.info("Entity is ",reeler);
-        return mapper.reelerEntityToObject(reeler,ReelerResponse.class);
+        return reelerResponse;
     }
 
     @Transactional
     public GetReelerResponse getReelerDetails(GetReelerRequest getReelerRequest){
+        ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = reelerRepository.findByReelerIdAndActive(getReelerRequest.getReelerId(),true);
         if(reeler == null){
-            throw new ValidationException("Invalid reeler id");
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Invalid id");
         }
         ReelerDTO reelerDTO = reelerRepository.getByReelerIdAndActive(reeler.getReelerId(), true);
         List<ReelerVirtualBankAccount> reelerVirtualBankAccountList = reelerVirtualBankAccountRepository.findByReelerIdAndActive(reeler.getReelerId(), true);
@@ -255,11 +295,16 @@ public class ReelerService {
     }
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public ReelerResponse getByReelerIdJoin(int reelerId){
+        ReelerResponse reelerResponse = new ReelerResponse();
         ReelerDTO reelerDTO = reelerRepository.getByReelerIdAndActive(reelerId, true);
         if(reelerDTO==null){
-            throw new ValidationException("Reeler not found by Reeler Id");
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Invalid id");
+        }else{
+            reelerResponse =  mapper.reelerDTOToObject(reelerDTO,ReelerResponse.class);
+            reelerResponse.setError(false);
         }
-        return mapper.reelerDTOToObject(reelerDTO,ReelerResponse.class);
+        return reelerResponse;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

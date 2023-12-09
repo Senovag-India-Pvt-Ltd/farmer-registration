@@ -37,6 +37,7 @@ public class ReelerVirtualBankAccountService {
 
     @Transactional
     public ReelerVirtualBankAccountResponse insertReelerVirtualBankAccountDetails(ReelerVirtualBankAccountRequest reelerVirtualBankAccountRequest){
+        ReelerVirtualBankAccountResponse reelerVirtualBankAccountResponse = new ReelerVirtualBankAccountResponse();
         ReelerVirtualBankAccount reelerVirtualBankAccount = mapper.reelerVirtualBankAccountObjectToEntity(reelerVirtualBankAccountRequest,ReelerVirtualBankAccount.class);
         validator.validate(reelerVirtualBankAccount);
        /* List<ReelerVirtualBankAccount> reelerVirtualBankAccountList = reelerVirtualBankAccountRepository.findByReelerVirtualBankAccountName(reelerVirtualBankAccountRequest.getReelerVirtualBankAccountName());
@@ -68,47 +69,70 @@ public class ReelerVirtualBankAccountService {
     }
 
     @Transactional
-    public void deleteReelerVirtualBankAccountDetails(long id) {
+    public ReelerVirtualBankAccountResponse deleteReelerVirtualBankAccountDetails(long id) {
+        ReelerVirtualBankAccountResponse reelerVirtualBankAccountResponse = new ReelerVirtualBankAccountResponse();
         ReelerVirtualBankAccount reelerVirtualBankAccount = reelerVirtualBankAccountRepository.findByReelerVirtualBankAccountIdAndActive(id, true);
         if (Objects.nonNull(reelerVirtualBankAccount)) {
             reelerVirtualBankAccount.setActive(false);
-            reelerVirtualBankAccountRepository.save(reelerVirtualBankAccount);
+            reelerVirtualBankAccountResponse = mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccountRepository.save(reelerVirtualBankAccount), ReelerVirtualBankAccountResponse.class);
+            reelerVirtualBankAccountResponse.setError(false);
         } else {
-            throw new ValidationException("Invalid Id");
+            reelerVirtualBankAccountResponse.setError(true);
+            reelerVirtualBankAccountResponse.setError_description("Invalid Id");
+            // throw new ValidationException("Invalid Id");
         }
+        return reelerVirtualBankAccountResponse;
     }
 
     @Transactional
     public ReelerVirtualBankAccountResponse getById(int id){
+        ReelerVirtualBankAccountResponse reelerVirtualBankAccountResponse = new ReelerVirtualBankAccountResponse();
         ReelerVirtualBankAccount reelerVirtualBankAccount = reelerVirtualBankAccountRepository.findByReelerVirtualBankAccountIdAndActive(id,true);
         if(reelerVirtualBankAccount == null){
-            throw new ValidationException("Invalid Id");
+            reelerVirtualBankAccountResponse.setError(true);
+            reelerVirtualBankAccountResponse.setError_description("Invalid id");
+        } else {
+            reelerVirtualBankAccountResponse = mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccount, ReelerVirtualBankAccountResponse.class);
+            reelerVirtualBankAccountResponse.setError(false);
         }
-        log.info("Entity is ",reelerVirtualBankAccount);
-        return mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccount,ReelerVirtualBankAccountResponse.class);
+        log.info("Entity is ", reelerVirtualBankAccount);
+        return reelerVirtualBankAccountResponse;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Map<String,Object> getByReelerId(int ReelerId){
+    public Map<String,Object> getByReelerId(int ReelerId) {
+        Map<String, Object> response = new HashMap<>();
         List<ReelerVirtualBankAccount> reelerList = reelerVirtualBankAccountRepository.findByReelerIdAndActive(ReelerId, true);
-        if(reelerList.isEmpty()){
-            throw new ValidationException("Virtual Bank Account not found by ReelerId");
+        if (reelerList.isEmpty()) {
+            response.put("error", "Error");
+            response.put("error_description", "Invalid id");
+            return response;
+        } else {
+            response = convertListToMapResponse(reelerList);
+            return response;
+//        return convertListToMapResponse(reelerList);
         }
-        return convertListToMapResponse(reelerList);
     }
 
     @Transactional
     public ReelerVirtualBankAccountResponse getByIdJoin(int id){
+        ReelerVirtualBankAccountResponse reelerVirtualBankAccountResponse = new ReelerVirtualBankAccountResponse();
         ReelerVirtualBankAccountDTO reelerVirtualBankAccountDTO = reelerVirtualBankAccountRepository.getByReelerVirtualBankAccountIdAndActive(id,true);
         if(reelerVirtualBankAccountDTO == null){
-            throw new ValidationException("Invalid Id");
+            reelerVirtualBankAccountResponse.setError(true);
+            reelerVirtualBankAccountResponse.setError_description("Invalid id");
+        } else {
+            reelerVirtualBankAccountResponse = mapper.reelerVirtualBankAccountDTOToObject(reelerVirtualBankAccountDTO, ReelerVirtualBankAccountResponse.class);
+            reelerVirtualBankAccountResponse.setError(false);
         }
         // log.info("Entity is ", farmerAddressDTO);
-        return mapper.reelerVirtualBankAccountDTOToObject(reelerVirtualBankAccountDTO, ReelerVirtualBankAccountResponse.class);
+//        return mapper.reelerVirtualBankAccountDTOToObject(reelerVirtualBankAccountDTO, ReelerVirtualBankAccountResponse.class);
+        return  reelerVirtualBankAccountResponse;
     }
 
     @Transactional
     public ReelerVirtualBankAccountResponse updateReelerVirtualBankAccountDetails(EditReelerVirtualBankAccountRequest reelerVirtualBankAccountRequest){
+        ReelerVirtualBankAccountResponse reelerVirtualBankAccountResponse = new ReelerVirtualBankAccountResponse();
        /* List<ReelerVirtualBankAccount> reelerVirtualBankAccountList = reelerVirtualBankAccountRepository.findByReelerVirtualBankAccountName(reelerVirtualBankAccountRequest.getReelerVirtualBankAccountName());
         if(reelerVirtualBankAccountList.size()>0){
             throw new ValidationException("ReelerVirtualBankAccount already exists with this name, duplicates are not allowed.");
@@ -123,10 +147,16 @@ public class ReelerVirtualBankAccountService {
             reelerVirtualBankAccount.setIfscCode(reelerVirtualBankAccountRequest.getIfscCode());
             reelerVirtualBankAccount.setMarketMasterId(reelerVirtualBankAccountRequest.getMarketMasterId());
             reelerVirtualBankAccount.setActive(true);
-        }else{
-            throw new ValidationException("Error occurred while fetching reelerVirtualBankAccount");
+            ReelerVirtualBankAccount reelerVirtualBankAccount1 = reelerVirtualBankAccountRepository.save(reelerVirtualBankAccount);
+            reelerVirtualBankAccountResponse = mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccount1, ReelerVirtualBankAccountResponse.class);
+            reelerVirtualBankAccountResponse.setError(false);
+        } else {
+            reelerVirtualBankAccountResponse.setError(true);
+            reelerVirtualBankAccountResponse.setError_description("Error occurred while fetching reelerVirtualBankAccount");
+            // throw new ValidationException("Error occurred while fetching village");
         }
-        return mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccountRepository.save(reelerVirtualBankAccount),ReelerVirtualBankAccountResponse.class);
+
+        return reelerVirtualBankAccountResponse;
     }
 
     private Map<String, Object> convertListToMapResponse(List<ReelerVirtualBankAccount> reelerVirtualBankAccountList) {
@@ -139,11 +169,18 @@ public class ReelerVirtualBankAccountService {
     }
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByReelerIdJoin(int reelerID){
+        Map<String, Object> response = new HashMap<>();
         List<ReelerVirtualBankAccountDTO> reelerVirtualBankAccountDTO = reelerVirtualBankAccountRepository.getByReelerIdAndActive(reelerID, true);
         if(reelerVirtualBankAccountDTO.isEmpty()){
-            throw new ValidationException("Reeler VirtualBank Account not found by Reeler Id");
+            response.put("error","Error");
+            response.put("error_description","Invalid id");
+            return response;
+        }else {
+            response = convertListDTOToMapResponse(reelerVirtualBankAccountDTO);
+            return response;
+
         }
-        return convertListDTOToMapResponse(reelerVirtualBankAccountDTO);
+
     }
 
     private Map<String, Object> convertListDTOToMapResponse(List<ReelerVirtualBankAccountDTO> reelerVirtualBankAccountDTOList) {

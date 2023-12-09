@@ -82,8 +82,10 @@ public class FarmerBankAccountController {
     public ResponseEntity<?> deleteFarmerBankAccountDetails(
             @PathVariable final Integer id
     ) {
-        farmerBankAccountService.deleteFarmerBankAccountDetails(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerBankAccountResponse.class);
+
+        rw.setContent(farmerBankAccountService.deleteFarmerBankAccountDetails(id));
+        return ResponseEntity.ok(rw);
     }
 
     @ApiResponses(value = {

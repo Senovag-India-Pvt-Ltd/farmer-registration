@@ -26,4 +26,10 @@ public class FarmerFamilyResponse {
 
     @Schema(name="relationshipName", example = "1")
     String relationshipName;
+
+    @Schema(name = "error", example = "true")
+    Boolean error;
+
+    @Schema(name = "error_description", example = "Username or password is incorrect")
+    String error_description;
 }

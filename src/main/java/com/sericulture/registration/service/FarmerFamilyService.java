@@ -39,29 +39,43 @@ public class FarmerFamilyService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public FarmerFamilyResponse getFarmerFamilyDetails(String farmerFamilyName){
+        FarmerFamilyResponse farmerFamilyResponse = new FarmerFamilyResponse();
         FarmerFamily farmerFamily = null;
         if(farmerFamily==null){
             farmerFamily = farmerFamilyRepository.findByFarmerFamilyNameAndActive(farmerFamilyName,true);
+            farmerFamilyResponse = mapper.farmerFamilyEntityToObject(farmerFamily,FarmerFamilyResponse.class);
+            farmerFamilyResponse.setError(false);
+        }else{
+            farmerFamilyResponse.setError(true);
+            farmerFamilyResponse.setError_description("FarmerFamily not found");
         }
         log.info("Entity is ",farmerFamily);
-        return mapper.farmerFamilyEntityToObject(farmerFamily,FarmerFamilyResponse.class);
+        return farmerFamilyResponse;
     }
 
     @Transactional
     public FarmerFamilyResponse insertFarmerFamilyDetails(FarmerFamilyRequest farmerFamilyRequest){
+        FarmerFamilyResponse farmerFamilyResponse = new FarmerFamilyResponse();
         FarmerFamily farmerFamily = mapper.farmerFamilyObjectToEntity(farmerFamilyRequest,FarmerFamily.class);
         validator.validate(farmerFamily);
         List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerFamilyNameAndFarmerIdAndActive(farmerFamilyRequest.getFarmerFamilyName(), farmerFamilyRequest.getFarmerId(), true);
         if(!farmerFamilyList.isEmpty()){
-            throw new ValidationException("Farmer Family name already exist");
-        }
+//            throw new ValidationException("Farmer Family name already exist");
+            farmerFamilyResponse.setError(true);
+            farmerFamilyResponse.setError_description("Farmer Family name already exist");
+
 //        if(!farmerFamilyList.isEmpty() && farmerFamilyList.stream().filter(FarmerFamily::getActive).findAny().isPresent()){
 //            throw new ValidationException("FarmerFamily name already exist");
 //        }
 //        if(!farmerFamilyList.isEmpty() && farmerFamilyList.stream().filter(Predicate.not(FarmerFamily::getActive)).findAny().isPresent()){
 //            throw new ValidationException("FarmerFamily name already exist with inactive state");
 //        }
-        return mapper.farmerFamilyEntityToObject(farmerFamilyRepository.save(farmerFamily),FarmerFamilyResponse.class);
+        }else {
+            farmerFamilyResponse = mapper.farmerFamilyEntityToObject(farmerFamilyRepository.save(farmerFamily), FarmerFamilyResponse.class);
+            farmerFamilyResponse.setError(false);
+        }
+        return farmerFamilyResponse;
+//        return mapper.farmerFamilyEntityToObject(farmerFamilyRepository.save(farmerFamily),FarmerFamilyResponse.class);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -83,33 +97,49 @@ public class FarmerFamilyService {
     }
 
     @Transactional
-    public void deleteFarmerFamilyDetails(long id) {
+    public FarmerFamilyResponse deleteFarmerFamilyDetails(long id) {
+        FarmerFamilyResponse farmerFamilyResponse = new FarmerFamilyResponse();
         FarmerFamily farmerFamily = farmerFamilyRepository.findByFarmerFamilyIdAndActive(id, true);
         if (Objects.nonNull(farmerFamily)) {
             farmerFamily.setActive(false);
-            farmerFamilyRepository.save(farmerFamily);
+            farmerFamilyResponse = mapper.farmerFamilyEntityToObject(farmerFamilyRepository.save(farmerFamily), FarmerFamilyResponse.class);
+            farmerFamilyResponse.setError(false);
         } else {
-            throw new ValidationException("Invalid Id");
+            farmerFamilyResponse.setError(true);
+            farmerFamilyResponse.setError_description("Invalid Id");
+            // throw new ValidationException("Invalid Id");
         }
+        return farmerFamilyResponse;
     }
 
     @Transactional
     public FarmerFamilyResponse getById(int id){
+        FarmerFamilyResponse farmerFamilyResponse = new FarmerFamilyResponse();
         FarmerFamily farmerFamily = farmerFamilyRepository.findByFarmerFamilyIdAndActive(id,true);
         if(farmerFamily == null){
-            throw new ValidationException("Invalid Id");
+            farmerFamilyResponse.setError(true);
+            farmerFamilyResponse.setError_description("Invalid id");
+        }else{
+            farmerFamilyResponse =  mapper.farmerFamilyEntityToObject(farmerFamily,FarmerFamilyResponse.class);
+            farmerFamilyResponse.setError(false);
         }
         log.info("Entity is ",farmerFamily);
-        return mapper.farmerFamilyEntityToObject(farmerFamily,FarmerFamilyResponse.class);
+        return farmerFamilyResponse;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByFarmerId(int farmerId){
+        Map<String, Object> response = new HashMap<>();
         List<FarmerFamily> familyList = farmerFamilyRepository.findByFarmerIdAndActive(farmerId, true);
         if(familyList.isEmpty()){
-            throw new ValidationException("Farmer Family Members not found by farmer Id");
+            response.put("error","Error");
+            response.put("error_description","Invalid id");
+            return response;
+        }else {
+            log.info("Entity is ", familyList);
+            response = convertListToMapResponse(familyList);
+            return response;
         }
-        return convertListToMapResponse(familyList);
     }
 
     @Transactional
@@ -125,21 +155,31 @@ public class FarmerFamilyService {
 
     @Transactional
     public FarmerFamilyResponse updateFarmerFamilyDetails(EditFarmerFamilyRequest farmerFamilyRequest){
+        FarmerFamilyResponse farmerFamilyResponse = new FarmerFamilyResponse();
+
         List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerFamilyName(farmerFamilyRequest.getFarmerFamilyName());
         if(farmerFamilyList.size()>0){
-            throw new ValidationException("FarmerFamily already exists with this name, duplicates are not allowed.");
-        }
+            farmerFamilyResponse.setError(true);
+            farmerFamilyResponse.setError_description("FarmerFamily already exists, duplicates are not allowed.");
+            // throw new ValidationException("Village already exists, duplicates are not allowed.");
+        }else {
 
-        FarmerFamily farmerFamily = farmerFamilyRepository.findByFarmerFamilyIdAndActiveIn(farmerFamilyRequest.getFarmerFamilyId(), Set.of(true,false));
-        if(Objects.nonNull(farmerFamily)){
-            farmerFamily.setFarmerFamilyName(farmerFamilyRequest.getFarmerFamilyName());
-            farmerFamily.setFarmerId(farmerFamilyRequest.getFarmerId());
-            farmerFamily.setRelationshipId(farmerFamilyRequest.getRelationshipId());
-            farmerFamily.setActive(true);
-        }else{
-            throw new ValidationException("Error occurred while fetching farmerFamily");
+            FarmerFamily farmerFamily = farmerFamilyRepository.findByFarmerFamilyIdAndActiveIn(farmerFamilyRequest.getFarmerFamilyId(), Set.of(true,false));
+            if(Objects.nonNull(farmerFamily)){
+                farmerFamily.setFarmerFamilyName(farmerFamilyRequest.getFarmerFamilyName());
+                farmerFamily.setFarmerId(farmerFamilyRequest.getFarmerId());
+                farmerFamily.setRelationshipId(farmerFamilyRequest.getRelationshipId());
+                farmerFamily.setActive(true);
+                FarmerFamily farmerFamily1 = farmerFamilyRepository.save(farmerFamily);
+                farmerFamilyResponse = mapper.farmerFamilyEntityToObject(farmerFamily1, FarmerFamilyResponse.class);
+                farmerFamilyResponse.setError(false);
+            } else {
+                farmerFamilyResponse.setError(true);
+                farmerFamilyResponse.setError_description("Error occurred while fetching farmerFamily");
+                // throw new ValidationException("Error occurred while fetching village");
+            }
         }
-        return mapper.farmerFamilyEntityToObject(farmerFamilyRepository.save(farmerFamily),FarmerFamilyResponse.class);
+        return farmerFamilyResponse;
     }
 
     private Map<String, Object> convertListToMapResponse(List<FarmerFamily> familyList) {
@@ -153,11 +193,17 @@ public class FarmerFamilyService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByFarmerIdJoin(int farmerId){
+        Map<String, Object> response = new HashMap<>();
         List<FarmerFamilyDTO> farmerFamilyDTO = farmerFamilyRepository.getByFarmerIdAndActive(farmerId, true);
         if(farmerFamilyDTO.isEmpty()){
-            throw new ValidationException("Farmer Family not found by Farmer Id");
+            response.put("error","Error");
+            response.put("error_description","Invalid id");
+            return response;
+        }else {
+            log.info("Entity is ", farmerFamilyDTO);
+            response = convertListDTOToMapResponse(farmerFamilyDTO);
+            return response;
         }
-        return convertListDTOToMapResponse(farmerFamilyDTO);
     }
 
     private Map<String, Object> convertListDTOToMapResponse(List<FarmerFamilyDTO> farmerFamilyDTOList) {

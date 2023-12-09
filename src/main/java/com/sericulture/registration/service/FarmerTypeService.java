@@ -1,8 +1,10 @@
 package com.sericulture.registration.service;
 
+import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
 import com.sericulture.registration.model.api.farmerType.EditFarmerTypeRequest;
 import com.sericulture.registration.model.api.farmerType.FarmerTypeRequest;
 import com.sericulture.registration.model.api.farmerType.FarmerTypeResponse;
+import com.sericulture.registration.model.entity.FarmerFamily;
 import com.sericulture.registration.model.entity.FarmerType;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,20 +36,48 @@ public class FarmerTypeService {
 
     @Transactional
     public FarmerTypeResponse insertFarmerTypeDetails(FarmerTypeRequest farmerTypeRequest){
+        FarmerTypeResponse farmerTypeResponse = new FarmerTypeResponse();
         FarmerType farmerType = mapper.farmerTypeObjectToEntity(farmerTypeRequest,FarmerType.class);
         validator.validate(farmerType);
         List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeNameAndActive(farmerTypeRequest.getFarmerTypeName(),true);
         if(!farmerTypeList.isEmpty()){
-            throw new ValidationException("Farmer Type name already exist");
-        }
+            farmerTypeResponse.setError(true);
+            farmerTypeResponse.setError_description("Farmer Type name already exist");
 //        if(!farmerTypeList.isEmpty() && farmerTypeList.stream().filter(FarmerType::getActive).findAny().isPresent()){
 //            throw new ValidationException("FarmerType name already exist");
 //        }
 //        if(!farmerTypeList.isEmpty() && farmerTypeList.stream().filter(Predicate.not(FarmerType::getActive)).findAny().isPresent()){
 //            throw new ValidationException("FarmerType name already exist with inactive state");
 //        }
-        return mapper.farmerTypeEntityToObject(farmerTypeRepository.save(farmerType),FarmerTypeResponse.class);
+//        return mapper.farmerTypeEntityToObject(farmerTypeRepository.save(farmerType),FarmerTypeResponse.class);
+        }else {
+            farmerTypeResponse = mapper.farmerTypeEntityToObject(farmerTypeRepository.save(farmerType), FarmerTypeResponse.class);
+            farmerTypeResponse.setError(false);
+        }
+        return farmerTypeResponse;
     }
+
+//    @Transactional
+//    public FarmerTypeResponse insertFarmerTypeDetails(FarmerTypeRequest farmerTypeRequest){
+//        FarmerTypeResponse farmerTypeResponse = new FarmerTypeResponse();
+//        FarmerType farmerType = mapper.farmerTypeObjectToEntity(farmerTypeRequest,FarmerType.class);
+//        validator.validate(farmerType);
+//        List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeName(farmerTypeRequest.getFarmerTypeName());
+//        if(!farmerTypeList.isEmpty() && farmerTypeList.stream().filter(FarmerType::getActive).findAny().isPresent()){
+//            farmerTypeResponse.setError(true);
+//            farmerTypeResponse.setError_description("Farmer Type name already exist");
+//        }
+//       else if(!farmerTypeList.isEmpty() && farmerTypeList.stream().filter(Predicate.not(FarmerType::getActive)).findAny().isPresent()){
+//            farmerTypeResponse.setError(true);
+//            farmerTypeResponse.setError_description("Farmer Type name already exist with inactive state");
+//        }else {
+//            farmerTypeResponse = mapper.farmerTypeEntityToObject(farmerTypeRepository.save(farmerType), FarmerTypeResponse.class);
+//            farmerTypeResponse.setError(false);
+//        }
+//        return farmerTypeResponse;
+//    }
+
+
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedFarmerTypeDetails(final Pageable pageable){
@@ -67,41 +98,58 @@ public class FarmerTypeService {
     }
 
     @Transactional
-    public void deleteFarmerTypeDetails(long id) {
+    public FarmerTypeResponse deleteFarmerTypeDetails(long id) {
+        FarmerTypeResponse farmerTypeResponse = new FarmerTypeResponse();
         FarmerType farmerType = farmerTypeRepository.findByFarmerTypeIdAndActive(id, true);
         if (Objects.nonNull(farmerType)) {
             farmerType.setActive(false);
-            farmerTypeRepository.save(farmerType);
+            farmerTypeResponse = mapper.farmerTypeEntityToObject(farmerTypeRepository.save(farmerType), FarmerTypeResponse.class);
+            farmerTypeResponse.setError(false);
         } else {
-            throw new ValidationException("Invalid Id");
+            farmerTypeResponse.setError(true);
+            farmerTypeResponse.setError_description("Invalid Id");
+            // throw new ValidationException("Invalid Id");
         }
+        return farmerTypeResponse;
     }
 
     @Transactional
     public FarmerTypeResponse getById(int id){
+        FarmerTypeResponse farmerTypeResponse = new FarmerTypeResponse();
         FarmerType farmerType = farmerTypeRepository.findByFarmerTypeIdAndActive(id,true);
         if(farmerType == null){
-            throw new ValidationException("Invalid Id");
+            farmerTypeResponse.setError(true);
+            farmerTypeResponse.setError_description("Invalid id");
+        }else{
+            farmerTypeResponse =  mapper.farmerTypeEntityToObject(farmerType,FarmerTypeResponse.class);
+            farmerTypeResponse.setError(false);
         }
         log.info("Entity is ",farmerType);
-        return mapper.farmerTypeEntityToObject(farmerType,FarmerTypeResponse.class);
+        return farmerTypeResponse;
     }
 
     @Transactional
-    public FarmerTypeResponse updateFarmerTypeDetails(EditFarmerTypeRequest farmerTypeRequest){
+    public FarmerTypeResponse updateFarmerTypeDetails(EditFarmerTypeRequest farmerTypeRequest) {
+        FarmerTypeResponse farmerTypeResponse = new FarmerTypeResponse();
         List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeName(farmerTypeRequest.getFarmerTypeName());
-        if(farmerTypeList.size()>0){
-            throw new ValidationException("FarmerType already exists with this name, duplicates are not allowed.");
-        }
+        if (farmerTypeList.size() > 0) {
+            farmerTypeResponse.setError(true);
+            farmerTypeResponse.setError_description("Farmer Type already exists, duplicates are not allowed.");
+            // throw new ValidationException("Village already exists, duplicates are not allowed.");
+        } else {
 
-        FarmerType farmerType = farmerTypeRepository.findByFarmerTypeIdAndActiveIn(farmerTypeRequest.getFarmerTypeId(), Set.of(true,false));
-        if(Objects.nonNull(farmerType)){
-            farmerType.setFarmerTypeName(farmerTypeRequest.getFarmerTypeName());
-            farmerType.setActive(true);
-        }else{
-            throw new ValidationException("Error occurred while fetching farmerType");
+            FarmerType farmerType = farmerTypeRepository.findByFarmerTypeIdAndActiveIn(farmerTypeRequest.getFarmerTypeId(), Set.of(true, false));
+            if (Objects.nonNull(farmerType)) {
+                farmerType.setFarmerTypeName(farmerTypeRequest.getFarmerTypeName());
+                FarmerType farmerType1 = farmerTypeRepository.save(farmerType);
+                farmerTypeResponse = mapper.farmerTypeEntityToObject(farmerType1, FarmerTypeResponse.class);
+                farmerTypeResponse.setError(false);
+            } else {
+                farmerTypeResponse.setError(true);
+                farmerTypeResponse.setError_description("Error occurred while fetching farmer type");
+                // throw new ValidationException("Error occurred while fetching village");
+            }
         }
-        return mapper.farmerTypeEntityToObject(farmerTypeRepository.save(farmerType),FarmerTypeResponse.class);
+        return farmerTypeResponse;
     }
-
 }
