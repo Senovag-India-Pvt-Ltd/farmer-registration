@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -266,6 +267,8 @@ public class GovtSMSService {
         SSLContext context = null;
         String encryptedPassword;
         try {
+            String otp = generateOTP();
+            String generatedOtpMessage = "Dear User, OTP to Authenticate your login credentials is "+ otp +" and is valid for 10mins. Do not share with anyone.-COMDOS";
             //context=SSLContext.getInstance("TLSv1.1"); // Use this line for Java version 6
             context = SSLContext.getInstance("TLSv1.2"); // Use this line for Java version 7 and above
             context.init(null, null, null);
@@ -275,11 +278,11 @@ public class GovtSMSService {
             client.getConnectionManager().getSchemeRegistry().register(scheme);
             HttpPost post = new HttpPost("http://smsmobileone.karnataka.gov.in/index.php/sendmsg");
             encryptedPassword = MD5(password);
-            String genratedhashKey = hashGenerator(username, senderId, message, secureKey);
+            String genratedhashKey = hashGenerator(username, senderId, generatedOtpMessage, secureKey);
             List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>(1);
             nameValuePairs.add(new BasicNameValuePair("mobileno", mobileNumber));
             nameValuePairs.add(new BasicNameValuePair("senderid", senderId));
-            nameValuePairs.add(new BasicNameValuePair("content", message));
+            nameValuePairs.add(new BasicNameValuePair("content", generatedOtpMessage));
             nameValuePairs.add(new BasicNameValuePair("smsservicetype", "otpmsg"));
             nameValuePairs.add(new BasicNameValuePair("username", username));
             nameValuePairs.add(new BasicNameValuePair("password", encryptedPassword));
@@ -592,5 +595,25 @@ public class GovtSMSService {
             } while (twoHalfBytes++ < 1);
         }
         return buf.toString();
+    }
+
+    // Length of the OTP
+    private static final int OTP_LENGTH = 6;
+    private static String generateOTP() {
+        // Define the characters to use in the OTP
+        String characters = "0123456789";
+
+        // Use SecureRandom for better security
+        SecureRandom random = new SecureRandom();
+
+        StringBuilder otp = new StringBuilder(OTP_LENGTH);
+
+        // Generate OTP of the specified length
+        for (int i = 0; i < OTP_LENGTH; i++) {
+            int index = random.nextInt(characters.length());
+            otp.append(characters.charAt(index));
+        }
+
+        return otp.toString();
     }
 }
