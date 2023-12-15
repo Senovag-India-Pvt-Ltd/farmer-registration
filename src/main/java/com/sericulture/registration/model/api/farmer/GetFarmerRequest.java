@@ -12,4 +12,7 @@ import lombok.*;
 public class GetFarmerRequest extends RequestBody {
     @Schema(name = "fruitsId", example = "2")
     String fruitsId;
+
+    @Schema(name = "farmerNumber", example = "2")
+    String farmerNumber;
 }

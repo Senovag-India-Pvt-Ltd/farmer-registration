@@ -232,7 +232,12 @@ public class FarmerService {
     @Transactional
     public GetFarmerResponse getFarmerDetailsByFruitsId(GetFarmerRequest getFarmerRequest) throws Exception {
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
-        Farmer farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(),true);
+        Farmer farmer = new Farmer();
+        if(getFarmerRequest.getFarmerNumber() == null || getFarmerRequest.getFarmerNumber().equals("")) {
+            farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(), true);
+        }else{
+            farmer = farmerRepository.findByFarmerNumberAndActive(getFarmerRequest.getFarmerNumber(), true);
+        }
         if(farmer == null){
             FruitsFarmerDTO fruitsFarmerDTO = new FruitsFarmerDTO();
             fruitsFarmerDTO.setFarmerId(getFarmerRequest.getFruitsId());
