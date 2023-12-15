@@ -31,6 +31,12 @@ public class ExternalUnitRegistrationResponse {
     @Schema(name = "externalUnitNumber", example = "S5346")
     String externalUnitNumber;
 
+    @Schema(name = "organisationName", example = "Test")
+    String organisationName;
+
+    @Schema(name = "raceMasterId", example = "1")
+    Long raceMasterId;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 
