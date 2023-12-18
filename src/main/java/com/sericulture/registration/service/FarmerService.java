@@ -194,7 +194,12 @@ public class FarmerService {
     @Transactional
     public GetFarmerResponse getFarmerDetails(GetFarmerRequest getFarmerRequest){
         FarmerResponse farmerResponse = new FarmerResponse();
-        Farmer farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(),true);
+        Farmer farmer = new Farmer();
+        if(getFarmerRequest.getFarmerNumber() == null || getFarmerRequest.getFarmerNumber().equals("")) {
+            farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(), true);
+        }else{
+            farmer = farmerRepository.findByFarmerNumberAndActive(getFarmerRequest.getFarmerNumber(), true);
+        }
         if (farmer == null) {
             // Log a message, provide a default value, or take other appropriate action
 //            System.out.println("Invalid fruits id");
