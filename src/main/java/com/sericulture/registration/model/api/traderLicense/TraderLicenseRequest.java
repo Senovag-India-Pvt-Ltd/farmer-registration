@@ -15,8 +15,8 @@ public class TraderLicenseRequest extends RequestBody {
     @Schema(name = "arnNumber", example = "167676")
     String arnNumber;
 
-    @Schema(name = "traderTypeId", example = "1")
-    Long traderTypeId;
+    @Schema(name = "traderTypeMasterId", example = "1")
+    Long traderTypeMasterId;
 
     @Schema(name = "firstName", example = "test")
     String firstName;

@@ -19,6 +19,7 @@ import com.sericulture.registration.model.dto.farmer.FarmerLandDetailsDTO;
 import com.sericulture.registration.model.dto.fruitsApi.GetFruitsTokenDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
+import com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO;
 import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.repository.ReelerLicenseTransactionRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -282,6 +283,15 @@ public class Mapper {
     public <T> T traderLicenseEntityToObject(TraderLicense traderLicenseTransactionEntity, Class<T> claaz) {
         log.info("Value of mapper is:",mapper, traderLicenseTransactionEntity);
         return (T) mapper.map(traderLicenseTransactionEntity, claaz);
+    }
+    /**
+     * Maps TraderLicense DTO to TraderLicense Response Object
+     * @param traderLicenseDTO
+     * @param <T>
+     */
+    public <T> T traderLicenseDTOToObject(TraderLicenseDTO traderLicenseDTO, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, traderLicenseDTO);
+        return (T) mapper.map(traderLicenseDTO, claaz);
     }
 
     /**

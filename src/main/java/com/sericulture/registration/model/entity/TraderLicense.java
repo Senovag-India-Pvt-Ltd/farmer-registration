@@ -25,7 +25,7 @@ public class TraderLicense extends BaseEntity implements Serializable {
     private String arnNumber;
 
     @Column(name = "trader_type_id")
-    private Long traderTypeId;
+    private Long traderTypeMasterId;
 
     @Column(name = "first_name")
     private String firstName;

@@ -3,6 +3,7 @@ package com.sericulture.registration.service;
 import com.sericulture.registration.model.api.traderLicense.EditTraderLicenseRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseResponse;
+import com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO;
 import com.sericulture.registration.model.entity.TraderLicense;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
@@ -65,6 +66,23 @@ public class TraderLicenseService {
         return response;
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> getPaginatedTraderLicenseDetailsWithJoin(final Pageable pageable){
+        return convertDTOToMapResponse(traderLicenseRepository.getByActiveOrderByTraderLicenseIdAsc( true, pageable));
+    }
+
+    private Map<String, Object> convertDTOToMapResponse(final Page<TraderLicenseDTO> activeTraderLicenses) {
+        Map<String, Object> response = new HashMap<>();
+
+        List<TraderLicenseResponse> traderLicenseResponses = activeTraderLicenses.getContent().stream()
+                .map(traderLicense -> mapper.traderLicenseDTOToObject(traderLicense,TraderLicenseResponse.class)).collect(Collectors.toList());
+        response.put("traderLicense",traderLicenseResponses);
+        response.put("currentPage", activeTraderLicenses.getNumber());
+        response.put("totalItems", activeTraderLicenses.getTotalElements());
+        response.put("totalPages", activeTraderLicenses.getTotalPages());
+        return response;
+    }
+
     @Transactional
     public TraderLicenseResponse deleteTraderLicenseDetails(long id) {
         TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
@@ -98,6 +116,21 @@ public class TraderLicenseService {
     }
 
     @Transactional
+    public TraderLicenseResponse getByIdJoin(int id){
+        TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
+        TraderLicenseDTO traderLicenseDTO = traderLicenseRepository.getByTraderLicenseIdAndActive(id,true);
+        if(traderLicenseDTO == null){
+            traderLicenseResponse.setError(true);
+            traderLicenseResponse.setError_description("Invalid id");
+        } else {
+            traderLicenseResponse = mapper.traderLicenseDTOToObject(traderLicenseDTO, TraderLicenseResponse.class);
+            traderLicenseResponse.setError(false);
+        }
+        log.info("Entity is ", traderLicenseDTO);
+        return traderLicenseResponse;
+    }
+
+    @Transactional
     public TraderLicenseResponse updateTraderLicenseDetails(EditTraderLicenseRequest traderLicenseRequest){
         TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
         /*List<TraderLicense> traderLicenseList = traderLicenseRepository.findByTraderLicenseNumber(traderLicenseRequest.getTraderLicenseNumber());
@@ -108,7 +141,7 @@ public class TraderLicenseService {
         TraderLicense traderLicense = traderLicenseRepository.findByTraderLicenseIdAndActiveIn(traderLicenseRequest.getTraderLicenseId(), Set.of(true,false));
         if(Objects.nonNull(traderLicense)){
             traderLicense.setArnNumber(traderLicenseRequest.getArnNumber());
-            traderLicense.setTraderTypeId(traderLicenseRequest.getTraderTypeId());
+            traderLicense.setTraderTypeMasterId(traderLicenseRequest.getTraderTypeMasterId());
             traderLicense.setFirstName(traderLicenseRequest.getFirstName());
             traderLicense.setMiddleName(traderLicenseRequest.getMiddleName());
             traderLicense.setLastName(traderLicenseRequest.getLastName());

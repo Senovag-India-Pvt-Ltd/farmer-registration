@@ -19,8 +19,8 @@ public class TraderLicenseResponse {
     @Schema(name = "arnNumber", example = "167676")
     String arnNumber;
 
-    @Schema(name = "traderTypeId", example = "1")
-    Long traderTypeId;
+    @Schema(name = "traderTypeMasterId", example = "1")
+    Long traderTypeMasterId;
 
     @Schema(name = "firstName", example = "test")
     String firstName;
@@ -72,6 +72,16 @@ public class TraderLicenseResponse {
 
     @Schema(name = "licenseNumberSequence", example = "1")
     Long licenseNumberSequence;
+
+    @Schema(name = "traderTypeMasterName", example = "Test")
+    String traderTypeMasterName;
+
+    @Schema(name = "stateName", example = "Test")
+    String stateName;
+
+    @Schema(name = "districtName", example = "Test")
+    String districtName;
+
 
     @Schema(name = "error", example = "true")
     Boolean error;
