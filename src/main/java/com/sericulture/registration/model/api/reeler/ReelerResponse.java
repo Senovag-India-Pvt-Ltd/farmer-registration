@@ -211,6 +211,9 @@ public class ReelerResponse {
     @Schema(name = "villageName", example = "35")
     String villageName;
 
+    @Schema(name = "isActivated", example = "0")
+    int isActivated;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 

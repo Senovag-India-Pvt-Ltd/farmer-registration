@@ -185,4 +185,7 @@ public class EditReelerRequest extends RequestBody {
 
     @Schema(name = "fruitsId", example = "35")
     String fruitsId;
+
+    @Schema(name = "isActivated", example = "0")
+    int isActivated;
 }

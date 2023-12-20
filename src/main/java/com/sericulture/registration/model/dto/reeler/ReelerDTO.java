@@ -77,5 +77,6 @@ public class ReelerDTO {
     private String talukName;
     private String hobliName;
     private String villageName;
+    private int isActivated;
 
 }

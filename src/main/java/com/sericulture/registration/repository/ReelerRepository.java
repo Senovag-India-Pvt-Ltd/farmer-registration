@@ -18,6 +18,9 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
 
     public Page<Reeler> findByActiveOrderByReelerIdAsc(boolean isActive, final Pageable pageable);
 
+    public List<Reeler> findByActiveOrderByReelerIdAsc(boolean isActive);
+
+
     public Reeler save(Reeler Reeler);
 
     public Reeler findByReelerIdAndActive(long id, boolean isActive);
@@ -92,7 +95,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " district.districtName, " +
             " taluk.talukName, " +
             " hobli.hobliName, " +
-            " village.villageName" +
+            " village.villageName," +
+            " reeler.isActivated " +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -181,7 +185,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " district.districtName, " +
             " taluk.talukName, " +
             " hobli.hobliName, " +
-            " village.villageName" +
+            " village.villageName," +
+            " reeler.isActivated " +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +

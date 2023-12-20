@@ -227,6 +227,7 @@ public class ReelerService {
             reeler.setStatus(reelerRequest.getStatus());
             reeler.setLicenseRenewalDate(reelerRequest.getLicenseRenewalDate());
             reeler.setFruitsId(reelerRequest.getFruitsId());
+            reeler.setIsActivated(reelerRequest.getIsActivated());
 
             reeler.setActive(true);
             Reeler reeler1 = reelerRepository.save(reeler);
@@ -322,6 +323,40 @@ public class ReelerService {
         response.put("currentPage", activeReelers.getNumber());
         response.put("totalItems", activeReelers.getTotalElements());
         response.put("totalPages", activeReelers.getTotalPages());
+        return response;
+    }
+
+    @Transactional
+    public ReelerResponse activateReeler(ActivateReelerRequest activateReelerRequest){
+        ReelerResponse reelerResponse = new ReelerResponse();
+        Reeler reeler = reelerRepository.findByReelerIdAndActiveIn(activateReelerRequest.getReelerId(), Set.of(true,false));
+        if(Objects.nonNull(reeler)){
+            reeler.setIsActivated(activateReelerRequest.getIsActivated());
+            reeler.setActive(true);
+            Reeler reeler1 = reelerRepository.save(reeler);
+            reelerResponse = mapper.reelerEntityToObject(reeler1, ReelerResponse.class);
+            reelerResponse.setError(false);
+        } else {
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Error occurred while fetching reeler");
+        }
+
+        return reelerResponse ;
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> inactiveReelers(){
+        return converListToResponse(reelerRepository.findByActiveOrderByReelerIdAsc( true));
+    }
+
+
+    private Map<String, Object> converListToResponse(final List<Reeler> inactiveReelers) {
+        Map<String, Object> response = new HashMap<>();
+
+        List<ReelerResponse> reelerResponses = inactiveReelers.stream()
+                .map(reeler -> mapper.reelerEntityToObject(reeler,ReelerResponse.class)).collect(Collectors.toList());
+        response.put("reeler",reelerResponses);
+        response.put("totalItems", inactiveReelers.size());
         return response;
     }
 }

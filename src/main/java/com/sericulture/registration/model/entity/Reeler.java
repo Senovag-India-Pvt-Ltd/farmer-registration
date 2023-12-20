@@ -198,4 +198,6 @@ public class Reeler extends BaseEntity implements Serializable {
     @Column(name = "fruits_id")
     private String fruitsId;
 
+    @Column(name = "is_activated") //
+    private int isActivated;
 }
