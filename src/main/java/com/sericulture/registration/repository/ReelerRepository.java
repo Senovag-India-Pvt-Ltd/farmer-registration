@@ -29,6 +29,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
     public Reeler findByFruitsIdAndActive(String fruitsId, boolean active);
     public Reeler findByReelingLicenseNumberAndActive(String reelingLicenseNumber, boolean isActive);
 
+    List<Reeler> findByActiveAndIsActivatedOrderByReelerIdAsc(boolean isActive, int isActivated);
+
     @Query("select new com.sericulture.registration.model.dto.reeler.ReelerDTO(" +
             " reeler.reelerId, " +
             " reeler.reelerName, " +
