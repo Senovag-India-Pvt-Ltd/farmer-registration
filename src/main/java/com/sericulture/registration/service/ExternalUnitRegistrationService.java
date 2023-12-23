@@ -4,6 +4,9 @@ import com.sericulture.registration.model.api.externalUnitRegistration.ExternalU
 import com.sericulture.registration.model.api.externalUnitRegistration.EditExternalUnitRegistrationRequest;
 import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationRequest;
 import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationResponse;
+import com.sericulture.registration.model.api.traderLicense.TraderLicenseResponse;
+import com.sericulture.registration.model.dto.externalUnitRegistration.ExternalUnitRegistrationDTO;
+import com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO;
 import com.sericulture.registration.model.entity.ExternalUnitRegistration;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
@@ -67,6 +70,23 @@ public class ExternalUnitRegistrationService {
         return response;
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> getPaginatedExternalUnitRegistrationDetailsWithJoin(final Pageable pageable){
+        return convertDTOToMapResponse(externalUnitRegistrationRepository.getByActiveOrderByExternalUnitRegistrationIdAsc( true, pageable));
+    }
+
+    private Map<String, Object> convertDTOToMapResponse(final Page<ExternalUnitRegistrationDTO> activeExternalUnitRegistrations) {
+        Map<String, Object> response = new HashMap<>();
+
+        List<ExternalUnitRegistrationResponse> externalUnitRegistrationResponses = activeExternalUnitRegistrations.getContent().stream()
+                .map(externalUnitRegistration -> mapper.externalUnitRegistrationDTOToObject(externalUnitRegistration,ExternalUnitRegistrationResponse.class)).collect(Collectors.toList());
+        response.put("externalUnitRegistration",externalUnitRegistrationResponses);
+        response.put("currentPage", activeExternalUnitRegistrations.getNumber());
+        response.put("totalItems", activeExternalUnitRegistrations.getTotalElements());
+        response.put("totalPages", activeExternalUnitRegistrations.getTotalPages());
+        return response;
+    }
+
     @Transactional
     public ExternalUnitRegistrationResponse deleteExternalUnitRegistrationDetails(long id) {
         ExternalUnitRegistrationResponse externalUnitRegistrationResponse = new ExternalUnitRegistrationResponse();
@@ -95,6 +115,21 @@ public class ExternalUnitRegistrationService {
             externalUnitRegistrationResponse.setError(false);
         }
         log.info("Entity is ", externalUnitRegistration);
+        return externalUnitRegistrationResponse;
+    }
+
+    @Transactional
+    public ExternalUnitRegistrationResponse getByIdJoin(int id){
+        ExternalUnitRegistrationResponse externalUnitRegistrationResponse = new ExternalUnitRegistrationResponse();
+        ExternalUnitRegistrationDTO externalUnitRegistrationDTO = externalUnitRegistrationRepository.getByExternalUnitRegistrationIdAndActive(id,true);
+        if(externalUnitRegistrationDTO == null){
+            externalUnitRegistrationResponse.setError(true);
+            externalUnitRegistrationResponse.setError_description("Invalid id");
+        } else {
+            externalUnitRegistrationResponse = mapper.externalUnitRegistrationDTOToObject(externalUnitRegistrationDTO, ExternalUnitRegistrationResponse.class);
+            externalUnitRegistrationResponse.setError(false);
+        }
+        log.info("Entity is ", externalUnitRegistrationDTO);
         return externalUnitRegistrationResponse;
     }
 

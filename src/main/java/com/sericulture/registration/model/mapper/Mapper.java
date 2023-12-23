@@ -12,6 +12,7 @@ import com.sericulture.registration.model.api.reeler.ReelerRequest;
 import com.sericulture.registration.model.api.reelerLicenseTransaction.ReelerLicenseTransactionRequest;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseRequest;
+import com.sericulture.registration.model.dto.externalUnitRegistration.ExternalUnitRegistrationDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerFamilyDTO;
@@ -312,6 +313,16 @@ public class Mapper {
     public <T> T externalUnitRegistrationEntityToObject(ExternalUnitRegistration externalUnitRegistrationEntity, Class<T> claaz) {
         log.info("Value of mapper is:",mapper, externalUnitRegistrationEntity);
         return (T) mapper.map(externalUnitRegistrationEntity, claaz);
+    }
+
+    /**
+     * Maps externalUnitRegistration DTO to externalUnitRegistration Response Object
+     * @param externalUnitRegistrationDTO
+     * @param <T>
+     */
+    public <T> T externalUnitRegistrationDTOToObject(ExternalUnitRegistrationDTO externalUnitRegistrationDTO, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, externalUnitRegistrationDTO);
+        return (T) mapper.map(externalUnitRegistrationDTO, claaz);
     }
 
     /**
