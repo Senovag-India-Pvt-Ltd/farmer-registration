@@ -64,6 +64,7 @@ public class FarmerService {
     @Autowired
     CasteRepository casteRepository;
 
+    @Autowired
     VillageRepository villageRepository;
     @Autowired
     Mapper mapper;
