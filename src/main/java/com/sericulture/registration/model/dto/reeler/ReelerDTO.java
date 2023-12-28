@@ -1,5 +1,6 @@
 package com.sericulture.registration.model.dto.reeler;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -78,5 +79,5 @@ public class ReelerDTO {
     private String hobliName;
     private String villageName;
     private int isActivated;
-
+    private Double walletAmount;
 }

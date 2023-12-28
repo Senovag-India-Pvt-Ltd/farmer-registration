@@ -185,4 +185,7 @@ public class ReelerRequest extends RequestBody {
 
     @Schema(name = "isActivated", example = "0")
     int isActivated;
+
+    @Schema(name = "walletAmount", example = "15.67")
+    double walletAmount;
 }

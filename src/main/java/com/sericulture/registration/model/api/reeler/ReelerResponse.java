@@ -214,6 +214,9 @@ public class ReelerResponse {
     @Schema(name = "isActivated", example = "0")
     int isActivated;
 
+    @Schema(name = "walletAmount", example = "15.67")
+    double walletAmount;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 

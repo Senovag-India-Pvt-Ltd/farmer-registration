@@ -200,4 +200,7 @@ public class Reeler extends BaseEntity implements Serializable {
 
     @Column(name = "is_activated") //
     private int isActivated;
+
+    @Column(name = "wallet_amount")
+    private Double walletAmount;
 }
