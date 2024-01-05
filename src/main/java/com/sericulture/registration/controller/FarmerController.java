@@ -232,12 +232,12 @@ public class FarmerController {
                             }),
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
-    @PostMapping("/get-farmer-details-by-fruits-id-or-farmer-number")
+    @PostMapping("/get-farmer-details-by-fruits-id-or-farmer-number-or-mobile-number")
     public ResponseEntity<?> getFarmerDetailsByFruitsIdOrFarmerNumber(
             @RequestBody GetFarmerRequest getFarmerRequest
     ) throws Exception {
         ResponseWrapper rw = ResponseWrapper.createWrapper(GetFarmerResponse.class);
-        rw.setContent(farmerService.getFarmerDetailsByFruitsIdOrFarmerNumber(getFarmerRequest));
+        rw.setContent(farmerService.getFarmerDetailsByFruitsIdOrFarmerNumberOrMobileNumber(getFarmerRequest));
         return ResponseEntity.ok(rw);
     }
 

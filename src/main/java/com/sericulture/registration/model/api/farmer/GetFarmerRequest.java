@@ -15,4 +15,7 @@ public class GetFarmerRequest extends RequestBody {
 
     @Schema(name = "farmerNumber", example = "2")
     String farmerNumber;
+
+    @Schema(name = "mobileNumber", example = "7788990066")
+    String mobileNumber;
 }

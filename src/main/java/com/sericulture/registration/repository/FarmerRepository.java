@@ -28,6 +28,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
 
     public Farmer findByFruitsIdAndActive(String fruitsid, boolean isActive);
 
+    public Farmer findByMobileNumberAndActive(String mobileNumber, boolean isActive);
+
     @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
             " farmer.farmerId, " +
             " farmer.farmerNumber, " +

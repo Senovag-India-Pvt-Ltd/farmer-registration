@@ -369,13 +369,15 @@ public class FarmerService {
         return getFarmerResponse;
     }
     @Transactional
-    public GetFarmerResponse getFarmerDetailsByFruitsIdOrFarmerNumber(GetFarmerRequest getFarmerRequest) throws Exception {
+    public GetFarmerResponse getFarmerDetailsByFruitsIdOrFarmerNumberOrMobileNumber(GetFarmerRequest getFarmerRequest) throws Exception {
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
         Farmer farmer = new Farmer();
-        if(getFarmerRequest.getFarmerNumber() == null || getFarmerRequest.getFarmerNumber().equals("")) {
+        if(getFarmerRequest.getFarmerNumber() != null && !getFarmerRequest.getFarmerNumber().equals("")) {
+            farmer = farmerRepository.findByFarmerNumberAndActive(getFarmerRequest.getFarmerNumber(), true);
+        }else if(getFarmerRequest.getFruitsId() != null && !getFarmerRequest.getFruitsId().equals("")){
             farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(), true);
         }else{
-            farmer = farmerRepository.findByFarmerNumberAndActive(getFarmerRequest.getFarmerNumber(), true);
+            farmer = farmerRepository.findByMobileNumberAndActive(getFarmerRequest.getMobileNumber(), true);
         }
         if(farmer == null){
             FruitsFarmerDTO fruitsFarmerDTO = new FruitsFarmerDTO();
