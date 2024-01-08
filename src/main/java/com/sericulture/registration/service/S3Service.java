@@ -3,11 +3,13 @@ package com.sericulture.registration.service;//package com.sericulture.registrat
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.File;
+import java.nio.file.Path;
 
 @Service
 @Slf4j
@@ -31,16 +33,28 @@ public class S3Service {
 //                .build();
     }
 
-    public void uploadFile(String bucketName, String key, File file) throws Exception {
+//    public void uploadFile(String bucketName, String key, File file) throws Exception {
+public void uploadFile(MultipartFile multipartFile) throws Exception {
         try {
-            this.s3Client = S3Client.builder()
-                    .region(Region.of(region))
-                    .credentialsProvider(() -> AwsBasicCredentials.create(accessKey, secretKey))
-                    .build();
-            s3Client.putObject(PutObjectRequest.builder()
+
+            String bucketName = "seri-ap-south-1";
+            String key = multipartFile.getOriginalFilename();
+
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(key)
-                    .build(), file.toPath());
+                    .build();
+
+            s3Client.putObject(putObjectRequest, (Path) multipartFile.getInputStream());
+
+//            this.s3Client = S3Client.builder()
+//                    .region(Region.of(region))
+//                    .credentialsProvider(() -> AwsBasicCredentials.create(accessKey, secretKey))
+//                    .build();
+//            s3Client.putObject(PutObjectRequest.builder()
+//                    .bucket(bucketName)
+//                    .key(key)
+//                    .build(), file.toPath());
         }catch (Exception ex){
             ex.printStackTrace();
             System.out.println("Error");
