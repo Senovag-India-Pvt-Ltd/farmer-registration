@@ -98,7 +98,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " taluk.talukName, " +
             " hobli.hobliName, " +
             " village.villageName," +
-            " reeler.isActivated " +
+            " reeler.isActivated," +
+            " reeler.walletAmount " +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -188,7 +189,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " taluk.talukName, " +
             " hobli.hobliName, " +
             " village.villageName," +
-            " reeler.isActivated " +
+            " reeler.isActivated," +
+            " reeler.walletAmount " +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +

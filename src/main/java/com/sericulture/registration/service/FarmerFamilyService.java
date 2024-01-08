@@ -157,12 +157,12 @@ public class FarmerFamilyService {
     public FarmerFamilyResponse updateFarmerFamilyDetails(EditFarmerFamilyRequest farmerFamilyRequest){
         FarmerFamilyResponse farmerFamilyResponse = new FarmerFamilyResponse();
 
-        List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerFamilyName(farmerFamilyRequest.getFarmerFamilyName());
-        if(farmerFamilyList.size()>0){
-            farmerFamilyResponse.setError(true);
-            farmerFamilyResponse.setError_description("FarmerFamily already exists, duplicates are not allowed.");
-            // throw new ValidationException("Village already exists, duplicates are not allowed.");
-        }else {
+//        List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerFamilyNameAndFarmerIdAndActive(farmerFamilyRequest.getFarmerFamilyName(),farmerFamilyRequest.getFarmerId(),true);
+//        if(farmerFamilyList.size()>0){
+//            farmerFamilyResponse.setError(true);
+//            farmerFamilyResponse.setError_description("FarmerFamily already exists, duplicates are not allowed.");
+//            // throw new ValidationException("Village already exists, duplicates are not allowed.");
+//        }else {
 
             FarmerFamily farmerFamily = farmerFamilyRepository.findByFarmerFamilyIdAndActiveIn(farmerFamilyRequest.getFarmerFamilyId(), Set.of(true,false));
             if(Objects.nonNull(farmerFamily)){
@@ -178,7 +178,7 @@ public class FarmerFamilyService {
                 farmerFamilyResponse.setError_description("Error occurred while fetching farmerFamily");
                 // throw new ValidationException("Error occurred while fetching village");
             }
-        }
+//        }
         return farmerFamilyResponse;
     }
 
