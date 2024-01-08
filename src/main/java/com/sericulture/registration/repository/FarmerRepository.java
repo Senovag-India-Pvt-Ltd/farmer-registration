@@ -126,5 +126,53 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
     )
     Page<FarmerDTO> getByActiveOrderByFarmerIdAsc(@Param("isActive") boolean isActive, final Pageable pageable);
 
-
+    @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
+            " farmer.farmerId, " +
+            " farmer.farmerNumber, " +
+            " farmer.fruitsId, " +
+            " farmer.firstName, " +
+            " farmer.middleName, " +
+            " farmer.lastName, " +
+            " farmer.dob, " +
+            " farmer.genderId, " +
+            " farmer.casteId, " +
+            " farmer.differentlyAbled, " +
+            " farmer.email, " +
+            " farmer.mobileNumber, " +
+            " farmer.epicNumber, " +
+            " farmer.rationCardNumber, " +
+            " farmer.totalLandHolding, " +
+            " farmer.passbookNumber, " +
+            " farmer.landCategoryId, " +
+            " farmer.educationId, " +
+            " farmer.representativeId, " +
+            " farmer.khazaneRecipientId, " +
+            " farmer.photoPath, " +
+            " farmer.farmerTypeId, " +
+            " farmer.minority, " +
+            " farmer.rdNumber, " +
+            " farmer.casteStatus, " +
+            " farmer.genderStatus, " +
+            " farmer.fatherNameKan, " +
+            " farmer.fatherName, " +
+            " farmer.nameKan, " +
+            " caste.title, " +
+            " landCategory.landCategoryName, " +
+            " farmerType.farmerTypeName, " +
+            " education.name" +
+            ") " +
+            "from Farmer farmer " +
+            "left join Caste caste " +
+            "on farmer.casteId = caste.casteId " +
+            "left join LandCategory landCategory " +
+            "on farmer.landCategoryId = landCategory.landCategoryId " +
+            "left join FarmerType farmerType " +
+            "on farmer.farmerTypeId = farmerType.farmerTypeId " +
+            "left join Education education " +
+            "on farmer.educationId = education.educationId " +
+            "where farmer.active = :isActive AND " +
+            "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
+            "(:joinColumn = 'farmer.mobileNumber' AND farmer.mobileNumber LIKE :searchText)"
+    )
+    public Page<FarmerDTO> getSortedFarmers(@Param("joinColumn") String joinColumn, @Param("searchText") String searchText, @Param("isActive") boolean isActive, Pageable pageable);
 }

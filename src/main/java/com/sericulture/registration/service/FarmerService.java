@@ -3,6 +3,7 @@ package com.sericulture.registration.service;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sericulture.registration.model.ResponseWrapper;
+import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.farmer.*;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
@@ -25,7 +26,9 @@ import com.sericulture.registration.utils.ObjectToUrlEncodedConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -719,6 +722,50 @@ public Map<String,Object> getPaginatedFarmerDetailsWithJoin(final Pageable pagea
         response.put("currentPage", activeFarmers.getNumber());
         response.put("totalItems", activeFarmers.getTotalElements());
         response.put("totalPages", activeFarmers.getTotalPages());
+        return response;
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> searchByColumnAndSort(SearchWithSortRequest searchWithSortRequest){
+        if(searchWithSortRequest.getSearchText() == null || searchWithSortRequest.getSearchText().equals("")){
+            searchWithSortRequest.setSearchText("%%");
+        }else{
+            searchWithSortRequest.setSearchText("%" + searchWithSortRequest.getSearchText() + "%");
+        }
+        if(searchWithSortRequest.getSortColumn() == null || searchWithSortRequest.getSortColumn().equals("")){
+            searchWithSortRequest.setSortColumn("firstName");
+        }
+        if(searchWithSortRequest.getSortOrder() == null || searchWithSortRequest.getSortOrder().equals("")){
+            searchWithSortRequest.setSortOrder("asc");
+        }
+        if(searchWithSortRequest.getPageNumber() == null || searchWithSortRequest.getPageNumber().equals("")){
+            searchWithSortRequest.setPageNumber("0");
+        }
+        if(searchWithSortRequest.getPageSize() == null || searchWithSortRequest.getPageSize().equals("")){
+            searchWithSortRequest.setPageSize("5");
+        }
+        Sort sort;
+        if(searchWithSortRequest.getSortOrder().equals("asc")){
+            sort = Sort.by(Sort.Direction.ASC, searchWithSortRequest.getSortColumn());
+        }else{
+            sort = Sort.by(Sort.Direction.DESC, searchWithSortRequest.getSortColumn());
+        }
+        Pageable pageable = PageRequest.of(Integer.parseInt(searchWithSortRequest.getPageNumber()), Integer.parseInt(searchWithSortRequest.getPageSize()), sort);
+        Page<FarmerDTO> farmerDTOS = farmerRepository.getSortedFarmers(searchWithSortRequest.getJoinColumn(),searchWithSortRequest.getSearchText(),true, pageable);
+        log.info("Entity is ",farmerDTOS);
+        return convertPageableDTOToMapResponse(farmerDTOS);
+    }
+
+    private Map<String, Object> convertPageableDTOToMapResponse(final Page<FarmerDTO> activeFarmers) {
+        Map<String, Object> response = new HashMap<>();
+
+        List<FarmerResponse> farmerResponses = activeFarmers.getContent().stream()
+                .map(farmer -> mapper.farmerDTOToObject(farmer,FarmerResponse.class)).collect(Collectors.toList());
+        response.put("farmer",farmerResponses);
+        response.put("currentPage", activeFarmers.getNumber());
+        response.put("totalItems", activeFarmers.getTotalElements());
+        response.put("totalPages", activeFarmers.getTotalPages());
+
         return response;
     }
 
