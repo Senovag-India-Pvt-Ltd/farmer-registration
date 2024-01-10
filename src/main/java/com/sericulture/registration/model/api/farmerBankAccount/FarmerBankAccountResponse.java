@@ -29,6 +29,9 @@ public class FarmerBankAccountResponse {
     @Schema(name = "farmerBankIfscCode", example = "SBI0005463")
     String farmerBankIfscCode;
 
+    @Schema(name = "accountImagePath", example = "/example.jpg")
+    String accountImagePath;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 
