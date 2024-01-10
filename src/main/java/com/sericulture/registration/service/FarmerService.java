@@ -83,7 +83,7 @@ public class FarmerService {
         List<Farmer> farmerList = farmerRepository.findByFarmerNumber(farmerRequest.getFarmerNumber());
         if(!farmerList.isEmpty() && farmerList.stream().filter(Farmer::getActive).findAny().isPresent()){
             farmerResponse.setError(true);
-            farmerResponse.setError_description("Farmer name already exist");
+            farmerResponse.setError_description("Farmer number already exist");
         }
         else if(!farmerList.isEmpty() && farmerList.stream().filter(Predicate.not(Farmer::getActive)).findAny().isPresent()){
             //throw new ValidationException("Village name already exist with inactive state");
