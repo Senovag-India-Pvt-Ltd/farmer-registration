@@ -95,7 +95,7 @@ public class FarmerService {
         else if(!farmerList.isEmpty() && farmerList.stream().filter(Predicate.not(Farmer::getActive)).findAny().isPresent()){
             //throw new ValidationException("Village name already exist with inactive state");
             farmerResponse.setError(true);
-            farmerResponse.setError_description("Farmer name already exist with inactive state");
+            farmerResponse.setError_description("Farmer number already exist with inactive state");
         }else {
             farmerResponse = mapper.farmerEntityToObject(farmerRepository.save(farmer), FarmerResponse.class);
             farmerResponse.setError(false);
@@ -529,11 +529,13 @@ public class FarmerService {
             List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
             List<FarmerLandDetailsDTO> farmerLandDetailsDTOS = farmerLandDetailsRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
             List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+            FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
 
             getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer, FarmerResponse.class));
             getFarmerResponse.setFarmerAddressList(farmerAddressList);
             getFarmerResponse.setFarmerFamilyList(farmerFamilyList);
             getFarmerResponse.setFarmerLandDetailsDTOList(farmerLandDetailsDTOS);
+            getFarmerResponse.setFarmerBankAccount(farmerBankAccount);
             getFarmerResponse.setIsFruitService(0);
         }
 
