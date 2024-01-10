@@ -1,17 +1,13 @@
 package com.sericulture.registration.controller;//package com.sericulture.registration.controller;//package com.sericulture.registration.controller;
 
 import com.sericulture.registration.service.S3Service;
+import lombok.SneakyThrows;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-
-import java.io.File;
-import java.nio.file.Path;
 
 @RestController
 @RequestMapping("/api/s3")
@@ -20,25 +16,35 @@ public class S3Controller {
     @Autowired
     private S3Service s3Service;
 
-//    @Autowired
-//    private S3Client s3Client;
+    @GetMapping("/list")
+    public ResponseEntity<?> listFiles(
+
+    ) {
+        val body = s3Service.listFiles();
+        return ResponseEntity.ok(body);
+    }
 
     @PostMapping("/upload")
-    public String uploadFile(@RequestParam("multipartFile") MultipartFile multipartFile) throws Exception {
-        // Convert MultipartFile to File
-        File file = new File(multipartFile.getOriginalFilename());
-        multipartFile.transferTo(file);
+    public void uploadFile(@RequestParam("multipartFile") MultipartFile file,
+                           @RequestParam("fileName") String fileName) throws Exception {
+        s3Service.uploadFile(fileName, file.getSize(), file.getContentType(), file.getInputStream());
+    }
 
-        // Upload to S3
-//        s3Service.uploadFile("seri-ap-south-1", "path/in/bucket/filename.ext", file);
-       // s3Service.uploadFile("seri-ap-south-1", "test/" + file.getName(), file);
-            s3Service.uploadFile(multipartFile);
-        // Cleanup
-       // file.delete();
+    @SneakyThrows
+    @GetMapping("/download")
+    public ResponseEntity<?> downloadFile(
+            @RequestParam("fileName") String fileName) throws Exception {
+        val body = s3Service.downloadFile(fileName);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; ")
+                .body(body.toByteArray());
+    }
 
-
-
-        return "File uploaded successfully!";
-
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteFile(
+            @RequestParam("fileName") String fileName
+    ) {
+        s3Service.deleteFile(fileName);
+        return ResponseEntity.ok().build();
     }
 }

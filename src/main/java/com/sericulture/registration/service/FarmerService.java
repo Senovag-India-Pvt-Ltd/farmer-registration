@@ -2,9 +2,11 @@ package com.sericulture.registration.service;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sericulture.registration.controller.S3Controller;
 import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.farmer.*;
+import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
 import com.sericulture.registration.model.api.fruitsApi.GetFruitsResponse;
@@ -33,7 +35,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -74,6 +78,9 @@ public class FarmerService {
 
     @Autowired
     CustomValidator validator;
+
+    @Autowired
+    S3Controller s3Controller;
 
     @Transactional
     public FarmerResponse insertFarmerDetails(FarmerRequest farmerRequest){
@@ -769,4 +776,25 @@ public Map<String,Object> getPaginatedFarmerDetailsWithJoin(final Pageable pagea
         return response;
     }
 
+    @Transactional
+    public FarmerResponse updatePhotoPath(MultipartFile multipartFile, String farmerId) throws Exception{
+        FarmerResponse farmerResponse = new FarmerResponse();
+        Farmer farmer = farmerRepository.findByFarmerIdAndActive(Long.parseLong(farmerId),true);
+        if(Objects.nonNull(farmer)){
+            UUID uuid = UUID.randomUUID();
+            String extension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
+            String fileName = "farmer/"+farmerId+"_"+uuid+"_"+extension;
+            s3Controller.uploadFile(multipartFile, fileName);
+            farmer.setPhotoPath(fileName);
+            farmer.setActive(true);
+            Farmer farmer1 = farmerRepository.save(farmer);
+            farmerResponse = mapper.farmerEntityToObject(farmer1, FarmerResponse.class);
+            farmerResponse.setError(false);
+        } else {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Error occurred while fetching Farmer");
+            // throw new ValidationException("Error occurred while fetching village");
+        }
+        return farmerResponse ;
+    }
 }

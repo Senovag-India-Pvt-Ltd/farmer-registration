@@ -5,6 +5,7 @@ import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationResponse;
 import com.sericulture.registration.model.api.farmer.*;
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
+import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
 import com.sericulture.registration.service.FarmerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -361,5 +363,13 @@ public class FarmerController {
         return ResponseEntity.ok(rw);
     }
 
+    @PostMapping("/upload-photo")
+    public ResponseEntity<ResponseWrapper> upload(@RequestParam("multipartFile") MultipartFile multipartFile,
+                                                  @RequestParam("farmerId") String farmerId) throws Exception {
 
+        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerBankAccountResponse.class);
+
+        rw.setContent(farmerService.updatePhotoPath(multipartFile, farmerId));
+        return ResponseEntity.ok(rw);
+    }
 }

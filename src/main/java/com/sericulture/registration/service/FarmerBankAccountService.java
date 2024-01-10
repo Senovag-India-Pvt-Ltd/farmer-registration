@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
@@ -171,21 +172,21 @@ public class FarmerBankAccountService {
     }
 
     @Transactional
-    public FarmerBankAccountResponse updateBankAccountPhotoPath(MultipartFile multipartFile,long farmerBankAccountId) throws Exception {
+    public FarmerBankAccountResponse updateBankAccountPhotoPath(MultipartFile multipartFile, String farmerBankAccountId) throws Exception {
         FarmerBankAccountResponse farmerBankAccountResponse = new FarmerBankAccountResponse();
-        FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerBankAccountIdAndActive(farmerBankAccountId,true);
+        FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerBankAccountIdAndActive(Long.parseLong(farmerBankAccountId),true);
         if (Objects.nonNull(farmerBankAccount)) {
-            String currentDate = (new Date()).toString();
-            String fileName = "farmer_bank_account/"+farmerBankAccountId+"_"+multipartFile.getOriginalFilename()+"_"+currentDate;
+            UUID uuid = UUID.randomUUID();
+            String extension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
+            String fileName = "farmer_bank_account/"+farmerBankAccount.getFarmerId()+"_"+farmerBankAccountId+"_"+uuid+"_"+extension;
             s3Controller.uploadFile(multipartFile, fileName);
-            //farmerBankAccount.setFa
-            farmerBankAccountResponse = mapper.farmerBankAccountEntityToObject(farmerBankAccount, FarmerBankAccountResponse.class);
-
+            farmerBankAccount.setAccountImagePath(fileName);
+            FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerBankAccount);
+            farmerBankAccountResponse = mapper.farmerBankAccountEntityToObject(farmerBankAccount1, FarmerBankAccountResponse.class);
             farmerBankAccountResponse.setError(false);
         } else {
             farmerBankAccountResponse.setError(true);
             farmerBankAccountResponse.setError_description("Error occurred while fetching farmerBankAccount");
-            // throw new ValidationException("Error occurred while fetching village");
         }
 
         return farmerBankAccountResponse;

@@ -12,9 +12,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -144,6 +144,15 @@ public class FarmerBankAccountController {
         ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerBankAccountResponse.class);
 
         rw.setContent(farmerBankAccountService.getByFarmerId(id));
+        return ResponseEntity.ok(rw);
+    }
+    @PostMapping("/upload-photo")
+    public ResponseEntity<ResponseWrapper> upload(@RequestParam("multipartFile") MultipartFile multipartFile,
+                         @RequestParam("farmerBankAccountId") String farmerBankAccountId) throws Exception {
+
+        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerBankAccountResponse.class);
+
+        rw.setContent(farmerBankAccountService.updateBankAccountPhotoPath(multipartFile, farmerBankAccountId));
         return ResponseEntity.ok(rw);
     }
 }
