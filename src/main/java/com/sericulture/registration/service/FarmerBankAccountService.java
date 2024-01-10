@@ -1,5 +1,6 @@
 package com.sericulture.registration.service;
 
+import com.sericulture.registration.controller.S3Controller;
 import com.sericulture.registration.model.api.farmerBankAccount.EditFarmerBankAccountRequest;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountRequest;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
@@ -8,13 +9,17 @@ import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.FarmerBankAccountRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -31,6 +36,9 @@ public class FarmerBankAccountService {
 
     @Autowired
     CustomValidator validator;
+
+    @Autowired
+    S3Controller s3Controller;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public FarmerBankAccountResponse getFarmerBankAccountDetails(String farmerBankAccountNumber) {
@@ -151,6 +159,27 @@ public class FarmerBankAccountService {
             farmerBankAccount.setActive(true);
             FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerBankAccount);
             farmerBankAccountResponse = mapper.farmerBankAccountEntityToObject(farmerBankAccount1, FarmerBankAccountResponse.class);
+            farmerBankAccountResponse.setError(false);
+        } else {
+            farmerBankAccountResponse.setError(true);
+            farmerBankAccountResponse.setError_description("Error occurred while fetching farmerBankAccount");
+            // throw new ValidationException("Error occurred while fetching village");
+        }
+
+        return farmerBankAccountResponse;
+    }
+
+    @Transactional
+    public FarmerBankAccountResponse updateBankAccountPhotoPath(MultipartFile multipartFile,long farmerBankAccountId) throws Exception {
+        FarmerBankAccountResponse farmerBankAccountResponse = new FarmerBankAccountResponse();
+        FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerBankAccountIdAndActive(farmerBankAccountId,true);
+        if (Objects.nonNull(farmerBankAccount)) {
+            String currentDate = (new Date()).toString();
+            String fileName = "farmer_bank_account/"+farmerBankAccountId+"_"+multipartFile.getOriginalFilename()+"_"+currentDate;
+            s3Controller.uploadFile(multipartFile, fileName);
+            //farmerBankAccount.setFa
+            farmerBankAccountResponse = mapper.farmerBankAccountEntityToObject(farmerBankAccount, FarmerBankAccountResponse.class);
+
             farmerBankAccountResponse.setError(false);
         } else {
             farmerBankAccountResponse.setError(true);
