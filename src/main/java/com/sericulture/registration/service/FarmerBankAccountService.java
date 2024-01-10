@@ -148,6 +148,7 @@ public class FarmerBankAccountService {
             farmerBankAccount.setFarmerBankName(farmerBankAccountRequest.getFarmerBankName());
             farmerBankAccount.setFarmerId(farmerBankAccountRequest.getFarmerId());
             farmerBankAccount.setFarmerBankAccountId(farmerBankAccountRequest.getFarmerBankAccountId());
+            farmerBankAccount.setAccountImagePath(farmerBankAccountRequest.getAccountImagePath());
             farmerBankAccount.setActive(true);
             FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerBankAccount);
             farmerBankAccountResponse = mapper.farmerBankAccountEntityToObject(farmerBankAccount1, FarmerBankAccountResponse.class);

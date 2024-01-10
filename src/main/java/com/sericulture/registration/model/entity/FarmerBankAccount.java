@@ -36,4 +36,7 @@ public class FarmerBankAccount extends BaseEntity implements Serializable {
 
     @Column(name = "FARMER_ID")
     private Long farmerId;
+
+    @Column(name = "account_image_path")
+    private String accountImagePath;
 }
