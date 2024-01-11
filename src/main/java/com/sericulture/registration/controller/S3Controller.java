@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/s3")
+@RequestMapping("/v1/api/s3")
 public class S3Controller {
 
     @Autowired
