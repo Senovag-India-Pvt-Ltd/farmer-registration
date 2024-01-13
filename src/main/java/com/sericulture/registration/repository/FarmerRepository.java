@@ -171,6 +171,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "left join Education education " +
             "on farmer.educationId = education.educationId " +
             "where farmer.active = :isActive AND " +
+            "(:joinColumn = 'farmer.fruitsId' AND farmer.fruitsId LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.mobileNumber' AND farmer.mobileNumber LIKE :searchText)"
     )

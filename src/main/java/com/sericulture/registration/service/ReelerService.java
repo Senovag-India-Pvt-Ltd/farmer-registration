@@ -53,14 +53,20 @@ public class ReelerService {
         ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = mapper.reelerObjectToEntity(reelerRequest,Reeler.class);
         validator.validate(reeler);
-        /*List<Reeler> reelerList = reelerRepository.findByReelerName(reelerRequest.getReelerName());
+        List<Reeler> reelerList = reelerRepository.findByReelingLicenseNumber(reeler.getReelingLicenseNumber());
         if(!reelerList.isEmpty() && reelerList.stream().filter(Reeler::getActive).findAny().isPresent()){
-            throw new ValidationException("Reeler name already exist");
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Reeler License Number already exist");
         }
-        if(!reelerList.isEmpty() && reelerList.stream().filter(Predicate.not(Reeler::getActive)).findAny().isPresent()){
-            throw new ValidationException("Reeler name already exist with inactive state");
-        }*/
-        return mapper.reelerEntityToObject(reelerRepository.save(reeler),ReelerResponse.class);
+        else if(!reelerList.isEmpty() && reelerList.stream().filter(Predicate.not(Reeler::getActive)).findAny().isPresent()){
+            //throw new ValidationException("Village name already exist with inactive state");
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Reeler License Number already exist with inactive state");
+        }else {
+            reelerResponse = mapper.reelerEntityToObject(reelerRepository.save(reeler), ReelerResponse.class);
+            reelerResponse.setError(false);
+        }
+        return reelerResponse;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
