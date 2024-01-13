@@ -65,11 +65,11 @@ public class FarmerBankAccountService {
         List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerBankAccountRequest.getFarmerBankAccountNumber());
         if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().filter(FarmerBankAccount::getActive).findAny().isPresent()) {
             farmerBankAccountResponse.setError(true);
-            farmerBankAccountResponse.setError_description("FarmerBankAccount name already exist");
+            farmerBankAccountResponse.setError_description("FarmerBankAccount number already exist");
         } else if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().filter(Predicate.not(FarmerBankAccount::getActive)).findAny().isPresent()) {
             //throw new ValidationException("Village name already exist with inactive state");
             farmerBankAccountResponse.setError(true);
-            farmerBankAccountResponse.setError_description("FarmerBankAccount name already exist with inactive state");
+            farmerBankAccountResponse.setError_description("FarmerBankAccount number already exist with inactive state");
         } else {
             farmerBankAccountResponse = mapper.farmerBankAccountEntityToObject(farmerBankAccountRepository.save(farmerBankAccount), FarmerBankAccountResponse.class);
             farmerBankAccountResponse.setError(false);
@@ -143,31 +143,31 @@ public class FarmerBankAccountService {
     }
 
     @Transactional
-    public FarmerBankAccountResponse updateFarmerBankAccountDetails(EditFarmerBankAccountRequest farmerBankAccountRequest) {
+    public FarmerBankAccountResponse updateFarmerBankAccountDetails(EditFarmerBankAccountRequest editFarmerBankAccountRequest) {
         FarmerBankAccountResponse farmerBankAccountResponse = new FarmerBankAccountResponse();
-//        List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerBankAccountRequest.getFarmerBankAccountNumber());
-//        if(farmerBankAccountList.size()>0){
-//            throw new ValidationException("FarmerBankAccount already exists with this name, duplicates are not allowed.");
-//        }
-
-        FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerBankAccountIdAndActiveIn(farmerBankAccountRequest.getFarmerBankAccountId(), Set.of(true, false));
+        FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerBankAccountIdAndActiveIn(editFarmerBankAccountRequest.getFarmerBankAccountId(), Set.of(true, false));
         if (Objects.nonNull(farmerBankAccount)) {
-            farmerBankAccount.setFarmerBankBranchName(farmerBankAccountRequest.getFarmerBankBranchName());
-            farmerBankAccount.setFarmerBankIfscCode(farmerBankAccountRequest.getFarmerBankIfscCode());
-            farmerBankAccount.setFarmerBankName(farmerBankAccountRequest.getFarmerBankName());
-            farmerBankAccount.setFarmerId(farmerBankAccountRequest.getFarmerId());
-            farmerBankAccount.setFarmerBankAccountId(farmerBankAccountRequest.getFarmerBankAccountId());
-            farmerBankAccount.setAccountImagePath(farmerBankAccountRequest.getAccountImagePath());
-            farmerBankAccount.setActive(true);
-            FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerBankAccount);
-            farmerBankAccountResponse = mapper.farmerBankAccountEntityToObject(farmerBankAccount1, FarmerBankAccountResponse.class);
-            farmerBankAccountResponse.setError(false);
-        } else {
+            List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumberAndActiveAndFarmerBankAccountIdIsNot(editFarmerBankAccountRequest.getFarmerBankAccountNumber(), true, editFarmerBankAccountRequest.getFarmerBankAccountId());
+            if (farmerBankAccountList.size() > 0) {
+                farmerBankAccountResponse.setError(true);
+                farmerBankAccountResponse.setError_description("Please check account number already exist");
+            } else {
+                farmerBankAccount.setFarmerBankBranchName(editFarmerBankAccountRequest.getFarmerBankBranchName());
+                farmerBankAccount.setFarmerBankIfscCode(editFarmerBankAccountRequest.getFarmerBankIfscCode());
+                farmerBankAccount.setFarmerBankAccountNumber(editFarmerBankAccountRequest.getFarmerBankAccountNumber());
+                farmerBankAccount.setFarmerBankName(editFarmerBankAccountRequest.getFarmerBankName());
+                farmerBankAccount.setFarmerId(editFarmerBankAccountRequest.getFarmerId());
+                farmerBankAccount.setFarmerBankAccountId(editFarmerBankAccountRequest.getFarmerBankAccountId());
+                farmerBankAccount.setAccountImagePath(editFarmerBankAccountRequest.getAccountImagePath());
+                farmerBankAccount.setActive(true);
+                FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerBankAccount);
+                farmerBankAccountResponse = mapper.farmerBankAccountEntityToObject(farmerBankAccount1, FarmerBankAccountResponse.class);
+                farmerBankAccountResponse.setError(false);
+            }
+        }else{
             farmerBankAccountResponse.setError(true);
             farmerBankAccountResponse.setError_description("Error occurred while fetching farmerBankAccount");
-            // throw new ValidationException("Error occurred while fetching village");
         }
-
         return farmerBankAccountResponse;
     }
 

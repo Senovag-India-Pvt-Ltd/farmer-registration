@@ -21,6 +21,10 @@ public interface FarmerBankAccountRepository extends PagingAndSortingRepository<
 
     public FarmerBankAccount findByFarmerBankAccountIdAndActive(long id, boolean isActive);
 
+    public FarmerBankAccount findByFarmerBankAccountIdAndFarmerBankAccountNumberAndActive(long id, String farmerBankAccountNumber, boolean isActive);
+
+    public List<FarmerBankAccount> findByFarmerBankAccountNumberAndActiveAndFarmerBankAccountIdIsNot(String farmerBankAccountNumber, boolean isActive, long id);
+
     public FarmerBankAccount findByFarmerBankAccountIdAndActiveIn(@Param("farmerBankAccountId") long farmerBankAccountId, @Param("active") Set<Boolean> active);
 
     public FarmerBankAccount findByFarmerIdAndActive(long farmerId, boolean isActive);
