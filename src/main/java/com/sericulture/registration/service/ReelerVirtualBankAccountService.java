@@ -40,14 +40,19 @@ public class ReelerVirtualBankAccountService {
         ReelerVirtualBankAccountResponse reelerVirtualBankAccountResponse = new ReelerVirtualBankAccountResponse();
         ReelerVirtualBankAccount reelerVirtualBankAccount = mapper.reelerVirtualBankAccountObjectToEntity(reelerVirtualBankAccountRequest,ReelerVirtualBankAccount.class);
         validator.validate(reelerVirtualBankAccount);
-       /* List<ReelerVirtualBankAccount> reelerVirtualBankAccountList = reelerVirtualBankAccountRepository.findByReelerVirtualBankAccountName(reelerVirtualBankAccountRequest.getReelerVirtualBankAccountName());
-        if(!reelerVirtualBankAccountList.isEmpty() && reelerVirtualBankAccountList.stream().filter(ReelerVirtualBankAccount::getActive).findAny().isPresent()){
-            throw new ValidationException("ReelerVirtualBankAccount name already exist");
+        List<ReelerVirtualBankAccount> reelerVirtualBankAccountList = reelerVirtualBankAccountRepository.findByVirtualAccountNumber(reelerVirtualBankAccount.getVirtualAccountNumber());
+        if (!reelerVirtualBankAccountList.isEmpty() && reelerVirtualBankAccountList.stream().filter(ReelerVirtualBankAccount::getActive).findAny().isPresent()) {
+            reelerVirtualBankAccountResponse.setError(true);
+            reelerVirtualBankAccountResponse.setError_description("Reeler virtual bank account number already exist");
+        } else if (!reelerVirtualBankAccountList.isEmpty() && reelerVirtualBankAccountList.stream().filter(Predicate.not(ReelerVirtualBankAccount::getActive)).findAny().isPresent()) {
+            //throw new ValidationException("Village name already exist with inactive state");
+            reelerVirtualBankAccountResponse.setError(true);
+            reelerVirtualBankAccountResponse.setError_description("FarmerBankAccount number already exist with inactive state");
+        } else {
+            reelerVirtualBankAccountResponse = mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccountRepository.save(reelerVirtualBankAccount), ReelerVirtualBankAccountResponse.class);
+            reelerVirtualBankAccountResponse.setError(false);
         }
-        if(!reelerVirtualBankAccountList.isEmpty() && reelerVirtualBankAccountList.stream().filter(Predicate.not(ReelerVirtualBankAccount::getActive)).findAny().isPresent()){
-            throw new ValidationException("ReelerVirtualBankAccount name already exist with inactive state");
-        }*/
-        return mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccountRepository.save(reelerVirtualBankAccount),ReelerVirtualBankAccountResponse.class);
+        return reelerVirtualBankAccountResponse;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -140,16 +145,22 @@ public class ReelerVirtualBankAccountService {
 
         ReelerVirtualBankAccount reelerVirtualBankAccount = reelerVirtualBankAccountRepository.findByReelerVirtualBankAccountIdAndActiveIn(reelerVirtualBankAccountRequest.getReelerVirtualBankAccountId(), Set.of(true,false));
         if(Objects.nonNull(reelerVirtualBankAccount)){
-            reelerVirtualBankAccount.setReelerVirtualBankAccountId(reelerVirtualBankAccountRequest.getReelerVirtualBankAccountId());
-            reelerVirtualBankAccount.setReelerId(reelerVirtualBankAccountRequest.getReelerId());
-            reelerVirtualBankAccount.setVirtualAccountNumber(reelerVirtualBankAccountRequest.getVirtualAccountNumber());
-            reelerVirtualBankAccount.setBranchName(reelerVirtualBankAccountRequest.getBranchName());
-            reelerVirtualBankAccount.setIfscCode(reelerVirtualBankAccountRequest.getIfscCode());
-            reelerVirtualBankAccount.setMarketMasterId(reelerVirtualBankAccountRequest.getMarketMasterId());
-            reelerVirtualBankAccount.setActive(true);
-            ReelerVirtualBankAccount reelerVirtualBankAccount1 = reelerVirtualBankAccountRepository.save(reelerVirtualBankAccount);
-            reelerVirtualBankAccountResponse = mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccount1, ReelerVirtualBankAccountResponse.class);
-            reelerVirtualBankAccountResponse.setError(false);
+            List<ReelerVirtualBankAccount> reelerVirtualBankAccountList = reelerVirtualBankAccountRepository.findByVirtualAccountNumberAndActiveAndReelerVirtualBankAccountIdIsNot(reelerVirtualBankAccountRequest.getVirtualAccountNumber(), true, reelerVirtualBankAccountRequest.getReelerVirtualBankAccountId());
+            if (reelerVirtualBankAccountList.size() > 0) {
+                reelerVirtualBankAccountResponse.setError(true);
+                reelerVirtualBankAccountResponse.setError_description("Please check virtual account number");
+            }else{
+                reelerVirtualBankAccount.setReelerVirtualBankAccountId(reelerVirtualBankAccountRequest.getReelerVirtualBankAccountId());
+                reelerVirtualBankAccount.setReelerId(reelerVirtualBankAccountRequest.getReelerId());
+                reelerVirtualBankAccount.setVirtualAccountNumber(reelerVirtualBankAccountRequest.getVirtualAccountNumber());
+                reelerVirtualBankAccount.setBranchName(reelerVirtualBankAccountRequest.getBranchName());
+                reelerVirtualBankAccount.setIfscCode(reelerVirtualBankAccountRequest.getIfscCode());
+                reelerVirtualBankAccount.setMarketMasterId(reelerVirtualBankAccountRequest.getMarketMasterId());
+                reelerVirtualBankAccount.setActive(true);
+                ReelerVirtualBankAccount reelerVirtualBankAccount1 = reelerVirtualBankAccountRepository.save(reelerVirtualBankAccount);
+                reelerVirtualBankAccountResponse = mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccount1, ReelerVirtualBankAccountResponse.class);
+                reelerVirtualBankAccountResponse.setError(false);
+            }
         } else {
             reelerVirtualBankAccountResponse.setError(true);
             reelerVirtualBankAccountResponse.setError_description("Error occurred while fetching reelerVirtualBankAccount");
