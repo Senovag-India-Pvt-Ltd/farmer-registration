@@ -396,96 +396,101 @@ public class FarmerService {
             //  GetFruitsResponse getFruitsResponse = fruitsApiService.getFarmerByFruitsIdWithResponse(fruitsFarmerDTO);
             String inputData = String.valueOf(fruitsApiService.getFarmerByFruitsId(fruitsFarmerDTO).getBody());
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-            GetFruitsResponse getFruitsResponse = objectMapper.readValue(inputData, GetFruitsResponse.class);
+            if(inputData.equals("Error!, Please try again")){
+                getFarmerResponse.setError(true);
+                getFarmerResponse.setError_description("Farmer not found");
+            }else {
 
-            Farmer farmer1 = new Farmer();
-            farmer1.setFruitsId(getFruitsResponse.getFarmerID());
-            farmer1.setFirstName(getFruitsResponse.getName());
-            farmer1.setMiddleName(getFruitsResponse.getFatherName());
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+                GetFruitsResponse getFruitsResponse = objectMapper.readValue(inputData, GetFruitsResponse.class);
 
-            List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeNameAndActive(getFruitsResponse.getFarmerType(), true);
-            if(farmerTypeList.size()>0){
-                farmer1.setFarmerTypeId(farmerTypeList.get(0).getFarmerTypeId());
-            }
+                Farmer farmer1 = new Farmer();
+                farmer1.setFruitsId(getFruitsResponse.getFarmerID());
+                farmer1.setFirstName(getFruitsResponse.getName());
+                farmer1.setMiddleName(getFruitsResponse.getFatherName());
 
-            farmer1.setMinority(getFruitsResponse.getMinority());
-            farmer1.setRdNumber(getFruitsResponse.getRDNumber());
-            farmer1.setCasteStatus(getFruitsResponse.getCasteStatus());
-            farmer1.setGenderStatus(getFruitsResponse.getGenderStatus());
-            farmer1.setFatherNameKan(getFruitsResponse.getFatherNameKan());
-            farmer1.setFatherName(getFruitsResponse.getFatherName());
-            farmer1.setNameKan(getFruitsResponse.getNameKan());
+                List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeNameAndActive(getFruitsResponse.getFarmerType(), true);
+                if (farmerTypeList.size() > 0) {
+                    farmer1.setFarmerTypeId(farmerTypeList.get(0).getFarmerTypeId());
+                }
 
-            // log.info("getFruitsResponse: " + getFruitsResponse);
-            // log.info("ERROR FINDER getFruitsResponse.getGender(): " + getFruitsResponse.getGender());
-            // log.info("ERROR FINDER getFruitsResponse.getName(): " + getFruitsResponse.getName());
-            // log.info("ERROR FINDER typeOf: " + getFruitsResponse.getGender().getClass().getName() );
+                farmer1.setMinority(getFruitsResponse.getMinority());
+                farmer1.setRdNumber(getFruitsResponse.getRDNumber());
+                farmer1.setCasteStatus(getFruitsResponse.getCasteStatus());
+                farmer1.setGenderStatus(getFruitsResponse.getGenderStatus());
+                farmer1.setFatherNameKan(getFruitsResponse.getFatherNameKan());
+                farmer1.setFatherName(getFruitsResponse.getFatherName());
+                farmer1.setNameKan(getFruitsResponse.getNameKan());
 
-            if(getFruitsResponse.getGender().equals("Male")){
-                farmer1.setGenderId(1L);
-            }else if(getFruitsResponse.getGender().equals("Female")){
-                farmer1.setGenderId(2L);
-            }else{
-                farmer1.setGenderId(3L);
-            }
+                // log.info("getFruitsResponse: " + getFruitsResponse);
+                // log.info("ERROR FINDER getFruitsResponse.getGender(): " + getFruitsResponse.getGender());
+                // log.info("ERROR FINDER getFruitsResponse.getName(): " + getFruitsResponse.getName());
+                // log.info("ERROR FINDER typeOf: " + getFruitsResponse.getGender().getClass().getName() );
+
+                if (getFruitsResponse.getGender().equals("Male")) {
+                    farmer1.setGenderId(1L);
+                } else if (getFruitsResponse.getGender().equals("Female")) {
+                    farmer1.setGenderId(2L);
+                } else {
+                    farmer1.setGenderId(3L);
+                }
             /*CasteDTO casteDTO = new CasteDTO();
             casteDTO.setCaste(getFruitsResponse.getCaste());
             ResponseWrapper responseWrapper = getCaste(casteDTO);
 
             farmer1.setCasteId(Long.valueOf(((LinkedHashMap) responseWrapper.getContent()).get("id").toString()));
 */
-            Caste caste = casteRepository.findByTitleAndActive(getFruitsResponse.getCaste(),true);
-            if(caste != null){
-                farmer1.setCasteId(caste.getCasteId());
-            }else{
-                farmer1.setCasteId(0L);
-            }
+                Caste caste = casteRepository.findByTitleAndActive(getFruitsResponse.getCaste(), true);
+                if (caste != null) {
+                    farmer1.setCasteId(caste.getCasteId());
+                } else {
+                    farmer1.setCasteId(0L);
+                }
 
-            if(getFruitsResponse.getPhysicallyChallenged().equals("No")){
-                farmer1.setDifferentlyAbled(false);
-            }else{
-                farmer1.setDifferentlyAbled(true);
-            }
-            getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer1, FarmerResponse.class));
+                if (getFruitsResponse.getPhysicallyChallenged().equals("No")) {
+                    farmer1.setDifferentlyAbled(false);
+                } else {
+                    farmer1.setDifferentlyAbled(true);
+                }
+                getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer1, FarmerResponse.class));
 
-            List<FarmerAddress> farmerAddressList = new ArrayList<>();
-            FarmerAddress farmerAddress = new FarmerAddress();
-            farmerAddress.setAddressText(getFruitsResponse.getResidentialAddress());
-            farmerAddress.setPincode(getFruitsResponse.getPincode());
-            farmerAddressList.add(farmerAddress);
-            getFarmerResponse.setFarmerAddressList(farmerAddressList);
+                List<FarmerAddress> farmerAddressList = new ArrayList<>();
+                FarmerAddress farmerAddress = new FarmerAddress();
+                farmerAddress.setAddressText(getFruitsResponse.getResidentialAddress());
+                farmerAddress.setPincode(getFruitsResponse.getPincode());
+                farmerAddressList.add(farmerAddress);
+                getFarmerResponse.setFarmerAddressList(farmerAddressList);
 
 
-            List<FarmerLandDetailsDTO> farmerLandDetailsList = new ArrayList<>();
-            for(GetLandDetailsResponse getLandDetailsResponse: getFruitsResponse.getLanddata()){
-                FarmerLandDetailsDTO farmerLandDetails = new FarmerLandDetailsDTO();
+                List<FarmerLandDetailsDTO> farmerLandDetailsList = new ArrayList<>();
+                for (GetLandDetailsResponse getLandDetailsResponse : getFruitsResponse.getLanddata()) {
+                    FarmerLandDetailsDTO farmerLandDetails = new FarmerLandDetailsDTO();
 //                VillageDTO villageDTO = new VillageDTO();
 //                villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
 //                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
 
-                Village village = villageRepository.findByVillageNameAndActive(getLandDetailsResponse.getVillageName(), true);
-                if (village == null) {
-                    farmerLandDetails.setVillageId(null);
-                    farmerLandDetails.setHobliId(null);
-                    farmerLandDetails.setTalukId(null);
-                    farmerLandDetails.setDistrictId(null);
-                    farmerLandDetails.setStateId(null);
-                } else {
-                    VillageDTO villageDTO1 = villageRepository.getByVillageIdAndActive(village.getVillageId(), true);
-                    farmerLandDetails.setVillageId(villageDTO1.getVillageId());
-                    farmerLandDetails.setHobliId(villageDTO1.getHobliId());
-                    farmerLandDetails.setTalukId(villageDTO1.getTalukId());
-                    farmerLandDetails.setDistrictId(villageDTO1.getDistrictId());
-                    farmerLandDetails.setStateId(villageDTO1.getStateId());
+                    Village village = villageRepository.findByVillageNameAndActive(getLandDetailsResponse.getVillageName(), true);
+                    if (village == null) {
+                        farmerLandDetails.setVillageId(null);
+                        farmerLandDetails.setHobliId(null);
+                        farmerLandDetails.setTalukId(null);
+                        farmerLandDetails.setDistrictId(null);
+                        farmerLandDetails.setStateId(null);
+                    } else {
+                        VillageDTO villageDTO1 = villageRepository.getByVillageIdAndActive(village.getVillageId(), true);
+                        farmerLandDetails.setVillageId(villageDTO1.getVillageId());
+                        farmerLandDetails.setHobliId(villageDTO1.getHobliId());
+                        farmerLandDetails.setTalukId(villageDTO1.getTalukId());
+                        farmerLandDetails.setDistrictId(villageDTO1.getDistrictId());
+                        farmerLandDetails.setStateId(villageDTO1.getStateId());
 
-                    farmerLandDetails.setStateName(villageDTO1.getStateName());
-                    farmerLandDetails.setDistrictName(villageDTO1.getDistrictName());
-                    farmerLandDetails.setTalukName(villageDTO1.getTalukName());
-                    farmerLandDetails.setHobliName(villageDTO1.getHobliName());
-                    farmerLandDetails.setVillageName(villageDTO1.getVillageName());
-                }
+                        farmerLandDetails.setStateName(villageDTO1.getStateName());
+                        farmerLandDetails.setDistrictName(villageDTO1.getDistrictName());
+                        farmerLandDetails.setTalukName(villageDTO1.getTalukName());
+                        farmerLandDetails.setHobliName(villageDTO1.getHobliName());
+                        farmerLandDetails.setVillageName(villageDTO1.getVillageName());
+                    }
 
                 /*if(responseWrapper1 != null) {
                 if(((LinkedHashMap) responseWrapper1.getContent()).get("error").equals(false)){
@@ -508,22 +513,24 @@ public class FarmerService {
                     farmerLandDetails.setStateId(null);
                 }*/
 
-                farmerLandDetails.setHissa(getLandDetailsResponse.getHissano());
-                farmerLandDetails.setSurveyNumber(String.valueOf(getLandDetailsResponse.getSurveyno()));
+                    farmerLandDetails.setHissa(getLandDetailsResponse.getHissano());
+                    farmerLandDetails.setSurveyNumber(String.valueOf(getLandDetailsResponse.getSurveyno()));
 
-                farmerLandDetails.setOwnerName(getLandDetailsResponse.getOwnerName());
-                farmerLandDetails.setSurNoc(String.valueOf(getLandDetailsResponse.getSurnoc()));
-                farmerLandDetails.setAcre(Long.valueOf(getLandDetailsResponse.getAcre()));
-                farmerLandDetails.setNameScore(Long.valueOf(getLandDetailsResponse.getNameScore()));
-                farmerLandDetails.setOwnerNo(Long.valueOf(getLandDetailsResponse.getOwnerNo()));
-                farmerLandDetails.setMainOwnerNo(Long.valueOf(String.valueOf(getLandDetailsResponse.getMainOwnerNo())));
-                farmerLandDetails.setGunta(Long.valueOf(getLandDetailsResponse.getGunta()));
-                farmerLandDetails.setFGunta(Double.valueOf(getLandDetailsResponse.getFgunta()));
+                    farmerLandDetails.setOwnerName(getLandDetailsResponse.getOwnerName());
+                    farmerLandDetails.setSurNoc(String.valueOf(getLandDetailsResponse.getSurnoc()));
+                    farmerLandDetails.setAcre(Long.valueOf(getLandDetailsResponse.getAcre()));
+                    farmerLandDetails.setNameScore(Long.valueOf(getLandDetailsResponse.getNameScore()));
+                    farmerLandDetails.setOwnerNo(Long.valueOf(getLandDetailsResponse.getOwnerNo()));
+                    farmerLandDetails.setMainOwnerNo(Long.valueOf(String.valueOf(getLandDetailsResponse.getMainOwnerNo())));
+                    farmerLandDetails.setGunta(Long.valueOf(getLandDetailsResponse.getGunta()));
+                    farmerLandDetails.setFGunta(Double.valueOf(getLandDetailsResponse.getFgunta()));
 
-                farmerLandDetailsList.add(farmerLandDetails);
+                    farmerLandDetailsList.add(farmerLandDetails);
+                }
+                getFarmerResponse.setFarmerLandDetailsDTOList(farmerLandDetailsList);
+                getFarmerResponse.setIsFruitService(1);
+                getFarmerResponse.setError(false);
             }
-            getFarmerResponse.setFarmerLandDetailsDTOList(farmerLandDetailsList);
-            getFarmerResponse.setIsFruitService(1);
         }else {
             List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
             List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
@@ -537,6 +544,7 @@ public class FarmerService {
             getFarmerResponse.setFarmerLandDetailsDTOList(farmerLandDetailsDTOS);
             getFarmerResponse.setFarmerBankAccount(farmerBankAccount);
             getFarmerResponse.setIsFruitService(0);
+            getFarmerResponse.setError(false);
         }
 
         return getFarmerResponse;

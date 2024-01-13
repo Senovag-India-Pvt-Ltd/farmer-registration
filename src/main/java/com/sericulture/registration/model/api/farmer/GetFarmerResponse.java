@@ -60,4 +60,10 @@ public class GetFarmerResponse {
 
     @Schema(name = "isFruitService")
     Integer isFruitService;
+
+    @Schema(name = "error", example = "true")
+    Boolean error;
+
+    @Schema(name = "error_description", example = "Invalid farmer")
+    String error_description;
 }
