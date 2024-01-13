@@ -80,4 +80,6 @@ public class ReelerDTO {
     private String villageName;
     private int isActivated;
     private Double walletAmount;
+    private String reelerNumber;
+    private int reelerTypeMasterId;
 }

@@ -217,6 +217,12 @@ public class ReelerResponse {
     @Schema(name = "walletAmount", example = "15.67")
     double walletAmount;
 
+    @Schema(name = "reelerNumber", example = "3674637")
+    String reelerNumber;
+
+    @Schema(name = "reelerTypeMasterId", example = "1")
+    int reelerTypeMasterId;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 

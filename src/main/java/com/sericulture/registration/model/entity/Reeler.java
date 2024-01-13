@@ -203,4 +203,10 @@ public class Reeler extends BaseEntity implements Serializable {
 
     @Column(name = "wallet_amount")
     private Double walletAmount;
+
+    @Column(name = "reeler_number")
+    private String reelerNumber;
+
+    @Column(name = "reeler_type_master_id")
+    private int reelerTypeMasterId;
 }

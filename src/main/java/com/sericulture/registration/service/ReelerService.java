@@ -232,6 +232,8 @@ public class ReelerService {
             reeler.setFruitsId(reelerRequest.getFruitsId());
             reeler.setIsActivated(reelerRequest.getIsActivated());
             reeler.setWalletAmount(reelerRequest.getWalletAmount());
+            reeler.setReelerNumber(reelerRequest.getReelerNumber());
+            reeler.setReelerTypeMasterId(reelerRequest.getReelerTypeMasterId());
 
             reeler.setActive(true);
             Reeler reeler1 = reelerRepository.save(reeler);
