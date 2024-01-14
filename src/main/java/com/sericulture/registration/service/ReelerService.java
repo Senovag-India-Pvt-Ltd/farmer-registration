@@ -53,22 +53,32 @@ public class ReelerService {
         ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = mapper.reelerObjectToEntity(reelerRequest,Reeler.class);
         validator.validate(reeler);
-        List<Reeler> reelerList = reelerRepository.findByReelingLicenseNumber(reeler.getReelingLicenseNumber());
-        if(!reelerList.isEmpty() && reelerList.stream().filter(Reeler::getActive).findAny().isPresent()){
+        List<Reeler> reelerListByLicenseNumber = reelerRepository.findByReelingLicenseNumber(reeler.getReelingLicenseNumber());
+        if(!reelerListByLicenseNumber.isEmpty() && reelerListByLicenseNumber.stream().filter(Reeler::getActive).findAny().isPresent()){
             reelerResponse.setError(true);
             reelerResponse.setError_description("Reeler License Number already exist");
         }
-        else if(!reelerList.isEmpty() && reelerList.stream().filter(Predicate.not(Reeler::getActive)).findAny().isPresent()){
+        else if(!reelerListByLicenseNumber.isEmpty() && reelerListByLicenseNumber.stream().filter(Predicate.not(Reeler::getActive)).findAny().isPresent()){
             //throw new ValidationException("Village name already exist with inactive state");
             reelerResponse.setError(true);
             reelerResponse.setError_description("Reeler License Number already exist with inactive state");
-        }else {
-            reelerResponse = mapper.reelerEntityToObject(reelerRepository.save(reeler), ReelerResponse.class);
-            reelerResponse.setError(false);
+        } else {
+            // Check for duplicate Reeler Number
+            List<Reeler> reelerListByNumber = reelerRepository.findByReelerNumber(reeler.getReelerNumber());
+            if (!reelerListByNumber.isEmpty() && reelerListByNumber.stream().anyMatch(Reeler::getActive)) {
+                reelerResponse.setError(true);
+                reelerResponse.setError_description("Reeler Number already exists");
+            } else if (!reelerListByNumber.isEmpty() && reelerListByNumber.stream().anyMatch(Predicate.not(Reeler::getActive))) {
+                reelerResponse.setError(true);
+                reelerResponse.setError_description("Reeler Number already exists with inactive state");
+            } else {
+                // If no duplicates found, save the reeler
+                reelerResponse = mapper.reelerEntityToObject(reelerRepository.save(reeler), ReelerResponse.class);
+                reelerResponse.setError(false);
+            }
         }
         return reelerResponse;
     }
-
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedReelerDetails(final Pageable pageable){
         return convertToMapResponse(reelerRepository.findByActiveOrderByReelerIdAsc( true, pageable));
