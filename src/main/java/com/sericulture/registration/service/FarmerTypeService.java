@@ -81,7 +81,7 @@ public class FarmerTypeService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedFarmerTypeDetails(final Pageable pageable){
-        return convertToMapResponse(farmerTypeRepository.findByActiveOrderByFarmerTypeIdAsc( true, pageable));
+        return convertToMapResponse(farmerTypeRepository.findByActiveOrderByFarmerTypeNameAsc( true, pageable));
     }
 
     private Map<String, Object> convertToMapResponse(final Page<FarmerType> activeFarmerTypes) {

@@ -40,7 +40,7 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             "left join RaceMaster raceMaster\n" +
             "on externalUnitRegistration.raceMasterId = raceMaster.raceMasterId " +
             "where externalUnitRegistration.active = :isActive " +
-            "ORDER BY externalUnitRegistration.externalUnitRegistrationId ASC"
+            "ORDER BY externalUnitRegistration.name ASC"
     )
     Page<ExternalUnitRegistrationDTO> getByActiveOrderByExternalUnitRegistrationIdAsc(@Param("isActive") boolean isActive, final Pageable pageable);
 

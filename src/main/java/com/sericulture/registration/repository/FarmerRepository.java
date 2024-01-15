@@ -122,7 +122,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "left join Education education " +
             "on farmer.educationId = education.educationId " +
             "where farmer.active = :isActive " +
-            "ORDER BY farmer.farmerId ASC"
+            "ORDER BY farmer.farmerNumber ASC"
     )
     Page<FarmerDTO> getByActiveOrderByFarmerIdAsc(@Param("isActive") boolean isActive, final Pageable pageable);
 

@@ -358,7 +358,7 @@ public class ReelerService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> inactiveReelers(){
-        return converListToResponse(reelerRepository.findByActiveAndIsActivatedOrderByReelerIdAsc( true,0));
+        return converListToResponse(reelerRepository.findByActiveAndIsActivatedOrderByReelerNameAsc( true,0));
     }
 
 

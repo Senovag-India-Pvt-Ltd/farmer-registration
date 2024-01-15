@@ -53,7 +53,7 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             "left join District district\n" +
             "on traderLicense.districtId = district.districtId " +
             "where traderLicense.active = :isActive " +
-            "ORDER BY traderLicense.traderLicenseId ASC"
+            "ORDER BY traderLicense.firstName ASC"
             )
     Page<TraderLicenseDTO> getByActiveOrderByTraderLicenseIdAsc(@Param("isActive") boolean isActive, final Pageable pageable);
 

@@ -31,7 +31,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
     public Reeler findByFruitsIdAndActive(String fruitsId, boolean active);
     public Reeler findByReelingLicenseNumberAndActive(String reelingLicenseNumber, boolean isActive);
 
-    List<Reeler> findByActiveAndIsActivatedOrderByReelerIdAsc(boolean isActive, int isActivated);
+    List<Reeler> findByActiveAndIsActivatedOrderByReelerNameAsc(boolean isActive, int isActivated);
 
     @Query("select new com.sericulture.registration.model.dto.reeler.ReelerDTO(" +
             " reeler.reelerId, " +
@@ -212,7 +212,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "left join Village village " +
             "on reeler.villageId = village.villageId " +
             "where reeler.active = :isActive " +
-            "ORDER BY reeler.reelerId ASC"
+            "ORDER BY reeler.reelerName ASC"
     )
     Page<ReelerDTO> getByActiveOrderByReelerIdAsc(@Param("isActive") boolean isActive, final Pageable pageable);
 
