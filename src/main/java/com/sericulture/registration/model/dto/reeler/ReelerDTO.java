@@ -82,4 +82,5 @@ public class ReelerDTO {
     private Double walletAmount;
     private String reelerNumber;
     private int reelerTypeMasterId;
+    private String reelerTypeMasterName;
 }

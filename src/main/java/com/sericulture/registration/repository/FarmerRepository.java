@@ -16,6 +16,8 @@ import java.util.Set;
 public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Long> {
     public List<Farmer> findByFarmerNumber(String farmerNumber);
 
+    public List<Farmer> findByMobileNumber(String mobileNumber);
+
     public Farmer findByFarmerNumberAndActive(String farmerNumber,boolean isActive);
 
     public Page<Farmer> findByActiveOrderByFarmerIdAsc(boolean isActive, final Pageable pageable);

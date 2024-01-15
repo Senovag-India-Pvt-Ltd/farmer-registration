@@ -223,6 +223,9 @@ public class ReelerResponse {
     @Schema(name = "reelerTypeMasterId", example = "1")
     int reelerTypeMasterId;
 
+    @Schema(name = "reelerTypeMasterName", example = "3674637")
+    String reelerTypeMasterName;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 

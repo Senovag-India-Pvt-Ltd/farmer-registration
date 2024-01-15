@@ -23,6 +23,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
 
     public List<Reeler> findByReelingLicenseNumber(String reelingLicenseNumber);
 
+   public List<Reeler> findByReelerNumber(String reelerNumber);
+
     public Reeler save(Reeler Reeler);
 
     public Reeler findByReelerIdAndActive(long id, boolean isActive);
@@ -101,7 +103,10 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " hobli.hobliName, " +
             " village.villageName," +
             " reeler.isActivated," +
-            " reeler.walletAmount " +
+            " reeler.walletAmount," +
+            " reeler.reelerNumber," +
+            " reeler.reelerTypeMasterId," +
+            " reelerTypeMaster.reelerTypeMasterName " +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -120,6 +125,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "on reeler.hobliId = hobli.hobliId " +
             "left join Village village " +
             "on reeler.villageId = village.villageId " +
+            "left join ReelerTypeMaster reelerTypeMaster " +
+            "on reeler.reelerTypeMasterId = reelerTypeMaster.reelerTypeMasterId " +
             "where reeler.active = :isActive AND reeler.reelerId = :id")
     public ReelerDTO getByReelerIdAndActive(@Param("id") long id, @Param("isActive") boolean isActive);
 
@@ -192,7 +199,10 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " hobli.hobliName, " +
             " village.villageName," +
             " reeler.isActivated," +
-            " reeler.walletAmount " +
+            " reeler.walletAmount," +
+            " reeler.reelerNumber," +
+            " reeler.reelerTypeMasterId," +
+            " reelerTypeMaster.reelerTypeMasterName " +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -211,6 +221,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "on reeler.hobliId = hobli.hobliId " +
             "left join Village village " +
             "on reeler.villageId = village.villageId " +
+            "left join ReelerTypeMaster reelerTypeMaster " +
+            "on reeler.reelerTypeMasterId = reelerTypeMaster.reelerTypeMasterId " +
             "where reeler.active = :isActive " +
             "ORDER BY reeler.reelerName ASC"
     )
@@ -284,7 +296,10 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " hobli.hobliName, " +
             " village.villageName," +
             " reeler.isActivated," +
-            " reeler.walletAmount " +
+            " reeler.walletAmount," +
+            " reeler.reelerNumber," +
+            " reeler.reelerTypeMasterId," +
+            " reelerTypeMaster.reelerTypeMasterName " +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -303,6 +318,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "on reeler.hobliId = hobli.hobliId " +
             "left join Village village " +
             "on reeler.villageId = village.villageId " +
+            "left join ReelerTypeMaster reelerTypeMaster " +
+            "on reeler.reelerTypeMasterId = reelerTypeMaster.reelerTypeMasterId " +
             "where reeler.active = :isActive AND " +
             "(:joinColumn = 'reeler.mobileNumber' AND reeler.mobileNumber LIKE :searchText) OR " +
             "(:joinColumn = 'reeler.reelingLicenseNumber' AND reeler.reelingLicenseNumber LIKE :searchText)"
