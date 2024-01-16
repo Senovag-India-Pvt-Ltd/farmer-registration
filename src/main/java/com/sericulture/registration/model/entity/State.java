@@ -26,4 +26,7 @@ public class State extends BaseEntity implements Serializable {
     @Column(name = "STATE_NAME", unique = true)
     private String stateName;
 
+    @Column(name = "state_name_in_kannada")
+    private String stateNameInKannada;
+
 }

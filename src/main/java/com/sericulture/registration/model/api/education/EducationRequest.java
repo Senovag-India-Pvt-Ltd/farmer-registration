@@ -13,4 +13,7 @@ public class EducationRequest extends RequestBody {
 
     @Schema(name = "name", example = "Bachelor of Engineering", required = true)
     String name;
+
+    @Schema(name = "educationNameInKannada", example = "ಭಾಷೆ")
+    String educationNameInKannada;
 }

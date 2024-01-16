@@ -32,5 +32,6 @@ public class Education extends BaseEntity implements Serializable {
     @Column(name = "EDUCATION_CODE")
     private String code;
 
-
+    @Column(name = "education_name_in_kannada")
+    private String educationNameInKannada;
 }

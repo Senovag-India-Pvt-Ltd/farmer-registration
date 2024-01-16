@@ -27,5 +27,6 @@ public class Relationship extends BaseEntity implements Serializable {
     @Column(name = "RELATIONSHIP_NAME", unique = true)
     private String relationshipName;
 
-
+    @Column(name = "relationship_name_in_kannada")
+    private String relationshipNameInKannada;
 }
