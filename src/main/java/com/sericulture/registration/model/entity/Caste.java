@@ -29,4 +29,7 @@ public class Caste extends BaseEntity implements Serializable {
 
     @Column(name = "CASTE_CODE",unique = true)
     private String code;
+
+    @Column(name = "name_in_kannada")
+    private String nameInKannada;
 }

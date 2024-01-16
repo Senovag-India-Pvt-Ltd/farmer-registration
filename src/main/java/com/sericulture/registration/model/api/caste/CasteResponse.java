@@ -21,6 +21,9 @@ public class CasteResponse {
     @Schema(name = "code", example = "123")
     String code;
 
+    @Schema(name = "nameInKannada", example = "ಭಾಷೆ")
+    String nameInKannada;
+
     @Schema(name = "error", example = "0")
     String error;
 
