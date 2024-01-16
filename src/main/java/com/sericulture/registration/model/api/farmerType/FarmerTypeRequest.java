@@ -16,4 +16,7 @@ import java.util.Date;
 public class FarmerTypeRequest extends RequestBody {
     @Schema(name = "farmerTypeName", example = "Margin farmer")
     String farmerTypeName;
+
+    @Schema(name = "farmerTypeNameInKannada", example = "ಭಾಷೆ")
+    String farmerTypeNameInKannada;
 }

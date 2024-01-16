@@ -26,5 +26,8 @@ public class FarmerType extends BaseEntity implements Serializable {
     @Column(name = "NAME")
     private String farmerTypeName;
 
+    @Column(name = "farmer_type_name_in_kannada")
+    private String farmerTypeNameInKannada;
+
 }
 

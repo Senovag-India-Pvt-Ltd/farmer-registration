@@ -16,6 +16,9 @@ public class FarmerTypeResponse extends RequestBody {
     @Schema(name = "farmerTypeName", example = "Margin farmer")
     String farmerTypeName;
 
+    @Schema(name = "farmerTypeNameInKannada", example = "ಭಾಷೆ")
+    String farmerTypeNameInKannada;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 

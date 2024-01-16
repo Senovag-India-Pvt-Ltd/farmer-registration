@@ -15,4 +15,7 @@ public class EditFarmerTypeRequest extends RequestBody {
 
     @Schema(name = "farmerTypeName", example = "Margin farmer")
     String farmerTypeName;
+
+    @Schema(name = "farmerTypeNameInKannada", example = "ಭಾಷೆ")
+    String farmerTypeNameInKannada;
 }

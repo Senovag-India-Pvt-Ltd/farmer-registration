@@ -25,4 +25,7 @@ public class TraderTypeMaster extends BaseEntity implements Serializable {
     @Size(min = 2, max = 250, message = "Trader Type name should be more than 1 characters.")
     @Column(name = "trader_type_name", unique = true)
     private String traderTypeMasterName;
+
+    @Column(name = "trader_type_name_in_kannada")
+    private String traderTypeNameInKannada;
 }

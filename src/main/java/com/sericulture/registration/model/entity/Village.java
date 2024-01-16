@@ -36,4 +36,7 @@ public class Village extends BaseEntity implements Serializable {
 
     @Column(name = "HOBLI_ID")
     private Long hobliId;
+
+    @Column(name = "village_name_in_kannada")
+    private String villageNameInKannada;
 }

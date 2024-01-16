@@ -141,6 +141,7 @@ public class FarmerTypeService {
             FarmerType farmerType = farmerTypeRepository.findByFarmerTypeIdAndActiveIn(farmerTypeRequest.getFarmerTypeId(), Set.of(true, false));
             if (Objects.nonNull(farmerType)) {
                 farmerType.setFarmerTypeName(farmerTypeRequest.getFarmerTypeName());
+                farmerType.setFarmerTypeNameInKannada(farmerTypeRequest.getFarmerTypeNameInKannada());
                 FarmerType farmerType1 = farmerTypeRepository.save(farmerType);
                 farmerTypeResponse = mapper.farmerTypeEntityToObject(farmerType1, FarmerTypeResponse.class);
                 farmerTypeResponse.setError(false);

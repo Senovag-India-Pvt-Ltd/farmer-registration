@@ -30,4 +30,7 @@ public class Taluk extends BaseEntity implements Serializable {
 
     @Column(name = "DISTRICT_ID")
     private Long districtId;
+
+    @Column(name = "taluk_name_in_kannada")
+    private String talukNameInKannada;
 }
