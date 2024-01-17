@@ -39,7 +39,7 @@ public class FarmerTypeService {
         FarmerTypeResponse farmerTypeResponse = new FarmerTypeResponse();
         FarmerType farmerType = mapper.farmerTypeObjectToEntity(farmerTypeRequest,FarmerType.class);
         validator.validate(farmerType);
-        List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeNameAndActive(farmerTypeRequest.getFarmerTypeName(),true);
+        List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeNameAndFarmerTypeNameInKannada(farmerTypeRequest.getFarmerTypeName(),farmerTypeRequest.getFarmerTypeNameInKannada());
         if(!farmerTypeList.isEmpty()){
             farmerTypeResponse.setError(true);
             farmerTypeResponse.setError_description("Farmer Type name already exist");
@@ -131,7 +131,7 @@ public class FarmerTypeService {
     @Transactional
     public FarmerTypeResponse updateFarmerTypeDetails(EditFarmerTypeRequest farmerTypeRequest) {
         FarmerTypeResponse farmerTypeResponse = new FarmerTypeResponse();
-        List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeName(farmerTypeRequest.getFarmerTypeName());
+        List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeNameAndFarmerTypeNameInKannada(farmerTypeRequest.getFarmerTypeName(),farmerTypeRequest.getFarmerTypeNameInKannada());
         if (farmerTypeList.size() > 0) {
             farmerTypeResponse.setError(true);
             farmerTypeResponse.setError_description("Farmer Type already exists, duplicates are not allowed.");
