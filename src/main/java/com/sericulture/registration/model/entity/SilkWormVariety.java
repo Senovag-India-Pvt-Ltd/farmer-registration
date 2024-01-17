@@ -25,4 +25,7 @@ public class SilkWormVariety extends BaseEntity implements Serializable {
     @Size(min = 2, max = 250, message = "Silk worm variety name should be more than 1 characters.")
     @Column(name = "silk_worm_variety_name", unique = true)
     private String silkWormVarietyName;
+
+    @Column(name = "silk_worm_variety_name_in_kannada")
+    private String silkWormVarietyNameInKannada;
 }

@@ -21,8 +21,10 @@ public class MulberrySource extends BaseEntity implements Serializable {
     @Column(name = "mulberry_source_id")
     private Long mulberrySourceId;
 
-
     @Size(min = 2, max = 250, message = "Mulberry source variety name should be more than 1 characters.")
     @Column(name = "mulberry_source_name", unique = true)
     private String mulberrySourceName;
+
+    @Column(name = "mulberry_source_name_in_kannada")
+    private String mulberrySourceNameInKannada;
 }

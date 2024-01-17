@@ -43,4 +43,7 @@ public class MarketMaster extends BaseEntity implements Serializable {
 
     @Column(name = "TALUK_ID")
     private Long talukId;
+
+    @Column(name = "market_name_in_kannada")
+    private String marketNameInKannada;
 }

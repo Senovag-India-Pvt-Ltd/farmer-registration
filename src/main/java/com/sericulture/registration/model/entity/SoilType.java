@@ -26,4 +26,7 @@ public class SoilType extends BaseEntity implements Serializable {
     @Size(min = 2, max = 250, message = "SoilType name should be more than 1 characters.")
     @Column(name = " soil_type_name", unique = true)
     private String soilTypeName;
+
+    @Column(name = "soil_type_name_in_kannada")
+    private String soilTypeNameInKannada;
 }

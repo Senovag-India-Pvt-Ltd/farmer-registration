@@ -30,4 +30,7 @@ public class ReelerTypeMaster extends BaseEntity implements Serializable {
 
     @Column(name = "no_of_device_allowed")
     private Long noOfDeviceAllowed;
+
+    @Column(name = "reeler_type_name_in_kannada")
+    private String reelerTypeNameInKannada;
 }

@@ -22,9 +22,11 @@ public class MachineType extends BaseEntity implements Serializable {
     @Column(name = "machine_type_id")
     private Long machineTypeId;
 
-
     @Size(min = 2, max = 250, message = "Machine type name should be more than 1 characters.")
     @Column(name = "machine_type_name", unique = true)
     private String machineTypeName;
+
+    @Column(name = "machine_type_name_in_kannada")
+    private String machineTypeNameInKannada;
 
 }

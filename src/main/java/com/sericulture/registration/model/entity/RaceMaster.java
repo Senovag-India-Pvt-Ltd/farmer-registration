@@ -26,4 +26,7 @@ public class RaceMaster extends BaseEntity implements Serializable {
     @Size(min = 2, max = 250, message = "Race name should be more than 1 characters.")
     @Column(name = "race_name", unique = true)
     private String raceMasterName;
+
+    @Column(name = "race_name_in_kannada")
+    private String raceNameInKannada;
 }

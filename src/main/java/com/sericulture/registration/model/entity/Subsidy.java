@@ -26,4 +26,7 @@ public class Subsidy extends BaseEntity implements Serializable {
     @Column(name = " subsidy_name", unique = true)
     private String subsidyName;
 
+    @Column(name = "subsidy_name_in_kannada")
+    private String subsidyNameInKannada;
+
 }

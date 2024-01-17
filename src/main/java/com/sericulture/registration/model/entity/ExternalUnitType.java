@@ -25,4 +25,7 @@ public class ExternalUnitType extends BaseEntity implements Serializable {
     @Size(min = 2, max = 250, message = "External Unit Type name should be more than 1 characters.")
     @Column(name = "external_unit_type_name", unique = true)
     private String externalUnitTypeName;
+
+    @Column(name = "external_unit_type_name_in_kannada")
+    private String externalUnitTypeNameInKannada;
 }

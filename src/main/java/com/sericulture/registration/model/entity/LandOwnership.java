@@ -21,9 +21,11 @@ public class LandOwnership extends BaseEntity implements Serializable {
     @Column(name = "land_ownership_id")
     private Long landOwnershipId;
 
-
     @Size(min = 2, max = 250, message = "LandOwnership name should be more than 1 characters.")
     @Column(name = " land_ownership_name", unique = true)
     private String landOwnershipName;
+
+    @Column(name = "land_ownership_name_in_kannada")
+    private String landOwnershipNameInKannada;
 
 }
