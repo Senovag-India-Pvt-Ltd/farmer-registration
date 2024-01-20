@@ -1,5 +1,6 @@
 package com.sericulture.registration.service;
 
+import com.sericulture.registration.model.api.common.SearchByColumnRequest;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.farmer.FarmerResponse;
 import com.sericulture.registration.model.api.farmer.GetFarmerRequest;
@@ -8,6 +9,7 @@ import com.sericulture.registration.model.api.reeler.*;
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerDTO;
+import com.sericulture.registration.model.dto.reeler.ReelerSearchDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.model.exceptions.ValidationException;
@@ -438,4 +440,28 @@ public class ReelerService {
         return response;
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> searchByColumn(SearchByColumnRequest searchByColumnRequest){
+        if(searchByColumnRequest.getSearchText() == null || searchByColumnRequest.getSearchText().equals("")){
+            searchByColumnRequest.setSearchText("%%");
+        }else{
+            searchByColumnRequest.setSearchText("%" + searchByColumnRequest.getSearchText() + "%");
+        }
+        if(searchByColumnRequest.getSearchColumn() == null || searchByColumnRequest.getSearchColumn().equals("")){
+            searchByColumnRequest.setSearchColumn("reeler.reelerName");
+        }
+        List<ReelerSearchDTO> reelerDTOList = reelerRepository.getReelerBySearchText(searchByColumnRequest.getSearchText(),searchByColumnRequest.getSearchColumn());
+        log.info("Entity is ",reelerDTOList);
+        return convertPageableDTOToMapResponse(reelerDTOList);
+    }
+
+    private Map<String, Object> convertPageableDTOToMapResponse(final List<ReelerSearchDTO> activeReelers) {
+        Map<String, Object> response = new HashMap<>();
+
+//        List<ReelerResponse> reelerResponses = activeReelers.stream()
+//                .map(reelerDTO -> mapper.reelerDTOToObject(reelerDTO,ReelerResponse.class)).collect(Collectors.toList());
+        response.put("reelers",activeReelers);
+        response.put("totalItems", activeReelers.size());
+        return response;
+    }
 }

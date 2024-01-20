@@ -2,6 +2,7 @@ package com.sericulture.registration.repository;
 
 import com.sericulture.registration.model.dto.farmer.FarmerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerDTO;
+import com.sericulture.registration.model.dto.reeler.ReelerSearchDTO;
 import com.sericulture.registration.model.entity.Farmer;
 import com.sericulture.registration.model.entity.Reeler;
 import org.springframework.data.domain.Page;
@@ -327,5 +328,22 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "(:joinColumn = 'reeler.reelingLicenseNumber' AND reeler.reelingLicenseNumber LIKE :searchText)"
     )
     public Page<ReelerDTO> getSortedReelers(@Param("joinColumn") String joinColumn, @Param("searchText") String searchText, @Param("isActive") boolean isActive, Pageable pageable);
+
+ @Query("select new com.sericulture.registration.model.dto.reeler.ReelerSearchDTO(" +
+         " reeler.reelerId, " +
+         " reeler.reelerName, " +
+         " CASE WHEN :joinColumn = 'reeler.mobileNumber' THEN reeler.mobileNumber " +
+         "      WHEN :joinColumn = 'reeler.reelerName' THEN reeler.reelerName " +
+         "      WHEN :joinColumn = 'reeler.reelingLicenseNumber' THEN reeler.reelingLicenseNumber " +
+         "      ELSE null " +
+         " END " +
+         ") " +
+         "from Reeler reeler " +
+         "where reeler.active = true AND " +
+         "(:joinColumn = 'reeler.mobileNumber' AND reeler.mobileNumber LIKE :searchText) OR " +
+         "(:joinColumn = 'reeler.reelerName' AND reeler.reelerName LIKE :searchText) OR " +
+         "(:joinColumn = 'reeler.reelingLicenseNumber' AND reeler.reelingLicenseNumber LIKE :searchText)"
+ )
+ public List<ReelerSearchDTO> getReelerBySearchText(@Param("searchText") String searchText, @Param("joinColumn") String joinColumn);
 
 }
