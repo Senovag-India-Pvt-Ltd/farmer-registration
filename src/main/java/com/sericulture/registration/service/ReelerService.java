@@ -371,6 +371,19 @@ public class ReelerService {
         return converListToResponse(reelerRepository.findByActiveAndIsActivatedOrderByReelerNameAsc( true,0));
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String, Object> getAllByActive(boolean isActive) {
+        return convertListEntityToMapResponse(reelerRepository.findByActive(isActive));
+    }
+
+    private Map<String, Object> convertListEntityToMapResponse(final List<Reeler> activeReelers) {
+        Map<String, Object> response = new HashMap<>();
+
+        List<ReelerResponse> reelerResponses = activeReelers.stream()
+                .map(reeler -> mapper.reelerEntityToObject(reeler, ReelerResponse.class)).collect(Collectors.toList());
+        response.put("reeler", reelerResponses);
+        return response;
+    }
 
     private Map<String, Object> converListToResponse(final List<Reeler> inactiveReelers) {
         Map<String, Object> response = new HashMap<>();

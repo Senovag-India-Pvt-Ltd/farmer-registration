@@ -25,6 +25,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
 
    public List<Reeler> findByReelerNumber(String reelerNumber);
 
+    public List<Reeler> findByActive(boolean isActive);
+
     public Reeler save(Reeler Reeler);
 
     public Reeler findByReelerIdAndActive(long id, boolean isActive);
