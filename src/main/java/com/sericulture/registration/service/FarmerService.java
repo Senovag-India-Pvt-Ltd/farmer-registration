@@ -492,7 +492,11 @@ public class FarmerService {
                     } else {
                         VillageDTO villageDTO1 = villageRepository.getByVillageIdAndActive(village.getVillageId(), true);
                         farmerLandDetails.setVillageId(villageDTO1.getVillageId());
-                        farmerLandDetails.setHobliId(villageDTO1.getHobliId());
+                        if(villageDTO1.getHobliId().equals("") || villageDTO1.getHobliId() == null){
+                            farmerLandDetails.setHobliId(0L);
+                        }else {
+                            farmerLandDetails.setHobliId(villageDTO1.getHobliId());
+                        }
                         farmerLandDetails.setTalukId(villageDTO1.getTalukId());
                         farmerLandDetails.setDistrictId(villageDTO1.getDistrictId());
                         farmerLandDetails.setStateId(villageDTO1.getStateId());
@@ -500,6 +504,11 @@ public class FarmerService {
                         farmerLandDetails.setStateName(villageDTO1.getStateName());
                         farmerLandDetails.setDistrictName(villageDTO1.getDistrictName());
                         farmerLandDetails.setTalukName(villageDTO1.getTalukName());
+                        if(villageDTO1.getHobliName().equals("") || villageDTO1.getHobliName() == null){
+                            farmerLandDetails.setHobliName("");
+                        }else {
+                            farmerLandDetails.setHobliId(villageDTO1.getHobliId());
+                        }
                         farmerLandDetails.setHobliName(villageDTO1.getHobliName());
                         farmerLandDetails.setVillageName(villageDTO1.getVillageName());
                     }
