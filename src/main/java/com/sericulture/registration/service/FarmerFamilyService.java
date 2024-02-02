@@ -40,14 +40,13 @@ public class FarmerFamilyService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public FarmerFamilyResponse getFarmerFamilyDetails(String farmerFamilyName){
         FarmerFamilyResponse farmerFamilyResponse = new FarmerFamilyResponse();
-        FarmerFamily farmerFamily = null;
+        FarmerFamily farmerFamily = farmerFamilyRepository.findByFarmerFamilyNameAndActive(farmerFamilyName,true);
         if(farmerFamily==null){
-            farmerFamily = farmerFamilyRepository.findByFarmerFamilyNameAndActive(farmerFamilyName,true);
+            farmerFamilyResponse.setError(true);
+            farmerFamilyResponse.setError_description("Farmer Family not found");
+        }else{
             farmerFamilyResponse = mapper.farmerFamilyEntityToObject(farmerFamily,FarmerFamilyResponse.class);
             farmerFamilyResponse.setError(false);
-        }else{
-            farmerFamilyResponse.setError(true);
-            farmerFamilyResponse.setError_description("FarmerFamily not found");
         }
         log.info("Entity is ",farmerFamily);
         return farmerFamilyResponse;
