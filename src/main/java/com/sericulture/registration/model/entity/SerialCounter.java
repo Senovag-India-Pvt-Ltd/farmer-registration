@@ -27,4 +27,10 @@ public class SerialCounter extends BaseEntity implements Serializable {
 
     @Column(name = "trader_counter_number")
     private Long traderCounterNumber;
+
+    @Column(name = "reeler_license_renewal_counter_number")
+    private Long reelerLicenseRenewalCounterNumber;
+
+    @Column(name = "transfer_reeler_license_counter_number")
+    private Long transferReelerLicenseCounterNumber;
 }

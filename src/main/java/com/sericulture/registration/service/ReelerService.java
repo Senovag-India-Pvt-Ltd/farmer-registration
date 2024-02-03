@@ -186,6 +186,28 @@ public class ReelerService {
             reeler.setFeeAmount(updateReelerLicenseRequest.getFeeAmount());
             reeler.setLicenseRenewalDate(updateReelerLicenseRequest.getLicenseRenewalDate());
             reeler.setLicenseExpiryDate(updateReelerLicenseRequest.getLicenseExpiryDate());
+
+            LocalDate today = Util.getISTLocalDate();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
+            String formattedDate = today.format(formatter);
+            List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
+            SerialCounter serialCounter = new SerialCounter();
+            if(serialCounters.size()>0){
+                serialCounter = serialCounters.get(0);
+                long counterValue = 1L;
+                if(serialCounter.getReelerLicenseRenewalCounterNumber() != null){
+                    counterValue =serialCounter.getReelerLicenseRenewalCounterNumber() + 1;
+                }
+                serialCounter.setReelerLicenseRenewalCounterNumber(counterValue);
+            }else{
+                serialCounter.setReelerLicenseRenewalCounterNumber(1L);
+            }
+            serialCounterRepository.save(serialCounter);
+            String formattedNumber = String.format("%05d", serialCounter.getReelerCounterNumber());
+
+            reeler.setArnNumber("RRL/"+formattedDate+"/"+formattedNumber);
+
+
             Reeler savedReeler = reelerRepository.save(reeler);
 
             //Save record to reeler license transaction table
