@@ -1,5 +1,6 @@
 package com.sericulture.registration.service;
 
+import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.api.common.SearchByColumnRequest;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.farmer.FarmerResponse;
@@ -17,6 +18,7 @@ import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.ReelerLicenseTransactionRepository;
 import com.sericulture.registration.repository.ReelerRepository;
 import com.sericulture.registration.repository.ReelerVirtualBankAccountRepository;
+import com.sericulture.registration.repository.SerialCounterRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,6 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -49,6 +53,9 @@ public class ReelerService {
 
     @Autowired
     ReelerVirtualBankAccountRepository reelerVirtualBankAccountRepository;
+
+    @Autowired
+    SerialCounterRepository serialCounterRepository;
 
     @Transactional
     public ReelerResponse insertReelerDetails(ReelerRequest reelerRequest){
@@ -75,6 +82,22 @@ public class ReelerService {
                 reelerResponse.setError_description("Reeler Number already exists with inactive state");
             } else {
                 // If no duplicates found, save the reeler
+                LocalDate today = Util.getISTLocalDate();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
+                String formattedDate = today.format(formatter);
+                List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
+                SerialCounter serialCounter = new SerialCounter();
+                if(serialCounters.size()>0){
+                    serialCounter = serialCounters.get(0);
+                    long counterValue =serialCounter.getReelerCounterNumber() + 1;
+                    serialCounter.setReelerCounterNumber(counterValue);
+                }else{
+                    serialCounter.setReelerCounterNumber(1L);
+                }
+                serialCounterRepository.save(serialCounter);
+                String formattedNumber = String.format("%05d", serialCounter.getReelerCounterNumber());
+
+                reeler.setArnNumber("NRL/"+formattedDate+"/"+formattedNumber);
                 reelerResponse = mapper.reelerEntityToObject(reelerRepository.save(reeler), ReelerResponse.class);
                 reelerResponse.setError(false);
             }
@@ -216,7 +239,7 @@ public class ReelerService {
             reeler.setGpsLat(reelerRequest.getGpsLat());
             reeler.setGpsLng(reelerRequest.getGpsLng());
             reeler.setInspectionDate(reelerRequest.getInspectionDate());
-            reeler.setArnNumber(reelerRequest.getArnNumber());
+          //  reeler.setArnNumber(reelerRequest.getArnNumber());
             reeler.setChakbandiLat(reelerRequest.getChakbandiLat());
             reeler.setChakbandiLng(reelerRequest.getChakbandiLng());
             reeler.setAddress(reelerRequest.getAddress());
