@@ -89,7 +89,10 @@ public class ReelerService {
                 SerialCounter serialCounter = new SerialCounter();
                 if(serialCounters.size()>0){
                     serialCounter = serialCounters.get(0);
-                    long counterValue =serialCounter.getReelerCounterNumber() + 1;
+                    long counterValue = 1L;
+                    if(serialCounter.getReelerCounterNumber() != null){
+                        counterValue =serialCounter.getReelerCounterNumber() + 1;
+                    }
                     serialCounter.setReelerCounterNumber(counterValue);
                 }else{
                     serialCounter.setReelerCounterNumber(1L);
