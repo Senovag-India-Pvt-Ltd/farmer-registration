@@ -57,27 +57,6 @@ public class FarmerTypeService {
         return farmerTypeResponse;
     }
 
-//    @Transactional
-//    public FarmerTypeResponse insertFarmerTypeDetails(FarmerTypeRequest farmerTypeRequest){
-//        FarmerTypeResponse farmerTypeResponse = new FarmerTypeResponse();
-//        FarmerType farmerType = mapper.farmerTypeObjectToEntity(farmerTypeRequest,FarmerType.class);
-//        validator.validate(farmerType);
-//        List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeName(farmerTypeRequest.getFarmerTypeName());
-//        if(!farmerTypeList.isEmpty() && farmerTypeList.stream().filter(FarmerType::getActive).findAny().isPresent()){
-//            farmerTypeResponse.setError(true);
-//            farmerTypeResponse.setError_description("Farmer Type name already exist");
-//        }
-//       else if(!farmerTypeList.isEmpty() && farmerTypeList.stream().filter(Predicate.not(FarmerType::getActive)).findAny().isPresent()){
-//            farmerTypeResponse.setError(true);
-//            farmerTypeResponse.setError_description("Farmer Type name already exist with inactive state");
-//        }else {
-//            farmerTypeResponse = mapper.farmerTypeEntityToObject(farmerTypeRepository.save(farmerType), FarmerTypeResponse.class);
-//            farmerTypeResponse.setError(false);
-//        }
-//        return farmerTypeResponse;
-//    }
-
-
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedFarmerTypeDetails(final Pageable pageable){
@@ -94,6 +73,21 @@ public class FarmerTypeService {
         response.put("totalItems", activeFarmerTypes.getTotalElements());
         response.put("totalPages", activeFarmerTypes.getTotalPages());
 
+        return response;
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> getAllByActive(boolean isActive){
+        return convertListEntityToMapResponse(farmerTypeRepository.findByActive(isActive));
+    }
+
+
+    private Map<String, Object> convertListEntityToMapResponse(final List<FarmerType> activeFarmerTypes) {
+        Map<String, Object> response = new HashMap<>();
+
+        List<FarmerTypeResponse> farmerTypeResponses = activeFarmerTypes.stream()
+                .map(farmerType -> mapper.farmerTypeEntityToObject(farmerType,FarmerTypeResponse.class)).collect(Collectors.toList());
+        response.put("farmerType",farmerTypeResponses);
         return response;
     }
 

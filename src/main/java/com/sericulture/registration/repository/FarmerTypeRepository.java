@@ -29,4 +29,6 @@ public interface FarmerTypeRepository extends PagingAndSortingRepository<FarmerT
 
     public FarmerType findByFarmerTypeIdAndActiveIn(@Param("farmerTypeId") long farmerLandDetailsId, @Param("active") Set<Boolean> active);
 
+    public List<FarmerType> findByActive(boolean isActive);
+
 }

@@ -127,4 +127,27 @@ public class FarmerTypeController {
         rw.setContent(farmerTypeService.getById(id));
         return ResponseEntity.ok(rw);
     }
+
+    @GetMapping("/get-all")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No Content - inserted successfully",content =
+                    {
+                            @Content(mediaType = "application/json", schema =
+                            @Schema(example = "{\"content\":{\"totalItems\":6,\"soilType\":[{\"id\":10,\"soilTypeName\":\"\"},{\"id\":11,\"soilTypeName\":\"Red Soil\"},{\"id\":13,\"soilTypeName\":\"Black Soil\"}],\"totalPages\":1,\"currentPage\":0},\"errorMessages\":[]}"))
+                    }),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    public ResponseEntity<?> getAllByActive(
+            @RequestParam(defaultValue = "true") boolean isActive
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(Map.class);
+        rw.setContent(farmerTypeService.getAllByActive(isActive));
+        return ResponseEntity.ok(rw);
+    }
 }
