@@ -44,14 +44,13 @@ public class FarmerBankAccountService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public FarmerBankAccountResponse getFarmerBankAccountDetails(String farmerBankAccountNumber) {
         FarmerBankAccountResponse farmerBankAccountResponse = new FarmerBankAccountResponse();
-        FarmerBankAccount farmerBankAccount = null;
+        FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerBankAccountNumberAndActive(farmerBankAccountNumber, true);
         if (farmerBankAccount == null) {
-            farmerBankAccount = farmerBankAccountRepository.findByFarmerBankAccountNumberAndActive(farmerBankAccountNumber, true);
+            farmerBankAccountResponse.setError(true);
+            farmerBankAccountResponse.setError_description("Farmer Bank Account not found");
+        } else {
             farmerBankAccountResponse = mapper.farmerBankAccountEntityToObject(farmerBankAccount, FarmerBankAccountResponse.class);
             farmerBankAccountResponse.setError(false);
-        } else {
-            farmerBankAccountResponse.setError(true);
-            farmerBankAccountResponse.setError_description("FarmerBankAccount not found");
         }
         log.info("Entity is ", farmerBankAccount);
         return farmerBankAccountResponse;

@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class ReelerRequest extends RequestBody {
-    @Schema(name = "name", example = "Test")
+    @Schema(name = "reelerName", example = "Test")
     String reelerName;
 
     @Schema(name = "wardNumber", example = "Test")

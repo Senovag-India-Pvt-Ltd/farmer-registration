@@ -1,14 +1,18 @@
 package com.sericulture.registration.service;
 
+import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.api.traderLicense.EditTraderLicenseRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseResponse;
 import com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO;
+import com.sericulture.registration.model.entity.SerialCounter;
 import com.sericulture.registration.model.entity.TraderLicense;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
+import com.sericulture.registration.repository.SerialCounterRepository;
 import com.sericulture.registration.repository.TraderLicenseRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -33,6 +39,9 @@ public class TraderLicenseService {
     @Autowired
     CustomValidator validator;
 
+    @Autowired
+    SerialCounterRepository serialCounterRepository;
+
     @Transactional
     public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest traderLicenseRequest){
         TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
@@ -45,6 +54,25 @@ public class TraderLicenseService {
         if(!traderLicenseList.isEmpty() && traderLicenseList.stream().filter(Predicate.not(TraderLicense::getActive)).findAny().isPresent()){
             throw new ValidationException("TraderLicense number already exist with inactive traderLicense");
         }*/
+        LocalDate today = Util.getISTLocalDate();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
+        String formattedDate = today.format(formatter);
+        List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
+        SerialCounter serialCounter = new SerialCounter();
+        if(serialCounters.size()>0){
+            serialCounter = serialCounters.get(0);
+            long counterValue = 1L;
+            if(serialCounter.getTraderCounterNumber() != null){
+                counterValue =serialCounter.getTraderCounterNumber() + 1;
+            }
+            serialCounter.setTraderCounterNumber(counterValue);
+        }else{
+            serialCounter.setTraderCounterNumber(1L);
+        }
+        serialCounterRepository.save(serialCounter);
+        String formattedNumber = String.format("%05d", serialCounter.getTraderCounterNumber());
+
+        traderLicense.setArnNumber("NTL/"+formattedDate+"/"+formattedNumber);
         return mapper.traderLicenseEntityToObject(traderLicenseRepository.save(traderLicense),TraderLicenseResponse.class);
     }
 
@@ -140,7 +168,7 @@ public class TraderLicenseService {
 */
         TraderLicense traderLicense = traderLicenseRepository.findByTraderLicenseIdAndActiveIn(traderLicenseRequest.getTraderLicenseId(), Set.of(true,false));
         if(Objects.nonNull(traderLicense)){
-            traderLicense.setArnNumber(traderLicenseRequest.getArnNumber());
+          //  traderLicense.setArnNumber(traderLicenseRequest.getArnNumber());
             traderLicense.setTraderTypeMasterId(traderLicenseRequest.getTraderTypeMasterId());
             traderLicense.setFirstName(traderLicenseRequest.getFirstName());
             traderLicense.setMiddleName(traderLicenseRequest.getMiddleName());
