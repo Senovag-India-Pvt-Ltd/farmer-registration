@@ -3,9 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.sericulture.parentpom</groupId>
-		<artifactId>parent-pom</artifactId>
-		<version>2.0.5</version>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.1.4</version>
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.sericulture.registration</groupId>
 	<artifactId>farmer-registration</artifactId>
@@ -114,6 +115,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.amazonaws</groupId>

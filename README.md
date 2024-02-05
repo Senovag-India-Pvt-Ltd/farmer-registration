@@ -15,3 +15,9 @@ http://localhost:8000/farmer-registration/swagger-ui.html
    check misc/postman
 
 
+How to Build and Run only for developer reference change directory-> pom file location
+
+1. mvn install:install-file -Dfile=lib\senovag-auth-module-develop-SNAPSHOT.jar -DpomFile=lib\senovag-auth-module-develop-SNAPSHOT.pom
+2. mvn clean install
+3. Run from IDEA tool
+
