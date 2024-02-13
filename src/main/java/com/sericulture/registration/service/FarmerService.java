@@ -439,14 +439,18 @@ public class FarmerService {
                 // log.info("ERROR FINDER getFruitsResponse.getGender(): " + getFruitsResponse.getGender());
                 // log.info("ERROR FINDER getFruitsResponse.getName(): " + getFruitsResponse.getName());
                 // log.info("ERROR FINDER typeOf: " + getFruitsResponse.getGender().getClass().getName() );
-
-                if (getFruitsResponse.getGender().equals("Male")) {
-                    farmer1.setGenderId(1L);
-                } else if (getFruitsResponse.getGender().equals("Female")) {
-                    farmer1.setGenderId(2L);
-                } else {
-                    farmer1.setGenderId(3L);
+                if(getFruitsResponse.getGender()!= null){
+                    if (getFruitsResponse.getGender().equals("Male")) {
+                        farmer1.setGenderId(1L);
+                    } else if (getFruitsResponse.getGender().equals("Female")) {
+                        farmer1.setGenderId(2L);
+                    } else {
+                        farmer1.setGenderId(3L);
+                    }
+                }else {
+                    farmer1.setGenderId(0L);
                 }
+
             /*CasteDTO casteDTO = new CasteDTO();
             casteDTO.setCaste(getFruitsResponse.getCaste());
             ResponseWrapper responseWrapper = getCaste(casteDTO);
