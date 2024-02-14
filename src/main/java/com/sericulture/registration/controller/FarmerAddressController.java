@@ -12,12 +12,16 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -26,6 +30,19 @@ public class FarmerAddressController {
 
     @Autowired
     FarmerAddressService farmerAddressService;
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, Object> response = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        response.put("validationErrors", errors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 
     @Operation(summary = "Insert FarmerAddress Details", description = "Creates FarmerAddress Details in to DB")
     @ApiResponses(value = {
@@ -39,7 +56,7 @@ public class FarmerAddressController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
     @PostMapping("/add")
-    public ResponseEntity<?> addFarmerAddressDetails(@RequestBody FarmerAddressRequest farmerAddressRequest){
+    public ResponseEntity<?> addFarmerAddressDetails(@Valid @RequestBody FarmerAddressRequest farmerAddressRequest){
         ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerAddressResponse.class);
 
         rw.setContent(farmerAddressService.insertFarmerAddressDetails(farmerAddressRequest));
@@ -102,7 +119,7 @@ public class FarmerAddressController {
     })
     @PostMapping("/edit")
     public ResponseEntity<?> editFarmerAddressDetails(
-            @RequestBody final EditFarmerAddressRequest editFarmerAddressRequest
+            @Valid @RequestBody final EditFarmerAddressRequest editFarmerAddressRequest
     ) {
         ResponseWrapper<FarmerAddressResponse> rw = ResponseWrapper.createWrapper(FarmerAddressResponse.class);
         rw.setContent(farmerAddressService.updateFarmerAddressDetails(editFarmerAddressRequest));

@@ -7,10 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.security.KeyManagementException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.security.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -21,10 +18,20 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.scheme.Scheme;
+
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContexts;
 import org.springframework.stereotype.Service;
 
 /**
@@ -50,19 +57,77 @@ public class GovtSMSService {
      * @return {@link String} response from Mobile Seva Gateway e.g. '402,MsgID = 150620161466003974245msdgsms'
      */
 
-    public String sendSingleSMS(String username, String password, String message, String senderId, String mobileNumber, String secureKey, String templateid) {
+//    public String sendSingleSMS(String username, String password, String message, String senderId, String mobileNumber, String secureKey, String templateid) {
+//        String responseString = "";
+//        SSLSocketFactory sf = null;
+//        SSLContext context = null;
+//        String encryptedPassword;
+//        try {
+//            //context=SSLContext.getInstance("TLSv1.1"); // Use this line for Java version 6
+//            context = SSLContext.getInstance("TLSv1.2"); // Use this line for Java version 7 and above
+//            context.init(null, null, null);
+//            sf = new SSLSocketFactory(context, SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
+//            Scheme scheme = new Scheme("https", 443, sf);
+//            HttpClient client = new DefaultHttpClient();
+//            client.getConnectionManager().getSchemeRegistry().register(scheme);
+//            HttpPost post = new HttpPost("http://smsmobileone.karnataka.gov.in/index.php/sendmsg");
+//            encryptedPassword = MD5(password);
+//            String genratedhashKey = hashGenerator(username, senderId, message, secureKey);
+//            List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>(1);
+//            // List<namevaluepair> nameValuePairs = new ArrayList<namevaluepair>(1);
+//            nameValuePairs.add(new BasicNameValuePair("mobileno", mobileNumber));
+//            nameValuePairs.add(new BasicNameValuePair("senderid", senderId));
+//            nameValuePairs.add(new BasicNameValuePair("content", message));
+//            nameValuePairs.add(new BasicNameValuePair("smsservicetype", "singlemsg"));
+//            nameValuePairs.add(new BasicNameValuePair("username", username));
+//            nameValuePairs.add(new BasicNameValuePair("password", encryptedPassword));
+//            nameValuePairs.add(new BasicNameValuePair("key", genratedhashKey));
+//            nameValuePairs.add(new BasicNameValuePair("templateid", templateid));
+//            post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+//            HttpResponse response = client.execute(post);
+//            BufferedReader bf = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+//            String line = "";
+//            while ((line = bf.readLine()) != null) {
+//                responseString = responseString + line;
+//
+//            }
+//            System.out.println(responseString);
+//        } catch (NoSuchAlgorithmException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch (KeyManagementException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch (UnsupportedEncodingException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch (ClientProtocolException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        return responseString;
+//    }
+
+    public String sendSingleSMS(String username, String password, String message, String senderId, String mobileNumber, String secureKey, String templateid) throws Exception {
         String responseString = "";
         SSLSocketFactory sf = null;
-        SSLContext context = null;
+        SSLContext context = SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
+        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(context, new NoopHostnameVerifier());
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create().register("https", sslsf).build();
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+        HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
         String encryptedPassword;
         try {
             //context=SSLContext.getInstance("TLSv1.1"); // Use this line for Java version 6
-            context = SSLContext.getInstance("TLSv1.2"); // Use this line for Java version 7 and above
-            context.init(null, null, null);
-            sf = new SSLSocketFactory(context, SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
-            Scheme scheme = new Scheme("https", 443, sf);
-            HttpClient client = new DefaultHttpClient();
-            client.getConnectionManager().getSchemeRegistry().register(scheme);
+//            context = SSLContext.getInstance("TLSv1.2"); // Use this line for Java version 7 and above
+//            context.init(null, null, null);
+//            sf = new SSLSocketFactory(context, SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
+//            Scheme scheme = new Scheme("https", 443, sf);
+           // HttpClient client = new DefaultHttpClient();
+           // client.getConnectionManager().getSchemeRegistry().register(scheme);
             HttpPost post = new HttpPost("http://smsmobileone.karnataka.gov.in/index.php/sendmsg");
             encryptedPassword = MD5(password);
             String genratedhashKey = hashGenerator(username, senderId, message, secureKey);
@@ -85,19 +150,7 @@ public class GovtSMSService {
 
             }
             System.out.println(responseString);
-        } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

@@ -2,6 +2,7 @@ package com.sericulture.registration.model.api.farmerAddress;
 
 import com.sericulture.registration.model.api.RequestBody;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 @AllArgsConstructor
@@ -32,9 +33,11 @@ public class EditFarmerAddressRequest extends RequestBody {
     @Schema(name = "villageId", example = "1", required = true)
     Long villageId;
 
+    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Address text must contain only letters and numbers")
     @Schema(name = "addressText", example = "Bengaluru", required = true)
     String addressText;
 
+    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Pincode must contain only letters and numbers")
     @Schema(name = "pincode", example = "566434", required = true)
     String pincode;
 
