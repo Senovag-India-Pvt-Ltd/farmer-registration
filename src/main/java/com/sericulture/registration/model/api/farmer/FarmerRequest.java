@@ -86,7 +86,7 @@ public class FarmerRequest extends RequestBody {
     @Schema(name = "khazaneRecipientId", example = "1")
     String khazaneRecipientId;
 
-    @Pattern(regexp = "^[a-zA-Z0-9/_\\s]*$", message = "Photopath must contain only letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9/_.\\s]*$", message = "Photopath must contain only letters and numbers")
     @Schema(name = "photoPath", example = "/example.jpg")
     String photoPath;
 
