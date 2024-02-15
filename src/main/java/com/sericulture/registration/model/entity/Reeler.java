@@ -212,4 +212,7 @@ public class Reeler extends BaseEntity implements Serializable {
 
     @Column(name = "reeler_name_kannada")
     private String reelerNameKannada;
+
+    @Column(name = "transfer_reeler_id")
+    private int transferReelerId;
 }

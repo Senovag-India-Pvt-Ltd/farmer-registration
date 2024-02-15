@@ -241,4 +241,7 @@ public class EditReelerRequest extends RequestBody {
     @Schema(name = "reelerNameKannada", example = "3674637")
     String reelerNameKannada;
 
+    @Schema(name = "transferReelerId", example = "1")
+    int transferReelerId;
+
 }

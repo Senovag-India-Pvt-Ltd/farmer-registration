@@ -237,4 +237,7 @@ public class ReelerRequest extends RequestBody {
     @Pattern(regexp = "^[a-zA-Z0-9\\s\\u0C80-\\u0CFF]*$", message = "Reeler name in kannada must contain only letters and numbers")
     @Schema(name = "reelerNameKannada", example = "3674637")
     String reelerNameKannada;
+
+    @Schema(name = "transferReelerId", example = "1")
+    int transferReelerId;
 }

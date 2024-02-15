@@ -87,20 +87,38 @@ public class ReelerService {
                 String formattedDate = today.format(formatter);
                 List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
                 SerialCounter serialCounter = new SerialCounter();
-                if(serialCounters.size()>0){
-                    serialCounter = serialCounters.get(0);
-                    long counterValue = 1L;
-                    if(serialCounter.getReelerCounterNumber() != null){
-                        counterValue =serialCounter.getReelerCounterNumber() + 1;
+                if(reelerRequest.getTransferReelerId() == 0) {
+                    if (serialCounters.size() > 0) {
+                        serialCounter = serialCounters.get(0);
+                        long counterValue = 1L;
+                        if (serialCounter.getReelerCounterNumber() != null) {
+                            counterValue = serialCounter.getReelerCounterNumber() + 1;
+                        }
+                        serialCounter.setReelerCounterNumber(counterValue);
+                    } else {
+                        serialCounter.setReelerCounterNumber(1L);
                     }
-                    serialCounter.setReelerCounterNumber(counterValue);
-                }else{
-                    serialCounter.setReelerCounterNumber(1L);
-                }
-                serialCounterRepository.save(serialCounter);
-                String formattedNumber = String.format("%05d", serialCounter.getReelerCounterNumber());
+                    serialCounterRepository.save(serialCounter);
+                    String formattedNumber = String.format("%05d", serialCounter.getReelerCounterNumber());
 
-                reeler.setArnNumber("NRL/"+formattedDate+"/"+formattedNumber);
+                    reeler.setArnNumber("NRL/"+formattedDate+"/"+formattedNumber);
+                }else{
+                    if (serialCounters.size() > 0) {
+                        serialCounter = serialCounters.get(0);
+                        long counterValue = 1L;
+                        if (serialCounter.getTransferReelerLicenseCounterNumber() != null) {
+                            counterValue = serialCounter.getTransferReelerLicenseCounterNumber() + 1;
+                        }
+                        serialCounter.setReelerCounterNumber(counterValue);
+                    } else {
+                        serialCounter.setReelerCounterNumber(1L);
+                    }
+                    serialCounterRepository.save(serialCounter);
+                    String formattedNumber = String.format("%05d", serialCounter.getReelerCounterNumber());
+
+                    reeler.setArnNumber("TRL/"+formattedDate+"/"+formattedNumber);
+                }
+
                 reelerResponse = mapper.reelerEntityToObject(reelerRepository.save(reeler), ReelerResponse.class);
                 reelerResponse.setError(false);
             }
