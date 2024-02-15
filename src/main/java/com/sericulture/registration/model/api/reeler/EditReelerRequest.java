@@ -107,7 +107,7 @@ public class EditReelerRequest extends RequestBody {
     @Schema(name = "inspectionDate", example = "2023-11-03 16:27:35.907")
     Date inspectionDate;
 
-    @Pattern(regexp = "^[a-zA-Z0-9/\\s]*$", message = "ARN Number must contain only letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9-/\\s]*$", message = "ARN Number must contain only letters and numbers")
     @Schema(name = "arnNumber", example = "34")
     String arnNumber;
 

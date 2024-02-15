@@ -16,7 +16,7 @@ public class EditTraderLicenseRequest extends RequestBody {
     @Schema(name = "traderLicenseId", example = "1")
     Long traderLicenseId;
 
-    @Pattern(regexp = "^[a-zA-Z0-9/\\s]*$", message = "ARN Number must contain only letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9-/\\s]*$", message = "ARN Number must contain only letters and numbers")
     @Schema(name = "arnNumber", example = "167676")
     String arnNumber;
 
