@@ -125,7 +125,7 @@ public class FarmerTypeService {
     @Transactional
     public FarmerTypeResponse updateFarmerTypeDetails(EditFarmerTypeRequest farmerTypeRequest) {
         FarmerTypeResponse farmerTypeResponse = new FarmerTypeResponse();
-        List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeNameAndFarmerTypeNameInKannada(farmerTypeRequest.getFarmerTypeName(),farmerTypeRequest.getFarmerTypeNameInKannada());
+        List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeNameAndFarmerTypeNameInKannadaAndFarmerTypeIdIsNot(farmerTypeRequest.getFarmerTypeName(),farmerTypeRequest.getFarmerTypeNameInKannada(), farmerTypeRequest.getFarmerTypeId());
         if (farmerTypeList.size() > 0) {
             farmerTypeResponse.setError(true);
             farmerTypeResponse.setError_description("Farmer Type already exists, duplicates are not allowed.");
