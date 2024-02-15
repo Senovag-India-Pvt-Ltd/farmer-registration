@@ -77,9 +77,9 @@ public class ReelerService {
             if (!reelerListByNumber.isEmpty() && reelerListByNumber.stream().anyMatch(Reeler::getActive)) {
                 reelerResponse.setError(true);
                 reelerResponse.setError_description("Reeler Number already exists");
-            } else if (!reelerListByNumber.isEmpty() && reelerListByNumber.stream().anyMatch(Predicate.not(Reeler::getActive))) {
-                reelerResponse.setError(true);
-                reelerResponse.setError_description("Reeler Number already exists with inactive state");
+//            } else if (!reelerListByNumber.isEmpty() && reelerListByNumber.stream().anyMatch(Predicate.not(Reeler::getActive))) {
+//                reelerResponse.setError(true);
+//                reelerResponse.setError_description("Reeler Number already exists with inactive state");
             } else {
                 // If no duplicates found, save the reeler
                 LocalDate today = Util.getISTLocalDate();

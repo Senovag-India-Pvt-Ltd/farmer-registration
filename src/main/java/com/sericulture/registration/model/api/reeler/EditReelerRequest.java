@@ -17,7 +17,7 @@ public class EditReelerRequest extends RequestBody {
     Long reelerId;
 
     @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Reeler name must contain only letters and numbers")
-    @Schema(name = "name", example = "Test")
+    @Schema(name = "reelerName", example = "Test")
     String reelerName;
 
     @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Ward number must contain only letters and numbers")
@@ -96,11 +96,11 @@ public class EditReelerRequest extends RequestBody {
     @Schema(name = "assignToInspectId", example = "1")
     Long assignToInspectId;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "GPS lat must contain only letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9.\\s]*$", message = "GPS lat must contain only letters and numbers")
     @Schema(name = "gpsLat", example = "123.454")
     String gpsLat;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "GPS Lng must contain only letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9.\\s]*$", message = "GPS Lng must contain only letters and numbers")
     @Schema(name = "gpsLng", example = "34.565")
     String gpsLng;
 
@@ -111,11 +111,11 @@ public class EditReelerRequest extends RequestBody {
     @Schema(name = "arnNumber", example = "34")
     String arnNumber;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "ChakBandi Lat must contain only letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9.\\s]*$", message = "ChakBandi Lat must contain only letters and numbers")
     @Schema(name = "chakbandiLat", example = "123.454")
     String chakbandiLat;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Chakbandi lng must contain only letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9.\\s]*$", message = "Chakbandi lng must contain only letters and numbers")
     @Schema(name = "chakbandiLng", example = "34.565")
     String chakbandiLng;
 
