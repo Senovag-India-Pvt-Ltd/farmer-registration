@@ -17,6 +17,10 @@ public class EducationResponse extends BaseResponse {
     int id;
     @Schema(name = "name", example = "Bachelor of Engineering")
     String name;
+
+    @Schema(name = "educationNameInKannada", example = "ಭಾಷೆ")
+    String educationNameInKannada;
+
     @Schema(name = "code", example = "BE")
     String code;
 }

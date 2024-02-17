@@ -22,7 +22,7 @@ public class Education extends BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EDUCATION_SEQ")
     @SequenceGenerator(name = "EDUCATION_SEQ", sequenceName = "EDUCATION_SEQ", allocationSize = 1)
     @Column(name = "EDUCATION_ID")
-    private Long id;
+    private Long educationId;
 
 
     @Size(min = 2, max = 250 , message = "Name should be more than 1 characters.")
@@ -32,5 +32,6 @@ public class Education extends BaseEntity implements Serializable {
     @Column(name = "EDUCATION_CODE")
     private String code;
 
-
+    @Column(name = "education_name_in_kannada")
+    private String educationNameInKannada;
 }
