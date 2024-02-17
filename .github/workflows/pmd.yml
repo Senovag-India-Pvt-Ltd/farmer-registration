@@ -1,5 +1,5 @@
 name: pmd
-on: [pull_request]
+on: [XXXXXX]
 jobs:
   pmd_job:
     runs-on: ubuntu-latest
