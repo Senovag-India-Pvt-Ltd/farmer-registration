@@ -31,7 +31,7 @@ public class FarmerBankAccountRequest extends RequestBody {
     @Schema(name = "farmerBankIfscCode", example = "SBI0005463")
     String farmerBankIfscCode;
 
-    @Pattern(regexp = "^[a-zA-Z0-9/._\\s]*$", message = "Account image path must contain only letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9-/._\\s]*$", message = "Account image path must contain only letters and numbers")
     @Schema(name = "accountImagePath", example = "/example.jpg")
     String accountImagePath;
 }
