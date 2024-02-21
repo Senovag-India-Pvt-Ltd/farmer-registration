@@ -48,9 +48,9 @@ public class EducationService {
         if(!educations.isEmpty() && educations.stream().filter(Education::getActive).findAny().isPresent()) {
             EducationResponse educationResponse = mapper.educationEntityToObject(educations.stream().filter(Education::getActive).findAny().get(), EducationResponse.class);
             return educationResponse;
-        } else if(!educations.isEmpty() && educations.stream().filter(Predicate.not(Education::getActive)).findAny().isPresent()) {
+        } /*else if(!educations.isEmpty() && educations.stream().filter(Predicate.not(Education::getActive)).findAny().isPresent()) {
             throw new ValidationException("Name already exists in Inactive State.");
-        }
+        }*/
         else {
            return mapper.educationEntityToObject(educationRepository.save(education), EducationResponse.class);
         }

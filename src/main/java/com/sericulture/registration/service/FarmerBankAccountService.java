@@ -65,10 +65,10 @@ public class FarmerBankAccountService {
         if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().filter(FarmerBankAccount::getActive).findAny().isPresent()) {
             farmerBankAccountResponse.setError(true);
             farmerBankAccountResponse.setError_description("FarmerBankAccount number already exist");
-        } else if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().filter(Predicate.not(FarmerBankAccount::getActive)).findAny().isPresent()) {
-            //throw new ValidationException("Village name already exist with inactive state");
-            farmerBankAccountResponse.setError(true);
-            farmerBankAccountResponse.setError_description("FarmerBankAccount number already exist with inactive state");
+//        } else if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().filter(Predicate.not(FarmerBankAccount::getActive)).findAny().isPresent()) {
+//            //throw new ValidationException("Village name already exist with inactive state");
+//            farmerBankAccountResponse.setError(true);
+//            farmerBankAccountResponse.setError_description("FarmerBankAccount number already exist with inactive state");
         } else {
             farmerBankAccountResponse = mapper.farmerBankAccountEntityToObject(farmerBankAccountRepository.save(farmerBankAccount), FarmerBankAccountResponse.class);
             farmerBankAccountResponse.setError(false);

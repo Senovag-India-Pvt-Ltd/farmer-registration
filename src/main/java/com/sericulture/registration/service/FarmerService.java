@@ -92,20 +92,20 @@ public class FarmerService {
         if(!farmerList.isEmpty() && farmerList.stream().filter(Farmer::getActive).findAny().isPresent()){
             farmerResponse.setError(true);
             farmerResponse.setError_description("Farmer number already exist");
-        }
-        else if(!farmerList.isEmpty() && farmerList.stream().filter(Predicate.not(Farmer::getActive)).findAny().isPresent()){
-            //throw new ValidationException("Village name already exist with inactive state");
-            farmerResponse.setError(true);
-            farmerResponse.setError_description("Farmer number already exist with inactive state");
+//        }
+//        else if(!farmerList.isEmpty() && farmerList.stream().filter(Predicate.not(Farmer::getActive)).findAny().isPresent()){
+//            //throw new ValidationException("Village name already exist with inactive state");
+//            farmerResponse.setError(true);
+//            farmerResponse.setError_description("Farmer number already exist with inactive state");
         }else{
             // Check for duplicate Reeler Number
             List<Farmer> farmerListByNumber = farmerRepository.findByMobileNumber(farmer.getMobileNumber());
             if (!farmerListByNumber.isEmpty() && farmerListByNumber.stream().anyMatch(Farmer::getActive)) {
                 farmerResponse.setError(true);
                 farmerResponse.setError_description("Farmer Mobile Number already exists");
-            } else if (!farmerListByNumber.isEmpty() && farmerListByNumber.stream().anyMatch(Predicate.not(Farmer::getActive))) {
-                farmerResponse.setError(true);
-                farmerResponse.setError_description("Farmer Mobile Number already exists with inactive state");
+//            } else if (!farmerListByNumber.isEmpty() && farmerListByNumber.stream().anyMatch(Predicate.not(Farmer::getActive))) {
+//                farmerResponse.setError(true);
+//                farmerResponse.setError_description("Farmer Mobile Number already exists with inactive state");
             } else {
                 // If no duplicates found, save the reeler
                 farmerResponse = mapper.farmerEntityToObject(farmerRepository.save(farmer), FarmerResponse.class);
