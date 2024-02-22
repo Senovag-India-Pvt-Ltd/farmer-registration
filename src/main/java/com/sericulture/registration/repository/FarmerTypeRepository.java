@@ -17,10 +17,13 @@ import java.util.Set;
 public interface FarmerTypeRepository extends PagingAndSortingRepository<FarmerType, Long> {
     public List<FarmerType> findByFarmerTypeName(String farmerTypeName);
 
+    public List<FarmerType> findByFarmerTypeNameAndFarmerTypeNameInKannadaAndActive(String farmerTypeName,String farmerTypeNameInKannada, boolean active);
+
     public List<FarmerType> findByFarmerTypeNameAndFarmerTypeNameInKannada(String farmerTypeName,String farmerTypeNameInKannada);
 
     public List<FarmerType> findByFarmerTypeNameAndFarmerTypeNameInKannadaAndFarmerTypeIdIsNot(String farmerTypeName,String farmerTypeNameInKannada, long id);
 
+    public List<FarmerType> findByFarmerTypeNameAndFarmerTypeNameInKannadaAndActiveAndFarmerTypeIdIsNot(String farmerTypeName,String farmerTypeNameInKannada, boolean isActive, long id);
     public List<FarmerType> findByFarmerTypeNameAndActive(String farmerTypeName,boolean isActive);
 
     public Page<FarmerType> findByActiveOrderByFarmerTypeNameAsc(boolean isActive, final Pageable pageable);
@@ -28,7 +31,6 @@ public interface FarmerTypeRepository extends PagingAndSortingRepository<FarmerT
     public FarmerType save(FarmerType farmerType);
 
     public FarmerType findByFarmerTypeIdAndActive(long id, boolean isActive);
-
     public FarmerType findByFarmerTypeIdAndActiveIn(@Param("farmerTypeId") long farmerLandDetailsId, @Param("active") Set<Boolean> active);
 
     public List<FarmerType> findByActive(boolean isActive);
