@@ -910,21 +910,23 @@ public class FarmerService {
             farmerResponse.setError(false);
         }
 
-        farmerId = farmer2.getFarmerId();
+        if(!farmerResponse.getError()) {
+            farmerId = farmer2.getFarmerId();
 
-        for (FarmerAddress farmerAddress : farmerRequest.getFarmerAddressList()) {
-            farmerAddress.setFarmerId(farmerId);
-            farmerAddressRepository.save(farmerAddress);
-        }
+            for (FarmerAddress farmerAddress : farmerRequest.getFarmerAddressList()) {
+                farmerAddress.setFarmerId(farmerId);
+                farmerAddressRepository.save(farmerAddress);
+            }
 
-        List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerRequest.getFarmerBankAccount().getFarmerBankAccountNumber());
-        if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().filter(FarmerBankAccount::getActive).findAny().isPresent()) {
-            farmerResponse.setError(true);
-            farmerResponse.setError_description("FarmerBankAccount number already exist");
-        }  else {
-            farmerRequest.getFarmerBankAccount().setFarmerId(farmerId);
-            FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerRequest.getFarmerBankAccount());
-            farmerResponse.setFarmerBankAccountId(farmerBankAccount1.getFarmerBankAccountId());
+            List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerRequest.getFarmerBankAccount().getFarmerBankAccountNumber());
+            if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().filter(FarmerBankAccount::getActive).findAny().isPresent()) {
+                farmerResponse.setError(true);
+                farmerResponse.setError_description("FarmerBankAccount number already exist");
+            } else {
+                farmerRequest.getFarmerBankAccount().setFarmerId(farmerId);
+                FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerRequest.getFarmerBankAccount());
+                farmerResponse.setFarmerBankAccountId(farmerBankAccount1.getFarmerBankAccountId());
+            }
         }
 
         return farmerResponse;
