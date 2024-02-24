@@ -85,6 +85,9 @@ public class FarmerService {
 
     @Transactional
     public FarmerResponse insertFarmerDetails(FarmerRequest farmerRequest){
+        if(farmerRequest.getIsOtherStateFarmer() == null){
+            farmerRequest.setIsOtherStateFarmer(false);
+        }
         FarmerResponse farmerResponse = new FarmerResponse();
         Farmer farmer = mapper.farmerObjectToEntity(farmerRequest,Farmer.class);
         validator.validate(farmer);
@@ -166,6 +169,9 @@ public class FarmerService {
 
     @Transactional
     public FarmerResponse updateFarmerDetails(EditFarmerRequest farmerRequest){
+        if(farmerRequest.getIsOtherStateFarmer() == null){
+            farmerRequest.setIsOtherStateFarmer(false);
+        }
         FarmerResponse farmerResponse = new FarmerResponse();
         /*List<Farmer> farmerList = farmerRepository.findByFarmerNumber(farmerRequest.getFarmerNumber());
         if(farmerList.size()>0){

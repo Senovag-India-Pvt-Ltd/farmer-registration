@@ -120,4 +120,7 @@ public class FarmerRequest extends RequestBody {
     @Pattern(regexp = "^[a-zA-Z0-9\\s\\u0C80-\\u0CFF]*$", message = "Name in kannada must contain only letters and numbers")
     @Schema(name = "nameKan", example = "test")
     private String nameKan;
+
+    @Schema(name = "isOtherStateFarmer", example = "0")
+    private Boolean isOtherStateFarmer;
 }

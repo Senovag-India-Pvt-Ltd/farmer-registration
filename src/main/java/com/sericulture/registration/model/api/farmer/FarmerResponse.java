@@ -120,4 +120,7 @@ public class FarmerResponse {
 
     @Schema(name = "error_description", example = "Username or password is incorrect")
     String error_description;
+
+    @Schema(name = "isOtherStateFarmer", example = "0")
+    private Boolean isOtherStateFarmer;
 }
