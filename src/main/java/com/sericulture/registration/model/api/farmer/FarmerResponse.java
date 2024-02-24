@@ -123,4 +123,7 @@ public class FarmerResponse {
 
     @Schema(name = "isOtherStateFarmer", example = "0")
     private Boolean isOtherStateFarmer;
+
+    @Schema(name = "farmerBankAccountId", example = "1")
+    private Long farmerBankAccountId;
 }
