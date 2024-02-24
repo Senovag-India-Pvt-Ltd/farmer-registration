@@ -10,6 +10,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -19,6 +20,8 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
     public ExternalUnitRegistration save(ExternalUnitRegistration farmerAddress);
 
     public ExternalUnitRegistration findByExternalUnitRegistrationIdAndActive(long id, boolean isActive);
+
+    List<ExternalUnitRegistration> findByExternalUnitTypeIdAndActive(long externalUnitTypeId, boolean active);
 
     public ExternalUnitRegistration findByExternalUnitRegistrationIdAndActiveIn(@Param("externalUnitRegistrationId") long externalUnitRegistrationId, @Param("active") Set<Boolean> active);
 

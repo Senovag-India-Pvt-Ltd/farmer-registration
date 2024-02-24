@@ -220,4 +220,23 @@ public class ExternalUnitRegistrationController {
         rw.setContent(externalUnitRegistrationService.getPaginatedExternalUnitRegistrationDetailsWithJoin(PageRequest.of(pageNumber, size)));
         return ResponseEntity.ok(rw);
     }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Object saved details"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @PostMapping("/get-by-external-unit-type-id")
+    public ResponseEntity<?> getByExternalUnitTypeId(
+            @Valid @RequestBody final EditExternalUnitRegistrationRequest editExternalUnitRegistrationRequest
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(Map.class);
+        rw.setContent(externalUnitRegistrationService.getExternalUnitRegistrationByExternalUnitId(editExternalUnitRegistrationRequest.getExternalUnitTypeId()));
+        return ResponseEntity.ok(rw);
+    }
 }
