@@ -36,4 +36,10 @@ public class SerialCounter extends BaseEntity implements Serializable {
 
     @Column(name = "other_state_farmer_counter")
     private Long otherStateFarmerCounter;
+
+    @Column(name = "farmer_without_fruits_allowed_number")
+    private Long farmerWithoutFruitsAllowedNumber;
+
+    @Column(name = "farmer_fruits_id_counter_number")
+    private Long farmerFruitsIdCounterNumber;
 }

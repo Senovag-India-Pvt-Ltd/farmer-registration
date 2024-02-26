@@ -126,4 +126,7 @@ public class FarmerResponse {
 
     @Schema(name = "farmerBankAccountId", example = "1")
     private Long farmerBankAccountId;
+
+    @Schema(name = "withoutFruitsInwardCounter", example = "1")
+    private Long withoutFruitsInwardCounter;
 }
