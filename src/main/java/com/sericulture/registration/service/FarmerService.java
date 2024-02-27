@@ -580,7 +580,7 @@ public class FarmerService {
             if(farmer.getWithoutFruitsInwardCounter() == null){
                 farmer.setWithoutFruitsInwardCounter(0L);
             }
-            if(farmer.getWithoutFruitsInwardCounter()> serialCounter.getFarmerWithoutFruitsAllowedNumber()){
+            if(farmer.getWithoutFruitsInwardCounter()> serialCounter.getFarmerWithoutFruitsAllowedNumber() && (farmer.getFruitsId().equals("") || farmer.getFruitsId() == null)){
                 getFarmerResponse.setError(true);
                 getFarmerResponse.setError_description("Maximum allowance of allotment for farmer is reached. Please come back with fruits id.");
             }else {
@@ -816,6 +816,9 @@ public class FarmerService {
         if (searchWithSortRequest.getPageSize() == null || searchWithSortRequest.getPageSize().equals("")) {
             searchWithSortRequest.setPageSize("5");
         }
+        if (searchWithSortRequest.getFarmerType() == null || searchWithSortRequest.getFarmerType().equals("")) {
+            searchWithSortRequest.setFarmerType("0");
+        }
         Sort sort;
         if (searchWithSortRequest.getSortOrder().equals("asc")) {
             sort = Sort.by(Sort.Direction.ASC, searchWithSortRequest.getSortColumn());
@@ -823,7 +826,17 @@ public class FarmerService {
             sort = Sort.by(Sort.Direction.DESC, searchWithSortRequest.getSortColumn());
         }
         Pageable pageable = PageRequest.of(Integer.parseInt(searchWithSortRequest.getPageNumber()), Integer.parseInt(searchWithSortRequest.getPageSize()), sort);
-        Page<FarmerDTO> farmerDTOS = farmerRepository.getSortedFarmers(searchWithSortRequest.getJoinColumn(), searchWithSortRequest.getSearchText(), true, pageable);
+        Page<FarmerDTO> farmerDTOS;
+        if(searchWithSortRequest.getFarmerType().equals("0")) {
+            farmerDTOS = farmerRepository.getSortedFarmers(searchWithSortRequest.getJoinColumn(), searchWithSortRequest.getSearchText(), true, pageable);
+            // }else if(searchWithSortRequest.getFarmerType().equals("1")){
+        }else{
+            farmerDTOS = farmerRepository.getSortedFarmersForKAWithFruits(searchWithSortRequest.getJoinColumn(), searchWithSortRequest.getSearchText(), true, pageable);
+        }/*else if(searchWithSortRequest.getFarmerType().equals("2")){
+
+        }else{
+
+        }*/
         log.info("Entity is ", farmerDTOS);
         return convertPageableDTOToMapResponse(farmerDTOS);
     }
