@@ -827,16 +827,16 @@ public class FarmerService {
         }
         Pageable pageable = PageRequest.of(Integer.parseInt(searchWithSortRequest.getPageNumber()), Integer.parseInt(searchWithSortRequest.getPageSize()), sort);
         Page<FarmerDTO> farmerDTOS;
-        if(searchWithSortRequest.getFarmerType().equals("0")) {
+        //if(searchWithSortRequest.getFarmerType().equals("0")) {
             farmerDTOS = farmerRepository.getSortedFarmers(searchWithSortRequest.getJoinColumn(), searchWithSortRequest.getSearchText(), true, pageable);
             // }else if(searchWithSortRequest.getFarmerType().equals("1")){
-        }else{
-            farmerDTOS = farmerRepository.getSortedFarmersForKAWithFruits(searchWithSortRequest.getJoinColumn(), searchWithSortRequest.getSearchText(), true, pageable);
-        }/*else if(searchWithSortRequest.getFarmerType().equals("2")){
+//        }else{
+//            farmerDTOS = farmerRepository.getSortedFarmersForKAWithFruits(searchWithSortRequest.getJoinColumn(), searchWithSortRequest.getSearchText(), true, pageable);
+//        }/*else if(searchWithSortRequest.getFarmerType().equals("2")){
 
-        }else{
+        //}else{
 
-        }*/
+        //}*/
         log.info("Entity is ", farmerDTOS);
         return convertPageableDTOToMapResponse(farmerDTOS);
     }
