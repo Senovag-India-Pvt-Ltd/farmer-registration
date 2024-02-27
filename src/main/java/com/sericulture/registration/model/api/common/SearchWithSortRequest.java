@@ -33,4 +33,8 @@ public class SearchWithSortRequest {
     @Pattern(regexp = "^[0-9]*$", message = "Page size must contain only numbers")
     @Schema(name = "pageSize", example = "10")
     String pageSize;
+
+    @Pattern(regexp = "^[0-9]*$", message = "Farmer type must contain only numbers")
+    @Schema(name = "farmerType", example = "0")
+    String farmerType;
 }
