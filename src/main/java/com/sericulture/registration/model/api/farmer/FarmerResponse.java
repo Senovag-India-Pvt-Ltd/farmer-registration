@@ -129,4 +129,7 @@ public class FarmerResponse {
 
     @Schema(name = "withoutFruitsInwardCounter", example = "1")
     private Long withoutFruitsInwardCounter;
+
+    @Schema(name = "configuredInward", example = "1")
+    private Long configuredInward;
 }

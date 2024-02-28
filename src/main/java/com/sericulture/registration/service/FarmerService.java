@@ -1063,6 +1063,22 @@ public class FarmerService {
     }
 
     @Transactional
+    public FarmerResponse getConfiguredInward() {
+        FarmerResponse farmerResponse = new FarmerResponse();
+        List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
+        SerialCounter serialCounter = new SerialCounter();
+        if (serialCounters.size() > 0) {
+            serialCounter = serialCounters.get(0);
+        }else{
+            serialCounter.setFarmerWithoutFruitsAllowedNumber(0L);
+        }
+
+        farmerResponse.setError(false);
+        farmerResponse.setConfiguredInward(serialCounter.getFarmerWithoutFruitsAllowedNumber());
+        return farmerResponse;
+    }
+
+    @Transactional
     public FarmerResponse updateFarmerWithoutFruitsIdCounter(UpdateFruitsIdAllowedCounter farmerRequest) throws Exception {
         FarmerResponse farmerResponse = new FarmerResponse();
         Farmer farmer = farmerRepository.findByFarmerIdAndActive(farmerRequest.getFarmerId(), true);
