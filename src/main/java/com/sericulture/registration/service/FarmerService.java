@@ -784,6 +784,26 @@ public class FarmerService {
         return convertDTOToMapResponse(farmerRepository.getByActiveOrderByFarmerIdAsc(true, pageable));
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText) {
+        Page<FarmerDTO> page;
+        if (searchText == null || searchText.equals("")) {
+            searchText = "%%";
+        } else {
+            searchText = "%" + searchText + "%";
+        }
+        if(type == 0){
+            page = farmerRepository.getByActiveOrderByFarmerIdAsc(true, searchText,pageable);
+        }else if(type == 1) {
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmers(true, searchText, pageable);
+        }else if(type == 2){
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, searchText, pageable);
+        }else{
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(true,searchText, pageable);
+        }
+        return convertDTOToMapResponse(page);
+    }
+
 
     private Map<String, Object> convertDTOToMapResponse(final Page<FarmerDTO> activeFarmers) {
         Map<String, Object> response = new HashMap<>();
