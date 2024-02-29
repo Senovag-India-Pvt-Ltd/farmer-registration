@@ -64,6 +64,25 @@ public class ReelerController {
         return ResponseEntity.ok(rw);
     }
 
+    @Operation(summary = "Insert Reeler Details", description = "Creates Reeler Details in to DB")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Reeler name should be more than 1 characters.\",\"label\":\"name\",\"locale\":null}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @PostMapping("/transfer-reeler-license")
+    public ResponseEntity<?> transferReelerLicense(@Valid @RequestBody ReelerRequest reelerRequest){
+        ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerResponse.class);
+
+        rw.setContent(reelerService.insertTransferReelerDetails(reelerRequest));
+        return ResponseEntity.ok(rw);
+    }
+
     @GetMapping("/list")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "No Content - inserted successfully",content =

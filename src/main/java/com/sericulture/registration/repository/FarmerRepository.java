@@ -65,7 +65,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " caste.title, " +
             " landCategory.landCategoryName, " +
             " farmerType.farmerTypeName, " +
-            " education.name" +
+            " education.name," +
+            " farmer.isOtherStateFarmer " +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -112,7 +113,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " caste.title, " +
             " landCategory.landCategoryName, " +
             " farmerType.farmerTypeName, " +
-            " education.name" +
+            " education.name," +
+            " farmer.isOtherStateFarmer " +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -161,7 +163,208 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " caste.title, " +
             " landCategory.landCategoryName, " +
             " farmerType.farmerTypeName, " +
-            " education.name" +
+            " education.name," +
+            " farmer.isOtherStateFarmer " +
+            ") " +
+            "from Farmer farmer " +
+            "left join Caste caste " +
+            "on farmer.casteId = caste.casteId " +
+            "left join LandCategory landCategory " +
+            "on farmer.landCategoryId = landCategory.landCategoryId " +
+            "left join FarmerType farmerType " +
+            "on farmer.farmerTypeId = farmerType.farmerTypeId " +
+            "left join Education education " +
+            "on farmer.educationId = education.educationId " +
+            "where farmer.active = :isActive and farmer.farmerNumber like :searchText " +
+            "ORDER BY farmer.farmerNumber ASC"
+    )
+    Page<FarmerDTO> getByActiveOrderByFarmerIdAsc(@Param("isActive") boolean isActive, @Param("searchText") String searchText, final Pageable pageable);
+
+    @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
+            " farmer.farmerId, " +
+            " farmer.farmerNumber, " +
+            " farmer.fruitsId, " +
+            " farmer.firstName, " +
+            " farmer.middleName, " +
+            " farmer.lastName, " +
+            " farmer.dob, " +
+            " farmer.genderId, " +
+            " farmer.casteId, " +
+            " farmer.differentlyAbled, " +
+            " farmer.email, " +
+            " farmer.mobileNumber, " +
+            " farmer.epicNumber, " +
+            " farmer.rationCardNumber, " +
+            " farmer.totalLandHolding, " +
+            " farmer.passbookNumber, " +
+            " farmer.landCategoryId, " +
+            " farmer.educationId, " +
+            " farmer.representativeId, " +
+            " farmer.khazaneRecipientId, " +
+            " farmer.photoPath, " +
+            " farmer.farmerTypeId, " +
+            " farmer.minority, " +
+            " farmer.rdNumber, " +
+            " farmer.casteStatus, " +
+            " farmer.genderStatus, " +
+            " farmer.fatherNameKan, " +
+            " farmer.fatherName, " +
+            " farmer.nameKan, " +
+            " caste.title, " +
+            " landCategory.landCategoryName, " +
+            " farmerType.farmerTypeName, " +
+            " education.name," +
+            " farmer.isOtherStateFarmer " +
+            ") " +
+            "from Farmer farmer " +
+            "left join Caste caste " +
+            "on farmer.casteId = caste.casteId " +
+            "left join LandCategory landCategory " +
+            "on farmer.landCategoryId = landCategory.landCategoryId " +
+            "left join FarmerType farmerType " +
+            "on farmer.farmerTypeId = farmerType.farmerTypeId " +
+            "left join Education education " +
+            "on farmer.educationId = education.educationId " +
+            "where farmer.active = :isActive and farmer.isOtherStateFarmer = true and farmer.farmerNumber like :searchText " +
+            "ORDER BY farmer.farmerNumber ASC"
+    )
+    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForNonKAFarmers(@Param("isActive") boolean isActive, @Param("searchText") String searchText, final Pageable pageable);
+
+    @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
+            " farmer.farmerId, " +
+            " farmer.farmerNumber, " +
+            " farmer.fruitsId, " +
+            " farmer.firstName, " +
+            " farmer.middleName, " +
+            " farmer.lastName, " +
+            " farmer.dob, " +
+            " farmer.genderId, " +
+            " farmer.casteId, " +
+            " farmer.differentlyAbled, " +
+            " farmer.email, " +
+            " farmer.mobileNumber, " +
+            " farmer.epicNumber, " +
+            " farmer.rationCardNumber, " +
+            " farmer.totalLandHolding, " +
+            " farmer.passbookNumber, " +
+            " farmer.landCategoryId, " +
+            " farmer.educationId, " +
+            " farmer.representativeId, " +
+            " farmer.khazaneRecipientId, " +
+            " farmer.photoPath, " +
+            " farmer.farmerTypeId, " +
+            " farmer.minority, " +
+            " farmer.rdNumber, " +
+            " farmer.casteStatus, " +
+            " farmer.genderStatus, " +
+            " farmer.fatherNameKan, " +
+            " farmer.fatherName, " +
+            " farmer.nameKan, " +
+            " caste.title, " +
+            " landCategory.landCategoryName, " +
+            " farmerType.farmerTypeName, " +
+            " education.name," +
+            " farmer.isOtherStateFarmer " +
+            ") " +
+            "from Farmer farmer " +
+            "left join Caste caste " +
+            "on farmer.casteId = caste.casteId " +
+            "left join LandCategory landCategory " +
+            "on farmer.landCategoryId = landCategory.landCategoryId " +
+            "left join FarmerType farmerType " +
+            "on farmer.farmerTypeId = farmerType.farmerTypeId " +
+            "left join Education education " +
+            "on farmer.educationId = education.educationId " +
+            "where farmer.active = :isActive and (farmer.isOtherStateFarmer = false or farmer.isOtherStateFarmer is null) and (farmer.fruitsId != '' and farmer.fruitsId is not null) and farmer.farmerNumber like :searchText " +
+            "ORDER BY farmer.farmerNumber ASC"
+    )
+    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(@Param("isActive") boolean isActive, @Param("searchText") String searchText, final Pageable pageable);
+
+    @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
+            " farmer.farmerId, " +
+            " farmer.farmerNumber, " +
+            " farmer.fruitsId, " +
+            " farmer.firstName, " +
+            " farmer.middleName, " +
+            " farmer.lastName, " +
+            " farmer.dob, " +
+            " farmer.genderId, " +
+            " farmer.casteId, " +
+            " farmer.differentlyAbled, " +
+            " farmer.email, " +
+            " farmer.mobileNumber, " +
+            " farmer.epicNumber, " +
+            " farmer.rationCardNumber, " +
+            " farmer.totalLandHolding, " +
+            " farmer.passbookNumber, " +
+            " farmer.landCategoryId, " +
+            " farmer.educationId, " +
+            " farmer.representativeId, " +
+            " farmer.khazaneRecipientId, " +
+            " farmer.photoPath, " +
+            " farmer.farmerTypeId, " +
+            " farmer.minority, " +
+            " farmer.rdNumber, " +
+            " farmer.casteStatus, " +
+            " farmer.genderStatus, " +
+            " farmer.fatherNameKan, " +
+            " farmer.fatherName, " +
+            " farmer.nameKan, " +
+            " caste.title, " +
+            " landCategory.landCategoryName, " +
+            " farmerType.farmerTypeName, " +
+            " education.name," +
+            " farmer.isOtherStateFarmer " +
+            ") " +
+            "from Farmer farmer " +
+            "left join Caste caste " +
+            "on farmer.casteId = caste.casteId " +
+            "left join LandCategory landCategory " +
+            "on farmer.landCategoryId = landCategory.landCategoryId " +
+            "left join FarmerType farmerType " +
+            "on farmer.farmerTypeId = farmerType.farmerTypeId " +
+            "left join Education education " +
+            "on farmer.educationId = education.educationId " +
+            "where farmer.active = :isActive and (farmer.isOtherStateFarmer = false or farmer.isOtherStateFarmer is NULL) and (farmer.fruitsId = '' or farmer.fruitsId is null) and farmer.farmerNumber like :searchText " +
+            "ORDER BY farmer.farmerNumber ASC"
+    )
+    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(@Param("isActive") boolean isActive, @Param("searchText") String searchText, final Pageable pageable);
+
+    @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
+            " farmer.farmerId, " +
+            " farmer.farmerNumber, " +
+            " farmer.fruitsId, " +
+            " farmer.firstName, " +
+            " farmer.middleName, " +
+            " farmer.lastName, " +
+            " farmer.dob, " +
+            " farmer.genderId, " +
+            " farmer.casteId, " +
+            " farmer.differentlyAbled, " +
+            " farmer.email, " +
+            " farmer.mobileNumber, " +
+            " farmer.epicNumber, " +
+            " farmer.rationCardNumber, " +
+            " farmer.totalLandHolding, " +
+            " farmer.passbookNumber, " +
+            " farmer.landCategoryId, " +
+            " farmer.educationId, " +
+            " farmer.representativeId, " +
+            " farmer.khazaneRecipientId, " +
+            " farmer.photoPath, " +
+            " farmer.farmerTypeId, " +
+            " farmer.minority, " +
+            " farmer.rdNumber, " +
+            " farmer.casteStatus, " +
+            " farmer.genderStatus, " +
+            " farmer.fatherNameKan, " +
+            " farmer.fatherName, " +
+            " farmer.nameKan, " +
+            " caste.title, " +
+            " landCategory.landCategoryName, " +
+            " farmerType.farmerTypeName, " +
+            " education.name," +
+            " farmer.isOtherStateFarmer " +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +

@@ -43,6 +43,7 @@ public class FarmerDTO {
     private String landCategoryName;
     private String farmerTypeName;
     private String name;
+    private Boolean isOtherStateFarmer;
 
 
 }

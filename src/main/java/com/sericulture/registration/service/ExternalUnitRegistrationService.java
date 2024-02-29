@@ -87,6 +87,21 @@ public class ExternalUnitRegistrationService {
         return response;
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> getExternalUnitRegistrationByExternalUnitId(Long externalUnitTypeId){
+        return convertListToMapResponse(externalUnitRegistrationRepository.findByExternalUnitTypeIdAndActive( externalUnitTypeId,true));
+    }
+
+    private Map<String, Object> convertListToMapResponse(final List<ExternalUnitRegistration> activeExternalUnitRegistrations) {
+        Map<String, Object> response = new HashMap<>();
+
+        List<ExternalUnitRegistrationResponse> externalUnitRegistrationResponses = activeExternalUnitRegistrations.stream()
+                .map(externalUnitRegistration -> mapper.externalUnitRegistrationEntityToObject(externalUnitRegistration,ExternalUnitRegistrationResponse.class)).collect(Collectors.toList());
+        response.put("externalUnitRegistration",externalUnitRegistrationResponses);
+        response.put("totalItems", activeExternalUnitRegistrations.size());
+        return response;
+    }
+
     @Transactional
     public ExternalUnitRegistrationResponse deleteExternalUnitRegistrationDetails(long id) {
         ExternalUnitRegistrationResponse externalUnitRegistrationResponse = new ExternalUnitRegistrationResponse();

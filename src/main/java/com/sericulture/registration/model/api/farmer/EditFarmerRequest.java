@@ -2,6 +2,7 @@ package com.sericulture.registration.model.api.farmer;
 
 import com.sericulture.registration.model.api.RequestBody;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
@@ -123,4 +124,7 @@ public class EditFarmerRequest extends RequestBody {
     @Pattern(regexp = "^[a-zA-Z0-9\\s\\u0C80-\\u0CFF]*$", message = "Name in kannada must contain only letters and numbers")
     @Schema(name = "nameKan", example = "test")
     private String nameKan;
+
+    @Schema(name = "isOtherStateFarmer", example = "0")
+    private Boolean isOtherStateFarmer;
 }

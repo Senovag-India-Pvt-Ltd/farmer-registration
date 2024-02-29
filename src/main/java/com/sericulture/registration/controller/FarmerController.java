@@ -361,6 +361,32 @@ public class FarmerController {
         return ResponseEntity.ok(rw);
     }
 
+    @GetMapping("/list-with-join-with-filters")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No Content - inserted successfully",content =
+                    {
+                            @Content(mediaType = "application/json", schema =
+                            @Schema(example = "{\"content\":{\"totalItems\":6,\"farmer\":[{\"id\":10,\"farmerName\":\"\",\"farmerId\":1,},{\"id\":11,\"farmerName\":\"Shimoga\",\"farmerId\":1,},{\"id\":13,\"farmerName\":\"Hubli\",\"farmerId\":1,}],\"totalPages\":1,\"currentPage\":0},\"errorMessages\":[]}"))
+                    }),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    public ResponseEntity<?> getPaginatedListWithJoinWIthFilters(
+            @RequestParam(defaultValue = "0") final Integer pageNumber,
+            @RequestParam(defaultValue = "5") final Integer size,
+            @RequestParam(defaultValue = "0") final Integer type,
+            @RequestParam(defaultValue = "") final String searchText
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(Map.class);
+        rw.setContent(farmerService.getPaginatedFarmerDetailsWithJoinWithFilters(PageRequest.of(pageNumber, size), type, searchText));
+        return ResponseEntity.ok(rw);
+    }
+
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Object saved details"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
@@ -387,6 +413,101 @@ public class FarmerController {
         ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerBankAccountResponse.class);
 
         rw.setContent(farmerService.updatePhotoPath(multipartFile, farmerId));
+        return ResponseEntity.ok(rw);
+    }
+
+    @Operation(summary = "Insert Non Karnataka Farmer Details", description = "Creates Farmer Details in to DB")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Farmer name should be more than 1 characters.\",\"label\":\"name\",\"locale\":null}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @PostMapping("/add-non-karnataka-farmer")
+    public ResponseEntity<?> addNonKarnatakaFarmerDetails(@Valid @RequestBody NonKarnatakaFarmerRequest farmerRequest) throws Exception {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerResponse.class);
+
+        rw.setContent(farmerService.insertNonKarnatakaFarmers(farmerRequest));
+        return ResponseEntity.ok(rw);
+    }
+
+    @Operation(summary = "Insert Non Karnataka Farmer Details", description = "Creates Farmer Details in to DB")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Farmer name should be more than 1 characters.\",\"label\":\"name\",\"locale\":null}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @PostMapping("/add-karnataka-farmer-without-fruits-id")
+    public ResponseEntity<?> addKarnatakaFarmerWithoutFruitsIdDetails(@Valid @RequestBody NonKarnatakaFarmerRequest farmerRequest) throws Exception {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerResponse.class);
+
+        rw.setContent(farmerService.insertKarnatakaFarmersWithoutFruitsId(farmerRequest));
+        return ResponseEntity.ok(rw);
+    }
+
+    @Operation(summary = "Insert Non Karnataka Farmer Details", description = "Creates Farmer Details in to DB")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Farmer name should be more than 1 characters.\",\"label\":\"name\",\"locale\":null}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @PostMapping("/configure-fruits-id-allowed-no-counter")
+    public ResponseEntity<?> configureFruitsIdAllowedNoCounter(@Valid @RequestBody FruitsIdAllowedCounterRequest farmerRequest) throws Exception {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerResponse.class);
+
+        rw.setContent(farmerService.configureFruitsIdAllowedNoCounter(farmerRequest));
+        return ResponseEntity.ok(rw);
+    }
+
+    @Operation(summary = "Insert Non Karnataka Farmer Details", description = "Creates Farmer Details in to DB")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Farmer name should be more than 1 characters.\",\"label\":\"name\",\"locale\":null}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @GetMapping("/get-inward-counter")
+    public ResponseEntity<?> getInwardCounter() throws Exception {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerResponse.class);
+
+        rw.setContent(farmerService.getConfiguredInward());
+        return ResponseEntity.ok(rw);
+    }
+
+    @Operation(summary = "Insert Non Karnataka Farmer Details", description = "Creates Farmer Details in to DB")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Farmer name should be more than 1 characters.\",\"label\":\"name\",\"locale\":null}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @PostMapping("/update-farmer-without-fruits-id-counter")
+    public ResponseEntity<?> updateFarmerWithoutFruitsIdCounter(@Valid @RequestBody UpdateFruitsIdAllowedCounter farmerRequest) throws Exception {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerResponse.class);
+
+        rw.setContent(farmerService.updateFarmerWithoutFruitsIdCounter(farmerRequest));
         return ResponseEntity.ok(rw);
     }
 }

@@ -120,4 +120,16 @@ public class FarmerResponse {
 
     @Schema(name = "error_description", example = "Username or password is incorrect")
     String error_description;
+
+    @Schema(name = "isOtherStateFarmer", example = "0")
+    private Boolean isOtherStateFarmer;
+
+    @Schema(name = "farmerBankAccountId", example = "1")
+    private Long farmerBankAccountId;
+
+    @Schema(name = "withoutFruitsInwardCounter", example = "1")
+    private Long withoutFruitsInwardCounter;
+
+    @Schema(name = "configuredInward", example = "1")
+    private Long configuredInward;
 }
