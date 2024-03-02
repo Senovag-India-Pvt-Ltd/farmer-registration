@@ -1,6 +1,7 @@
 package com.sericulture.registration.controller;
 
 import com.sericulture.registration.model.ResponseWrapper;
+import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.externalUnitRegistration.EditExternalUnitRegistrationRequest;
 import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationRequest;
 import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationResponse;
@@ -237,6 +238,25 @@ public class ExternalUnitRegistrationController {
     ) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(Map.class);
         rw.setContent(externalUnitRegistrationService.getExternalUnitRegistrationByExternalUnitId(editExternalUnitRegistrationRequest.getExternalUnitTypeId()));
+        return ResponseEntity.ok(rw);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Object saved details"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @PostMapping("/search")
+    public ResponseEntity<?> search(
+            @Valid @RequestBody final SearchWithSortRequest searchWithSortRequest
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(Map.class);
+        rw.setContent(externalUnitRegistrationService.searchByColumnAndSort(searchWithSortRequest));
         return ResponseEntity.ok(rw);
     }
 }

@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class ReelerRequest extends RequestBody {
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Reeler name must contain only letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9._@ ]*$", message = "Reeler name must contain only letters and numbers")
     @Schema(name = "reelerName", example = "Test")
     String reelerName;
 
@@ -74,7 +74,7 @@ public class ReelerRequest extends RequestBody {
     @Schema(name = "recipientId", example = "675687787")
     String recipientId;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Mahajar details must contain only letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9/-_. \\\\s]*$", message = "Mahajar details document should not contain special characters")
     @Schema(name = "mahajarDetails", example = "Test")
     String mahajarDetails;
 
