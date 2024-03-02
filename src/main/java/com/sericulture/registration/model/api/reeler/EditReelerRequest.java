@@ -16,7 +16,7 @@ public class EditReelerRequest extends RequestBody {
     @Schema(name = "reelerId", example = "1")
     Long reelerId;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Reeler name must contain only letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9._@ ]*$", message = "Reeler name must contain only letters and numbers")
     @Schema(name = "reelerName", example = "Test")
     String reelerName;
 
