@@ -1,5 +1,6 @@
 package com.sericulture.registration.service;
 
+import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationResponse;
 import com.sericulture.registration.model.api.externalUnitRegistration.EditExternalUnitRegistrationRequest;
 import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationRequest;
@@ -14,7 +15,9 @@ import com.sericulture.registration.repository.ExternalUnitRegistrationRepositor
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -176,4 +179,50 @@ public class ExternalUnitRegistrationService {
         }
         return externalUnitRegistrationResponse;
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> searchByColumnAndSort(SearchWithSortRequest searchWithSortRequest){
+        if(searchWithSortRequest.getSearchText() == null || searchWithSortRequest.getSearchText().equals("")){
+            searchWithSortRequest.setSearchText("%%");
+        }else{
+            searchWithSortRequest.setSearchText("%" + searchWithSortRequest.getSearchText() + "%");
+        }
+        if(searchWithSortRequest.getSortColumn() == null || searchWithSortRequest.getSortColumn().equals("")){
+            searchWithSortRequest.setSortColumn("externalUnitType.externalUnitTypeName");
+        }
+        if(searchWithSortRequest.getSortOrder() == null || searchWithSortRequest.getSortOrder().equals("")){
+            searchWithSortRequest.setSortOrder("asc");
+        }
+        if(searchWithSortRequest.getPageNumber() == null || searchWithSortRequest.getPageNumber().equals("")){
+            searchWithSortRequest.setPageNumber("0");
+        }
+        if(searchWithSortRequest.getPageSize() == null || searchWithSortRequest.getPageSize().equals("")){
+            searchWithSortRequest.setPageSize("5");
+        }
+        Sort sort;
+        if(searchWithSortRequest.getSortOrder().equals("asc")){
+            sort = Sort.by(Sort.Direction.ASC, searchWithSortRequest.getSortColumn());
+        }else{
+            sort = Sort.by(Sort.Direction.DESC, searchWithSortRequest.getSortColumn());
+        }
+        Pageable pageable = PageRequest.of(Integer.parseInt(searchWithSortRequest.getPageNumber()), Integer.parseInt(searchWithSortRequest.getPageSize()), sort);
+        Page<ExternalUnitRegistrationDTO> externalUnitRegistrationDTOS = externalUnitRegistrationRepository.getSortedExternalUnitRegistration(searchWithSortRequest.getJoinColumn(),searchWithSortRequest.getSearchText(),true, pageable);
+        log.info("Entity is ",externalUnitRegistrationDTOS);
+        return convertPageableDTOToMapResponse(externalUnitRegistrationDTOS);
+    }
+
+    private Map<String, Object> convertPageableDTOToMapResponse(final Page<ExternalUnitRegistrationDTO> activeExternalUnitRegistrations) {
+        Map<String, Object> response = new HashMap<>();
+
+        List<ExternalUnitRegistrationResponse> externalUnitRegistrationResponses = activeExternalUnitRegistrations.getContent().stream()
+                .map(externalUnitRegistration -> mapper.externalUnitRegistrationDTOToObject(externalUnitRegistration,ExternalUnitRegistrationResponse.class)).collect(Collectors.toList());
+        response.put("externalUnitRegistration",externalUnitRegistrationResponses);
+        response.put("currentPage", activeExternalUnitRegistrations.getNumber());
+        response.put("totalItems", activeExternalUnitRegistrations.getTotalElements());
+        response.put("totalPages", activeExternalUnitRegistrations.getTotalPages());
+
+        return response;
+    }
+
+
 }

@@ -1,6 +1,7 @@
 package com.sericulture.registration.service;
 
 import com.sericulture.registration.helper.Util;
+import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.traderLicense.EditTraderLicenseRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseResponse;
@@ -15,7 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -202,5 +205,50 @@ public class TraderLicenseService {
 
         return traderLicenseResponse;
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> searchByColumnAndSort(SearchWithSortRequest searchWithSortRequest){
+        if(searchWithSortRequest.getSearchText() == null || searchWithSortRequest.getSearchText().equals("")){
+            searchWithSortRequest.setSearchText("%%");
+        }else{
+            searchWithSortRequest.setSearchText("%" + searchWithSortRequest.getSearchText() + "%");
+        }
+        if(searchWithSortRequest.getSortColumn() == null || searchWithSortRequest.getSortColumn().equals("")){
+            searchWithSortRequest.setSortColumn("firstName");
+        }
+        if(searchWithSortRequest.getSortOrder() == null || searchWithSortRequest.getSortOrder().equals("")){
+            searchWithSortRequest.setSortOrder("asc");
+        }
+        if(searchWithSortRequest.getPageNumber() == null || searchWithSortRequest.getPageNumber().equals("")){
+            searchWithSortRequest.setPageNumber("0");
+        }
+        if(searchWithSortRequest.getPageSize() == null || searchWithSortRequest.getPageSize().equals("")){
+            searchWithSortRequest.setPageSize("5");
+        }
+        Sort sort;
+        if(searchWithSortRequest.getSortOrder().equals("asc")){
+            sort = Sort.by(Sort.Direction.ASC, searchWithSortRequest.getSortColumn());
+        }else{
+            sort = Sort.by(Sort.Direction.DESC, searchWithSortRequest.getSortColumn());
+        }
+        Pageable pageable = PageRequest.of(Integer.parseInt(searchWithSortRequest.getPageNumber()), Integer.parseInt(searchWithSortRequest.getPageSize()), sort);
+        Page<TraderLicenseDTO> traderLicenseDTOS = traderLicenseRepository.getSortedTraderLicenses(searchWithSortRequest.getJoinColumn(),searchWithSortRequest.getSearchText(),true, pageable);
+        log.info("Entity is ",traderLicenseDTOS);
+        return convertPageableDTOToMapResponse(traderLicenseDTOS);
+    }
+
+    private Map<String, Object> convertPageableDTOToMapResponse(final Page<TraderLicenseDTO> activeTraderLicenses) {
+        Map<String, Object> response = new HashMap<>();
+
+        List<TraderLicenseResponse> traderLicenseResponses = activeTraderLicenses.getContent().stream()
+                .map(traderLicense -> mapper.traderLicenseDTOToObject(traderLicense,TraderLicenseResponse.class)).collect(Collectors.toList());
+        response.put("traderLicense",traderLicenseResponses);
+        response.put("currentPage", activeTraderLicenses.getNumber());
+        response.put("totalItems", activeTraderLicenses.getTotalElements());
+        response.put("totalPages", activeTraderLicenses.getTotalPages());
+
+        return response;
+    }
+
 
 }
