@@ -6,6 +6,7 @@ import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.farmer.FarmerResponse;
 import com.sericulture.registration.model.api.farmer.GetFarmerRequest;
 import com.sericulture.registration.model.api.farmer.GetFarmerResponse;
+import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
 import com.sericulture.registration.model.api.reeler.*;
 import com.sericulture.registration.service.ReelerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -585,6 +587,16 @@ public class ReelerController {
         ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerResponse.class);
 
         rw.setContent(reelerService.searchByColumn(searchByColumnRequest));
+        return ResponseEntity.ok(rw);
+    }
+
+    @PostMapping("/upload-document")
+    public ResponseEntity<ResponseWrapper> upload(@RequestParam("multipartFile") MultipartFile multipartFile,
+                                                  @RequestParam("reelerId") String reelerId) throws Exception {
+
+        ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerResponse.class);
+
+        rw.setContent(reelerService.updateMahajarDetailsPath(multipartFile, reelerId));
         return ResponseEntity.ok(rw);
     }
 }

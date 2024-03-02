@@ -1,11 +1,13 @@
 package com.sericulture.registration.service;
 
+import com.sericulture.registration.controller.S3Controller;
 import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.api.common.SearchByColumnRequest;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.farmer.FarmerResponse;
 import com.sericulture.registration.model.api.farmer.GetFarmerRequest;
 import com.sericulture.registration.model.api.farmer.GetFarmerResponse;
+import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
 import com.sericulture.registration.model.api.reeler.*;
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerDTO;
@@ -28,6 +30,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -56,6 +60,9 @@ public class ReelerService {
 
     @Autowired
     SerialCounterRepository serialCounterRepository;
+
+    @Autowired
+    S3Controller s3Controller;
 
     @Transactional
     public ReelerResponse insertReelerDetails(ReelerRequest reelerRequest){
@@ -563,5 +570,25 @@ public class ReelerService {
         response.put("reelers",activeReelers);
         response.put("totalItems", activeReelers.size());
         return response;
+    }
+    @Transactional
+    public ReelerResponse updateMahajarDetailsPath(MultipartFile multipartFile, String reelerId) throws Exception {
+        ReelerResponse reelerResponse = new ReelerResponse();
+        Reeler reeler = reelerRepository.findByReelerIdAndActive(Long.parseLong(reelerId),true);
+        if (Objects.nonNull(reeler)) {
+            UUID uuid = UUID.randomUUID();
+            String extension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
+            String fileName = "reeler/"+reeler.getReelerId()+"_"+reelerId+"_"+uuid+"_"+extension;
+            s3Controller.uploadFile(multipartFile, fileName);
+            reeler.setMahajarDetails(fileName);
+            Reeler reeler1 = reelerRepository.save(reeler);
+            reelerResponse = mapper.reelerEntityToObject(reeler1, ReelerResponse.class);
+            reelerResponse.setError(false);
+        } else {
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Error occurred while fetching reeler");
+        }
+
+        return reelerResponse;
     }
 }
