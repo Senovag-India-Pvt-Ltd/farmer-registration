@@ -20,7 +20,7 @@ public class EditFarmerFamilyRequest extends RequestBody {
     @Schema(name = "relationshipId", example = "1")
     Long relationshipId;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Farmer family name must contain only letters and numbers")
+//    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Farmer family name must contain only letters and numbers")
     @Schema(name = "farmerFamilyName", example = "Latha", required = true)
     String farmerFamilyName;
 }
