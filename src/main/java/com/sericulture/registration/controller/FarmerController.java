@@ -380,10 +380,11 @@ public class FarmerController {
             @RequestParam(defaultValue = "0") final Integer pageNumber,
             @RequestParam(defaultValue = "5") final Integer size,
             @RequestParam(defaultValue = "0") final Integer type,
-            @RequestParam(defaultValue = "") final String searchText
+            @RequestParam(defaultValue = "") final String searchText,
+            @RequestParam(defaultValue = "0") final Integer joinColumnType
     ) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(Map.class);
-        rw.setContent(farmerService.getPaginatedFarmerDetailsWithJoinWithFilters(PageRequest.of(pageNumber, size), type, searchText));
+        rw.setContent(farmerService.getPaginatedFarmerDetailsWithJoinWithFilters(PageRequest.of(pageNumber, size), type, searchText, joinColumnType));
         return ResponseEntity.ok(rw);
     }
 

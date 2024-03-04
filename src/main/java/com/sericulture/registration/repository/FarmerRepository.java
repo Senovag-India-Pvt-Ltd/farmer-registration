@@ -175,10 +175,13 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.farmerTypeId = farmerType.farmerTypeId " +
             "left join Education education " +
             "on farmer.educationId = education.educationId " +
-            "where farmer.active = :isActive and farmer.farmerNumber like :searchText " +
+            "where farmer.active = :isActive and " +
+            "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
+            "(:joinColumn = 'farmer.fruitsId' AND farmer.fruitsId LIKE :searchText) OR " +
+            "(:joinColumn = 'farmer.mobileNumber' AND farmer.mobileNumber LIKE :searchText) " +
             "ORDER BY farmer.farmerNumber ASC"
     )
-    Page<FarmerDTO> getByActiveOrderByFarmerIdAsc(@Param("isActive") boolean isActive, @Param("searchText") String searchText, final Pageable pageable);
+    Page<FarmerDTO> getByActiveOrderByFarmerIdAsc(@Param("isActive") boolean isActive,@Param("joinColumn") String joinColumn, @Param("searchText") String searchText, final Pageable pageable);
 
     @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
             " farmer.farmerId, " +
@@ -225,10 +228,12 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.farmerTypeId = farmerType.farmerTypeId " +
             "left join Education education " +
             "on farmer.educationId = education.educationId " +
-            "where farmer.active = :isActive and farmer.isOtherStateFarmer = true and farmer.farmerNumber like :searchText " +
+            "where farmer.active = :isActive and farmer.isOtherStateFarmer = true and " +
+            "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
+            "(:joinColumn = 'farmer.mobileNumber' AND farmer.mobileNumber LIKE :searchText) " +
             "ORDER BY farmer.farmerNumber ASC"
     )
-    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForNonKAFarmers(@Param("isActive") boolean isActive, @Param("searchText") String searchText, final Pageable pageable);
+    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForNonKAFarmers(@Param("isActive") boolean isActive, @Param("joinColumn") String joinColumn,@Param("searchText") String searchText, final Pageable pageable);
 
     @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
             " farmer.farmerId, " +
@@ -275,10 +280,13 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.farmerTypeId = farmerType.farmerTypeId " +
             "left join Education education " +
             "on farmer.educationId = education.educationId " +
-            "where farmer.active = :isActive and (farmer.isOtherStateFarmer = false or farmer.isOtherStateFarmer is null) and (farmer.fruitsId != '' and farmer.fruitsId is not null) and farmer.farmerNumber like :searchText " +
+            "where farmer.active = :isActive and (farmer.isOtherStateFarmer = false or farmer.isOtherStateFarmer is null) and (farmer.fruitsId != '' and farmer.fruitsId is not null) and  " +
+            "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
+            "(:joinColumn = 'farmer.fruitsId' AND farmer.fruitsId LIKE :searchText) OR " +
+            "(:joinColumn = 'farmer.mobileNumber' AND farmer.mobileNumber LIKE :searchText) " +
             "ORDER BY farmer.farmerNumber ASC"
     )
-    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(@Param("isActive") boolean isActive, @Param("searchText") String searchText, final Pageable pageable);
+    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(@Param("isActive") boolean isActive,@Param("joinColumn") String joinColumn, @Param("searchText") String searchText, final Pageable pageable);
 
     @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
             " farmer.farmerId, " +
@@ -325,10 +333,12 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.farmerTypeId = farmerType.farmerTypeId " +
             "left join Education education " +
             "on farmer.educationId = education.educationId " +
-            "where farmer.active = :isActive and (farmer.isOtherStateFarmer = false or farmer.isOtherStateFarmer is NULL) and (farmer.fruitsId = '' or farmer.fruitsId is null) and farmer.farmerNumber like :searchText " +
+            "where farmer.active = :isActive and (farmer.isOtherStateFarmer = false or farmer.isOtherStateFarmer is NULL) and (farmer.fruitsId = '' or farmer.fruitsId is null) and " +
+            "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
+            "(:joinColumn = 'farmer.mobileNumber' AND farmer.mobileNumber LIKE :searchText) " +
             "ORDER BY farmer.farmerNumber ASC"
     )
-    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(@Param("isActive") boolean isActive, @Param("searchText") String searchText, final Pageable pageable);
+    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(@Param("isActive") boolean isActive, @Param("joinColumn") String joinColumn, @Param("searchText") String searchText, final Pageable pageable);
 
     @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
             " farmer.farmerId, " +

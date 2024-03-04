@@ -785,21 +785,31 @@ public class FarmerService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText) {
+    public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText, int joinColumnType) {
         Page<FarmerDTO> page;
         if (searchText == null || searchText.equals("")) {
             searchText = "%%";
         } else {
             searchText = "%" + searchText + "%";
         }
-        if(type == 0){
-            page = farmerRepository.getByActiveOrderByFarmerIdAsc(true, searchText,pageable);
-        }else if(type == 1) {
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmers(true, searchText, pageable);
-        }else if(type == 2){
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, searchText, pageable);
+        String joinColumn = "";
+
+        if(joinColumnType == 0){
+            joinColumn = "farmer.farmerNumber";
+        }else if(joinColumnType == 1){
+            joinColumn = "farmer.fruitsId";
         }else{
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(true,searchText, pageable);
+            joinColumn = "farmer.mobileNumber";
+        }
+
+        if(type == 0){
+            page = farmerRepository.getByActiveOrderByFarmerIdAsc(true,joinColumn, searchText,pageable);
+        }else if(type == 1) {
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmers(true,joinColumn, searchText, pageable);
+        }else if(type == 2){
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
+        }else{
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(true,joinColumn, searchText, pageable);
         }
         return convertDTOToMapResponse(page);
     }
