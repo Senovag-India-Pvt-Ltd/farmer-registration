@@ -376,12 +376,12 @@ public class ReelerService {
     @Transactional
     public ReelerResponse getByReelingLicenseNumber(String reelingLicenseNumber){
         ReelerResponse reelerResponse = new ReelerResponse();
-        Reeler reeler = reelerRepository.findByReelingLicenseNumberAndActive(reelingLicenseNumber,true);
+        ReelerDTO reeler = reelerRepository.getByReelerLicenseNumberAndActive(reelingLicenseNumber,true);
         if(reeler == null){
             reelerResponse.setError(true);
             reelerResponse.setError_description("Invalid id");
         }else{
-            reelerResponse =  mapper.reelerEntityToObject(reeler,ReelerResponse.class);
+            reelerResponse =  mapper.reelerDTOToObject(reeler,ReelerResponse.class);
             reelerResponse.setError(false);
         }
         log.info("Entity is ",reeler);
