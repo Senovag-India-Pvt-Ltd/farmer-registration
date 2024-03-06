@@ -74,7 +74,8 @@ public class ReelerRequest extends RequestBody {
     @Schema(name = "recipientId", example = "675687787")
     String recipientId;
 
-    @Pattern(regexp = "^[a-zA-Z0-9/-_. \\\\s]*$", message = "Mahajar details document should not contain special characters")
+//    @Pattern(regexp = "^[a-zA-Z0-9/-_. \\\\s]*$", message = "Mahajar details document should not contain special characters")
+    @Pattern(regexp = "^[a-zA-Z0-9-/_.\\s]*$", message = "Mahajar Document must contain only letters and numbers")
     @Schema(name = "mahajarDetails", example = "Test")
     String mahajarDetails;
 
