@@ -482,7 +482,7 @@ public class ReelerService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> getAllByActive(boolean isActive) {
-        return convertListEntityToMapResponse(reelerRepository.findByActive(isActive));
+        return convertListEntityToMapResponse(reelerRepository.findByActiveOrderByReelerNameAsc(isActive));
     }
 
     private Map<String, Object> convertListEntityToMapResponse(final List<Reeler> activeReelers) {
