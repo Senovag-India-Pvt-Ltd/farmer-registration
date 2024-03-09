@@ -29,7 +29,8 @@ public class FarmerAddressRequest extends RequestBody {
     @Schema(name = "villageId", example = "1", required = true)
     Long villageId;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Address text must contain only letters and numbers")
+//    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Address text must contain only letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s.,/#*\"']*$", message = "Address text must contain only letters and numbers")
     @Schema(name = "addressText", example = "Bengaluru", required = true)
     String addressText;
 
