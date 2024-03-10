@@ -73,6 +73,21 @@ public class ReelerVirtualBankAccountService {
         return response;
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String,Object> getReelersByMarketId(long marketId){
+        return convertToMapResponse(reelerVirtualBankAccountRepository.getByReelersByMarketId( marketId,true));
+    }
+
+    private Map<String, Object> convertToMapResponse(final List<ReelerVirtualBankAccountDTO> activeReelerVirtualBankAccounts) {
+        Map<String, Object> response = new HashMap<>();
+
+        List<ReelerVirtualBankAccountResponse> reelerVirtualBankAccountResponses = activeReelerVirtualBankAccounts.stream()
+                .map(reelerVirtualBankAccount -> mapper.reelerVirtualBankAccountDTOToObject(reelerVirtualBankAccount,ReelerVirtualBankAccountResponse.class)).collect(Collectors.toList());
+        response.put("reelerVirtualBankAccount",reelerVirtualBankAccountResponses);
+        response.put("totalItems", activeReelerVirtualBankAccounts.size());
+        return response;
+    }
+
     @Transactional
     public ReelerVirtualBankAccountResponse deleteReelerVirtualBankAccountDetails(long id) {
         ReelerVirtualBankAccountResponse reelerVirtualBankAccountResponse = new ReelerVirtualBankAccountResponse();

@@ -36,11 +36,14 @@ public interface ReelerVirtualBankAccountRepository extends PagingAndSortingRepo
             " reelerVirtualBankAccount.branchName, " +
             " reelerVirtualBankAccount.ifscCode, " +
             " reelerVirtualBankAccount.marketMasterId, " +
+            " reeler.reelerName, " +
             " marketMaster.marketMasterName" +
             ") " +
             "from ReelerVirtualBankAccount reelerVirtualBankAccount " +
             "left join market_master marketMaster " +
             "on reelerVirtualBankAccount.marketMasterId = marketMaster.marketMasterId " +
+            "left join Reeler reeler " +
+            "on reelerVirtualBankAccount.reelerId = reeler.reelerId " +
             "where reelerVirtualBankAccount.active = :isActive AND reelerVirtualBankAccount.reelerVirtualBankAccountId = :id")
     public ReelerVirtualBankAccountDTO getByReelerVirtualBankAccountIdAndActive(@Param("id") long id, @Param("isActive") boolean isActive);
 
@@ -51,13 +54,33 @@ public interface ReelerVirtualBankAccountRepository extends PagingAndSortingRepo
             " reelerVirtualBankAccount.branchName, " +
             " reelerVirtualBankAccount.ifscCode, " +
             " reelerVirtualBankAccount.marketMasterId, " +
+            " reeler.reelerName, " +
             " marketMaster.marketMasterName" +
             ") " +
             "from ReelerVirtualBankAccount reelerVirtualBankAccount " +
             "left join market_master marketMaster " +
             "on reelerVirtualBankAccount.marketMasterId = marketMaster.marketMasterId " +
+            "left join Reeler reeler " +
+            "on reelerVirtualBankAccount.reelerId = reeler.reelerId " +
             "where reelerVirtualBankAccount.active = :isActive AND reelerVirtualBankAccount.reelerId = :id")
     public List <ReelerVirtualBankAccountDTO> getByReelerIdAndActive(@Param("id") long id, @Param("isActive") boolean isActive);
 
+    @Query("select new com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO(" +
+            " reelerVirtualBankAccount.reelerVirtualBankAccountId, " +
+            " reelerVirtualBankAccount.reelerId, " +
+            " reelerVirtualBankAccount.virtualAccountNumber, " +
+            " reelerVirtualBankAccount.branchName, " +
+            " reelerVirtualBankAccount.ifscCode, " +
+            " reelerVirtualBankAccount.marketMasterId, " +
+            " reeler.reelerName, " +
+            " marketMaster.marketMasterName" +
+            ") " +
+            "from ReelerVirtualBankAccount reelerVirtualBankAccount " +
+            "left join market_master marketMaster " +
+            "on reelerVirtualBankAccount.marketMasterId = marketMaster.marketMasterId " +
+            "left join Reeler reeler " +
+            "on reelerVirtualBankAccount.reelerId = reeler.reelerId " +
+            "where reelerVirtualBankAccount.active = :isActive AND reelerVirtualBankAccount.marketMasterId = :marketId order by reeler.reelerName ASC")
+    public List<ReelerVirtualBankAccountDTO> getByReelersByMarketId(@Param("marketId") long marketId, @Param("isActive") boolean isActive);
 
 }

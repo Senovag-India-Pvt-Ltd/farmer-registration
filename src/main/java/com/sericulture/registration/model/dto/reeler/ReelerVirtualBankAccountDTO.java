@@ -14,5 +14,6 @@ public class ReelerVirtualBankAccountDTO {
     private String branchName;
     private String ifscCode;
     private Long marketMasterId;
+    private String reelerName;
     private String marketMasterName;
 }

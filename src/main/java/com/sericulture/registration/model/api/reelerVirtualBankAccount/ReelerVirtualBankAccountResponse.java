@@ -32,6 +32,9 @@ public class ReelerVirtualBankAccountResponse {
     @Schema(name = "marketMasterName", example = "1")
     String marketMasterName;
 
+    @Schema(name = "reelerName", example = "Reeler name")
+    String reelerName;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 
