@@ -467,6 +467,26 @@ public class ReelerService {
     }
 
     @Transactional
+    public ReelerResponse getReelerDetailsByReelerNumberOrMobileNumber(GetReelerRequest getReelerRequest) throws Exception{
+        ReelerResponse reelerResponse = new ReelerResponse();
+        ReelerDTO reeler = new ReelerDTO();
+        if(getReelerRequest.getReelerNumber() != null && !getReelerRequest.getReelerNumber().equals("")){
+            reeler = reelerRepository.getByReelerNumberAndActive(getReelerRequest.getReelerNumber(),true);
+        }else{
+            reeler = reelerRepository.getByMobileNumberAndActive(getReelerRequest.getMobileNumber(), true);
+        }
+        if(reeler == null){
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Invalid id");
+        }else{
+            reelerResponse =  mapper.reelerDTOToObject(reeler,ReelerResponse.class);
+            reelerResponse.setError(false);
+        }
+        log.info("Entity is ",reeler);
+        return reelerResponse;
+    }
+
+    @Transactional
     public GetReelerResponse getReelerDetails(GetReelerRequest getReelerRequest){
         ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = reelerRepository.findByReelerIdAndActive(getReelerRequest.getReelerId(),true);
