@@ -134,6 +134,84 @@ public class ReelerService {
     }
 
     @Transactional
+    public ReelerResponse dummyReelerDetails(ReelerRequest reelerRequest){
+        ReelerResponse reelerResponse = new ReelerResponse();
+        for(int i=0; i< 1000; i++) {
+            UUID uuid = UUID.randomUUID();
+            reelerRequest.setReelerName("dummy_reeler"+ uuid);
+            reelerRequest.setPassbookNumber(String.valueOf(uuid));
+            reelerRequest.setReelerNumber(String.valueOf(uuid));
+            reelerRequest.setLicenseReceiptNumber(String.valueOf(uuid));
+            reelerRequest.setReelingLicenseNumber(String.valueOf(uuid));
+            reelerRequest.setMobileNumber(String.valueOf(uuid));
+            reelerRequest.setBankAccountNumber("dummy_acc"+ uuid);
+            Reeler reeler = mapper.reelerObjectToEntity(reelerRequest, Reeler.class);
+            validator.validate(reeler);
+            List<Reeler> reelerListByLicenseNumber = reelerRepository.findByReelingLicenseNumber(reeler.getReelingLicenseNumber());
+            if (!reelerListByLicenseNumber.isEmpty() && reelerListByLicenseNumber.stream().filter(Reeler::getActive).findAny().isPresent()) {
+                reelerResponse.setError(true);
+                reelerResponse.setError_description("Reeler License Number already exist");
+//        }
+//        else if(!reelerListByLicenseNumber.isEmpty() && reelerListByLicenseNumber.stream().filter(Predicate.not(Reeler::getActive)).findAny().isPresent()){
+//            //throw new ValidationException("Village name already exist with inactive state");
+//            reelerResponse.setError(true);
+//            reelerResponse.setError_description("Reeler License Number already exist with inactive state");
+            } else {
+                // Check for duplicate Reeler Number
+                List<Reeler> reelerListByNumber = reelerRepository.findByReelerNumber(reeler.getReelerNumber());
+                if (!reelerListByNumber.isEmpty() && reelerListByNumber.stream().anyMatch(Reeler::getActive)) {
+                    reelerResponse.setError(true);
+                    reelerResponse.setError_description("Reeler Number already exists");
+//            } else if (!reelerListByNumber.isEmpty() && reelerListByNumber.stream().anyMatch(Predicate.not(Reeler::getActive))) {
+//                reelerResponse.setError(true);
+//                reelerResponse.setError_description("Reeler Number already exists with inactive state");
+                } else {
+                    // If no duplicates found, save the reeler
+                    LocalDate today = Util.getISTLocalDate();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
+                    String formattedDate = today.format(formatter);
+                    List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
+                    SerialCounter serialCounter = new SerialCounter();
+                    if (reelerRequest.getTransferReelerId() == 0) {
+                        if (serialCounters.size() > 0) {
+                            serialCounter = serialCounters.get(0);
+                            long counterValue = 1L;
+                            if (serialCounter.getReelerCounterNumber() != null) {
+                                counterValue = serialCounter.getReelerCounterNumber() + 1;
+                            }
+                            serialCounter.setReelerCounterNumber(counterValue);
+                        } else {
+                            serialCounter.setReelerCounterNumber(1L);
+                        }
+                        serialCounterRepository.save(serialCounter);
+                        String formattedNumber = String.format("%05d", serialCounter.getReelerCounterNumber());
+
+                        reeler.setArnNumber("NRL/" + formattedDate + "/" + formattedNumber);
+                    } else {
+                        if (serialCounters.size() > 0) {
+                            serialCounter = serialCounters.get(0);
+                            long counterValue = 1L;
+                            if (serialCounter.getTransferReelerLicenseCounterNumber() != null) {
+                                counterValue = serialCounter.getTransferReelerLicenseCounterNumber() + 1;
+                            }
+                            serialCounter.setReelerCounterNumber(counterValue);
+                        } else {
+                            serialCounter.setReelerCounterNumber(1L);
+                        }
+                        serialCounterRepository.save(serialCounter);
+                        String formattedNumber = String.format("%05d", serialCounter.getReelerCounterNumber());
+
+                        reeler.setArnNumber("TRL/" + formattedDate + "/" + formattedNumber);
+                    }
+                    reelerResponse = mapper.reelerEntityToObject(reelerRepository.save(reeler), ReelerResponse.class);
+                    reelerResponse.setError(false);
+                }
+            }
+        }
+        return reelerResponse;
+    }
+
+    @Transactional
     public ReelerResponse insertTransferReelerDetails(ReelerRequest reelerRequest){
         ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = mapper.reelerObjectToEntity(reelerRequest,Reeler.class);
