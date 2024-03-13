@@ -37,6 +37,9 @@ public interface ReelerVirtualBankAccountRepository extends PagingAndSortingRepo
             " reelerVirtualBankAccount.ifscCode, " +
             " reelerVirtualBankAccount.marketMasterId, " +
             " reeler.reelerName, " +
+            " reeler.reelingLicenseNumber, " +
+            " reeler.reelerNumber, " +
+            " reeler.mobileNumber, " +
             " marketMaster.marketMasterName" +
             ") " +
             "from ReelerVirtualBankAccount reelerVirtualBankAccount " +
@@ -55,6 +58,9 @@ public interface ReelerVirtualBankAccountRepository extends PagingAndSortingRepo
             " reelerVirtualBankAccount.ifscCode, " +
             " reelerVirtualBankAccount.marketMasterId, " +
             " reeler.reelerName, " +
+            " reeler.reelingLicenseNumber, " +
+            " reeler.reelerNumber, " +
+            " reeler.mobileNumber, " +
             " marketMaster.marketMasterName" +
             ") " +
             "from ReelerVirtualBankAccount reelerVirtualBankAccount " +
@@ -73,6 +79,9 @@ public interface ReelerVirtualBankAccountRepository extends PagingAndSortingRepo
             " reelerVirtualBankAccount.ifscCode, " +
             " reelerVirtualBankAccount.marketMasterId, " +
             " reeler.reelerName, " +
+            " reeler.reelingLicenseNumber, " +
+            " reeler.reelerNumber, " +
+            " reeler.mobileNumber, " +
             " marketMaster.marketMasterName" +
             ") " +
             "from ReelerVirtualBankAccount reelerVirtualBankAccount " +
@@ -91,6 +100,9 @@ public interface ReelerVirtualBankAccountRepository extends PagingAndSortingRepo
             " reelerVirtualBankAccount.ifscCode, " +
             " reelerVirtualBankAccount.marketMasterId, " +
             " reeler.reelerName, " +
+            " reeler.reelingLicenseNumber, " +
+            " reeler.reelerNumber, " +
+            " reeler.mobileNumber, " +
             " marketMaster.marketMasterName" +
             ") " +
             "from ReelerVirtualBankAccount reelerVirtualBankAccount " +
@@ -109,6 +121,9 @@ public interface ReelerVirtualBankAccountRepository extends PagingAndSortingRepo
             " reelerVirtualBankAccount.ifscCode, " +
             " reelerVirtualBankAccount.marketMasterId, " +
             " reeler.reelerName, " +
+            " reeler.reelingLicenseNumber, " +
+            " reeler.reelerNumber, " +
+            " reeler.mobileNumber, " +
             " marketMaster.marketMasterName" +
             ") " +
             "from ReelerVirtualBankAccount reelerVirtualBankAccount " +
@@ -127,6 +142,9 @@ public interface ReelerVirtualBankAccountRepository extends PagingAndSortingRepo
             " reelerVirtualBankAccount.ifscCode, " +
             " reelerVirtualBankAccount.marketMasterId, " +
             " reeler.reelerName, " +
+            " reeler.reelingLicenseNumber, " +
+            " reeler.reelerNumber, " +
+            " reeler.mobileNumber, " +
             " marketMaster.marketMasterName" +
             ") " +
             "from ReelerVirtualBankAccount reelerVirtualBankAccount " +
