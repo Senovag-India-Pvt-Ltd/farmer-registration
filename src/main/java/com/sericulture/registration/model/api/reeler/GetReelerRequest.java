@@ -20,8 +20,15 @@ public class GetReelerRequest extends RequestBody {
     @Schema(name = "reelerNumber", example = "2")
     String reelerNumber;
 
+    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Reeler license number must contain only letters and numbers")
+    @Schema(name = "reelingLicenseNumber", example = "2")
+    String reelingLicenseNumber;
+
     @Pattern(regexp = "^[+0-9\\s]*$", message = "Mobile number must contain only numbers")
     @Schema(name = "mobileNumber", example = "7788990066")
     String mobileNumber;
+
+    @Schema(name = "marketId", example = "1")
+    Long marketId;
 
 }

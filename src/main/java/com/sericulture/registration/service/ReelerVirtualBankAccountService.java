@@ -1,11 +1,14 @@
 package com.sericulture.registration.service;
 
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
+import com.sericulture.registration.model.api.reeler.GetReelerRequest;
+import com.sericulture.registration.model.api.reeler.ReelerResponse;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.EditReelerVirtualBankAccountRequest;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountRequest;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountResponse;
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
+import com.sericulture.registration.model.entity.Reeler;
 import com.sericulture.registration.model.entity.ReelerVirtualBankAccount;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
@@ -133,6 +136,28 @@ public class ReelerVirtualBankAccountService {
 //        return convertListToMapResponse(reelerList);
         }
     }
+    @Transactional
+    public ReelerVirtualBankAccountResponse getReelerDetailsByReelerNumberOrMobileNumber(GetReelerRequest getReelerRequest) throws Exception{
+        ReelerVirtualBankAccountResponse reelerResponse = new ReelerVirtualBankAccountResponse();
+        ReelerVirtualBankAccountDTO reelerVirtualBankAccount = new ReelerVirtualBankAccountDTO();
+        if(getReelerRequest.getReelingLicenseNumber() != null && !getReelerRequest.getReelingLicenseNumber().equals("")) {
+            reelerVirtualBankAccount = reelerVirtualBankAccountRepository.getByReelerByMarketIdAndReelingLicenseNumber(getReelerRequest.getMarketId(), getReelerRequest.getReelingLicenseNumber(), true);
+        }else if(getReelerRequest.getReelerNumber() != null && !getReelerRequest.getReelerNumber().equals("")){
+            reelerVirtualBankAccount = reelerVirtualBankAccountRepository.getByReelerByMarketIdAndReelerNumber(getReelerRequest.getMarketId(),getReelerRequest.getReelerNumber(), true);
+        }else{
+            reelerVirtualBankAccount = reelerVirtualBankAccountRepository.getByReelerByMarketIdAndMobileNumber(getReelerRequest.getMarketId(),getReelerRequest.getMobileNumber(), true);
+        }
+        if(reelerVirtualBankAccount == null){
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Invalid id");
+        }else{
+            reelerResponse =  mapper.reelerVirtualBankAccountDTOToObject(reelerVirtualBankAccount,ReelerVirtualBankAccountResponse.class);
+            reelerResponse.setError(false);
+        }
+        log.info("Entity is ",reelerVirtualBankAccount);
+        return reelerResponse;
+    }
+
 
     @Transactional
     public ReelerVirtualBankAccountResponse getByIdJoin(int id){

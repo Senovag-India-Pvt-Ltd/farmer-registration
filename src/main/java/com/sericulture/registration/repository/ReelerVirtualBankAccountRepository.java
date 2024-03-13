@@ -83,4 +83,57 @@ public interface ReelerVirtualBankAccountRepository extends PagingAndSortingRepo
             "where reelerVirtualBankAccount.active = :isActive AND reelerVirtualBankAccount.marketMasterId = :marketId order by reeler.reelerName ASC")
     public List<ReelerVirtualBankAccountDTO> getByReelersByMarketId(@Param("marketId") long marketId, @Param("isActive") boolean isActive);
 
+    @Query("select new com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO(" +
+            " reelerVirtualBankAccount.reelerVirtualBankAccountId, " +
+            " reelerVirtualBankAccount.reelerId, " +
+            " reelerVirtualBankAccount.virtualAccountNumber, " +
+            " reelerVirtualBankAccount.branchName, " +
+            " reelerVirtualBankAccount.ifscCode, " +
+            " reelerVirtualBankAccount.marketMasterId, " +
+            " reeler.reelerName, " +
+            " marketMaster.marketMasterName" +
+            ") " +
+            "from ReelerVirtualBankAccount reelerVirtualBankAccount " +
+            "left join market_master marketMaster " +
+            "on reelerVirtualBankAccount.marketMasterId = marketMaster.marketMasterId " +
+            "left join Reeler reeler " +
+            "on reelerVirtualBankAccount.reelerId = reeler.reelerId " +
+            "where reelerVirtualBankAccount.active = :isActive AND reelerVirtualBankAccount.marketMasterId = :marketId AND reeler.reelerNumber = :reelerNumber")
+    public ReelerVirtualBankAccountDTO getByReelerByMarketIdAndReelerNumber(@Param("marketId") long marketId, @Param("reelerNumber") String reelerNumber, @Param("isActive") boolean isActive);
+
+    @Query("select new com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO(" +
+            " reelerVirtualBankAccount.reelerVirtualBankAccountId, " +
+            " reelerVirtualBankAccount.reelerId, " +
+            " reelerVirtualBankAccount.virtualAccountNumber, " +
+            " reelerVirtualBankAccount.branchName, " +
+            " reelerVirtualBankAccount.ifscCode, " +
+            " reelerVirtualBankAccount.marketMasterId, " +
+            " reeler.reelerName, " +
+            " marketMaster.marketMasterName" +
+            ") " +
+            "from ReelerVirtualBankAccount reelerVirtualBankAccount " +
+            "left join market_master marketMaster " +
+            "on reelerVirtualBankAccount.marketMasterId = marketMaster.marketMasterId " +
+            "left join Reeler reeler " +
+            "on reelerVirtualBankAccount.reelerId = reeler.reelerId " +
+            "where reelerVirtualBankAccount.active = :isActive AND reelerVirtualBankAccount.marketMasterId = :marketId AND reeler.reelingLicenseNumber = :reelingLicenseNumber")
+    public ReelerVirtualBankAccountDTO getByReelerByMarketIdAndReelingLicenseNumber(@Param("marketId") long marketId, @Param("reelingLicenseNumber") String reelingLicenseNumber, @Param("isActive") boolean isActive);
+
+    @Query("select new com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO(" +
+            " reelerVirtualBankAccount.reelerVirtualBankAccountId, " +
+            " reelerVirtualBankAccount.reelerId, " +
+            " reelerVirtualBankAccount.virtualAccountNumber, " +
+            " reelerVirtualBankAccount.branchName, " +
+            " reelerVirtualBankAccount.ifscCode, " +
+            " reelerVirtualBankAccount.marketMasterId, " +
+            " reeler.reelerName, " +
+            " marketMaster.marketMasterName" +
+            ") " +
+            "from ReelerVirtualBankAccount reelerVirtualBankAccount " +
+            "left join market_master marketMaster " +
+            "on reelerVirtualBankAccount.marketMasterId = marketMaster.marketMasterId " +
+            "left join Reeler reeler " +
+            "on reelerVirtualBankAccount.reelerId = reeler.reelerId " +
+            "where reelerVirtualBankAccount.active = :isActive AND reelerVirtualBankAccount.marketMasterId = :marketId AND reeler.mobileNumber = :mobileNumber")
+    public ReelerVirtualBankAccountDTO getByReelerByMarketIdAndMobileNumber(@Param("marketId") long marketId, @Param("mobileNumber") String mobileNumber, @Param("isActive") boolean isActive);
 }
