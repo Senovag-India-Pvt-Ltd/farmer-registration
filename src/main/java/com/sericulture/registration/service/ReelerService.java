@@ -1,5 +1,6 @@
 package com.sericulture.registration.service;
 
+import com.sericulture.registration.controller.GovtSMSServiceController;
 import com.sericulture.registration.controller.S3Controller;
 import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.api.common.SearchByColumnRequest;
@@ -11,6 +12,7 @@ import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccoun
 import com.sericulture.registration.model.api.reeler.*;
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerDTO;
+import com.sericulture.registration.model.dto.govtSmsService.GovtSmsServiceDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerSearchDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
@@ -54,6 +56,9 @@ public class ReelerService {
 
     @Autowired
     CustomValidator validator;
+
+    @Autowired
+    GovtSMSServiceController govtSMSServiceController;
 
     @Autowired
     ReelerVirtualBankAccountRepository reelerVirtualBankAccountRepository;
@@ -290,6 +295,33 @@ public class ReelerService {
             reelerResponse.setError(false);
         }
         log.info("Entity is ",reeler);
+        return reelerResponse;
+    }
+
+    @Transactional
+    public ReelerResponse getIsReelerLicenseExpiryDateIsNear(){
+        ReelerResponse reelerResponse = new ReelerResponse();
+        List<Object[]> reelerListResponse = reelerRepository.getReelerLicenseExpiry();
+        if(reelerListResponse.size()>0){
+            for(int i=0; i<reelerListResponse.size(); i++) {
+                GovtSmsServiceDTO govtSmsServiceDTO = new GovtSmsServiceDTO();
+                govtSmsServiceDTO.setUsername("Mobile_1-COMDOS");
+                govtSmsServiceDTO.setPassword("COMDOS@1234");
+                govtSmsServiceDTO.setMessage("Generate and store otp");
+                govtSmsServiceDTO.setSenderId("COMDOS");
+                govtSmsServiceDTO.setMobileNumber(Util.objectToString(reelerListResponse.get(i)[16]));
+                govtSmsServiceDTO.setSecureKey("046bdec5-4bba-69b3-k4e4-01d6b555c9cv");
+                govtSmsServiceDTO.setTemplateid("1107170082061011792");
+                govtSmsServiceDTO.setUserId("1");
+
+                govtSMSServiceController.sendOtpSMS(govtSmsServiceDTO);
+
+                reelerResponse.setError(false);
+            }
+        }else{
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("No reelers found whose license expiry date is within 30 days");
+        }
         return reelerResponse;
     }
     @Transactional

@@ -1,5 +1,6 @@
 package com.sericulture.registration.repository;
 
+import com.sericulture.registration.QueryConstants.QueryConstants;
 import com.sericulture.registration.model.dto.farmer.FarmerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerSearchDTO;
@@ -12,6 +13,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -38,6 +40,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
 
     List<Reeler> findByActiveAndIsActivatedOrderByReelerNameAsc(boolean isActive, int isActivated);
 
+    @Query(nativeQuery = true,value = QueryConstants.get_reeler_license_expiry)
+    public List<Object[]> getReelerLicenseExpiry();
     @Query("select new com.sericulture.registration.model.dto.reeler.ReelerDTO(" +
             " reeler.reelerId, " +
             " reeler.reelerName, " +
