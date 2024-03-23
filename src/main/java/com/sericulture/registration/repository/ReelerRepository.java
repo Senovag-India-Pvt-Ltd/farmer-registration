@@ -5,6 +5,7 @@ import com.sericulture.registration.model.dto.reeler.ReelerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerSearchDTO;
 import com.sericulture.registration.model.entity.Farmer;
 import com.sericulture.registration.model.entity.Reeler;
+import com.sericulture.registration.model.entity.ReelerTypeMaster;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -21,6 +22,9 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
     public Page<Reeler> findByActiveOrderByReelerIdAsc(boolean isActive, final Pageable pageable);
 
     public List<Reeler> findByActiveOrderByReelerIdAsc(boolean isActive);
+
+    public ReelerTypeMaster findByReelerNumberAndActive(String reelerNumber, boolean isActive);
+
 
     public List<Reeler> findByReelingLicenseNumber(String reelingLicenseNumber);
 

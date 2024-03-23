@@ -3,6 +3,7 @@ package com.sericulture.registration.repository;
 import com.sericulture.registration.model.dto.farmer.FarmerLandDetailsDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerLandDetailsDTO;
+import com.sericulture.registration.model.entity.District;
 import com.sericulture.registration.model.entity.FarmerLandDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,9 @@ public interface FarmerLandDetailsRepository extends PagingAndSortingRepository<
     public FarmerLandDetails save(FarmerLandDetails farmerLandDetails);
 
     public FarmerLandDetails findByFarmerLandDetailsIdAndActive(long id, boolean isActive);
+
+    public FarmerLandDetails findByCategoryNumberAndActive(String categoryNumber, boolean isActive);
+
 
     public FarmerLandDetails findByFarmerLandDetailsIdAndActiveIn(@Param("farmerLandDetailsId") long farmerLandDetailsId, @Param("active") Set<Boolean> active);
 

@@ -26,6 +26,9 @@ public interface FarmerTypeRepository extends PagingAndSortingRepository<FarmerT
     public List<FarmerType> findByFarmerTypeNameAndFarmerTypeNameInKannadaAndActiveAndFarmerTypeIdIsNot(String farmerTypeName,String farmerTypeNameInKannada, boolean isActive, long id);
     public List<FarmerType> findByFarmerTypeNameAndActive(String farmerTypeName,boolean isActive);
 
+    public FarmerType findByActiveAndFarmerTypeName(boolean isActive, String farmerTypeName);
+
+
     public Page<FarmerType> findByActiveOrderByFarmerTypeNameAsc(boolean isActive, final Pageable pageable);
 
     public FarmerType save(FarmerType farmerType);

@@ -13,7 +13,7 @@ import lombok.*;
 public class FarmerBankAccountRequest extends RequestBody {
 
     @Schema(name="farmerId", example = "1")
-    int farmerId;
+    Long farmerId;
 
     @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Farmer bank name must contain only letters and numbers")
     @Schema(name = "farmerBankName", example = "SBI")

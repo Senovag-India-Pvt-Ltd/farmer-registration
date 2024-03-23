@@ -208,11 +208,13 @@ public class Reeler extends BaseEntity implements Serializable {
     private String reelerNumber;
 
     @Column(name = "reeler_type_master_id")
-    private int reelerTypeMasterId;
+    private Long reelerTypeMasterId;
 
     @Column(name = "reeler_name_kannada")
     private String reelerNameKannada;
 
     @Column(name = "transfer_reeler_id")
     private int transferReelerId;
+
+
 }

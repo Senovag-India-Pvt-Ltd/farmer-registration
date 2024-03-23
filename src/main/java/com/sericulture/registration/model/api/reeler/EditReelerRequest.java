@@ -235,7 +235,7 @@ public class EditReelerRequest extends RequestBody {
     String reelerNumber;
 
     @Schema(name = "reelerTypeMasterId", example = "1")
-    int reelerTypeMasterId;
+    Long reelerTypeMasterId;
 
     @Pattern(regexp = "^[a-zA-Z0-9\\s\\u0C80-\\u0CFF]*$", message = "Reeler name in kannada must contain only letters and numbers")
     @Schema(name = "reelerNameKannada", example = "3674637")

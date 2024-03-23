@@ -2,6 +2,7 @@ package com.sericulture.registration.repository;
 
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
+import com.sericulture.registration.model.entity.District;
 import com.sericulture.registration.model.entity.ReelerVirtualBankAccount;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,9 @@ public interface ReelerVirtualBankAccountRepository extends PagingAndSortingRepo
     public Page<ReelerVirtualBankAccount> findByActiveOrderByReelerVirtualBankAccountIdAsc(boolean isActive, final Pageable pageable);
 
     public ReelerVirtualBankAccount save(ReelerVirtualBankAccount ReelerVirtualBankAccount);
+
+    public ReelerVirtualBankAccount findByVirtualAccountNumberAndActive(String virtualAccountNumber, boolean isActive);
+
 
     public List<ReelerVirtualBankAccount> findByVirtualAccountNumber(String virtualAccountNumber);
 
