@@ -1,5 +1,8 @@
 package com.sericulture.registration.model.mapper;
 
+import com.sericulture.registration.BankTransaction.GenericCorporateAlertRequest;
+import com.sericulture.registration.BankTransaction.ReelerVidCreditTxn;
+import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.api.education.EducationRequest;
 import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationRequest;
 import com.sericulture.registration.model.api.farmer.FarmerRequest;
@@ -35,6 +38,26 @@ public class Mapper {
 
     @Autowired
     ModelMapper mapper;
+
+    public ReelerVidCreditTxn bankCreditRequestToEntity(GenericCorporateAlertRequest transactionRequest ) {
+        ReelerVidCreditTxn reelerVidCreditTxn = new ReelerVidCreditTxn();
+        reelerVidCreditTxn.setAlertSequenceNo(transactionRequest.getAlertSequenceNo());
+        reelerVidCreditTxn.setRemitterName(transactionRequest.getRemitterName());
+        reelerVidCreditTxn.setRemitterAccount(transactionRequest.getRemitterAccount());
+        reelerVidCreditTxn.setRemitterBank(transactionRequest.getRemitterBank());
+        reelerVidCreditTxn.setUserReferenceNumber(transactionRequest.getUserReferenceNumber());
+        reelerVidCreditTxn.setVirtualAccount(transactionRequest.getVirtualAccount());
+        reelerVidCreditTxn.setAmount(transactionRequest.getAmount());
+        reelerVidCreditTxn.setMnemonicCode(transactionRequest.getMnemonicCode());
+        reelerVidCreditTxn.setTransactionDate(Util.parseStringToLocalDateTime(transactionRequest.getTransactionDate(), "yyy-MM-dd HH:mm"));
+        reelerVidCreditTxn.setValueDate(Util.parseStringToLocalDate(transactionRequest.getValueDate(), "yyyy-MM-dd"));
+        reelerVidCreditTxn.setIfscCode(transactionRequest.getIfscCode());
+        reelerVidCreditTxn.setChequeNo(transactionRequest.getChequeNo());
+        reelerVidCreditTxn.setTransactionDescription(transactionRequest.getTransactionDescription());
+        reelerVidCreditTxn.setAccountNumber(transactionRequest.getAccountNumber());
+        reelerVidCreditTxn.setDebitCredit(transactionRequest.getDebitCredit());
+        return reelerVidCreditTxn;
+    }
 
     /**
      * Maps Education Entity to Education Response Object

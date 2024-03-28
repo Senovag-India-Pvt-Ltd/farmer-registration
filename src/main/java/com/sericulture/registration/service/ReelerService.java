@@ -1,6 +1,12 @@
 package com.sericulture.registration.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sericulture.registration.BankTransaction.BankTransactionController;
+import com.sericulture.registration.BankTransaction.GenericBankTransactionRequest;
+import com.sericulture.registration.BankTransaction.GenericCorporateAlertRequest;
 import com.sericulture.registration.controller.S3Controller;
+import com.sericulture.registration.helper.FarmerRegistrationHelper;
 import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.api.common.SearchByColumnRequest;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
@@ -27,6 +33,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +41,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
@@ -50,6 +58,9 @@ public class ReelerService {
     ReelerLicenseTransactionRepository reelerLicenseTransactionRepository;
 
     @Autowired
+    FarmerRegistrationHelper farmerRegistrationHelper;
+
+    @Autowired
     Mapper mapper;
 
     @Autowired
@@ -63,6 +74,9 @@ public class ReelerService {
 
     @Autowired
     S3Controller s3Controller;
+
+    @Autowired
+    BankTransactionController bankTransactionController;
 
     @Transactional
     public ReelerResponse insertReelerDetails(ReelerRequest reelerRequest){
@@ -304,6 +318,53 @@ public class ReelerService {
 //        }
 //        return mapper.reelerEntityToObject(reeler,ReelerResponse.class);
             reelerResponse = mapper.reelerEntityToObject(reeler, ReelerResponse.class);
+            reelerResponse.setError(false);
+        } else {
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Invalid Id");
+            // throw new ValidationException("Error occurred while fetching village");
+        }
+
+        return reelerResponse ;
+    }
+
+    @Transactional
+    public ReelerResponse reelerInitialAmount(HttpHeaders httpHeader, ReelerInitialAmountRequest reelerInitialAmountRequest) {
+        ReelerResponse reelerResponse = new ReelerResponse();
+        farmerRegistrationHelper.getAuthToken(reelerInitialAmountRequest);
+        Reeler reeler = reelerRepository.findByReelerIdAndActive(reelerInitialAmountRequest.getReelerId(), true);
+        if (Objects.nonNull(reeler)) {
+            GenericBankTransactionRequest genericBankTransactionRequest = new GenericBankTransactionRequest();
+            List<GenericCorporateAlertRequest> genericCorporateAlertRequests = new ArrayList<>();
+            GenericCorporateAlertRequest genericCorporateAlertRequest = new GenericCorporateAlertRequest();
+
+            genericCorporateAlertRequest.setAlertSequenceNo(reeler.getReelingLicenseNumber()+"_"+reeler.getReelerNumber());
+
+            genericCorporateAlertRequest.setVirtualAccount(reelerInitialAmountRequest.getVirtualAccount());
+            genericCorporateAlertRequest.setAccountNumber(reelerInitialAmountRequest.getAccountNumber());
+            genericCorporateAlertRequest.setAmount(reelerInitialAmountRequest.getInitialAmount());
+
+            genericCorporateAlertRequest.setDebitCredit("CREDIT");
+            genericCorporateAlertRequest.setRemitterName(reeler.getReelerName());
+            genericCorporateAlertRequest.setRemitterBank(reeler.getBankName());
+            genericCorporateAlertRequest.setRemitterAccount(reeler.getBankAccountNumber());
+            genericCorporateAlertRequest.setIfscCode(reeler.getIfscCode());
+            //genericCorporateAlertRequest.setChequeNo("");
+            genericCorporateAlertRequest.setUserReferenceNumber(reeler.getReelerNumber()+"_"+reeler.getBankAccountNumber()+"_"+LocalDateTime.now());
+            genericCorporateAlertRequest.setMnemonicCode("NEFT");
+            genericCorporateAlertRequest.setValueDate(LocalDate.now().toString());
+            genericCorporateAlertRequest.setTransactionDescription("Initial amount");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            String formattedDateTime = LocalDateTime.now().format(formatter);
+            genericCorporateAlertRequest.setTransactionDate(formattedDateTime);
+
+            genericCorporateAlertRequests.add(genericCorporateAlertRequest);
+            genericBankTransactionRequest.setGenericCorporateAlertRequest(genericCorporateAlertRequests);
+
+            ObjectMapper mapper1 = new ObjectMapper();
+            JsonNode jsonNode = mapper1.valueToTree(genericBankTransactionRequest);
+            bankTransactionController.creditTransaction(httpHeader, jsonNode);
+
             reelerResponse.setError(false);
         } else {
             reelerResponse.setError(true);

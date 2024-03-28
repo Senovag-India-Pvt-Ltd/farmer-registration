@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -616,6 +617,27 @@ public class ReelerController {
         ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerResponse.class);
 
         rw.setContent(reelerService.updateMahajarDetailsPath(multipartFile, reelerId));
+        return ResponseEntity.ok(rw);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @PostMapping("/reeler-initial-amount")
+    public ResponseEntity<?> reelerInitialAmount(
+            @RequestHeader HttpHeaders headers,
+            @RequestBody final ReelerInitialAmountRequest reelerInitialAmountRequest
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerResponse.class);
+
+        rw.setContent(reelerService.reelerInitialAmount(headers,reelerInitialAmountRequest));
         return ResponseEntity.ok(rw);
     }
 }

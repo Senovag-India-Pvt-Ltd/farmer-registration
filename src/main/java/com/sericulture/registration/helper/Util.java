@@ -16,6 +16,7 @@ import java.math.RoundingMode;
 import java.security.Principal;
 import java.text.DecimalFormat;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Component
@@ -105,5 +106,14 @@ public final class Util {
     }
     public static String getUserId(JwtPayloadData jwtPayloadData) {
         return jwtPayloadData.getUsername();
+    }
+
+    public static LocalDateTime parseStringToLocalDateTime(String value, String format) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
+        return LocalDateTime.parse(value, dtf);
+    }
+    public static LocalDate parseStringToLocalDate(String value, String format) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
+        return LocalDate.parse(value, dtf);
     }
 }
