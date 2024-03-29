@@ -330,6 +330,9 @@ public class ReelerService {
 
     @Transactional
     public ReelerResponse reelerInitialAmount(HttpHeaders httpHeader, ReelerInitialAmountRequest reelerInitialAmountRequest) {
+        if(reelerInitialAmountRequest.getInitialAmount() == null || reelerInitialAmountRequest.getVirtualAccount() == null || reelerInitialAmountRequest.getVirtualAccount().equals("")){
+            throw new ValidationException("Please provide required information");
+        }
         ReelerResponse reelerResponse = new ReelerResponse();
         farmerRegistrationHelper.getAuthToken(reelerInitialAmountRequest);
         Reeler reeler = reelerRepository.findByReelerIdAndActive(reelerInitialAmountRequest.getReelerId(), true);
@@ -337,35 +340,51 @@ public class ReelerService {
             GenericBankTransactionRequest genericBankTransactionRequest = new GenericBankTransactionRequest();
             List<GenericCorporateAlertRequest> genericCorporateAlertRequests = new ArrayList<>();
             GenericCorporateAlertRequest genericCorporateAlertRequest = new GenericCorporateAlertRequest();
+            if(reeler.getReelingLicenseNumber().equals("") || reeler.getReelingLicenseNumber() == null || reeler.getReelerNumber().equals("") || reeler.getReelerNumber() == null) {
+                reelerResponse.setError(true);
+                reelerResponse.setError_description("Invalid reeler number or reeling license number");
+            }else{
+                genericCorporateAlertRequest.setAlertSequenceNo(reeler.getReelingLicenseNumber()+"_"+reeler.getReelerNumber());
 
-            genericCorporateAlertRequest.setAlertSequenceNo(reeler.getReelingLicenseNumber()+"_"+reeler.getReelerNumber());
+                genericCorporateAlertRequest.setVirtualAccount(reelerInitialAmountRequest.getVirtualAccount());
+                genericCorporateAlertRequest.setAccountNumber(reelerInitialAmountRequest.getAccountNumber());
+                genericCorporateAlertRequest.setAmount(reelerInitialAmountRequest.getInitialAmount());
 
-            genericCorporateAlertRequest.setVirtualAccount(reelerInitialAmountRequest.getVirtualAccount());
-            genericCorporateAlertRequest.setAccountNumber(reelerInitialAmountRequest.getAccountNumber());
-            genericCorporateAlertRequest.setAmount(reelerInitialAmountRequest.getInitialAmount());
+                genericCorporateAlertRequest.setDebitCredit("CREDIT");
+                genericCorporateAlertRequest.setRemitterName(reeler.getReelerName());
+                if(reeler.getBankName().equals("") || reeler.getBankName() == null){
+                    genericCorporateAlertRequest.setRemitterBank("");
+                }else {
+                    genericCorporateAlertRequest.setRemitterBank(reeler.getBankName());
+                }
+                if(reeler.getBankAccountNumber().equals("") || reeler.getBankAccountNumber() == null){
+                    genericCorporateAlertRequest.setRemitterAccount("");
+                }else {
+                    genericCorporateAlertRequest.setRemitterAccount(reeler.getBankAccountNumber());
+                }
+                if(reeler.getIfscCode().equals("") || reeler.getIfscCode() == null){
+                    genericCorporateAlertRequest.setIfscCode("");
+                }else {
+                    genericCorporateAlertRequest.setIfscCode(reeler.getIfscCode());
+                }
+                //genericCorporateAlertRequest.setChequeNo("");
+                genericCorporateAlertRequest.setUserReferenceNumber(reeler.getReelerNumber()+"_"+reeler.getBankAccountNumber()+"_"+LocalDateTime.now());
+                genericCorporateAlertRequest.setMnemonicCode("NEFT");
+                genericCorporateAlertRequest.setValueDate(LocalDate.now().toString());
+                genericCorporateAlertRequest.setTransactionDescription("Initial amount");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                String formattedDateTime = LocalDateTime.now().format(formatter);
+                genericCorporateAlertRequest.setTransactionDate(formattedDateTime);
 
-            genericCorporateAlertRequest.setDebitCredit("CREDIT");
-            genericCorporateAlertRequest.setRemitterName(reeler.getReelerName());
-            genericCorporateAlertRequest.setRemitterBank(reeler.getBankName());
-            genericCorporateAlertRequest.setRemitterAccount(reeler.getBankAccountNumber());
-            genericCorporateAlertRequest.setIfscCode(reeler.getIfscCode());
-            //genericCorporateAlertRequest.setChequeNo("");
-            genericCorporateAlertRequest.setUserReferenceNumber(reeler.getReelerNumber()+"_"+reeler.getBankAccountNumber()+"_"+LocalDateTime.now());
-            genericCorporateAlertRequest.setMnemonicCode("NEFT");
-            genericCorporateAlertRequest.setValueDate(LocalDate.now().toString());
-            genericCorporateAlertRequest.setTransactionDescription("Initial amount");
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            String formattedDateTime = LocalDateTime.now().format(formatter);
-            genericCorporateAlertRequest.setTransactionDate(formattedDateTime);
+                genericCorporateAlertRequests.add(genericCorporateAlertRequest);
+                genericBankTransactionRequest.setGenericCorporateAlertRequest(genericCorporateAlertRequests);
 
-            genericCorporateAlertRequests.add(genericCorporateAlertRequest);
-            genericBankTransactionRequest.setGenericCorporateAlertRequest(genericCorporateAlertRequests);
+                ObjectMapper mapper1 = new ObjectMapper();
+                JsonNode jsonNode = mapper1.valueToTree(genericBankTransactionRequest);
+                bankTransactionController.creditTransaction(httpHeader, jsonNode);
 
-            ObjectMapper mapper1 = new ObjectMapper();
-            JsonNode jsonNode = mapper1.valueToTree(genericBankTransactionRequest);
-            bankTransactionController.creditTransaction(httpHeader, jsonNode);
-
-            reelerResponse.setError(false);
+                reelerResponse.setError(false);
+            }
         } else {
             reelerResponse.setError(true);
             reelerResponse.setError_description("Invalid Id");
