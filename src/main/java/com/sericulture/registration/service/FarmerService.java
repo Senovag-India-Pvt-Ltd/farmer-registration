@@ -233,6 +233,7 @@ public class FarmerService {
     @Transactional
     public GetFarmerResponse getFarmerDetails(GetFarmerRequest getFarmerRequest) {
         FarmerResponse farmerResponse = new FarmerResponse();
+        GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
         Farmer farmer = new Farmer();
         if (getFarmerRequest.getFarmerNumber() == null || getFarmerRequest.getFarmerNumber().equals("")) {
             farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(), true);
@@ -240,37 +241,35 @@ public class FarmerService {
             farmer = farmerRepository.findByFarmerNumberAndActive(getFarmerRequest.getFarmerNumber(), true);
         }
         if (farmer == null) {
-            // Log a message, provide a default value, or take other appropriate action
-//            System.out.println("Invalid fruits id");
-//
-//            // You might want to return an empty response or some default response
-//            return new GetFarmerResponse();
-            farmerResponse.setError(true);
-            farmerResponse.setError_description("Invalid fruits id");
+            getFarmerResponse.setError(true);
+            getFarmerResponse.setError_description("Not Found");
+        }else{
+            List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+            List<FarmerAddressDTO> farmerAddressDTOList = farmerAddressRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
+            List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+            List<FarmerLandDetailsDTO> farmerLandDetailsDTOList = farmerLandDetailsRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
+            List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+            List<FarmerFamilyDTO> farmerFamilyDTOList = farmerFamilyRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
+            FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
+
+
+            getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer, FarmerResponse.class));
+//        getFarmerResponse.setFarmerDTO(farmerDTO);
+//        getFarmerResponse.setFarmerDTOList(farmerDTOList);
+            getFarmerResponse.setFarmerAddressList(farmerAddressList);
+            getFarmerResponse.setFarmerAddressDTOList(farmerAddressDTOList);
+            getFarmerResponse.setFarmerFamilyList(farmerFamilyList);
+            getFarmerResponse.setFarmerFamilyDTOList(farmerFamilyDTOList);
+            getFarmerResponse.setFarmerLandDetailsList(farmerLandDetailsList);
+            getFarmerResponse.setFarmerLandDetailsDTOList(farmerLandDetailsDTOList);
+            getFarmerResponse.setFarmerBankAccount(farmerBankAccount);
+
         }
 //        FarmerDTO farmerDTO = farmerRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
 //        List<FarmerDTO> farmerDTOList = farmerRepository.getByIdAndActive(farmer.getFarmerId(), true);
-        List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
-        List<FarmerAddressDTO> farmerAddressDTOList = farmerAddressRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
-        List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
-        List<FarmerLandDetailsDTO> farmerLandDetailsDTOList = farmerLandDetailsRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
-        List<FarmerFamily> farmerFamilyList = farmerFamilyRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
-        List<FarmerFamilyDTO> farmerFamilyDTOList = farmerFamilyRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
-        FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
-
-        GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
-        getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer, FarmerResponse.class));
-//        getFarmerResponse.setFarmerDTO(farmerDTO);
-//        getFarmerResponse.setFarmerDTOList(farmerDTOList);
-        getFarmerResponse.setFarmerAddressList(farmerAddressList);
-        getFarmerResponse.setFarmerAddressDTOList(farmerAddressDTOList);
-        getFarmerResponse.setFarmerFamilyList(farmerFamilyList);
-        getFarmerResponse.setFarmerFamilyDTOList(farmerFamilyDTOList);
-        getFarmerResponse.setFarmerLandDetailsList(farmerLandDetailsList);
-        getFarmerResponse.setFarmerLandDetailsDTOList(farmerLandDetailsDTOList);
-        getFarmerResponse.setFarmerBankAccount(farmerBankAccount);
 
         return getFarmerResponse;
+
     }
 
     @Transactional
