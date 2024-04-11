@@ -27,36 +27,6 @@ public class BankTransactionController {
     @Autowired
     BankTransactionService bankTransactionService;
 
-    /**
-     * Main api that handles credit from bank
-     * @param headers
-     * @param jsonNode
-     * @return
-     */
-    @Operation(summary = "Bank Transaction credit entry",
-            description = "")
-    @RequestBody( required = true,
-            content = @Content(
-                    schema=@Schema(example = BTConstants.BANK_CREDIT_TXN_REQUEST )))
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Ok Response", content = {
-                    @Content(mediaType = "application/json", schema =
-                    @Schema(example = "TODO"))
-            }),
-            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
-                    content =
-                            {
-                                    @Content(mediaType = "application/json", schema =
-                                    @Schema(example = ""))
-                            }),
-            @ApiResponse(responseCode = "500", description = "",
-                    content =
-                            {
-                                    @Content(mediaType = "application/json", schema =
-                                    @Schema(example = ""))
-                            })
-    })
-    @PostMapping("/credit")
     public ResponseEntity<?> creditTransaction(@RequestHeader HttpHeaders headers,
                                                @org.springframework.web.bind.annotation.RequestBody JsonNode jsonNode){
         try {
