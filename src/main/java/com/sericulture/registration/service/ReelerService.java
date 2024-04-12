@@ -377,13 +377,14 @@ public class ReelerService {
                         genericCorporateAlertRequest.setIfscCode(reeler.getIfscCode());
                     }
                     //genericCorporateAlertRequest.setChequeNo("");
-                    genericCorporateAlertRequest.setUserReferenceNumber(reeler.getReelerNumber() + "_" + reeler.getBankAccountNumber() + "_" + LocalDateTime.now());
-                    genericCorporateAlertRequest.setMnemonicCode("NEFT");
-                    genericCorporateAlertRequest.setValueDate(LocalDate.now().toString());
-                    genericCorporateAlertRequest.setTransactionDescription("Initial amount");
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                     String formattedDateTime = LocalDateTime.now().format(formatter);
                     genericCorporateAlertRequest.setTransactionDate(formattedDateTime);
+                    UUID uuid = UUID.randomUUID();
+                    genericCorporateAlertRequest.setUserReferenceNumber(reeler.getReelerNumber() + "_" + uuid);
+                    genericCorporateAlertRequest.setMnemonicCode("NEFT");
+                    genericCorporateAlertRequest.setValueDate(LocalDate.now().toString());
+                    genericCorporateAlertRequest.setTransactionDescription("Initial amount");
 
                     genericCorporateAlertRequests.add(genericCorporateAlertRequest);
                     genericBankTransactionRequest.setGenericCorporateAlertRequest(genericCorporateAlertRequests);
