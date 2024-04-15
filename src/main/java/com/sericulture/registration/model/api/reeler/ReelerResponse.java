@@ -221,7 +221,7 @@ public class ReelerResponse {
     String reelerNumber;
 
     @Schema(name = "reelerTypeMasterId", example = "1")
-    int reelerTypeMasterId;
+    Long reelerTypeMasterId;
 
     @Schema(name = "reelerTypeMasterName", example = "3674637")
     String reelerTypeMasterName;
