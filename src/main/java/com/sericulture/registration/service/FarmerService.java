@@ -89,6 +89,12 @@ public class FarmerService {
     @Autowired
     SerialCounterRepository serialCounterRepository;
 
+    @Autowired
+    RequestInspectionMappingRepository requestInspectionMappingRepository;
+
+    @Autowired
+    InspectionTaskRepository inspectionTaskRepository;
+
     @Transactional
     public FarmerResponse insertFarmerDetails(FarmerRequest farmerRequest) {
         if (farmerRequest.getIsOtherStateFarmer() == null) {
@@ -117,8 +123,34 @@ public class FarmerService {
                 farmerResponse.setError_description("Farmer Mobile Number already exists with inactive state");
             } else {
                 // If no duplicates found, save the reeler
-                farmerResponse = mapper.farmerEntityToObject(farmerRepository.save(farmer), FarmerResponse.class);
-                farmerResponse.setError(false);
+                Farmer savedResponse = farmerRepository.save(farmer);
+                farmerResponse = mapper.farmerEntityToObject(savedResponse, FarmerResponse.class);
+
+                //Once farmer created, trigger inspection if farmer created
+                if(savedResponse.getFarmerId() != null) {
+                    InspectionTask inspectionTask = new InspectionTask();
+                    inspectionTask.setInspectionDate(LocalDate.now());
+                    inspectionTask.setStatus(1); //Open (Newly created)
+                    inspectionTask.setUserMasterId(farmerRequest.getInspectorId());
+                    inspectionTask.setRequestType("FARMER_REGISTRATION");
+                    inspectionTask.setRequestTypeId(savedResponse.getFarmerId());
+
+                    //To fetch inspection type
+                    RequestInspectionMapping requestInspectionMapping = requestInspectionMappingRepository.findByRequestTypeNameAndActive("FARMER_REGISTRATION", true);
+
+                    if(requestInspectionMapping != null){
+                        inspectionTask.setInspectionType(requestInspectionMapping.getInspectionType());
+                        inspectionTaskRepository.save(inspectionTask);
+                        farmerResponse.setError(false);
+                    }else{
+                        farmerResponse.setError(true);
+                        farmerResponse.setError_description("Farmer saved, but inspection not saved");
+                    }
+
+                }else{
+                    farmerResponse.setError(true);
+                    farmerResponse.setError_description("Farmer not saved");
+                }
             }
         }
         return farmerResponse;

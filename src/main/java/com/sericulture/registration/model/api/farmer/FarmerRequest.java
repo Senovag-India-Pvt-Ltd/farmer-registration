@@ -123,4 +123,7 @@ public class FarmerRequest extends RequestBody {
 
     @Schema(name = "isOtherStateFarmer", example = "0")
     private Boolean isOtherStateFarmer;
+
+    @Schema(name = "inspectorId", example = "1")
+    Long inspectorId;
 }
