@@ -278,11 +278,33 @@ public class ReelerService {
 
         reeler.setArnNumber("TRL/"+formattedDate+"/"+formattedNumber);
 
+        Reeler savedResponse = reelerRepository.save(reeler);
+        reelerResponse = mapper.reelerEntityToObject(savedResponse, ReelerResponse.class);
+        //Once transfer of license done, trigger inspection if created
+        if(savedResponse.getReelerId() != null) {
+            InspectionTask inspectionTask = new InspectionTask();
+            inspectionTask.setInspectionDate(LocalDate.now());
+            inspectionTask.setStatus(1); //Open (Newly created)
+            inspectionTask.setUserMasterId(reelerRequest.getInspectorId());
+            inspectionTask.setRequestType("REELER_LICENSE_RENEWAL");
+            inspectionTask.setRequestTypeId(savedResponse.getReelerId());
 
-        reelerResponse = mapper.reelerEntityToObject(reelerRepository.save(reeler), ReelerResponse.class);
-        reelerResponse.setError(false);
+            //To fetch inspection type
+            RequestInspectionMapping requestInspectionMapping = requestInspectionMappingRepository.findByRequestTypeNameAndActive("REELER_LICENSE_RENEWAL", true);
 
+            if(requestInspectionMapping != null){
+                inspectionTask.setInspectionType(requestInspectionMapping.getInspectionType());
+                inspectionTaskRepository.save(inspectionTask);
+                reelerResponse.setError(false);
+            }else{
+                reelerResponse.setError(true);
+                reelerResponse.setError_description("Reeler license transferred, but inspection not saved");
+            }
 
+        }else{
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Reeler license not transferred");
+        }
         return reelerResponse;
     }
     @Transactional(isolation = Isolation.READ_COMMITTED)
