@@ -241,4 +241,7 @@ public class ReelerRequest extends RequestBody {
 
     @Schema(name = "transferReelerId", example = "1")
     int transferReelerId;
+
+    @Schema(name = "inspectorId", example = "1")
+    Long inspectorId;
 }
