@@ -579,6 +579,9 @@ public class FarmerService {
             if(farmer.getWithoutFruitsInwardCounter() == null){
                 farmer.setWithoutFruitsInwardCounter(0L);
             }
+            if(serialCounter.getFarmerWithoutFruitsAllowedNumber() == null){
+                serialCounter.setFarmerWithoutFruitsAllowedNumber(0L);
+            }
             if(farmer.getWithoutFruitsInwardCounter()> serialCounter.getFarmerWithoutFruitsAllowedNumber() && (farmer.getFruitsId().equals("") || farmer.getFruitsId() == null)){
                 getFarmerResponse.setError(true);
                 getFarmerResponse.setError_description("Maximum allowance of allotment for farmer is reached. Please come back with fruits id.");
