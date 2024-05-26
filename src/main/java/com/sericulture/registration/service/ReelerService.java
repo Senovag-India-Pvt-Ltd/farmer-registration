@@ -10,9 +10,7 @@ import com.sericulture.registration.helper.FarmerRegistrationHelper;
 import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.api.common.SearchByColumnRequest;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
-import com.sericulture.registration.model.api.farmer.FarmerResponse;
 import com.sericulture.registration.model.api.farmer.GetFarmerRequest;
-import com.sericulture.registration.model.api.farmer.GetFarmerResponse;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
 import com.sericulture.registration.model.api.reeler.*;
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
@@ -23,10 +21,7 @@ import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO
 import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
-import com.sericulture.registration.repository.ReelerLicenseTransactionRepository;
-import com.sericulture.registration.repository.ReelerRepository;
-import com.sericulture.registration.repository.ReelerVirtualBankAccountRepository;
-import com.sericulture.registration.repository.SerialCounterRepository;
+import com.sericulture.registration.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -77,6 +72,12 @@ public class ReelerService {
 
     @Autowired
     BankTransactionController bankTransactionController;
+
+    @Autowired
+    InspectionTaskRepository inspectionTaskRepository;
+
+    @Autowired
+    RequestInspectionMappingRepository requestInspectionMappingRepository;
 
     @Transactional
     public ReelerResponse insertReelerDetails(ReelerRequest reelerRequest){
@@ -139,9 +140,35 @@ public class ReelerService {
 
                     reeler.setArnNumber("TRL/"+formattedDate+"/"+formattedNumber);
                 }
-
-                reelerResponse = mapper.reelerEntityToObject(reelerRepository.save(reeler), ReelerResponse.class);
+                Reeler savedResponse = reelerRepository.save(reeler);
+                reelerResponse = mapper.reelerEntityToObject(savedResponse, ReelerResponse.class);
                 reelerResponse.setError(false);
+
+                //Once reeler created, trigger inspection if reeler created
+                if(savedResponse.getReelerId() != null) {
+                    InspectionTask inspectionTask = new InspectionTask();
+                    inspectionTask.setInspectionDate(LocalDate.now());
+                    inspectionTask.setStatus(1); //Open (Newly created)
+                    inspectionTask.setUserMasterId(reelerRequest.getInspectorId());
+                    inspectionTask.setRequestType("REELER_REGISTRATION");
+                    inspectionTask.setRequestTypeId(savedResponse.getReelerId());
+
+                    //To fetch inspection type
+                    RequestInspectionMapping requestInspectionMapping = requestInspectionMappingRepository.findByRequestTypeNameAndActive("REELER_REGISTRATION", true);
+
+                    if(requestInspectionMapping != null){
+                        inspectionTask.setInspectionType(requestInspectionMapping.getInspectionType());
+                        inspectionTaskRepository.save(inspectionTask);
+                        reelerResponse.setError(false);
+                    }else{
+                        reelerResponse.setError(true);
+                        reelerResponse.setError_description("Reeler saved, but inspection not saved");
+                    }
+
+                }else{
+                    reelerResponse.setError(true);
+                    reelerResponse.setError_description("Reeler not saved");
+                }
             }
         }
         return reelerResponse;
@@ -251,11 +278,33 @@ public class ReelerService {
 
         reeler.setArnNumber("TRL/"+formattedDate+"/"+formattedNumber);
 
+        Reeler savedResponse = reelerRepository.save(reeler);
+        reelerResponse = mapper.reelerEntityToObject(savedResponse, ReelerResponse.class);
+        //Once transfer of license done, trigger inspection if created
+        if(savedResponse.getReelerId() != null) {
+            InspectionTask inspectionTask = new InspectionTask();
+            inspectionTask.setInspectionDate(LocalDate.now());
+            inspectionTask.setStatus(1); //Open (Newly created)
+            inspectionTask.setUserMasterId(reelerRequest.getInspectorId());
+            inspectionTask.setRequestType("REELER_LICENSE_RENEWAL");
+            inspectionTask.setRequestTypeId(savedResponse.getReelerId());
 
-        reelerResponse = mapper.reelerEntityToObject(reelerRepository.save(reeler), ReelerResponse.class);
-        reelerResponse.setError(false);
+            //To fetch inspection type
+            RequestInspectionMapping requestInspectionMapping = requestInspectionMappingRepository.findByRequestTypeNameAndActive("REELER_LICENSE_RENEWAL", true);
 
+            if(requestInspectionMapping != null){
+                inspectionTask.setInspectionType(requestInspectionMapping.getInspectionType());
+                inspectionTaskRepository.save(inspectionTask);
+                reelerResponse.setError(false);
+            }else{
+                reelerResponse.setError(true);
+                reelerResponse.setError_description("Reeler license transferred, but inspection not saved");
+            }
 
+        }else{
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Reeler license not transferred");
+        }
         return reelerResponse;
     }
     @Transactional(isolation = Isolation.READ_COMMITTED)
