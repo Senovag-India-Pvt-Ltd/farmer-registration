@@ -47,7 +47,7 @@ public class FarmerLandDetailsRequest extends RequestBody {
     @Schema(name = "plantationDate", example = "2023-05-23")
     private Date plantationDate;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Spacing must contain only letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s()+]*$", message = "Spacing must contain only letters and numbers")
     @Schema(name = "spacing", example = ",")
     private String spacing;
 
