@@ -95,6 +95,15 @@ public class FarmerService {
     @Autowired
     InspectionTaskRepository inspectionTaskRepository;
 
+    @Autowired
+    FarmerBankAccountService farmerBankAccountService;
+
+    @Autowired
+    FarmerFamilyService farmerFamilyService;
+
+    @Autowired
+    FarmerLandDetailsService farmerLandDetailsService;
+
     @Transactional
     public FarmerResponse insertFarmerDetails(FarmerRequest farmerRequest) {
         if (farmerRequest.getIsOtherStateFarmer() == null) {
@@ -128,6 +137,86 @@ public class FarmerService {
 
                 //Once farmer created, trigger inspection if farmer created
                 if(savedResponse.getFarmerId() != null) {
+                    InspectionTask inspectionTask = new InspectionTask();
+                    inspectionTask.setInspectionDate(LocalDate.now());
+                    inspectionTask.setStatus(1); //Open (Newly created)
+                    inspectionTask.setUserMasterId(farmerRequest.getInspectorId());
+                    inspectionTask.setRequestType("FARMER_REGISTRATION");
+                    inspectionTask.setRequestTypeId(savedResponse.getFarmerId());
+
+                    //To fetch inspection type
+                    RequestInspectionMapping requestInspectionMapping = requestInspectionMappingRepository.findByRequestTypeNameAndActive("FARMER_REGISTRATION", true);
+
+                    if(requestInspectionMapping != null){
+                        inspectionTask.setInspectionType(requestInspectionMapping.getInspectionType());
+                        inspectionTaskRepository.save(inspectionTask);
+                        farmerResponse.setError(false);
+                    }else{
+                        farmerResponse.setError(true);
+                        farmerResponse.setError_description("Farmer saved, but inspection not saved");
+                    }
+
+                }else{
+                    farmerResponse.setError(true);
+                    farmerResponse.setError_description("Farmer not saved");
+                }
+            }
+        }
+        return farmerResponse;
+    }
+
+    @Transactional
+    public FarmerResponse insertCompleteFarmerDetails(FarmerSaveRequest farmerSaveRequest) {
+        FarmerRequest farmerRequest = farmerSaveRequest.getFarmerRequest();
+        if (farmerRequest.getIsOtherStateFarmer() == null) {
+            farmerRequest.setIsOtherStateFarmer(false);
+        }
+        FarmerResponse farmerResponse = new FarmerResponse();
+        Farmer farmer = mapper.farmerObjectToEntity(farmerRequest, Farmer.class);
+        farmer.setWithoutFruitsInwardCounter(0L);
+        validator.validate(farmer);
+        List<Farmer> farmerList = farmerRepository.findByFarmerNumber(farmerRequest.getFarmerNumber());
+        if (!farmerList.isEmpty() && farmerList.stream().filter(Farmer::getActive).findAny().isPresent()) {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Farmer number already exist");
+        } else if (!farmerList.isEmpty() && farmerList.stream().filter(Predicate.not(Farmer::getActive)).findAny().isPresent()) {
+            //throw new ValidationException("Village name already exist with inactive state");
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Farmer number already exist with inactive state");
+        } else {
+            // Check for duplicate Reeler Number
+            List<Farmer> farmerListByNumber = farmerRepository.findByMobileNumber(farmer.getMobileNumber());
+            if (!farmerListByNumber.isEmpty() && farmerListByNumber.stream().anyMatch(Farmer::getActive)) {
+                farmerResponse.setError(true);
+                farmerResponse.setError_description("Farmer Mobile Number already exists");
+            } else if (!farmerListByNumber.isEmpty() && farmerListByNumber.stream().anyMatch(Predicate.not(Farmer::getActive))) {
+                farmerResponse.setError(true);
+                farmerResponse.setError_description("Farmer Mobile Number already exists with inactive state");
+            } else {
+                // If no duplicates found, save the reeler
+                Farmer savedResponse = farmerRepository.save(farmer);
+                farmerResponse = mapper.farmerEntityToObject(savedResponse, FarmerResponse.class);
+
+                //Once farmer created, trigger inspection if farmer created
+                if(savedResponse.getFarmerId() != null) {
+
+
+                    //Save farmer bank acc details
+                    farmerSaveRequest.getFarmerBankAccountRequest().setFarmerId(savedResponse.getFarmerId());
+                    farmerBankAccountService.insertFarmerBankAccountDetails(farmerSaveRequest.getFarmerBankAccountRequest());
+
+
+                    for(int i=0; i<farmerSaveRequest.getFarmerFamilyRequestList().size();i++) {
+                        farmerSaveRequest.getFarmerFamilyRequestList().get(i).setFarmerId(savedResponse.getFarmerId());
+                        farmerFamilyService.insertFarmerFamilyDetails(farmerSaveRequest.getFarmerFamilyRequestList().get(i));
+                    }
+
+                    for(int i=0; i<farmerSaveRequest.getFarmerLandDetailsRequests().size();i++) {
+                        farmerSaveRequest.getFarmerLandDetailsRequests().get(i).setFarmerId(savedResponse.getFarmerId());
+                        farmerLandDetailsService.insertFarmerLandDetailsDetails(farmerSaveRequest.getFarmerLandDetailsRequests().get(i));
+                    }
+
+
                     InspectionTask inspectionTask = new InspectionTask();
                     inspectionTask.setInspectionDate(LocalDate.now());
                     inspectionTask.setStatus(1); //Open (Newly created)
