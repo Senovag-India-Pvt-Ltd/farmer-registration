@@ -354,6 +354,84 @@ public class FarmerService {
     }
 
     @Transactional
+    public FarmerResponse editCompleteFarmerDetails(EditCompleteFarmerRequest editCompleteFarmerRequest) {
+        EditFarmerRequest farmerRequest = editCompleteFarmerRequest.getEditFarmerRequest();
+        if (farmerRequest.getIsOtherStateFarmer() == null) {
+            farmerRequest.setIsOtherStateFarmer(false);
+        }
+        FarmerResponse farmerResponse = new FarmerResponse();
+        /*List<Farmer> farmerList = farmerRepository.findByFarmerNumber(farmerRequest.getFarmerNumber());
+        if(farmerList.size()>0){
+            throw new ValidationException("farmer already exists with this name, duplicates are not allowed.");
+        }
+*/
+        Farmer farmer = farmerRepository.findByFarmerIdAndActiveIn(farmerRequest.getFarmerId(), Set.of(true, false));
+        if (Objects.nonNull(farmer)) {
+            farmer.setFarmerNumber(farmerRequest.getFarmerNumber());
+            farmer.setFruitsId(farmerRequest.getFruitsId());
+            farmer.setFirstName(farmerRequest.getFirstName());
+            farmer.setMiddleName(farmerRequest.getMiddleName());
+            farmer.setLastName(farmerRequest.getLastName());
+            farmer.setDob(farmerRequest.getDob());
+            farmer.setGenderId(farmerRequest.getGenderId());
+            farmer.setGenderId(farmerRequest.getGenderId());
+            farmer.setCasteId(farmerRequest.getCasteId());
+            farmer.setDifferentlyAbled(farmerRequest.getDifferentlyAbled());
+            farmer.setEmail(farmerRequest.getEmail());
+            farmer.setMobileNumber(farmerRequest.getMobileNumber());
+            farmer.setAadhaarNumber(farmerRequest.getAadhaarNumber());
+            farmer.setEpicNumber(farmerRequest.getEpicNumber());
+            farmer.setRationCardNumber(farmerRequest.getRationCardNumber());
+            farmer.setTotalLandHolding(farmerRequest.getTotalLandHolding());
+            farmer.setPassbookNumber(farmerRequest.getPassbookNumber());
+            farmer.setLandCategoryId(farmerRequest.getLandCategoryId());
+            farmer.setEducationId(farmerRequest.getEducationId());
+            farmer.setRepresentativeId(farmerRequest.getRepresentativeId());
+            farmer.setKhazaneRecipientId(farmerRequest.getKhazaneRecipientId());
+            farmer.setPhotoPath(farmerRequest.getPhotoPath());
+            farmer.setFarmerTypeId(farmerRequest.getFarmerTypeId());
+            farmer.setMinority(farmerRequest.getMinority());
+            farmer.setRdNumber(farmerRequest.getRdNumber());
+            farmer.setCasteStatus(farmerRequest.getCasteStatus());
+            farmer.setGenderStatus(farmerRequest.getGenderStatus());
+            farmer.setFatherNameKan(farmerRequest.getFatherNameKan());
+            farmer.setFatherName(farmerRequest.getFatherName());
+            farmer.setNameKan(farmerRequest.getNameKan());
+
+            farmer.setActive(true);
+            Farmer farmer1 = farmerRepository.save(farmer);
+            farmerResponse = mapper.farmerEntityToObject(farmer1, FarmerResponse.class);
+
+            if(farmerResponse.getFarmerId()>0){
+                //Save farmer bank acc details
+                editCompleteFarmerRequest.getEditFarmerBankAccountRequest().setFarmerId(farmerResponse.getFarmerId());
+                FarmerBankAccountResponse farmerBankAccountResponse =farmerBankAccountService.updateFarmerBankAccountDetails(editCompleteFarmerRequest.getEditFarmerBankAccountRequest());
+                if(farmerBankAccountResponse.getFarmerBankAccountId()>0){
+                    farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
+                }
+
+                for(int i=0; i<editCompleteFarmerRequest.getEditFarmerFamilyRequests().size();i++) {
+                    editCompleteFarmerRequest.getEditFarmerFamilyRequests().get(i).setFarmerId(farmerResponse.getFarmerId());
+                    farmerFamilyService.updateFarmerFamilyDetails(editCompleteFarmerRequest.getEditFarmerFamilyRequests().get(i));
+                }
+
+                for(int i=0; i<editCompleteFarmerRequest.getEditFarmerLandDetailsRequests().size();i++) {
+                    editCompleteFarmerRequest.getEditFarmerLandDetailsRequests().get(i).setFarmerId(farmerResponse.getFarmerId());
+                    farmerLandDetailsService.updateFarmerLandDetailsDetails(editCompleteFarmerRequest.getEditFarmerLandDetailsRequests().get(i));
+                }
+            }
+
+            farmerResponse.setError(false);
+        } else {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Error occurred while fetching Farmer");
+            // throw new ValidationException("Error occurred while fetching village");
+        }
+
+        return farmerResponse;
+    }
+
+    @Transactional
     public GetFarmerResponse getFarmerDetails(GetFarmerRequest getFarmerRequest) {
         FarmerResponse farmerResponse = new FarmerResponse();
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();

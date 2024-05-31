@@ -205,6 +205,25 @@ public class FarmerController {
     }
 
     @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Object saved details"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @PostMapping("/edit-complete-farmer-details")
+    public ResponseEntity<?> editCompleteFarmerDetails(
+            @Valid @RequestBody final EditCompleteFarmerRequest editFarmerRequest
+    ) {
+        ResponseWrapper<FarmerResponse> rw = ResponseWrapper.createWrapper(FarmerResponse.class);
+        rw.setContent(farmerService.editCompleteFarmerDetails(editFarmerRequest));
+        return ResponseEntity.ok(rw);
+    }
+
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ok Response"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
                     content =
