@@ -203,8 +203,10 @@ public class FarmerService {
 
                     //Save farmer bank acc details
                     farmerSaveRequest.getFarmerBankAccountRequest().setFarmerId(savedResponse.getFarmerId());
-                    farmerBankAccountService.insertFarmerBankAccountDetails(farmerSaveRequest.getFarmerBankAccountRequest());
-
+                    FarmerBankAccountResponse farmerBankAccountResponse =farmerBankAccountService.insertFarmerBankAccountDetails(farmerSaveRequest.getFarmerBankAccountRequest());
+                    if(farmerBankAccountResponse.getFarmerBankAccountId()>0){
+                        farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
+                    }
 
                     for(int i=0; i<farmerSaveRequest.getFarmerFamilyRequestList().size();i++) {
                         farmerSaveRequest.getFarmerFamilyRequestList().get(i).setFarmerId(savedResponse.getFarmerId());
