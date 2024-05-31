@@ -187,6 +187,7 @@ public class FarmerLandDetailsService {
             farmerLandDetails.setAcre(farmerLandDetailsRequest.getAcre());
             farmerLandDetails.setGunta(farmerLandDetailsRequest.getGunta());
             farmerLandDetails.setFGunta(farmerLandDetailsRequest.getFGunta());
+            farmerLandDetails.setLandCode(farmerLandDetailsRequest.getLandCode());
 
             farmerLandDetails.setActive(true);
             FarmerLandDetails farmerLandDetails1 = farmerLandDetailsRepository.save(farmerLandDetails);

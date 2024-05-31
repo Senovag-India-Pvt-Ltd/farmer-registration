@@ -1,5 +1,6 @@
 package com.sericulture.registration.model.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -141,4 +142,7 @@ public class FarmerLandDetails extends BaseEntity implements Serializable {
 
     @Column(name = "f_gunta")
     private Double fGunta;
+
+    @Column(name = "land_code")
+    private Long landCode;
 }

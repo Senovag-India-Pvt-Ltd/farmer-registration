@@ -185,6 +185,9 @@ public class FarmerLandDetailsResponse {
     @Schema(name = "villageName", example = "Hodla")
     private String villageName;
 
+    @Schema(name = "landCode", example = "1")
+    private Long landCode;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 

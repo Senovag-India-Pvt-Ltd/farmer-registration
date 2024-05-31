@@ -156,4 +156,7 @@ public class FarmerLandDetailsRequest extends RequestBody {
 
     @Schema(name = "fGunta", example = "1")
     private Double fGunta;
+
+    @Schema(name = "landCode", example = "1")
+    private Long landCode;
 }
