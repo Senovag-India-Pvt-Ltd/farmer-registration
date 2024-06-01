@@ -53,6 +53,21 @@ public class GetLandDetailsResponse {
     @Schema(name = "Fgunta", example = "16")
     Float Fgunta;
 
+    @Schema(name = "LandCode", example = "1")
+    Integer LandCode;
+
+    @Schema(name = "DistrictCode", example = "1")
+    Integer DistrictCode;
+
+    @Schema(name = "TalukCode", example = "1")
+    Integer TalukCode;
+
+    @Schema(name = "HobliCode", example = "1")
+    Integer HobliCode;
+
+    @Schema(name = "VillageCode", example = "1")
+    Integer VillageCode;
+
     @Schema(name = "error", example = "Response unavailable")
     String error;
 

@@ -188,6 +188,18 @@ public class FarmerLandDetailsResponse {
     @Schema(name = "landCode", example = "1")
     private Long landCode;
 
+    @Schema(name = "districtCode", example = "1")
+    private Long districtCode;
+
+    @Schema(name = "talukCode", example = "1")
+    private Long talukCode;
+
+    @Schema(name = "hobliCode", example = "1")
+    private Long hobliCode;
+
+    @Schema(name = "villageCode", example = "1")
+    private Long villageCode;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 

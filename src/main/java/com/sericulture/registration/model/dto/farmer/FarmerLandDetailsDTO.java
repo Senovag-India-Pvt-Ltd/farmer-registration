@@ -66,4 +66,9 @@ public class FarmerLandDetailsDTO {
     private String talukName;
     private String hobliName;
     private String villageName;
+    private Long landCode;
+    private Long districtCode;
+    private Long talukCode;
+    private Long hobliCode;
+    private Long villageCode;
 }

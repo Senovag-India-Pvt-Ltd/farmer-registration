@@ -762,6 +762,11 @@ public class FarmerService {
                     farmerLandDetails.setMainOwnerNo(Long.valueOf(String.valueOf(getLandDetailsResponse.getMainOwnerNo())));
                     farmerLandDetails.setGunta(Long.valueOf(getLandDetailsResponse.getGunta()));
                     farmerLandDetails.setFGunta(Double.valueOf(getLandDetailsResponse.getFgunta()));
+                    farmerLandDetails.setLandCode(Long.valueOf(getLandDetailsResponse.getLandCode()));
+                    farmerLandDetails.setDistrictCode(Long.valueOf(getLandDetailsResponse.getDistrictCode()));
+                    farmerLandDetails.setTalukCode(Long.valueOf(getLandDetailsResponse.getTalukCode()));
+                    farmerLandDetails.setHobliCode(Long.valueOf(String.valueOf(getLandDetailsResponse.getHobliCode())));
+                    farmerLandDetails.setVillageCode(Long.valueOf(getLandDetailsResponse.getVillageCode()));
 
                     farmerLandDetailsList.add(farmerLandDetails);
                 }

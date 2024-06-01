@@ -188,6 +188,10 @@ public class FarmerLandDetailsService {
             farmerLandDetails.setGunta(farmerLandDetailsRequest.getGunta());
             farmerLandDetails.setFGunta(farmerLandDetailsRequest.getFGunta());
             farmerLandDetails.setLandCode(farmerLandDetailsRequest.getLandCode());
+            farmerLandDetails.setDistrictCode(farmerLandDetailsRequest.getDistrictCode());
+            farmerLandDetails.setTalukCode(farmerLandDetailsRequest.getTalukCode());
+            farmerLandDetails.setHobliCode(farmerLandDetailsRequest.getHobliCode());
+            farmerLandDetails.setVillageCode(farmerLandDetailsRequest.getVillageCode());
 
             farmerLandDetails.setActive(true);
             FarmerLandDetails farmerLandDetails1 = farmerLandDetailsRepository.save(farmerLandDetails);

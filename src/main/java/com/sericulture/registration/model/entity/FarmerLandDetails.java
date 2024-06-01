@@ -145,4 +145,17 @@ public class FarmerLandDetails extends BaseEntity implements Serializable {
 
     @Column(name = "land_code")
     private Long landCode;
+
+    @Column(name = "district_code")
+    private Long districtCode;
+
+    @Column(name = "taluk_code")
+    private Long talukCode;
+
+    @Column(name = "hobli_code")
+    private Long hobliCode;
+
+    @Column(name = "village_code")
+    private Long villageCode;
+
 }

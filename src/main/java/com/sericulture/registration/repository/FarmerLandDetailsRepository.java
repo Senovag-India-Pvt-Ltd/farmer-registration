@@ -87,7 +87,12 @@ public interface FarmerLandDetailsRepository extends PagingAndSortingRepository<
             " district.districtName, " +
             " taluk.talukName, " +
             " hobli.hobliName, " +
-            " village.villageName" +
+            " village.villageName," +
+            " farmerLandDetails.landCode, " +
+            " farmerLandDetails.districtCode, " +
+            " farmerLandDetails.talukCode, " +
+            " farmerLandDetails.hobliCode, " +
+            " farmerLandDetails.villageCode " +
             ") " +
             "from FarmerLandDetails farmerLandDetails " +
             "left join LandOwnership landOwnership " +
@@ -179,7 +184,12 @@ public interface FarmerLandDetailsRepository extends PagingAndSortingRepository<
             " district.districtName, " +
             " taluk.talukName, " +
             " hobli.hobliName, " +
-            " village.villageName" +
+            " village.villageName," +
+            " farmerLandDetails.landCode, " +
+            " farmerLandDetails.districtCode, " +
+            " farmerLandDetails.talukCode, " +
+            " farmerLandDetails.hobliCode, " +
+            " farmerLandDetails.villageCode " +
             ") " +
             "from FarmerLandDetails farmerLandDetails " +
             "left join LandOwnership landOwnership " +
@@ -262,7 +272,12 @@ public interface FarmerLandDetailsRepository extends PagingAndSortingRepository<
 //            " district.districtName, " +
 //            " taluk.talukName, " +
 //            " hobli.hobliName, " +
-//            " village.villageName" +
+//            " village.villageName," +
+//            " farmerLandDetails.landCode, " +
+//            " farmerLandDetails.districtCode, " +
+//            " farmerLandDetails.talukCode, " +
+//            " farmerLandDetails.hobliCode, " +
+//            " farmerLandDetails.villageCode " +
 //            ") " +
 //            "from FarmerLandDetails farmerLandDetails " +
 //            "left join State state " +
