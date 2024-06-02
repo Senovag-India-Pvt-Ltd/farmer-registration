@@ -104,6 +104,9 @@ public class FarmerService {
     @Autowired
     FarmerLandDetailsService farmerLandDetailsService;
 
+    @Autowired
+    FarmerAddressService farmerAddressService;
+
     @Transactional
     public FarmerResponse insertFarmerDetails(FarmerRequest farmerRequest) {
         if (farmerRequest.getIsOtherStateFarmer() == null) {
@@ -207,6 +210,9 @@ public class FarmerService {
                     if(farmerBankAccountResponse.getFarmerBankAccountId()>0){
                         farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
                     }
+
+                    farmerSaveRequest.getFarmerAddressRequest().setFarmerId(savedResponse.getFarmerId());
+                    farmerAddressService.insertFarmerAddressDetails(farmerSaveRequest.getFarmerAddressRequest());
 
                     for(int i=0; i<farmerSaveRequest.getFarmerFamilyRequestList().size();i++) {
                         farmerSaveRequest.getFarmerFamilyRequestList().get(i).setFarmerId(savedResponse.getFarmerId());
@@ -409,6 +415,9 @@ public class FarmerService {
                 if(farmerBankAccountResponse.getFarmerBankAccountId()>0){
                     farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
                 }
+
+                editCompleteFarmerRequest.getEditFarmerAddressRequest().setFarmerId(farmerResponse.getFarmerId());
+                farmerAddressService.updateFarmerAddressDetails(editCompleteFarmerRequest.getEditFarmerAddressRequest());
 
                 for(int i=0; i<editCompleteFarmerRequest.getEditFarmerFamilyRequests().size();i++) {
                     editCompleteFarmerRequest.getEditFarmerFamilyRequests().get(i).setFarmerId(farmerResponse.getFarmerId());

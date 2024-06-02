@@ -1,6 +1,7 @@
 package com.sericulture.registration.model.api.farmer;
 
 import com.sericulture.registration.model.api.RequestBody;
+import com.sericulture.registration.model.api.farmerAddress.EditFarmerAddressRequest;
 import com.sericulture.registration.model.api.farmerBankAccount.EditFarmerBankAccountRequest;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountRequest;
 import com.sericulture.registration.model.api.farmerFamily.EditFarmerFamilyRequest;
@@ -20,6 +21,8 @@ public class EditCompleteFarmerRequest extends RequestBody {
     EditFarmerRequest editFarmerRequest;
 
     EditFarmerBankAccountRequest editFarmerBankAccountRequest;
+
+    EditFarmerAddressRequest editFarmerAddressRequest;
 
     List<EditFarmerFamilyRequest> editFarmerFamilyRequests;
 
