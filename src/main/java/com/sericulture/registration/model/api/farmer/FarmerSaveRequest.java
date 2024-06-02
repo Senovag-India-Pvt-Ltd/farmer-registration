@@ -1,6 +1,7 @@
 package com.sericulture.registration.model.api.farmer;
 
 import com.sericulture.registration.model.api.RequestBody;
+import com.sericulture.registration.model.api.farmerAddress.FarmerAddressRequest;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountRequest;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyRequest;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsRequest;
@@ -22,6 +23,8 @@ public class FarmerSaveRequest extends RequestBody {
     FarmerRequest farmerRequest;
 
     FarmerBankAccountRequest farmerBankAccountRequest;
+
+    List <FarmerAddressRequest> farmerAddressRequests;
 
     List<FarmerFamilyRequest> farmerFamilyRequestList;
 
