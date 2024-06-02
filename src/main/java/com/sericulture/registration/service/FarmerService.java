@@ -102,10 +102,10 @@ public class FarmerService {
     FarmerFamilyService farmerFamilyService;
 
     @Autowired
-    FarmerLandDetailsService farmerLandDetailsService;
+    FarmerAddressService farmerAddressService;
 
     @Autowired
-    FarmerAddressService farmerAddressService;
+    FarmerLandDetailsService farmerLandDetailsService;
 
     @Transactional
     public FarmerResponse insertFarmerDetails(FarmerRequest farmerRequest) {
@@ -211,8 +211,10 @@ public class FarmerService {
                         farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
                     }
 
-                    farmerSaveRequest.getFarmerAddressRequest().setFarmerId(savedResponse.getFarmerId());
-                    farmerAddressService.insertFarmerAddressDetails(farmerSaveRequest.getFarmerAddressRequest());
+                    for(int i=0; i<farmerSaveRequest.getFarmerAddressRequests().size();i++) {
+                        farmerSaveRequest.getFarmerAddressRequests().get(i).setFarmerId(savedResponse.getFarmerId());
+                        farmerAddressService.insertFarmerAddressDetails(farmerSaveRequest.getFarmerAddressRequests().get(i));
+                    }
 
                     for(int i=0; i<farmerSaveRequest.getFarmerFamilyRequestList().size();i++) {
                         farmerSaveRequest.getFarmerFamilyRequestList().get(i).setFarmerId(savedResponse.getFarmerId());
@@ -415,13 +417,16 @@ public class FarmerService {
                 if(farmerBankAccountResponse.getFarmerBankAccountId()>0){
                     farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
                 }
+                if(editCompleteFarmerRequest.getEditFarmerFamilyRequests() != null){
+                    for(int i=0; i<editCompleteFarmerRequest.getEditFarmerFamilyRequests().size();i++) {
+                        editCompleteFarmerRequest.getEditFarmerFamilyRequests().get(i).setFarmerId(farmerResponse.getFarmerId());
+                        farmerFamilyService.updateFarmerFamilyDetails(editCompleteFarmerRequest.getEditFarmerFamilyRequests().get(i));
+                    }
+                }
 
-                editCompleteFarmerRequest.getEditFarmerAddressRequest().setFarmerId(farmerResponse.getFarmerId());
-                farmerAddressService.updateFarmerAddressDetails(editCompleteFarmerRequest.getEditFarmerAddressRequest());
-
-                for(int i=0; i<editCompleteFarmerRequest.getEditFarmerFamilyRequests().size();i++) {
-                    editCompleteFarmerRequest.getEditFarmerFamilyRequests().get(i).setFarmerId(farmerResponse.getFarmerId());
-                    farmerFamilyService.updateFarmerFamilyDetails(editCompleteFarmerRequest.getEditFarmerFamilyRequests().get(i));
+                for(int i=0; i<editCompleteFarmerRequest.getEditFarmerAddressRequests().size();i++) {
+                    editCompleteFarmerRequest.getEditFarmerAddressRequests().get(i).setFarmerId(farmerResponse.getFarmerId());
+                    farmerAddressService.updateFarmerAddressDetails(editCompleteFarmerRequest.getEditFarmerAddressRequests().get(i));
                 }
 
                 for(int i=0; i<editCompleteFarmerRequest.getEditFarmerLandDetailsRequests().size();i++) {

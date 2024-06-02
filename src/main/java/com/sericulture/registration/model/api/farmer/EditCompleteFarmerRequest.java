@@ -22,7 +22,7 @@ public class EditCompleteFarmerRequest extends RequestBody {
 
     EditFarmerBankAccountRequest editFarmerBankAccountRequest;
 
-    EditFarmerAddressRequest editFarmerAddressRequest;
+    List<EditFarmerAddressRequest> editFarmerAddressRequests;
 
     List<EditFarmerFamilyRequest> editFarmerFamilyRequests;
 
