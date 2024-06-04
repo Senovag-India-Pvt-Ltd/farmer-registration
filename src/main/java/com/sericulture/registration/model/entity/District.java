@@ -30,4 +30,11 @@ public class District extends BaseEntity implements Serializable {
 
     @Column(name = "district_name_in_kannada")
     private String districtNameInKannada;
+
+    @Column(name = "lg_district")
+    private String lgDistrict;
+
+    @Column(name = "code")
+    private String districtCode;
+
 }

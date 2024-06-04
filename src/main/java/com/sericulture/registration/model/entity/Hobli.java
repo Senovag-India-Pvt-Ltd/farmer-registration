@@ -36,4 +36,7 @@ public class Hobli extends BaseEntity implements Serializable {
 
     @Column(name = "hobli_name_in_kannada")
     private String hobliNameInKannada;
+
+    @Column(name = "code")
+    private String hobliCode;
 }
