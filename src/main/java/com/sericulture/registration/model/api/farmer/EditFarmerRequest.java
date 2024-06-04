@@ -69,7 +69,7 @@ public class EditFarmerRequest extends RequestBody {
     @Schema(name = "rationCardNumber", example = "12345")
     String rationCardNumber;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Total land holding must contain only letters and numbers")
+    @Pattern(regexp = "^[a-zA-Z0-9.\\s]*$", message = "Total land holding must contain only letters and numbers")
     @Schema(name = "totalLandHolding", example = "100")
     String totalLandHolding;
 
