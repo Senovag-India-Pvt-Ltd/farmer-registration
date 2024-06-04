@@ -972,35 +972,76 @@ public class FarmerService {
 //                villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
 //                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
 
-                    Village village = villageRepository.findByVillageNameAndActive(getLandDetailsResponse.getVillageName(), true);
-                    if (village == null) {
+                    District district = districtRepository.findByDistrictCode(String.valueOf(farmerLandDetails.getDistrictCode()));
+                    if(district != null) {
+
+                        Taluk taluk = talukRepository.findByDistrictIdAndTalukCode(district.getDistrictId(), String.valueOf(farmerLandDetails.getTalukCode()));
+                        if(taluk != null) {
+                            Hobli hobli = hobliRepository.findByTalukIdAndHobliCode(taluk.getTalukId(), String.valueOf(farmerLandDetails.getHobliCode()));
+                            if(hobli != null) {
+
+                                Village village = villageRepository.findByHobliIdAndVillageCode(hobli.getHobliId(), String.valueOf(farmerLandDetails.getVillageCode()));
+                                if (village == null) {
+                                    farmerLandDetails.setVillageId(null);
+                                    farmerLandDetails.setHobliId(null);
+                                    farmerLandDetails.setTalukId(null);
+                                    farmerLandDetails.setDistrictId(null);
+                                    farmerLandDetails.setStateId(null);
+
+                                    getFarmerResponse.setError(true);
+                                    getFarmerResponse.setError_description("Village not found, please create village and then continue");
+                                } else {
+                                    VillageDTO villageDTO1 = villageRepository.getByVillageIdAndActive(village.getVillageId(), true);
+                                    farmerLandDetails.setVillageId(villageDTO1.getVillageId());
+                                    if (villageDTO1.getHobliId().equals("") || villageDTO1.getHobliId() == null) {
+                                        farmerLandDetails.setHobliId(0L);
+                                    } else {
+                                        farmerLandDetails.setHobliId(villageDTO1.getHobliId());
+                                    }
+                                    farmerLandDetails.setTalukId(villageDTO1.getTalukId());
+                                    farmerLandDetails.setDistrictId(villageDTO1.getDistrictId());
+                                    farmerLandDetails.setStateId(villageDTO1.getStateId());
+
+                                    farmerLandDetails.setStateName(villageDTO1.getStateName());
+                                    farmerLandDetails.setDistrictName(villageDTO1.getDistrictName());
+                                    farmerLandDetails.setTalukName(villageDTO1.getTalukName());
+                                    if (villageDTO1.getHobliName().equals("") || villageDTO1.getHobliName() == null) {
+                                        farmerLandDetails.setHobliName("");
+                                    } else {
+                                        farmerLandDetails.setHobliId(villageDTO1.getHobliId());
+                                    }
+                                    farmerLandDetails.setHobliName(villageDTO1.getHobliName());
+                                    farmerLandDetails.setVillageName(villageDTO1.getVillageName());
+                                }
+                            }else{
+                                farmerLandDetails.setVillageId(null);
+                                farmerLandDetails.setHobliId(null);
+                                farmerLandDetails.setTalukId(null);
+                                farmerLandDetails.setDistrictId(null);
+                                farmerLandDetails.setStateId(null);
+
+                                getFarmerResponse.setError(true);
+                                getFarmerResponse.setError_description("Hobli not found, please create hobli and then continue");
+                            }
+                        }else{
+                            farmerLandDetails.setVillageId(null);
+                            farmerLandDetails.setHobliId(null);
+                            farmerLandDetails.setTalukId(null);
+                            farmerLandDetails.setDistrictId(null);
+                            farmerLandDetails.setStateId(null);
+
+                            getFarmerResponse.setError(true);
+                            getFarmerResponse.setError_description("Taluk not found, please create taluk and then continue");
+                        }
+                    }else{
                         farmerLandDetails.setVillageId(null);
                         farmerLandDetails.setHobliId(null);
                         farmerLandDetails.setTalukId(null);
                         farmerLandDetails.setDistrictId(null);
                         farmerLandDetails.setStateId(null);
-                    } else {
-                        VillageDTO villageDTO1 = villageRepository.getByVillageIdAndActive(village.getVillageId(), true);
-                        farmerLandDetails.setVillageId(villageDTO1.getVillageId());
-                        if (villageDTO1.getHobliId().equals("") || villageDTO1.getHobliId() == null) {
-                            farmerLandDetails.setHobliId(0L);
-                        } else {
-                            farmerLandDetails.setHobliId(villageDTO1.getHobliId());
-                        }
-                        farmerLandDetails.setTalukId(villageDTO1.getTalukId());
-                        farmerLandDetails.setDistrictId(villageDTO1.getDistrictId());
-                        farmerLandDetails.setStateId(villageDTO1.getStateId());
 
-                        farmerLandDetails.setStateName(villageDTO1.getStateName());
-                        farmerLandDetails.setDistrictName(villageDTO1.getDistrictName());
-                        farmerLandDetails.setTalukName(villageDTO1.getTalukName());
-                        if (villageDTO1.getHobliName().equals("") || villageDTO1.getHobliName() == null) {
-                            farmerLandDetails.setHobliName("");
-                        } else {
-                            farmerLandDetails.setHobliId(villageDTO1.getHobliId());
-                        }
-                        farmerLandDetails.setHobliName(villageDTO1.getHobliName());
-                        farmerLandDetails.setVillageName(villageDTO1.getVillageName());
+                        getFarmerResponse.setError(true);
+                        getFarmerResponse.setError_description("District not found, please create district and then continue");
                     }
 
                 /*if(responseWrapper1 != null) {
