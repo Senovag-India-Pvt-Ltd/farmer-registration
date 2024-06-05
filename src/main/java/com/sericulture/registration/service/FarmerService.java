@@ -148,7 +148,7 @@ public class FarmerService {
                 farmerResponse = mapper.farmerEntityToObject(savedResponse, FarmerResponse.class);
 
                 //Once farmer created, trigger inspection if farmer created
-                if(savedResponse.getFarmerId() != null) {
+                /*if(savedResponse.getFarmerId() != null) {
                     InspectionTask inspectionTask = new InspectionTask();
                     inspectionTask.setInspectionDate(LocalDate.now());
                     inspectionTask.setStatus(1); //Open (Newly created)
@@ -171,7 +171,7 @@ public class FarmerService {
                 }else{
                     farmerResponse.setError(true);
                     farmerResponse.setError_description("Farmer not saved");
-                }
+                }*/
             }
         }
         return farmerResponse;
