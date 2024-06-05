@@ -34,11 +34,11 @@ public class EditFarmerAddressRequest extends RequestBody {
     Long villageId;
 
 //    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Address text must contain only letters and numbers")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s.,/#*\"']*$", message = "Address text must contain only letters and numbers")
+//    @Pattern(regexp = "^[a-zA-Z0-9\\s.,/#*\"']*$", message = "Address text must contain only letters and numbers")
     @Schema(name = "addressText", example = "Bengaluru", required = true)
     String addressText;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Pincode must contain only letters and numbers")
+//    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Pincode must contain only letters and numbers")
     @Schema(name = "pincode", example = "566434", required = true)
     String pincode;
 
