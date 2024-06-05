@@ -236,7 +236,7 @@ public class FarmerService {
                     }
 
 
-                    InspectionTask inspectionTask = new InspectionTask();
+                    /*InspectionTask inspectionTask = new InspectionTask();
                     inspectionTask.setInspectionDate(LocalDate.now());
                     inspectionTask.setStatus(1); //Open (Newly created)
                     inspectionTask.setUserMasterId(farmerRequest.getInspectorId());
@@ -253,7 +253,7 @@ public class FarmerService {
                     }else{
                         farmerResponse.setError(true);
                         farmerResponse.setError_description("Farmer saved, but inspection not saved");
-                    }
+                    }*/
 
                 }else{
                     farmerResponse.setError(true);

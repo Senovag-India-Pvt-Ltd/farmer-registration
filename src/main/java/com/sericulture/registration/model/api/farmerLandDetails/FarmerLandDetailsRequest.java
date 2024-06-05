@@ -18,7 +18,7 @@ public class FarmerLandDetailsRequest extends RequestBody {
     @Schema(name = "farmerId", example = "1", required = true)
     Long farmerId;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Category number must contain only letters and numbers")
+  //  @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Category number must contain only letters and numbers")
     @Schema(name = "categoryNumber", example = "1")
     private String categoryNumber;
 
@@ -29,14 +29,14 @@ public class FarmerLandDetailsRequest extends RequestBody {
     private Long soilTypeId;
 
 //    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Hissa must contain only letters and numbers")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s.,/#*\"']*$", message = "Hissa must contain only letters and numbers")
+  //  @Pattern(regexp = "^[a-zA-Z0-9\\s.,/#*\"']*$", message = "Hissa must contain only letters and numbers")
     @Schema(name = "hissa", example = "test")
     private String hissa;
 
     @Schema(name = "mulberrySourceId", example = "1")
     private Long mulberrySourceId;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Mulberry area must contain only letters and numbers")
+  //  @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Mulberry area must contain only letters and numbers")
     @Schema(name = "mulberryArea", example = "Test")
     private String mulberryArea;
 
@@ -47,7 +47,7 @@ public class FarmerLandDetailsRequest extends RequestBody {
     @Schema(name = "plantationDate", example = "2023-05-23")
     private Date plantationDate;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s()+]*$", message = "Spacing must contain only letters and numbers")
+  //  @Pattern(regexp = "^[a-zA-Z0-9\\s()+]*$", message = "Spacing must contain only letters and numbers")
     @Schema(name = "spacing", example = ",")
     private String spacing;
 
@@ -60,7 +60,7 @@ public class FarmerLandDetailsRequest extends RequestBody {
     @Schema(name = "irrigationTypeId", example = "1")
     private Long irrigationTypeId;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Rearing house details must contain only letters and numbers")
+  //  @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Rearing house details must contain only letters and numbers")
     @Schema(name = "rearingHouseDetails", example = "Test")
     private String rearingHouseDetails;
 
@@ -70,11 +70,11 @@ public class FarmerLandDetailsRequest extends RequestBody {
     @Schema(name = "silkWormVarietyId", example = "1")
     private Long silkWormVarietyId;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Rearing capacity crops must contain only letters and numbers")
+   // @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Rearing capacity crops must contain only letters and numbers")
     @Schema(name = "rearingCapacityCrops", example = "test")
     private String rearingCapacityCrops;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Rearing capacity dlf must contain only letters and numbers")
+   // @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Rearing capacity dlf must contain only letters and numbers")
     @Schema(name = "rearingCapacityDlf", example = "test")
     private String rearingCapacityDlf;
 
@@ -84,24 +84,24 @@ public class FarmerLandDetailsRequest extends RequestBody {
     @Schema(name = "subsidyId", example = "1")
     private Long subsidyId;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Loan details must contain only letters and numbers")
+   // @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Loan details must contain only letters and numbers")
     @Schema(name = "loanDetails", example = "test")
     private String loanDetails;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Equipment details must contain only letters and numbers")
+   // @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Equipment details must contain only letters and numbers")
     @Schema(name = "equipmentDetails", example = "test")
     private String equipmentDetails;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "GPS lat must contain only letters and numbers")
+   // @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "GPS lat must contain only letters and numbers")
     @Schema(name = "gpsLat", example = "132.44")
     private String gpsLat;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "GPS Lang must contain only letters and numbers")
+   // @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "GPS Lang must contain only letters and numbers")
     @Schema(name = "gpsLng", example = "145.33")
     private String gpsLng;
 
 //    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Survey number must contain only letters and numbers")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s.,/#*\"']*$", message = "Survey number must contain only letters and numbers")
+   // @Pattern(regexp = "^[a-zA-Z0-9\\s.,/#*\"']*$", message = "Survey number must contain only letters and numbers")
     @Schema(name = "surveyNumber", example = "13543")
     private String surveyNumber;
 
@@ -121,21 +121,21 @@ public class FarmerLandDetailsRequest extends RequestBody {
     private Long villageId;
 
 //    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Address must contain only letters and numbers")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s.,/#*\"']*$", message = "Address must contain only letters and numbers")
+  //  @Pattern(regexp = "^[a-zA-Z0-9\\s.,/#*\"']*$", message = "Address must contain only letters and numbers")
     @Schema(name = "address", example = "TTH")
     private String address;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Pincode must contain only letters and numbers")
+  //  @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Pincode must contain only letters and numbers")
     @Schema(name = "pincode", example = "135345")
     private String pincode;
 
 //    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Owner name must contain only letters and numbers")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s\\u0C80-\\u0CFF.,/#*\"']*$", message = "Owner name must contain only letters and numbers")
+ //   @Pattern(regexp = "^[a-zA-Z0-9\\s\\u0C80-\\u0CFF.,/#*\"']*$", message = "Owner name must contain only letters and numbers")
     @Schema(name = "ownerName", example = "Test")
     private String ownerName;
 
 //    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Sur noc must contain only letters and numbers")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s.,/#*\"']*$", message = "Sur noc must contain only letters and numbers")
+ //   @Pattern(regexp = "^[a-zA-Z0-9\\s.,/#*\"']*$", message = "Sur noc must contain only letters and numbers")
     @Schema(name = "surNoc", example = "135345")
     private String surNoc;
 
