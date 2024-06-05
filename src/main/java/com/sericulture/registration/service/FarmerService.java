@@ -257,7 +257,6 @@ public class FarmerService {
 
                 }else{
                     farmerResponse.setError(true);
-                    farmerResponse.setError_description("Farmer not saved");
                 }
             }
         }
@@ -717,21 +716,28 @@ public class FarmerService {
 
                 List<FarmerLandDetailsDTO> farmerLandDetailsList = new ArrayList<>();
                 for (GetLandDetailsResponse getLandDetailsResponse : getFruitsResponse.getLanddata()) {
+                    log.info("ENtered inside land details loop");
                     FarmerLandDetailsDTO farmerLandDetails = new FarmerLandDetailsDTO();
 //                VillageDTO villageDTO = new VillageDTO();
 //                villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
 //                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
 
+                    log.info("District code: "+farmerLandDetails.getDistrictCode());
                     District district = districtRepository.findByDistrictCode(String.valueOf(farmerLandDetails.getDistrictCode()));
                     if(district != null) {
-
+                        log.info("District name: "+district.getDistrictName() +":districtId:"+district.getDistrictId()+":lgDist:"+district.getDistrictCode());
+                        log.info("Taluk code: "+farmerLandDetails.getTalukCode());
                         Taluk taluk = talukRepository.findByDistrictIdAndTalukCode(district.getDistrictId(), String.valueOf(farmerLandDetails.getTalukCode()));
                         if(taluk != null) {
+                            log.info("Taluk name: "+taluk.getTalukName()+":talukId:"+taluk.getTalukId()+":districtId"+taluk.getDistrictId()+"lgTaluk:"+taluk.getLgTaluk());
+                            log.info("Hobli code: "+farmerLandDetails.getHobliCode());
                             Hobli hobli = hobliRepository.findByTalukIdAndHobliCode(taluk.getTalukId(), String.valueOf(farmerLandDetails.getHobliCode()));
                             if(hobli != null) {
-
+                                log.info("Hobli name: "+hobli.getHobliName()+":hobliId:"+hobli.getHobliId()+":districtId"+hobli.getDistrictId()+":talukId:"+hobli.getTalukId());
+                                log.info("Village code: "+farmerLandDetails.getVillageCode());
                                 Village village = villageRepository.findByHobliIdAndVillageCode(hobli.getHobliId(), String.valueOf(farmerLandDetails.getVillageCode()));
                                 if (village == null) {
+                                    log.info("Village name: "+village.getVillageName()+":hobliId:"+village.getHobliId()+":districtId"+village.getDistrictId()+":talukId:"+village.getTalukId()+":villageId:"+village.getVillageId()+":lgVillage:"+village.getLgVillage());
                                     farmerLandDetails.setVillageId(null);
                                     farmerLandDetails.setHobliId(null);
                                     farmerLandDetails.setTalukId(null);
@@ -741,7 +747,10 @@ public class FarmerService {
                                     getFarmerResponse.setError(true);
                                     getFarmerResponse.setError_description("Village not found, please create village and then continue");
                                 } else {
+                                    log.info("Village name: "+village.getVillageName()+":hobliId:"+village.getHobliId()+":districtId"+village.getDistrictId()+":talukId:"+village.getTalukId()+":villageId:"+village.getVillageId()+":lgVillage:"+village.getLgVillage());
                                     VillageDTO villageDTO1 = villageRepository.getByVillageIdAndActive(village.getVillageId(), true);
+                                    log.info("VillageDTO1: - Village name: "+villageDTO1.getVillageName()+":hobliId:"+villageDTO1.getHobliId()+":districtId"+villageDTO1.getDistrictId()+":talukId:"+villageDTO1.getTalukId()+":villageId:"+villageDTO1.getVillageId());
+
                                     farmerLandDetails.setVillageId(villageDTO1.getVillageId());
                                     if (villageDTO1.getHobliId().equals("") || villageDTO1.getHobliId() == null) {
                                         farmerLandDetails.setHobliId(0L);
@@ -764,6 +773,7 @@ public class FarmerService {
                                     farmerLandDetails.setVillageName(villageDTO1.getVillageName());
                                 }
                             }else{
+                                log.info("Hobli not found ");
                                 farmerLandDetails.setVillageId(null);
                                 farmerLandDetails.setHobliId(null);
                                 farmerLandDetails.setTalukId(null);
@@ -774,6 +784,7 @@ public class FarmerService {
                                 getFarmerResponse.setError_description("Hobli not found, please create hobli and then continue");
                             }
                         }else{
+                            log.info("Taluk not found: "+farmerLandDetails.getTalukCode());
                             farmerLandDetails.setVillageId(null);
                             farmerLandDetails.setHobliId(null);
                             farmerLandDetails.setTalukId(null);
@@ -784,6 +795,7 @@ public class FarmerService {
                             getFarmerResponse.setError_description("Taluk not found, please create taluk and then continue");
                         }
                     }else{
+                        log.info("District name not found: "+district.getDistrictName());
                         farmerLandDetails.setVillageId(null);
                         farmerLandDetails.setHobliId(null);
                         farmerLandDetails.setTalukId(null);
