@@ -627,6 +627,7 @@ public class FarmerService {
 
     @Transactional
     public GetFarmerResponse getFarmerDetailsByFruitsIdOrFarmerNumberOrMobileNumber(GetFarmerRequest getFarmerRequest) throws Exception {
+        log.info("Entered to function");
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
         Farmer farmer = new Farmer();
         if (getFarmerRequest.getFarmerNumber() != null && !getFarmerRequest.getFarmerNumber().equals("")) {
