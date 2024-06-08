@@ -109,6 +109,9 @@ public class Farmer extends BaseEntity implements Serializable {
     @Column(name = "name_kan")
     private String nameKan;
 
+    @Column(name = "tsc_master_id")
+    private Long tscMasterId;
+
     @Column(name = "is_other_state_farmer", columnDefinition = "TINYINT")
     private Boolean isOtherStateFarmer;
 

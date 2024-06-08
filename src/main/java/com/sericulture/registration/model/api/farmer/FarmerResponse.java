@@ -16,6 +16,9 @@ public class FarmerResponse {
     @Schema(name = "farmerId", example = "1")
     Long farmerId;
 
+    @Schema(name = "tscMasterId", example = "1")
+    Long tscMasterId;
+
     @Schema(name = "farmerNumber", example = "12345")
     String farmerNumber;
 
@@ -114,6 +117,9 @@ public class FarmerResponse {
 
     @Schema(name = "title", example = "OBC")
     private String name;
+
+    @Schema(name = "tscName", example = "OBC")
+    private String tscName;
 
     @Schema(name = "error", example = "true")
     Boolean error;

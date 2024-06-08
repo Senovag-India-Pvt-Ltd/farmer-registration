@@ -16,6 +16,9 @@ public class ReelerResponse {
     @Schema(name = "reelerId", example = "1")
     Long reelerId;
 
+    @Schema(name = "tscMasterId", example = "1")
+    Long tscMasterId;
+
     @Schema(name = "reelerName", example = "Test")
     String reelerName;
 
@@ -192,6 +195,9 @@ public class ReelerResponse {
 
     @Schema(name = "name", example = "35")
     String name;
+
+    @Schema(name = "tscName", example = "35")
+    String tscName;
 
     @Schema(name = "machineTypeName", example = "35")
     String machineTypeName;

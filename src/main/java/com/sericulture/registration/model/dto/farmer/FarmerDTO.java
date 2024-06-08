@@ -19,6 +19,7 @@ public class FarmerDTO {
     private Date dob;
     private Long genderId;
     private Long casteId;
+    private Long tscMasterId;
     private Boolean differentlyAbled;
     private String email;
     private String mobileNumber;
@@ -42,6 +43,7 @@ public class FarmerDTO {
     private String title;
     private String landCategoryName;
     private String farmerTypeName;
+    private String tscName;
     private String name;
     private Boolean isOtherStateFarmer;
 

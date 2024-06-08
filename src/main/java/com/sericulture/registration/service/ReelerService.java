@@ -526,6 +526,7 @@ public class ReelerService {
             reeler.setEducationId(reelerRequest.getEducationId());
             reeler.setReelingUnitBoundary(reelerRequest.getReelingUnitBoundary());
             reeler.setDob(reelerRequest.getDob());
+            reeler.setTscMasterId(reelerRequest.getTscMasterId());
             reeler.setRationCard(reelerRequest.getRationCard());
             reeler.setMachineTypeId(reelerRequest.getMachineTypeId());
             reeler.setGender(reelerRequest.getGender());

@@ -42,6 +42,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.dob, " +
             " farmer.genderId, " +
             " farmer.casteId, " +
+            " farmer.tscMasterId, " +
             " farmer.differentlyAbled, " +
             " farmer.email, " +
             " farmer.mobileNumber, " +
@@ -65,6 +66,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " caste.title, " +
             " landCategory.landCategoryName, " +
             " farmerType.farmerTypeName, " +
+            " tscMaster.name, " +
             " education.name," +
             " farmer.isOtherStateFarmer " +
             ") " +
@@ -75,6 +77,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.landCategoryId = landCategory.landCategoryId " +
             "left join FarmerType farmerType " +
             "on farmer.farmerTypeId = farmerType.farmerTypeId " +
+            "left join TscMaster tscMaster " +
+            "on farmer.tscMasterId = tscMaster.tscMasterId " +
             "left join Education education " +
             "on farmer.educationId = education.educationId " +
             "where farmer.active = :isActive AND farmer.farmerId = :id")
@@ -90,6 +94,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.dob, " +
             " farmer.genderId, " +
             " farmer.casteId, " +
+            " farmer.tscMasterId, " +
             " farmer.differentlyAbled, " +
             " farmer.email, " +
             " farmer.mobileNumber, " +
@@ -113,6 +118,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " caste.title, " +
             " landCategory.landCategoryName, " +
             " farmerType.farmerTypeName, " +
+            " tscMaster.name, " +
             " education.name," +
             " farmer.isOtherStateFarmer " +
             ") " +
@@ -123,6 +129,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.landCategoryId = landCategory.landCategoryId " +
             "left join FarmerType farmerType " +
             "on farmer.farmerTypeId = farmerType.farmerTypeId " +
+            "left join TscMaster tscMaster " +
+            "on farmer.tscMasterId = tscMaster.tscMasterId " +
             "left join Education education " +
             "on farmer.educationId = education.educationId " +
             "where farmer.active = :isActive " +
@@ -140,6 +148,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.dob, " +
             " farmer.genderId, " +
             " farmer.casteId, " +
+            " farmer.tscMasterId, " +
             " farmer.differentlyAbled, " +
             " farmer.email, " +
             " farmer.mobileNumber, " +
@@ -163,6 +172,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " caste.title, " +
             " landCategory.landCategoryName, " +
             " farmerType.farmerTypeName, " +
+            " tscMaster.name, " +
             " education.name," +
             " farmer.isOtherStateFarmer " +
             ") " +
@@ -173,6 +183,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.landCategoryId = landCategory.landCategoryId " +
             "left join FarmerType farmerType " +
             "on farmer.farmerTypeId = farmerType.farmerTypeId " +
+            "left join TscMaster tscMaster " +
+            "on farmer.tscMasterId = tscMaster.tscMasterId " +
             "left join Education education " +
             "on farmer.educationId = education.educationId " +
             "where farmer.active = :isActive and " +
@@ -193,6 +205,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.dob, " +
             " farmer.genderId, " +
             " farmer.casteId, " +
+            " farmer.tscMasterId, " +
             " farmer.differentlyAbled, " +
             " farmer.email, " +
             " farmer.mobileNumber, " +
@@ -216,6 +229,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " caste.title, " +
             " landCategory.landCategoryName, " +
             " farmerType.farmerTypeName, " +
+            " tscMaster.name, " +
             " education.name," +
             " farmer.isOtherStateFarmer " +
             ") " +
@@ -226,6 +240,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.landCategoryId = landCategory.landCategoryId " +
             "left join FarmerType farmerType " +
             "on farmer.farmerTypeId = farmerType.farmerTypeId " +
+            "left join TscMaster tscMaster " +
+            "on farmer.tscMasterId = tscMaster.tscMasterId " +
             "left join Education education " +
             "on farmer.educationId = education.educationId " +
             "where farmer.active = :isActive and farmer.isOtherStateFarmer = true and " +
@@ -245,6 +261,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.dob, " +
             " farmer.genderId, " +
             " farmer.casteId, " +
+            " farmer.tscMasterId, " +
             " farmer.differentlyAbled, " +
             " farmer.email, " +
             " farmer.mobileNumber, " +
@@ -268,6 +285,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " caste.title, " +
             " landCategory.landCategoryName, " +
             " farmerType.farmerTypeName, " +
+            " tscMaster.name, " +
             " education.name," +
             " farmer.isOtherStateFarmer " +
             ") " +
@@ -278,6 +296,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.landCategoryId = landCategory.landCategoryId " +
             "left join FarmerType farmerType " +
             "on farmer.farmerTypeId = farmerType.farmerTypeId " +
+            "left join TscMaster tscMaster " +
+            "on farmer.tscMasterId = tscMaster.tscMasterId " +
             "left join Education education " +
             "on farmer.educationId = education.educationId " +
             "where farmer.active = :isActive and (farmer.isOtherStateFarmer = false or farmer.isOtherStateFarmer is null) and (farmer.fruitsId != '' and farmer.fruitsId is not null) and  " +
@@ -298,6 +318,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.dob, " +
             " farmer.genderId, " +
             " farmer.casteId, " +
+            " farmer.tscMasterId, " +
             " farmer.differentlyAbled, " +
             " farmer.email, " +
             " farmer.mobileNumber, " +
@@ -321,6 +342,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " caste.title, " +
             " landCategory.landCategoryName, " +
             " farmerType.farmerTypeName, " +
+            " tscMaster.name, " +
             " education.name," +
             " farmer.isOtherStateFarmer " +
             ") " +
@@ -331,6 +353,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.landCategoryId = landCategory.landCategoryId " +
             "left join FarmerType farmerType " +
             "on farmer.farmerTypeId = farmerType.farmerTypeId " +
+            "left join TscMaster tscMaster " +
+            "on farmer.tscMasterId = tscMaster.tscMasterId " +
             "left join Education education " +
             "on farmer.educationId = education.educationId " +
             "where farmer.active = :isActive and (farmer.isOtherStateFarmer = false or farmer.isOtherStateFarmer is NULL) and (farmer.fruitsId = '' or farmer.fruitsId is null) and " +
@@ -350,6 +374,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.dob, " +
             " farmer.genderId, " +
             " farmer.casteId, " +
+            " farmer.tscMasterId, " +
             " farmer.differentlyAbled, " +
             " farmer.email, " +
             " farmer.mobileNumber, " +
@@ -373,6 +398,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " caste.title, " +
             " landCategory.landCategoryName, " +
             " farmerType.farmerTypeName, " +
+            " tscMaster.name, " +
             " education.name," +
             " farmer.isOtherStateFarmer " +
             ") " +
@@ -383,6 +409,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.landCategoryId = landCategory.landCategoryId " +
             "left join FarmerType farmerType " +
             "on farmer.farmerTypeId = farmerType.farmerTypeId " +
+            "left join TscMaster tscMaster " +
+            "on farmer.tscMasterId = tscMaster.tscMasterId " +
             "left join Education education " +
             "on farmer.educationId = education.educationId " +
             "where farmer.active = :isActive AND " +

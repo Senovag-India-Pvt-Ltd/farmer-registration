@@ -49,6 +49,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.passbookNumber, " +
             " reeler.fatherName, " +
             " reeler.educationId, " +
+            " reeler.tscMasterId, " +
             " reeler.reelingUnitBoundary, " +
             " reeler.dob, " +
             " reeler.rationCard, " +
@@ -102,6 +103,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.licenseRenewalDate, " +
             " reeler.fruitsId, " +
             " caste.title, " +
+            " tscMaster.name, " +
             " education.name, " +
             " machineType.machineTypeName, " +
             " state.stateName, " +
@@ -118,6 +120,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "from Reeler reeler " +
             "left join Caste caste " +
             "on reeler.casteId = caste.casteId " +
+            "left join TscMaster tscMaster " +
+            "on reeler.tscMasterId = tscMaster.tscMasterId " +
             "left join Education education " +
             "on reeler.educationId = education.educationId " +
             "left join machine_type_master machineType " +
@@ -144,6 +148,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
          " reeler.passbookNumber, " +
          " reeler.fatherName, " +
          " reeler.educationId, " +
+         " reeler.tscMasterId, " +
          " reeler.reelingUnitBoundary, " +
          " reeler.dob, " +
          " reeler.rationCard, " +
@@ -197,6 +202,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
          " reeler.licenseRenewalDate, " +
          " reeler.fruitsId, " +
          " caste.title, " +
+         " tscMaster.name, " +
          " education.name, " +
          " machineType.machineTypeName, " +
          " state.stateName, " +
@@ -213,6 +219,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
          "from Reeler reeler " +
          "left join Caste caste " +
          "on reeler.casteId = caste.casteId " +
+         "left join TscMaster tscMaster " +
+         "on reeler.tscMasterId = tscMaster.tscMasterId " +
          "left join Education education " +
          "on reeler.educationId = education.educationId " +
          "left join machine_type_master machineType " +
@@ -240,6 +248,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.passbookNumber, " +
             " reeler.fatherName, " +
             " reeler.educationId, " +
+            " reeler.tscMasterId, " +
             " reeler.reelingUnitBoundary, " +
             " reeler.dob, " +
             " reeler.rationCard, " +
@@ -293,6 +302,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.licenseRenewalDate, " +
             " reeler.fruitsId, " +
             " caste.title, " +
+            " tscMaster.name, " +
             " education.name, " +
             " machineType.machineTypeName, " +
             " state.stateName, " +
@@ -309,6 +319,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "from Reeler reeler " +
             "left join Caste caste " +
             "on reeler.casteId = caste.casteId " +
+            "left join TscMaster tscMaster " +
+            "on reeler.tscMasterId = tscMaster.tscMasterId " +
             "left join Education education " +
             "on reeler.educationId = education.educationId " +
             "left join machine_type_master machineType " +
@@ -335,6 +347,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.passbookNumber, " +
             " reeler.fatherName, " +
             " reeler.educationId, " +
+            " reeler.tscMasterId, " +
             " reeler.reelingUnitBoundary, " +
             " reeler.dob, " +
             " reeler.rationCard, " +
@@ -388,6 +401,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.licenseRenewalDate, " +
             " reeler.fruitsId, " +
             " caste.title, " +
+            " tscMaster.name, " +
             " education.name, " +
             " machineType.machineTypeName, " +
             " state.stateName, " +
@@ -404,6 +418,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "from Reeler reeler " +
             "left join Caste caste " +
             "on reeler.casteId = caste.casteId " +
+            "left join TscMaster tscMaster " +
+            "on reeler.tscMasterId = tscMaster.tscMasterId " +
             "left join Education education " +
             "on reeler.educationId = education.educationId " +
             "left join machine_type_master machineType " +
@@ -431,6 +447,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.passbookNumber, " +
             " reeler.fatherName, " +
             " reeler.educationId, " +
+            " reeler.tscMasterId, " +
             " reeler.reelingUnitBoundary, " +
             " reeler.dob, " +
             " reeler.rationCard, " +
@@ -484,6 +501,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.licenseRenewalDate, " +
             " reeler.fruitsId, " +
             " caste.title, " +
+            " tscMaster.name, " +
             " education.name, " +
             " machineType.machineTypeName, " +
             " state.stateName, " +
@@ -500,6 +518,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "from Reeler reeler " +
             "left join Caste caste " +
             "on reeler.casteId = caste.casteId " +
+            "left join TscMaster tscMaster " +
+            "on reeler.tscMasterId = tscMaster.tscMasterId " +
             "left join Education education " +
             "on reeler.educationId = education.educationId " +
             "left join machine_type_master machineType " +
@@ -528,6 +548,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.passbookNumber, " +
             " reeler.fatherName, " +
             " reeler.educationId, " +
+            " reeler.tscMasterId, " +
             " reeler.reelingUnitBoundary, " +
             " reeler.dob, " +
             " reeler.rationCard, " +
@@ -581,6 +602,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.licenseRenewalDate, " +
             " reeler.fruitsId, " +
             " caste.title, " +
+            " tscMaster.name, " +
             " education.name, " +
             " machineType.machineTypeName, " +
             " state.stateName, " +
@@ -597,6 +619,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "from Reeler reeler " +
             "left join Caste caste " +
             "on reeler.casteId = caste.casteId " +
+            "left join TscMaster tscMaster " +
+            "on reeler.tscMasterId = tscMaster.tscMasterId " +
             "left join Education education " +
             "on reeler.educationId = education.educationId " +
             "left join machine_type_master machineType " +

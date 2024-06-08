@@ -216,5 +216,8 @@ public class Reeler extends BaseEntity implements Serializable {
     @Column(name = "transfer_reeler_id")
     private int transferReelerId;
 
+    @Column(name = "tsc_master_id")
+    private Long tscMasterId;
+
 
 }

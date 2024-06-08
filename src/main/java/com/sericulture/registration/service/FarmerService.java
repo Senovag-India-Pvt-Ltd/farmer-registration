@@ -387,6 +387,7 @@ public class FarmerService {
             farmer.setFruitsId(farmerRequest.getFruitsId());
             farmer.setFirstName(farmerRequest.getFirstName());
             farmer.setMiddleName(farmerRequest.getMiddleName());
+            farmer.setTscMasterId(farmerRequest.getTscMasterId());
             farmer.setLastName(farmerRequest.getLastName());
             farmer.setDob(farmerRequest.getDob());
             farmer.setGenderId(farmerRequest.getGenderId());

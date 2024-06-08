@@ -13,6 +13,10 @@ import java.util.Date;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class ReelerRequest extends RequestBody {
+
+    @Schema(name = "tscMasterId", example = "1")
+    Long tscMasterId;
+
     @Pattern(regexp = "^[a-zA-Z0-9._@ ]*$", message = "Reeler name must contain only letters and numbers")
     @Schema(name = "reelerName", example = "Test")
     String reelerName;

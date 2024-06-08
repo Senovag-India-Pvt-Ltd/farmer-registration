@@ -18,6 +18,7 @@ public class ReelerDTO {
     private String passbookNumber;
     private String fatherName;
     private Long educationId;
+    private Long tscMasterId;
     private String reelingUnitBoundary;
     private Date dob;
     private String rationCard;
@@ -71,6 +72,7 @@ public class ReelerDTO {
     private Date licenseRenewalDate;
     private String fruitsId;
     private String title;
+    private String tscName;
     private String name;
     private String machineTypeName;
     private String stateName;

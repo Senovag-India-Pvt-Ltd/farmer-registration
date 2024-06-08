@@ -17,6 +17,9 @@ public class EditFarmerRequest extends RequestBody {
     @Schema(name = "farmerId", example = "1")
     Long farmerId;
 
+    @Schema(name = "tscMasterId", example = "1")
+    Long tscMasterId;
+
 //    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Farmer number must contain only letters and numbers")
     @Schema(name = "farmerNumber", example = "12345")
     String farmerNumber;
