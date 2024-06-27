@@ -67,27 +67,31 @@ public class FruitsApiService {
             String uri = "https://fruits-services.karnataka.gov.in/FRUITS_Sericulture/FRUITSData/GetFarmerByFID";
 
             FruitsTokenDTO fruitsTokenDTO = new FruitsTokenDTO("Sericulture", "ZIy5S72oUvn4a1Tice9vSA==", "password");
+            log.info("Entering getToken");
             GetFruitsTokenResponse getFruitsTokenResponse = this.getToken(fruitsTokenDTO);
             String access_token = getFruitsTokenResponse.getAccess_token();
-
+            log.info("token",access_token);
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             // headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
             headers.setBearerAuth(access_token);
 
             HttpEntity<FruitsFarmerDTO> request = new HttpEntity<>(body, headers);
-
+            log.info("request",request);
             // restTemplate.getMessageConverters().add(new org.springframework.http.converter.FormHttpMessageConverter.FormHttpMessageConverter());
             ObjectMapper mapper1 = new ObjectMapper();
             restTemplate.getMessageConverters().add(new ObjectToUrlEncodedConverter(mapper1));
 
             ResponseEntity<String> result = restTemplate.postForEntity(uri, request, String.class);
 
+            log.info("result",result);
+
             return new ResponseEntity<>( result.getStatusCodeValue() == 200 ? result.getBody() : "Getting Fruits Farmer Details Failed", HttpStatus.OK);
             // return new ResponseEntity<>( result.getStatusCodeValue() == 200 ? "Got Fruits Token Successfully" : "Getting Fruits Token Failed", HttpStatus.OK);
 
         }catch (Exception e){
             e.printStackTrace();
+            log.info("request",e);
             return new ResponseEntity<>("Error!, Please try again", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
