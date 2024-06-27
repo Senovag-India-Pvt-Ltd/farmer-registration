@@ -60,6 +60,15 @@ public class ExternalUnitRegistrationService {
         return convertToMapResponse(externalUnitRegistrationRepository.findByActiveOrderByExternalUnitRegistrationIdAsc(true, pageable));
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Map<String, Object> getAllByActive(boolean isActive) {
+        return convertListToMapResponse(externalUnitRegistrationRepository.findByActiveOrderByExternalUnitRegistrationIdAsc(isActive));
+
+
+    }
+
+
+
     private Map<String, Object> convertToMapResponse(final Page<ExternalUnitRegistration> activeExternalUnitRegistrations) {
         Map<String, Object> response = new HashMap<>();
 
