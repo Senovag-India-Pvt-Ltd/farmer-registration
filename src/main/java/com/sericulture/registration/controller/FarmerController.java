@@ -1,6 +1,7 @@
 package com.sericulture.registration.controller;
 
 import com.sericulture.registration.model.ResponseWrapper;
+import com.sericulture.registration.model.api.ApplicationsDetailsDistrictWiseRequest;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationResponse;
 import com.sericulture.registration.model.api.farmer.*;
@@ -568,5 +569,23 @@ public class FarmerController {
 
         rw.setContent(farmerService.updateFarmerWithoutFruitsIdCounter(farmerRequest));
         return ResponseEntity.ok(rw);
+    }
+
+    @PostMapping("/totalFarmerCount")
+    public ResponseEntity<?> totalFarmerCount(  ){
+        return farmerService.totalFarmerCount();
+
+    }
+
+    @PostMapping("/districtWiseFarmerCount")
+    public ResponseEntity<?> districtWiseFarmerCount(  ){
+        return farmerService.districtWiseFarmerCount();
+
+    }
+
+    @PostMapping("/talukWise")
+    public ResponseEntity<?> talukWise(@RequestBody ApplicationsDetailsDistrictWiseRequest applicationsDetailsDistrictWiseRequest){
+        return farmerService.talukWise(applicationsDetailsDistrictWiseRequest);
+
     }
 }

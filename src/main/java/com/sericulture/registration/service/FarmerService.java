@@ -5,6 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sericulture.registration.controller.S3Controller;
 import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.ResponseWrapper;
+import com.sericulture.registration.model.api.ApplicationsDetailsDistrictWiseRequest;
+import com.sericulture.registration.model.api.DistrictWiseFarmerCountResponse;
+import com.sericulture.registration.model.api.FarmerTotalCountResponse;
+import com.sericulture.registration.model.api.TalukWiseFarmerCountResponse;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.farmer.*;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
@@ -1627,5 +1631,68 @@ public class FarmerService {
             farmerResponse.setError(false);
         }
         return farmerResponse;
+    }
+
+    public ResponseEntity<?> totalFarmerCount( ) {
+
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+
+        List<FarmerTotalCountResponse> farmerTotalCountResponseList = new ArrayList<>();
+        List<Object[]> applicableList = farmerRepository.getFarmerCountDetails();
+        for (Object[] arr : applicableList) {
+            FarmerTotalCountResponse farmerTotalCountResponse;
+            farmerTotalCountResponse = FarmerTotalCountResponse.builder().
+                    totalFarmerCount(Util.objectToString(arr[0]))
+
+                    .build();
+            farmerTotalCountResponseList.add(farmerTotalCountResponse);
+        }
+        rw.setContent(farmerTotalCountResponseList);
+
+        return ResponseEntity.ok(rw);
+
+    }
+
+
+    public ResponseEntity<?> districtWiseFarmerCount( ) {
+
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+
+        List<DistrictWiseFarmerCountResponse> districtWiseFarmerCountResponseList = new ArrayList<>();
+        List<Object[]> applicableList = farmerRepository.getDistrictWiseCount();
+        for (Object[] arr : applicableList) {
+            DistrictWiseFarmerCountResponse districtWiseFarmerCountResponse;
+            districtWiseFarmerCountResponse = DistrictWiseFarmerCountResponse.builder().
+                    districtName(Util.objectToString(arr[0]))
+                    .farmerCount(Util.objectToString(arr[1]))
+                    .build();
+            districtWiseFarmerCountResponseList.add(districtWiseFarmerCountResponse);
+        }
+        rw.setContent(districtWiseFarmerCountResponseList);
+
+        return ResponseEntity.ok(rw);
+
+    }
+
+    public ResponseEntity<?> talukWise(ApplicationsDetailsDistrictWiseRequest applicationsDetailsDistrictWiseRequest) {
+
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+
+        List<TalukWiseFarmerCountResponse> talukWiseFarmerCountResponseList = new ArrayList<>();
+        List<Object[]> applicableList = farmerRepository.getTalukWise(applicationsDetailsDistrictWiseRequest.getDistrictId());
+        for (Object[] arr : applicableList) {
+            TalukWiseFarmerCountResponse talukWiseFarmerCountResponse;
+            talukWiseFarmerCountResponse = TalukWiseFarmerCountResponse.builder().
+                    talukName(Util.objectToString(arr[0]))
+                    .farmerCount(Util.objectToString(arr[1]))
+
+
+                    .build();
+            talukWiseFarmerCountResponseList.add(talukWiseFarmerCountResponse);
+        }
+        rw.setContent(talukWiseFarmerCountResponseList);
+
+        return ResponseEntity.ok(rw);
+
     }
 }

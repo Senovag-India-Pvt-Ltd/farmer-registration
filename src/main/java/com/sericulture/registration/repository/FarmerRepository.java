@@ -419,4 +419,23 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "(:joinColumn = 'farmer.mobileNumber' AND farmer.mobileNumber LIKE :searchText)"
     )
     public Page<FarmerDTO> getSortedFarmers(@Param("joinColumn") String joinColumn, @Param("searchText") String searchText, @Param("isActive") boolean isActive, Pageable pageable);
+
+    @Query(nativeQuery = true,value = "select COUNT(farmer_id) as total_farmer_count\n" +
+            "from farmer;\n")
+    public List<Object[]> getFarmerCountDetails( );
+
+    @Query(nativeQuery = true,value = "select d.district_name, COUNT(f.farmer_id) as farmer_count\n" +
+            "from farmer f\n" +
+            "left join user_master um on um.username=f.CREATED_BY \n" +
+            "left join district d on d.DISTRICT_ID = um.DISTRICT_ID GROUP BY d.district_name;\n" )
+    public List<Object[]> getDistrictWiseCount();
+
+    @Query(nativeQuery = true,value = "select t.taluk_name, COUNT(f.farmer_id) AS farmer_count \n" +
+            "from farmer f\n" +
+            "left join user_master um on um.username = f.CREATED_BY\n"+
+            "left join district d on d.district_id = um.district_id\n" +
+            "left join taluk t on t.taluk_id = um.taluk_id\n" +
+            "where d.district_id = :districtId \n" +
+            "GROUP BY t.taluk_name;\n")
+    public List<Object[]> getTalukWise(@Param("districtId") int districtId);
 }
