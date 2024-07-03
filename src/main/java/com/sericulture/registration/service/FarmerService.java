@@ -1701,7 +1701,10 @@ public class FarmerService {
         ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
         List<PrimaryDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
 
-
+        districtId = (districtId == 0) ? null : districtId;
+        talukId = (talukId == 0) ? null : talukId;
+        villageId = (villageId == 0) ? null : villageId;
+        tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
         List<Object[]> applicableList;
         // applicableList = applicationFormRepository.getSubmittedListForDbt(statusList, financialYearId, schemeId, subSchemeId, applicationId, sanctionNo, fruitsId);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
