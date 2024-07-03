@@ -1,5 +1,6 @@
 package com.sericulture.registration.controller;
 
+import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.ApplicationsDetailsDistrictWiseRequest;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
@@ -16,14 +17,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -609,6 +615,43 @@ public ResponseEntity<?> primaryFarmerDetails(
         @RequestParam(defaultValue = "50") int pageSize) {
     return farmerService.primaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageNumber, pageSize);
 }
+    @PostMapping("/farmer-report")
+    public ResponseEntity<?> farmerReport( @RequestParam(defaultValue = "0") Long districtId,
+                                           @RequestParam(defaultValue = "0") Long talukId,
+                                           @RequestParam(defaultValue = "0") Long villageId,
+                                           @RequestParam(defaultValue = "0") Long tscMasterId){
+        try {
+            System.out.println("enter to farmer report");
+            FileInputStream fileInputStream = farmerService.farmerReport(districtId, talukId, villageId, tscMasterId);
+
+            InputStreamResource resource = new InputStreamResource(fileInputStream);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=sample.xlsx");
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" +"farmer_report"+ Util.getISTLocalDate()+".xlsx")
+                    .contentType(MediaType.parseMediaType("application/csv"))
+                    .body(resource);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
+            HttpHeaders headers = new HttpHeaders();
+            return new ResponseEntity<>(ex.getMessage().getBytes(StandardCharsets.UTF_8), org.springframework.http.HttpStatus.OK);
+        }
+    }
+
+    @PostMapping("/primaryFarmerDetails")
+    public ResponseEntity<?> primaryFarmerDetails( @RequestParam(defaultValue = "0") Long districtId,
+                                                   @RequestParam(defaultValue = "0") Long talukId,
+                                                   @RequestParam(defaultValue = "0") Long villageId,
+                                                   @RequestParam(defaultValue = "0") Long tscMasterId,
+                                                   @RequestParam(defaultValue = "0") int pageNumber,
+                                                   @RequestParam(defaultValue = "10") int pageSize ){
+        return farmerService.primaryFarmerDetails(districtId,talukId,villageId,tscMasterId, pageNumber, pageSize);
+
+    }
 
 
 }
