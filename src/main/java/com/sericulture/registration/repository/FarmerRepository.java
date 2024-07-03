@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -23,6 +24,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
     public Page<Farmer> findByActiveOrderByFarmerIdAsc(boolean isActive, final Pageable pageable);
 
     public Farmer save(Farmer farmer);
+
+    Optional<Farmer> findByFarmerId(long farmerId);
 
     public Farmer findByFarmerIdAndActive(long id, boolean isActive);
 

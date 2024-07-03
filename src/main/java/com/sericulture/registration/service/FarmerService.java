@@ -1509,6 +1509,82 @@ public class FarmerService {
     }
 
     @Transactional
+    public FarmerResponse updateNonKarnatakaFarmer(EditNonKarnatakaFarmerRequest farmerRequest) throws Exception {
+        FarmerResponse farmerResponse = new FarmerResponse();
+
+        // Retrieve the existing farmer entity
+        Optional<Farmer> optionalFarmer = farmerRepository.findByFarmerId(farmerRequest.getFarmerId());
+        if (!optionalFarmer.isPresent()) {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Farmer not found");
+            return farmerResponse;
+        }
+
+        Farmer farmer = optionalFarmer.get();
+
+        // Update farmer basic details
+        farmer.setFirstName(farmerRequest.getFirstName());
+        farmer.setMiddleName(farmerRequest.getMiddleName());
+        farmer.setLastName(farmerRequest.getLastName());
+        farmer.setNameKan(farmerRequest.getNameKan());
+        farmer.setFatherName(farmerRequest.getFatherName());
+        farmer.setFatherNameKan(farmerRequest.getFatherNameKan());
+        farmer.setDob(farmerRequest.getDob());
+        farmer.setCasteId(farmerRequest.getCasteId());
+        farmer.setMobileNumber(farmerRequest.getMobileNumber());
+        farmer.setEpicNumber(farmerRequest.getEpicNumber());
+        farmer.setPassbookNumber(farmerRequest.getPassbookNumber());
+        farmer.setFarmerTypeId(farmerRequest.getFarmerTypeId());
+
+        validator.validate(farmer);
+
+        // Check for duplicate mobile number
+        List<Farmer> farmerListByNumber = farmerRepository.findByMobileNumber(farmer.getMobileNumber());
+        if (!farmerListByNumber.isEmpty() && farmerListByNumber.stream().anyMatch(f -> !f.getFarmerId().equals(farmerRequest.getFarmerId()) && f.getActive())) {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Farmer Mobile Number already exists");
+            return farmerResponse;
+        }
+
+        // Update farmer entity
+        farmerRepository.save(farmer);
+
+        // Update farmer addresses
+        for (FarmerAddress farmerAddress : farmerRequest.getFarmerAddressList()) {
+            farmerAddress.setFarmerId(farmerRequest.getFarmerId());
+            farmerAddressRepository.save(farmerAddress);
+        }
+
+        // Update farmer bank account
+        List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerRequest.getFarmerBankAccount().getFarmerBankAccountNumber());
+        if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().anyMatch(fba -> !fba.getFarmerId().equals(farmerRequest.getFarmerId()) && fba.getActive())) {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Farmer Bank Account number already exists");
+            return farmerResponse;
+        } else {
+            FarmerBankAccount existingFarmerBankAccount = farmerBankAccountRepository.findByFarmerIdAndActive(farmerRequest.getFarmerId(), true);
+            if (existingFarmerBankAccount != null) {
+                existingFarmerBankAccount.setFarmerBankAccountNumber(farmerRequest.getFarmerBankAccount().getFarmerBankAccountNumber());
+                existingFarmerBankAccount.setFarmerBankName(farmerRequest.getFarmerBankAccount().getFarmerBankName());
+                existingFarmerBankAccount.setFarmerBankBranchName(farmerRequest.getFarmerBankAccount().getFarmerBankBranchName());
+                existingFarmerBankAccount.setFarmerBankIfscCode(farmerRequest.getFarmerBankAccount().getFarmerBankIfscCode());
+                farmerBankAccountRepository.save(existingFarmerBankAccount);
+            } else {
+                farmerRequest.getFarmerBankAccount().setFarmerId(farmerRequest.getFarmerId());
+                FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerRequest.getFarmerBankAccount());
+                farmerResponse.setFarmerBankAccountId(farmerBankAccount1.getFarmerBankAccountId());
+            }
+        }
+
+        farmerResponse.setError(false);
+        farmerResponse = mapper.farmerEntityToObject(farmer, FarmerResponse.class);
+
+        return farmerResponse;
+    }
+
+
+
+    @Transactional
     public FarmerResponse insertKarnatakaFarmersWithoutFruitsId(NonKarnatakaFarmerRequest farmerRequest) throws Exception {
         Farmer farmer2 = new Farmer();
         Long farmerId;
