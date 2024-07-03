@@ -596,10 +596,13 @@ public class FarmerController {
     }
 
     @PostMapping("/farmer-report")
-    public ResponseEntity<?> farmerReport(@RequestBody AverageReportRequest request) {
+    public ResponseEntity<?> farmerReport( @RequestParam(defaultValue = "0") Long districtId,
+                                           @RequestParam(defaultValue = "0") Long talukId,
+                                           @RequestParam(defaultValue = "0") Long villageId,
+                                           @RequestParam(defaultValue = "0") Long tscMasterId){
         try {
-            System.out.println("enter to dtr online report pdf");
-            FileInputStream fileInputStream = farmerService.farmerReport(request);
+            System.out.println("enter to farmer report");
+            FileInputStream fileInputStream = farmerService.farmerReport(districtId, talukId, villageId, tscMasterId);
 
             InputStreamResource resource = new InputStreamResource(fileInputStream);
 

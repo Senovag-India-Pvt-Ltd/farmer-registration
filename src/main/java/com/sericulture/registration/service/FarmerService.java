@@ -1723,6 +1723,12 @@ public class FarmerService {
         // Fetch data from repository
 
 
+        farmerResponse(primaryDetailsResponseList, applicableList);
+        rw.setContent(primaryDetailsResponseList);
+        return ResponseEntity.ok(rw);
+    }
+
+    private static void farmerResponse(List<PrimaryDetailsResponse> primaryDetailsResponseList, List<Object[]> applicableList) {
         for (Object[] arr : applicableList) {
             PrimaryDetailsResponse primaryDetailsResponse;
             primaryDetailsResponse = PrimaryDetailsResponse.builder().
@@ -1748,12 +1754,23 @@ public class FarmerService {
                     .build();
             primaryDetailsResponseList.add(primaryDetailsResponse);
         }
-        rw.setContent(primaryDetailsResponseList);
-        return ResponseEntity.ok(rw);
     }
 
-    private FileInputStream farmerReport(AverageReportRequest requestDto) throws Exception {
-        AverageReportDataResponse reportDataResponse = apiService.averageReport(requestDto);
+    public FileInputStream farmerReport(Long districtId,
+                                        Long talukId,
+                                        Long villageId,
+                                        Long tscMasterId) throws Exception {
+        List<PrimaryDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
+
+
+        List<Object[]> applicableList;
+        districtId = (districtId == 0) ? null : districtId;
+        talukId = (talukId == 0) ? null : talukId;
+        villageId = (villageId == 0) ? null : villageId;
+        tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
+        Pageable pageable = null;
+        applicableList  = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
+        farmerResponse(primaryDetailsResponseList, applicableList);
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Sheet 1");
@@ -1781,10 +1798,29 @@ public class FarmerService {
 
         //Dynamic data binds here
         //Starting 0th and 1st column cells are hardcoded, So dynamic data column starts from 2nd column
-
-        for(int i=0; i<10; i++){
-            Row contentRow = sheet.createRow(0);
-            headerRow.createCell(0).setCellValue("Val");
+        int dataStartsFrom = 1;
+        for(int i=0; i<primaryDetailsResponseList.size(); i++){
+            Row contentRow = sheet.createRow(dataStartsFrom);
+            PrimaryDetailsResponse primaryDetailsResponse = primaryDetailsResponseList.get(i);
+            contentRow.createCell(0).setCellValue(primaryDetailsResponse.getFirstName());
+            contentRow.createCell(1).setCellValue(primaryDetailsResponse.getMiddleName());
+            contentRow.createCell(2).setCellValue(primaryDetailsResponse.getLastName());
+            contentRow.createCell(3).setCellValue(primaryDetailsResponse.getFruitsId());
+            contentRow.createCell(4).setCellValue(primaryDetailsResponse.getFruitsId());
+            contentRow.createCell(5).setCellValue(primaryDetailsResponse.getFatherName());
+            contentRow.createCell(6).setCellValue(primaryDetailsResponse.getPassbookNumber());
+            contentRow.createCell(7).setCellValue(primaryDetailsResponse.getEpicNumber());
+            contentRow.createCell(8).setCellValue(primaryDetailsResponse.getRationCardNumber());
+            contentRow.createCell(9).setCellValue(primaryDetailsResponse.getDob());
+            contentRow.createCell(10).setCellValue(primaryDetailsResponse.getDistrictName());
+            contentRow.createCell(11).setCellValue(primaryDetailsResponse.getTalukName());
+            contentRow.createCell(12).setCellValue(primaryDetailsResponse.getHobliName());
+            contentRow.createCell(13).setCellValue(primaryDetailsResponse.getVillageName());
+            contentRow.createCell(14).setCellValue(primaryDetailsResponse.getFarmerBankName());
+            contentRow.createCell(15).setCellValue(primaryDetailsResponse.getFarmerBankAccountNumber());
+            contentRow.createCell(16).setCellValue(primaryDetailsResponse.getFarmerBankBranchName());
+            contentRow.createCell(17).setCellValue(primaryDetailsResponse.getFarmerBankIfscCode());
+            dataStartsFrom = dataStartsFrom + 1;
         }
 
         // Auto-size all columns
@@ -1802,7 +1838,7 @@ public class FarmerService {
         String directoryPath = Paths.get(userHome, "Downloads").toString();
         Path directory = Paths.get(directoryPath);
         Files.createDirectories(directory);
-        Path filePath = directory.resolve("average_report"+Util.getISTLocalDate()+".xlsx");
+        Path filePath = directory.resolve("farmers"+Util.getISTLocalDate()+".xlsx");
 
         // Write the workbook content to the specified file path
         FileOutputStream fileOut = new FileOutputStream(filePath.toString());
