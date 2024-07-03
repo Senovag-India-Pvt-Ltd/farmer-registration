@@ -14,6 +14,7 @@ public class ResponseWrapper<T> {
     List<? extends Object> errorMessages = new ArrayList<>();
 
     int errorCode = 0;
+    Long totalRecords;
 
 
     public static <T> ResponseWrapper  createWrapper(T t) {

@@ -440,7 +440,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
     public List<Object[]> getTalukWise(@Param("districtId") int districtId);
 
 //    @Query(nativeQuery = true,value = "WITH PrimaryAddress AS (\n" +
-//            "    SELECT \n" +
+//            "    SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,\n" +
 //            "        fa.farmer_id,\n" +
 //            "        fa.DISTRICT_ID,\n" +
 //            "        fa.TALUK_ID,\n" +
@@ -489,14 +489,14 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
 //            "    (pa.TALUK_ID = NULL OR NULL IS NULL) AND\n" +
 //            "    (pa.VILLAGE_ID = NULL OR NULL IS NULL) AND\n" +
 //            "    (f.tsc_master_id = NULL OR NULL IS NULL)\n")
-//    public List<Object[]> getPrimaryFarmerDetails( @Param("districtId") Long districtId,
+//    public List<Object[]> getPrimaryFarmerReportDetails( @Param("districtId") Long districtId,
 //                                                   @Param("talukId") Long talukId,
 //                                                   @Param("villageId") Long villageId,
 //                                                   @Param("tscMasterId") Long tscMasterId,Pageable pageable);
 
     @Query(nativeQuery = true, value = """
     WITH PrimaryAddress AS (
-        SELECT
+        SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
             fa.farmer_id,
             fa.DISTRICT_ID,
             fa.TALUK_ID,

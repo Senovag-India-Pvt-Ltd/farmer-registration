@@ -11,6 +11,7 @@ import lombok.*;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PrimaryDetailsResponse extends ResponseBody{
+    private int serialNumber;
     private String farmerId;
     private String firstName;
     private String middleName;

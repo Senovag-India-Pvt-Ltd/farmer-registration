@@ -1732,10 +1732,12 @@ public class FarmerService {
     }
 
     private static void farmerResponse(List<PrimaryDetailsResponse> primaryDetailsResponseList, List<Object[]> applicableList) {
+        int serialNumber = 1;
         for (Object[] arr : applicableList) {
             PrimaryDetailsResponse primaryDetailsResponse;
-            primaryDetailsResponse = PrimaryDetailsResponse.builder().
-                    farmerId(Util.objectToString(arr[0]))
+            primaryDetailsResponse = PrimaryDetailsResponse.builder()
+                    .serialNumber(serialNumber++)
+                    .farmerId(Util.objectToString(arr[0]))
                     .firstName(Util.objectToString(arr[1]))
                     .middleName(Util.objectToString(arr[2]))
                     .lastName(Util.objectToString(arr[3]))

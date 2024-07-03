@@ -616,10 +616,10 @@ public ResponseEntity<?> primaryFarmerDetails(
     return farmerService.primaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageNumber, pageSize);
 }
     @PostMapping("/farmer-report")
-    public ResponseEntity<?> farmerReport( @RequestParam(defaultValue = "0") Long districtId,
-                                           @RequestParam(defaultValue = "0") Long talukId,
-                                           @RequestParam(defaultValue = "0") Long villageId,
-                                           @RequestParam(defaultValue = "0") Long tscMasterId){
+    public ResponseEntity<?> farmerReport( @RequestParam(required = false) Long districtId,
+                                           @RequestParam(required = false) Long talukId,
+                                           @RequestParam(required = false) Long villageId,
+                                           @RequestParam(required = false) Long tscMasterId){
         try {
             System.out.println("enter to farmer report");
             FileInputStream fileInputStream = farmerService.farmerReport(districtId, talukId, villageId, tscMasterId);
