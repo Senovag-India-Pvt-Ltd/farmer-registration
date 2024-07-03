@@ -438,4 +438,60 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "where d.district_id = :districtId \n" +
             "GROUP BY t.taluk_name;\n")
     public List<Object[]> getTalukWise(@Param("districtId") int districtId);
+
+    @Query(nativeQuery = true,value = "WITH PrimaryAddress AS (\n" +
+            "    SELECT \n" +
+            "        fa.farmer_id,\n" +
+            "        fa.DISTRICT_ID,\n" +
+            "        fa.TALUK_ID,\n" +
+            "        fa.HOBLI_ID,\n" +
+            "        fa.VILLAGE_ID,\n" +
+            "        ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn\n" +
+            "    FROM \n" +
+            "        farmer_address fa\n" +
+            ")\n" +
+            "SELECT\n" +
+            "    f.farmer_id,\n" +
+            "    f.first_name, \n" +
+            "    f.middle_name,\n" +
+            "    f.last_name,\n" +
+            "    f.fruits_id,\n" +
+            "    f.farmer_number,\n" +
+            "    f.father_name,\n" +
+            "    f.passbook_number,\n" +
+            "    f.epic_number,\n" +
+            "    f.ration_card_number,\n" +
+            "    f.dob,\n" +
+            "    d.DISTRICT_NAME, \n" +
+            "    t.TALUK_NAME,\n" +
+            "    h.hobli_name,\n" +
+            "    v.village_name,\n" +
+            "    fba.farmer_bank_name,\n" +
+            "    fba.farmer_bank_account_number,\n" +
+            "    fba.farmer_bank_branch_name,\n" +
+            "    fba.farmer_bank_ifsc_code\n" +
+            "FROM\n" +
+            "    farmer f\n" +
+            "LEFT JOIN\n" +
+            "    PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1\n" +
+            "LEFT JOIN\n" +
+            "    farmer_bank_account fba ON fba.farmer_id = f.farmer_id\n" +
+            "LEFT JOIN\n" +
+            "    district d ON pa.DISTRICT_ID = d.DISTRICT_ID\n" +
+            "LEFT JOIN\n" +
+            "    taluk t ON pa.TALUK_ID = t.TALUK_ID\n" +
+            "LEFT JOIN\n" +
+            "    hobli h ON pa.HOBLI_ID = h.HOBLI_ID\n" +
+            "LEFT JOIN\n" +
+            "    village v ON pa.VILLAGE_ID = v.VILLAGE_ID\n" +
+            "WHERE\n" +
+            "    (pa.DISTRICT_ID = NULL OR NULL IS NULL) AND\n" +
+            "    (pa.TALUK_ID = NULL OR NULL IS NULL) AND\n" +
+            "    (pa.VILLAGE_ID = NULL OR NULL IS NULL) AND\n" +
+            "    (f.tsc_master_id = NULL OR NULL IS NULL)\n")
+    public List<Object[]> getPrimaryFarmerDetails( @Param("districtId") Long districtId,
+                                                   @Param("talukId") Long talukId,
+                                                   @Param("villageId") Long villageId,
+                                                   @Param("tscMasterId") Long tscMasterId,Pageable pageable);
+
 }
