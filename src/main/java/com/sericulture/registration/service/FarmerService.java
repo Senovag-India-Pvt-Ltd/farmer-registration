@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sericulture.registration.controller.S3Controller;
 import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.ResponseWrapper;
-import com.sericulture.registration.model.api.ApplicationsDetailsDistrictWiseRequest;
-import com.sericulture.registration.model.api.DistrictWiseFarmerCountResponse;
-import com.sericulture.registration.model.api.FarmerTotalCountResponse;
-import com.sericulture.registration.model.api.TalukWiseFarmerCountResponse;
+import com.sericulture.registration.model.api.*;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.farmer.*;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
@@ -1707,6 +1704,52 @@ public class FarmerService {
 
         return ResponseEntity.ok(rw);
 
+    }
+
+    public ResponseEntity<?> primaryFarmerDetails(Long districtId,
+                                                  Long talukId,
+                                                  Long villageId,
+                                                  Long tscMasterId,
+                                                  int pageNumber, int pageSize) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+        List<PrimaryDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
+
+
+        List<Object[]> applicableList;
+        // applicableList = applicationFormRepository.getSubmittedListForDbt(statusList, financialYearId, schemeId, subSchemeId, applicationId, sanctionNo, fruitsId);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        applicableList  = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
+
+        // Fetch data from repository
+
+
+        for (Object[] arr : applicableList) {
+            PrimaryDetailsResponse primaryDetailsResponse;
+            primaryDetailsResponse = PrimaryDetailsResponse.builder().
+                    farmerId(Util.objectToString(arr[0]))
+                    .firstName(Util.objectToString(arr[1]))
+                    .middleName(Util.objectToString(arr[2]))
+                    .lastName(Util.objectToString(arr[3]))
+                    .fruitsId(Util.objectToString(arr[4]))
+                    .farmerNumber(Util.objectToString(arr[5]))
+                    .fatherName(Util.objectToString(arr[6]))
+                    .passbookNumber(Util.objectToString(arr[7]))
+                    .epicNumber(Util.objectToString(arr[8]))
+                    .rationCardNumber(Util.objectToString(arr[9]))
+                    .dob(Util.objectToString(arr[10]))
+                    .districtName(Util.objectToString(arr[11]))
+                    .talukName(Util.objectToString(arr[12]))
+                    .hobliName(Util.objectToString(arr[13]))
+                    .villageName(Util.objectToString(arr[14]))
+                    .farmerBankName(Util.objectToString(arr[15]))
+                    .farmerBankAccountNumber(Util.objectToString(arr[16]))
+                    .farmerBankBranchName(Util.objectToString(arr[17]))
+                    .farmerBankIfscCode(Util.objectToString(arr[18]))
+                    .build();
+            primaryDetailsResponseList.add(primaryDetailsResponse);
+        }
+        rw.setContent(primaryDetailsResponseList);
+        return ResponseEntity.ok(rw);
     }
 
     private FileInputStream farmerReport(AverageReportRequest requestDto) throws Exception {
