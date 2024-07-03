@@ -642,16 +642,5 @@ public ResponseEntity<?> primaryFarmerDetails(
         }
     }
 
-    @PostMapping("/primaryFarmerDetails")
-    public ResponseEntity<?> primaryFarmerDetails( @RequestParam(defaultValue = "0") Long districtId,
-                                                   @RequestParam(defaultValue = "0") Long talukId,
-                                                   @RequestParam(defaultValue = "0") Long villageId,
-                                                   @RequestParam(defaultValue = "0") Long tscMasterId,
-                                                   @RequestParam(defaultValue = "0") int pageNumber,
-                                                   @RequestParam(defaultValue = "10") int pageSize ){
-        return farmerService.primaryFarmerDetails(districtId,talukId,villageId,tscMasterId, pageNumber, pageSize);
-
-    }
-
 
 }
