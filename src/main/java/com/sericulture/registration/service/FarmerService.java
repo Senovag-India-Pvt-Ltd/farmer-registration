@@ -32,7 +32,12 @@ import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.*;
 import com.sericulture.registration.utils.ObjectToUrlEncodedConverter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,9 +47,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -1694,5 +1707,66 @@ public class FarmerService {
 
         return ResponseEntity.ok(rw);
 
+    }
+
+    private FileInputStream farmerReport(AverageReportRequest requestDto) throws Exception {
+        AverageReportDataResponse reportDataResponse = apiService.averageReport(requestDto);
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Sheet 1");
+
+        // Create a header row
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("First Name");
+        headerRow.createCell(1).setCellValue("Middle Name");
+        headerRow.createCell(2).setCellValue("Last Name");
+        headerRow.createCell(3).setCellValue("Fruits Id");
+        headerRow.createCell(4).setCellValue("Farmer Number");
+        headerRow.createCell(5).setCellValue("Father Name");
+        headerRow.createCell(6).setCellValue("Passbook Number");
+        headerRow.createCell(7).setCellValue("Epic Number");
+        headerRow.createCell(8).setCellValue("Ration Card Number");
+        headerRow.createCell(9).setCellValue("DOB");
+        headerRow.createCell(10).setCellValue("District Name");
+        headerRow.createCell(11).setCellValue("Taluk Name");
+        headerRow.createCell(12).setCellValue("Hobli Name");
+        headerRow.createCell(13).setCellValue("Village Name");
+        headerRow.createCell(14).setCellValue("Bank Name");
+        headerRow.createCell(15).setCellValue("Bank Account Number");
+        headerRow.createCell(16).setCellValue("Branch Name");
+        headerRow.createCell(17).setCellValue("IFSC Code");
+
+        //Dynamic data binds here
+        //Starting 0th and 1st column cells are hardcoded, So dynamic data column starts from 2nd column
+
+        for(int i=0; i<10; i++){
+            Row contentRow = sheet.createRow(0);
+            headerRow.createCell(0).setCellValue("Val");
+        }
+
+        // Auto-size all columns
+        for (int columnIndex = 0; columnIndex <= 17; columnIndex++) {
+            sheet.autoSizeColumn(columnIndex, true);
+        }
+
+        // Write the workbook content to a file
+        // Specify the directory where the file will be saved
+        //String directoryPath = "C:\\Users\\Swathi V S\\Downloads\\";
+        // Specify the directory where the file will be saved
+        String userHome = System.getProperty("user.home");
+
+        // Define the directory path relative to the user's home directory
+        String directoryPath = Paths.get(userHome, "Downloads").toString();
+        Path directory = Paths.get(directoryPath);
+        Files.createDirectories(directory);
+        Path filePath = directory.resolve("average_report"+Util.getISTLocalDate()+".xlsx");
+
+        // Write the workbook content to the specified file path
+        FileOutputStream fileOut = new FileOutputStream(filePath.toString());
+        FileInputStream fileIn = new FileInputStream(filePath.toString());
+        workbook.write(fileOut);
+        fileOut.close();
+        workbook.close();
+        return fileIn;
     }
 }
