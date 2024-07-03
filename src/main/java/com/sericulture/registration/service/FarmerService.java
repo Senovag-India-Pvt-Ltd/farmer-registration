@@ -1718,15 +1718,16 @@ public class FarmerService {
         talukId = (talukId == 0) ? null : talukId;
         villageId = (villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
-        List<Object[]> applicableList;
+        Page<Object[]> applicablePage;
         // applicableList = applicationFormRepository.getSubmittedListForDbt(statusList, financialYearId, schemeId, subSchemeId, applicationId, sanctionNo, fruitsId);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        applicableList  = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
-
-        // Fetch data from repository
+        applicablePage  = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
+        List<Object[]> applicableList = applicablePage.getContent();
+        long totalRecords = applicablePage.getTotalElements();
 
 
         farmerResponse(primaryDetailsResponseList, applicableList);
+        rw.setTotalRecords(totalRecords);
         rw.setContent(primaryDetailsResponseList);
         return ResponseEntity.ok(rw);
     }
@@ -1768,13 +1769,14 @@ public class FarmerService {
         List<PrimaryDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
 
 
-        List<Object[]> applicableList;
+        Page<Object[]> applicablePage;
         districtId = (districtId == 0) ? null : districtId;
         talukId = (talukId == 0) ? null : talukId;
         villageId = (villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
         Pageable pageable = null;
-        applicableList  = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
+        applicablePage  = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
+        List<Object[]> applicableList = applicablePage.getContent();
         farmerResponse(primaryDetailsResponseList, applicableList);
 
         Workbook workbook = new XSSFWorkbook();
