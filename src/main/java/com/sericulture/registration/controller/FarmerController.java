@@ -516,7 +516,7 @@ public class FarmerController {
     public ResponseEntity<?> editNonKarnatakaFarmerDetails(@Valid @RequestBody EditNonKarnatakaFarmerRequest editNonKarnatakaFarmerRequest) throws Exception {
         ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerResponse.class);
 
-        rw.setContent(farmerService.updateNonKarnatakaFarmer(editNonKarnatakaFarmerRequest));
+        rw.setContent(farmerService.editNonKarnatakaFarmers(editNonKarnatakaFarmerRequest));
         return ResponseEntity.ok(rw);
     }
 

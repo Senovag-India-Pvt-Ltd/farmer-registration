@@ -2,6 +2,8 @@ package com.sericulture.registration.model.api.farmer;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sericulture.registration.model.api.farmerAddress.EditFarmerAddressRequest;
+import com.sericulture.registration.model.api.farmerBankAccount.EditFarmerBankAccountRequest;
 import com.sericulture.registration.model.entity.FarmerAddress;
 import com.sericulture.registration.model.entity.FarmerBankAccount;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -89,9 +91,9 @@ public class EditNonKarnatakaFarmerRequest {
     @Schema(name = "isOtherStateFarmer", example = "0")
     private Boolean isOtherStateFarmer;
 
-    @Schema(name = "farmerAddressList")
-    List<FarmerAddress> farmerAddressList;
+    @Schema(name = "editFarmerAddressRequestList")
+    List<EditFarmerAddressRequest> editFarmerAddressRequestList;
 
-    @Schema(name = "farmerBankAccount")
-    FarmerBankAccount farmerBankAccount;
+    @Schema(name = "editFarmerBankAccountRequest")
+    EditFarmerBankAccountRequest editFarmerBankAccountRequest;
 }

@@ -6,7 +6,9 @@ import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.api.education.EducationRequest;
 import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationRequest;
 import com.sericulture.registration.model.api.farmer.FarmerRequest;
+import com.sericulture.registration.model.api.farmerAddress.EditFarmerAddressRequest;
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressRequest;
+import com.sericulture.registration.model.api.farmerBankAccount.EditFarmerBankAccountRequest;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountRequest;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyRequest;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsRequest;
@@ -159,6 +161,11 @@ public class Mapper {
         return (T) mapper.map(farmerBankAccountRequest, claaz);
     }
 
+    public <T> T editFarmerBankAccountObjectToEntity(EditFarmerBankAccountRequest editFarmerBankAccountRequest, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, editFarmerBankAccountRequest);
+        return (T) mapper.map(editFarmerBankAccountRequest, claaz);
+    }
+
     /**
      * Maps FarmerAddress Entity to FarmerAddress Response Object
      * @param farmerAddressEntity
@@ -177,6 +184,11 @@ public class Mapper {
     public <T> T farmerAddressObjectToEntity(FarmerAddressRequest farmerAddressRequest, Class<T> claaz) {
         log.info("Value of mapper is:",mapper, farmerAddressRequest);
         return (T) mapper.map(farmerAddressRequest, claaz);
+    }
+
+    public <T> T editFarmerAddressObjectToEntity(EditFarmerAddressRequest editFarmerAddressRequest, Class<T> claaz) {
+        log.info("Value of mapper is:",mapper, editFarmerAddressRequest);
+        return (T) mapper.map(editFarmerAddressRequest, claaz);
     }
 
     /**

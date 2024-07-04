@@ -8,6 +8,7 @@ import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.*;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.farmer.*;
+import com.sericulture.registration.model.api.farmerAddress.EditFarmerAddressRequest;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
@@ -1509,7 +1510,7 @@ public class FarmerService {
         return farmerResponse;
     }
 
-    @Transactional
+   /* @Transactional
     public FarmerResponse updateNonKarnatakaFarmer(EditNonKarnatakaFarmerRequest farmerRequest) throws Exception {
         FarmerResponse farmerResponse = new FarmerResponse();
 
@@ -1582,7 +1583,67 @@ public class FarmerService {
 
         return farmerResponse;
     }
+*/
 
+    @Transactional
+    public FarmerResponse editNonKarnatakaFarmers(EditNonKarnatakaFarmerRequest farmerRequest) throws Exception {
+        Farmer farmer2 = new Farmer();
+        FarmerResponse farmerResponse = new FarmerResponse();
+
+        Optional<Farmer> optionalFarmer = farmerRepository.findByFarmerId(farmerRequest.getFarmerId());
+        if (!optionalFarmer.isPresent()) {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Farmer not found");
+            return farmerResponse;
+        }
+
+        Farmer farmer = optionalFarmer.get();
+        farmer.setFirstName(farmerRequest.getFirstName());
+        farmer.setMiddleName(farmerRequest.getMiddleName());
+        farmer.setLastName(farmerRequest.getLastName());
+        farmer.setNameKan(farmerRequest.getNameKan());
+        farmer.setFatherName(farmerRequest.getFatherName());
+        farmer.setFatherNameKan(farmerRequest.getFatherNameKan());
+        farmer.setDob(farmerRequest.getDob());
+        farmer.setCasteId(farmerRequest.getCasteId());
+        farmer.setMobileNumber(farmerRequest.getMobileNumber());
+        farmer.setEpicNumber(farmerRequest.getEpicNumber());
+        farmer.setPassbookNumber(farmerRequest.getPassbookNumber());
+        farmer.setWithoutFruitsInwardCounter(0L);
+        validator.validate(farmer);
+
+        // Check for duplicate Reeler Number
+        List<Farmer> farmerListByNumber = farmerRepository.findByMobileNumber(farmer.getMobileNumber());
+        if (!farmerListByNumber.isEmpty() && farmerListByNumber.stream().anyMatch(Farmer::getActive)) {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Farmer Mobile Number already exists");
+        } else {
+            // If no duplicates found, save the reeler
+            farmer2 = farmerRepository.save(farmer);
+            farmerResponse = mapper.farmerEntityToObject(farmer2, FarmerResponse.class);
+            farmerResponse.setError(false);
+        }
+
+        if(!farmerResponse.getError()) {
+
+            for (EditFarmerAddressRequest editFarmerAddressRequest : farmerRequest.getEditFarmerAddressRequestList()) {
+                FarmerAddress farmerAddress = mapper.editFarmerAddressObjectToEntity(editFarmerAddressRequest,FarmerAddress.class);
+                farmerAddressRepository.save(farmerAddress);
+            }
+
+            List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerRequest.getEditFarmerBankAccountRequest().getFarmerBankAccountNumber());
+            if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().filter(FarmerBankAccount::getActive).findAny().isPresent()) {
+                farmerResponse.setError(true);
+                farmerResponse.setError_description("FarmerBankAccount number already exist");
+            } else {
+                FarmerBankAccount farmerBankAccount = mapper.editFarmerBankAccountObjectToEntity(farmerRequest.getEditFarmerBankAccountRequest(),FarmerBankAccount.class);
+                FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerBankAccount);
+                farmerResponse.setFarmerBankAccountId(farmerBankAccount1.getFarmerBankAccountId());
+            }
+        }
+
+        return farmerResponse;
+    }
 
 
     @Transactional
