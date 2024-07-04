@@ -9,6 +9,7 @@ import com.sericulture.registration.model.api.*;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.farmer.*;
 import com.sericulture.registration.model.api.farmerAddress.EditFarmerAddressRequest;
+import com.sericulture.registration.model.api.farmerBankAccount.EditFarmerBankAccountRequest;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
@@ -225,27 +226,27 @@ public class FarmerService {
                 farmerResponse = mapper.farmerEntityToObject(savedResponse, FarmerResponse.class);
 
                 //Once farmer created, trigger inspection if farmer created
-                if(savedResponse.getFarmerId() != null) {
+                if (savedResponse.getFarmerId() != null) {
 
 
                     //Save farmer bank acc details
                     farmerSaveRequest.getFarmerBankAccountRequest().setFarmerId(savedResponse.getFarmerId());
-                    FarmerBankAccountResponse farmerBankAccountResponse =farmerBankAccountService.insertFarmerBankAccountDetails(farmerSaveRequest.getFarmerBankAccountRequest());
-                    if(farmerBankAccountResponse.getFarmerBankAccountId()>0){
+                    FarmerBankAccountResponse farmerBankAccountResponse = farmerBankAccountService.insertFarmerBankAccountDetails(farmerSaveRequest.getFarmerBankAccountRequest());
+                    if (farmerBankAccountResponse.getFarmerBankAccountId() > 0) {
                         farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
                     }
 
-                    for(int i=0; i<farmerSaveRequest.getFarmerAddressRequests().size();i++) {
+                    for (int i = 0; i < farmerSaveRequest.getFarmerAddressRequests().size(); i++) {
                         farmerSaveRequest.getFarmerAddressRequests().get(i).setFarmerId(savedResponse.getFarmerId());
                         farmerAddressService.insertFarmerAddressDetails(farmerSaveRequest.getFarmerAddressRequests().get(i));
                     }
 
-                    for(int i=0; i<farmerSaveRequest.getFarmerFamilyRequestList().size();i++) {
+                    for (int i = 0; i < farmerSaveRequest.getFarmerFamilyRequestList().size(); i++) {
                         farmerSaveRequest.getFarmerFamilyRequestList().get(i).setFarmerId(savedResponse.getFarmerId());
                         farmerFamilyService.insertFarmerFamilyDetails(farmerSaveRequest.getFarmerFamilyRequestList().get(i));
                     }
 
-                    for(int i=0; i<farmerSaveRequest.getFarmerLandDetailsRequests().size();i++) {
+                    for (int i = 0; i < farmerSaveRequest.getFarmerLandDetailsRequests().size(); i++) {
                         farmerSaveRequest.getFarmerLandDetailsRequests().get(i).setFarmerId(savedResponse.getFarmerId());
                         farmerLandDetailsService.insertFarmerLandDetailsDetails(farmerSaveRequest.getFarmerLandDetailsRequests().get(i));
                     }
@@ -270,7 +271,7 @@ public class FarmerService {
                         farmerResponse.setError_description("Farmer saved, but inspection not saved");
                     }*/
 
-                }else{
+                } else {
                     farmerResponse.setError(true);
                 }
             }
@@ -434,26 +435,26 @@ public class FarmerService {
             Farmer farmer1 = farmerRepository.save(farmer);
             farmerResponse = mapper.farmerEntityToObject(farmer1, FarmerResponse.class);
 
-            if(farmerResponse.getFarmerId()>0){
+            if (farmerResponse.getFarmerId() > 0) {
                 //Save farmer bank acc details
                 editCompleteFarmerRequest.getEditFarmerBankAccountRequest().setFarmerId(farmerResponse.getFarmerId());
-                FarmerBankAccountResponse farmerBankAccountResponse =farmerBankAccountService.updateFarmerBankAccountDetails(editCompleteFarmerRequest.getEditFarmerBankAccountRequest());
-                if(farmerBankAccountResponse.getFarmerBankAccountId()>0){
+                FarmerBankAccountResponse farmerBankAccountResponse = farmerBankAccountService.updateFarmerBankAccountDetails(editCompleteFarmerRequest.getEditFarmerBankAccountRequest());
+                if (farmerBankAccountResponse.getFarmerBankAccountId() > 0) {
                     farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
                 }
-                if(editCompleteFarmerRequest.getEditFarmerFamilyRequests() != null){
-                    for(int i=0; i<editCompleteFarmerRequest.getEditFarmerFamilyRequests().size();i++) {
+                if (editCompleteFarmerRequest.getEditFarmerFamilyRequests() != null) {
+                    for (int i = 0; i < editCompleteFarmerRequest.getEditFarmerFamilyRequests().size(); i++) {
                         editCompleteFarmerRequest.getEditFarmerFamilyRequests().get(i).setFarmerId(farmerResponse.getFarmerId());
                         farmerFamilyService.updateFarmerFamilyDetails(editCompleteFarmerRequest.getEditFarmerFamilyRequests().get(i));
                     }
                 }
 
-                for(int i=0; i<editCompleteFarmerRequest.getEditFarmerAddressRequests().size();i++) {
+                for (int i = 0; i < editCompleteFarmerRequest.getEditFarmerAddressRequests().size(); i++) {
                     editCompleteFarmerRequest.getEditFarmerAddressRequests().get(i).setFarmerId(farmerResponse.getFarmerId());
                     farmerAddressService.updateFarmerAddressDetails(editCompleteFarmerRequest.getEditFarmerAddressRequests().get(i));
                 }
 
-                for(int i=0; i<editCompleteFarmerRequest.getEditFarmerLandDetailsRequests().size();i++) {
+                for (int i = 0; i < editCompleteFarmerRequest.getEditFarmerLandDetailsRequests().size(); i++) {
                     editCompleteFarmerRequest.getEditFarmerLandDetailsRequests().get(i).setFarmerId(farmerResponse.getFarmerId());
                     farmerLandDetailsService.updateFarmerLandDetailsDetails(editCompleteFarmerRequest.getEditFarmerLandDetailsRequests().get(i));
                 }
@@ -482,7 +483,7 @@ public class FarmerService {
         if (farmer == null) {
             getFarmerResponse.setError(true);
             getFarmerResponse.setError_description("Not Found");
-        }else{
+        } else {
             List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
             List<FarmerAddressDTO> farmerAddressDTOList = farmerAddressRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
             List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
@@ -739,22 +740,22 @@ public class FarmerService {
 //                villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
 //                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
 
-                    log.info("District code: "+farmerLandDetails.getDistrictCode());
+                    log.info("District code: " + farmerLandDetails.getDistrictCode());
                     District district = districtRepository.findByDistrictCode(String.valueOf(getLandDetailsResponse.getDistrictCode()));
-                    if(district != null) {
-                        log.info("District name: "+district.getDistrictName() +":districtId:"+district.getDistrictId()+":lgDist:"+district.getDistrictCode());
-                        log.info("Taluk code: "+getLandDetailsResponse.getTalukCode());
+                    if (district != null) {
+                        log.info("District name: " + district.getDistrictName() + ":districtId:" + district.getDistrictId() + ":lgDist:" + district.getDistrictCode());
+                        log.info("Taluk code: " + getLandDetailsResponse.getTalukCode());
                         Taluk taluk = talukRepository.findByDistrictIdAndTalukCode(district.getDistrictId(), String.valueOf(getLandDetailsResponse.getTalukCode()));
-                        if(taluk != null) {
-                            log.info("Taluk name: "+taluk.getTalukName()+":talukId:"+taluk.getTalukId()+":districtId"+taluk.getDistrictId()+"lgTaluk:"+taluk.getLgTaluk());
-                            log.info("Hobli code: "+getLandDetailsResponse.getHobliCode());
+                        if (taluk != null) {
+                            log.info("Taluk name: " + taluk.getTalukName() + ":talukId:" + taluk.getTalukId() + ":districtId" + taluk.getDistrictId() + "lgTaluk:" + taluk.getLgTaluk());
+                            log.info("Hobli code: " + getLandDetailsResponse.getHobliCode());
                             Hobli hobli = hobliRepository.findByTalukIdAndHobliCode(taluk.getTalukId(), String.valueOf(getLandDetailsResponse.getHobliCode()));
-                            if(hobli != null) {
-                                log.info("Hobli name: "+hobli.getHobliName()+":hobliId:"+hobli.getHobliId()+":districtId"+hobli.getDistrictId()+":talukId:"+hobli.getTalukId());
-                                log.info("Village code: "+getLandDetailsResponse.getVillageCode());
+                            if (hobli != null) {
+                                log.info("Hobli name: " + hobli.getHobliName() + ":hobliId:" + hobli.getHobliId() + ":districtId" + hobli.getDistrictId() + ":talukId:" + hobli.getTalukId());
+                                log.info("Village code: " + getLandDetailsResponse.getVillageCode());
                                 Village village = villageRepository.findByHobliIdAndVillageCode(hobli.getHobliId(), String.valueOf(getLandDetailsResponse.getVillageCode()));
                                 if (village == null) {
-                                    log.info("Village name: "+village.getVillageName()+":hobliId:"+village.getHobliId()+":districtId"+village.getDistrictId()+":talukId:"+village.getTalukId()+":villageId:"+village.getVillageId()+":lgVillage:"+village.getLgVillage());
+                                    log.info("Village name: " + village.getVillageName() + ":hobliId:" + village.getHobliId() + ":districtId" + village.getDistrictId() + ":talukId:" + village.getTalukId() + ":villageId:" + village.getVillageId() + ":lgVillage:" + village.getLgVillage());
                                     farmerLandDetails.setVillageId(null);
                                     farmerLandDetails.setHobliId(null);
                                     farmerLandDetails.setTalukId(null);
@@ -764,9 +765,9 @@ public class FarmerService {
                                     getFarmerResponse.setError(true);
                                     getFarmerResponse.setError_description("Village not found, please create village and then continue");
                                 } else {
-                                    log.info("Village name: "+village.getVillageName()+":hobliId:"+village.getHobliId()+":districtId"+village.getDistrictId()+":talukId:"+village.getTalukId()+":villageId:"+village.getVillageId()+":lgVillage:"+village.getLgVillage());
+                                    log.info("Village name: " + village.getVillageName() + ":hobliId:" + village.getHobliId() + ":districtId" + village.getDistrictId() + ":talukId:" + village.getTalukId() + ":villageId:" + village.getVillageId() + ":lgVillage:" + village.getLgVillage());
                                     VillageDTO villageDTO1 = villageRepository.getByVillageIdAndActive(village.getVillageId(), true);
-                                    log.info("VillageDTO1: - Village name: "+villageDTO1.getVillageName()+":hobliId:"+villageDTO1.getHobliId()+":districtId"+villageDTO1.getDistrictId()+":talukId:"+villageDTO1.getTalukId()+":villageId:"+villageDTO1.getVillageId());
+                                    log.info("VillageDTO1: - Village name: " + villageDTO1.getVillageName() + ":hobliId:" + villageDTO1.getHobliId() + ":districtId" + villageDTO1.getDistrictId() + ":talukId:" + villageDTO1.getTalukId() + ":villageId:" + villageDTO1.getVillageId());
 
                                     farmerLandDetails.setVillageId(villageDTO1.getVillageId());
                                     if (villageDTO1.getHobliId().equals("") || villageDTO1.getHobliId() == null) {
@@ -789,7 +790,7 @@ public class FarmerService {
                                     farmerLandDetails.setHobliName(villageDTO1.getHobliName());
                                     farmerLandDetails.setVillageName(villageDTO1.getVillageName());
                                 }
-                            }else{
+                            } else {
                                 log.info("Hobli not found ");
                                 farmerLandDetails.setVillageId(null);
                                 farmerLandDetails.setHobliId(null);
@@ -800,8 +801,8 @@ public class FarmerService {
                                 getFarmerResponse.setError(true);
                                 getFarmerResponse.setError_description("Hobli not found, please create hobli and then continue");
                             }
-                        }else{
-                            log.info("Taluk not found: "+farmerLandDetails.getTalukCode());
+                        } else {
+                            log.info("Taluk not found: " + farmerLandDetails.getTalukCode());
                             farmerLandDetails.setVillageId(null);
                             farmerLandDetails.setHobliId(null);
                             farmerLandDetails.setTalukId(null);
@@ -811,8 +812,8 @@ public class FarmerService {
                             getFarmerResponse.setError(true);
                             getFarmerResponse.setError_description("Taluk not found, please create taluk and then continue");
                         }
-                    }else{
-                        log.info("District name not found: "+district.getDistrictName());
+                    } else {
+                        log.info("District name not found: " + district.getDistrictName());
                         farmerLandDetails.setVillageId(null);
                         farmerLandDetails.setHobliId(null);
                         farmerLandDetails.setTalukId(null);
@@ -872,19 +873,19 @@ public class FarmerService {
             SerialCounter serialCounter = new SerialCounter();
             if (serialCounters.size() > 0) {
                 serialCounter = serialCounters.get(0);
-            }else{
+            } else {
                 serialCounter.setFarmerWithoutFruitsAllowedNumber(0L);
             }
-            if(farmer.getWithoutFruitsInwardCounter() == null){
+            if (farmer.getWithoutFruitsInwardCounter() == null) {
                 farmer.setWithoutFruitsInwardCounter(0L);
             }
-            if(serialCounter.getFarmerWithoutFruitsAllowedNumber() == null){
+            if (serialCounter.getFarmerWithoutFruitsAllowedNumber() == null) {
                 serialCounter.setFarmerWithoutFruitsAllowedNumber(0L);
             }
-            if(farmer.getWithoutFruitsInwardCounter()> serialCounter.getFarmerWithoutFruitsAllowedNumber() && (farmer.getFruitsId().equals("") || farmer.getFruitsId() == null)){
+            if (farmer.getWithoutFruitsInwardCounter() > serialCounter.getFarmerWithoutFruitsAllowedNumber() && (farmer.getFruitsId().equals("") || farmer.getFruitsId() == null)) {
                 getFarmerResponse.setError(true);
                 getFarmerResponse.setError_description("Maximum allowance of allotment for farmer is reached. Please come back with fruits id.");
-            }else {
+            } else {
                 List<FarmerAddress> farmerAddressList = farmerAddressRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
                 List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmer.getFarmerId(), true);
                 List<FarmerLandDetailsDTO> farmerLandDetailsDTOS = farmerLandDetailsRepository.getByFarmerIdAndActive(farmer.getFarmerId(), true);
@@ -917,54 +918,54 @@ public class FarmerService {
 //            farmer = farmerRepository.findByMobileNumberAndActive(getFarmerRequest.getMobileNumber(), true);
 //        }
 //        if (farmer == null) {
-            FruitsFarmerDTO fruitsFarmerDTO = new FruitsFarmerDTO();
-            fruitsFarmerDTO.setFarmerId(getFarmerRequest.getFruitsId());
+        FruitsFarmerDTO fruitsFarmerDTO = new FruitsFarmerDTO();
+        fruitsFarmerDTO.setFarmerId(getFarmerRequest.getFruitsId());
 
-            //  GetFruitsResponse getFruitsResponse = fruitsApiService.getFarmerByFruitsIdWithResponse(fruitsFarmerDTO);
-            String inputData = String.valueOf(fruitsApiService.getFarmerByFruitsId(fruitsFarmerDTO).getBody());
+        //  GetFruitsResponse getFruitsResponse = fruitsApiService.getFarmerByFruitsIdWithResponse(fruitsFarmerDTO);
+        String inputData = String.valueOf(fruitsApiService.getFarmerByFruitsId(fruitsFarmerDTO).getBody());
 
-            if (inputData.equals("Error!, Please try again")) {
-                getFarmerResponse.setError(true);
-                getFarmerResponse.setError_description("Farmer not found");
-            } else {
+        if (inputData.equals("Error!, Please try again")) {
+            getFarmerResponse.setError(true);
+            getFarmerResponse.setError_description("Farmer not found");
+        } else {
 
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-                GetFruitsResponse getFruitsResponse = objectMapper.readValue(inputData, GetFruitsResponse.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+            GetFruitsResponse getFruitsResponse = objectMapper.readValue(inputData, GetFruitsResponse.class);
 
-                Farmer farmer1 = new Farmer();
-                farmer1.setFruitsId(getFruitsResponse.getFarmerID());
-                farmer1.setFirstName(getFruitsResponse.getName());
-                farmer1.setMiddleName(getFruitsResponse.getFatherName());
+            Farmer farmer1 = new Farmer();
+            farmer1.setFruitsId(getFruitsResponse.getFarmerID());
+            farmer1.setFirstName(getFruitsResponse.getName());
+            farmer1.setMiddleName(getFruitsResponse.getFatherName());
 
-                List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeNameAndActive(getFruitsResponse.getFarmerType(), true);
-                if (farmerTypeList.size() > 0) {
-                    farmer1.setFarmerTypeId(farmerTypeList.get(0).getFarmerTypeId());
-                }
+            List<FarmerType> farmerTypeList = farmerTypeRepository.findByFarmerTypeNameAndActive(getFruitsResponse.getFarmerType(), true);
+            if (farmerTypeList.size() > 0) {
+                farmer1.setFarmerTypeId(farmerTypeList.get(0).getFarmerTypeId());
+            }
 
-                farmer1.setMinority(getFruitsResponse.getMinority());
-                farmer1.setRdNumber(getFruitsResponse.getRDNumber());
-                farmer1.setCasteStatus(getFruitsResponse.getCasteStatus());
-                farmer1.setGenderStatus(getFruitsResponse.getGenderStatus());
-                farmer1.setFatherNameKan(getFruitsResponse.getFatherNameKan());
-                farmer1.setFatherName(getFruitsResponse.getFatherName());
-                farmer1.setNameKan(getFruitsResponse.getNameKan());
+            farmer1.setMinority(getFruitsResponse.getMinority());
+            farmer1.setRdNumber(getFruitsResponse.getRDNumber());
+            farmer1.setCasteStatus(getFruitsResponse.getCasteStatus());
+            farmer1.setGenderStatus(getFruitsResponse.getGenderStatus());
+            farmer1.setFatherNameKan(getFruitsResponse.getFatherNameKan());
+            farmer1.setFatherName(getFruitsResponse.getFatherName());
+            farmer1.setNameKan(getFruitsResponse.getNameKan());
 
-                // log.info("getFruitsResponse: " + getFruitsResponse);
-                // log.info("ERROR FINDER getFruitsResponse.getGender(): " + getFruitsResponse.getGender());
-                // log.info("ERROR FINDER getFruitsResponse.getName(): " + getFruitsResponse.getName());
-                // log.info("ERROR FINDER typeOf: " + getFruitsResponse.getGender().getClass().getName() );
-                if (getFruitsResponse.getGender() != null) {
-                    if (getFruitsResponse.getGender().equals("Male")) {
-                        farmer1.setGenderId(1L);
-                    } else if (getFruitsResponse.getGender().equals("Female")) {
-                        farmer1.setGenderId(2L);
-                    } else {
-                        farmer1.setGenderId(3L);
-                    }
+            // log.info("getFruitsResponse: " + getFruitsResponse);
+            // log.info("ERROR FINDER getFruitsResponse.getGender(): " + getFruitsResponse.getGender());
+            // log.info("ERROR FINDER getFruitsResponse.getName(): " + getFruitsResponse.getName());
+            // log.info("ERROR FINDER typeOf: " + getFruitsResponse.getGender().getClass().getName() );
+            if (getFruitsResponse.getGender() != null) {
+                if (getFruitsResponse.getGender().equals("Male")) {
+                    farmer1.setGenderId(1L);
+                } else if (getFruitsResponse.getGender().equals("Female")) {
+                    farmer1.setGenderId(2L);
                 } else {
-                    farmer1.setGenderId(0L);
+                    farmer1.setGenderId(3L);
                 }
+            } else {
+                farmer1.setGenderId(0L);
+            }
 
             /*CasteDTO casteDTO = new CasteDTO();
             casteDTO.setCaste(getFruitsResponse.getCaste());
@@ -972,77 +973,45 @@ public class FarmerService {
 
             farmer1.setCasteId(Long.valueOf(((LinkedHashMap) responseWrapper.getContent()).get("id").toString()));
 */
-                Caste caste = casteRepository.findByTitleAndActive(getFruitsResponse.getCaste(), true);
-                if (caste != null) {
-                    farmer1.setCasteId(caste.getCasteId());
-                } else {
-                    farmer1.setCasteId(0L);
-                }
+            Caste caste = casteRepository.findByTitleAndActive(getFruitsResponse.getCaste(), true);
+            if (caste != null) {
+                farmer1.setCasteId(caste.getCasteId());
+            } else {
+                farmer1.setCasteId(0L);
+            }
 
-                if (getFruitsResponse.getPhysicallyChallenged().equals("No")) {
-                    farmer1.setDifferentlyAbled(false);
-                } else {
-                    farmer1.setDifferentlyAbled(true);
-                }
-                getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer1, FarmerResponse.class));
+            if (getFruitsResponse.getPhysicallyChallenged().equals("No")) {
+                farmer1.setDifferentlyAbled(false);
+            } else {
+                farmer1.setDifferentlyAbled(true);
+            }
+            getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer1, FarmerResponse.class));
 
-                List<FarmerAddressDTO> farmerAddressDTOList = new ArrayList<>();
-                FarmerAddressDTO farmerAddressDTO = new FarmerAddressDTO();
-                farmerAddressDTO.setAddressText(getFruitsResponse.getResidentialAddress());
-                farmerAddressDTO.setPincode(getFruitsResponse.getPincode());
-                farmerAddressDTOList.add(farmerAddressDTO);
-                getFarmerResponse.setFarmerAddressDTOList(farmerAddressDTOList);
+            List<FarmerAddressDTO> farmerAddressDTOList = new ArrayList<>();
+            FarmerAddressDTO farmerAddressDTO = new FarmerAddressDTO();
+            farmerAddressDTO.setAddressText(getFruitsResponse.getResidentialAddress());
+            farmerAddressDTO.setPincode(getFruitsResponse.getPincode());
+            farmerAddressDTOList.add(farmerAddressDTO);
+            getFarmerResponse.setFarmerAddressDTOList(farmerAddressDTOList);
 
 
-                List<FarmerLandDetailsDTO> farmerLandDetailsList = new ArrayList<>();
-                for (GetLandDetailsResponse getLandDetailsResponse : getFruitsResponse.getLanddata()) {
-                    FarmerLandDetailsDTO farmerLandDetails = new FarmerLandDetailsDTO();
+            List<FarmerLandDetailsDTO> farmerLandDetailsList = new ArrayList<>();
+            for (GetLandDetailsResponse getLandDetailsResponse : getFruitsResponse.getLanddata()) {
+                FarmerLandDetailsDTO farmerLandDetails = new FarmerLandDetailsDTO();
 //                VillageDTO villageDTO = new VillageDTO();
 //                villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
 //                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
 
-                    District district = districtRepository.findByDistrictCode(String.valueOf(farmerLandDetails.getDistrictCode()));
-                    if(district != null) {
+                District district = districtRepository.findByDistrictCode(String.valueOf(farmerLandDetails.getDistrictCode()));
+                if (district != null) {
 
-                        Taluk taluk = talukRepository.findByDistrictIdAndTalukCode(district.getDistrictId(), String.valueOf(farmerLandDetails.getTalukCode()));
-                        if(taluk != null) {
-                            Hobli hobli = hobliRepository.findByTalukIdAndHobliCode(taluk.getTalukId(), String.valueOf(farmerLandDetails.getHobliCode()));
-                            if(hobli != null) {
+                    Taluk taluk = talukRepository.findByDistrictIdAndTalukCode(district.getDistrictId(), String.valueOf(farmerLandDetails.getTalukCode()));
+                    if (taluk != null) {
+                        Hobli hobli = hobliRepository.findByTalukIdAndHobliCode(taluk.getTalukId(), String.valueOf(farmerLandDetails.getHobliCode()));
+                        if (hobli != null) {
 
-                                Village village = villageRepository.findByHobliIdAndVillageCode(hobli.getHobliId(), String.valueOf(farmerLandDetails.getVillageCode()));
-                                if (village == null) {
-                                    farmerLandDetails.setVillageId(null);
-                                    farmerLandDetails.setHobliId(null);
-                                    farmerLandDetails.setTalukId(null);
-                                    farmerLandDetails.setDistrictId(null);
-                                    farmerLandDetails.setStateId(null);
-
-                                    getFarmerResponse.setError(true);
-                                    getFarmerResponse.setError_description("Village not found, please create village and then continue");
-                                } else {
-                                    VillageDTO villageDTO1 = villageRepository.getByVillageIdAndActive(village.getVillageId(), true);
-                                    farmerLandDetails.setVillageId(villageDTO1.getVillageId());
-                                    if (villageDTO1.getHobliId().equals("") || villageDTO1.getHobliId() == null) {
-                                        farmerLandDetails.setHobliId(0L);
-                                    } else {
-                                        farmerLandDetails.setHobliId(villageDTO1.getHobliId());
-                                    }
-                                    farmerLandDetails.setTalukId(villageDTO1.getTalukId());
-                                    farmerLandDetails.setDistrictId(villageDTO1.getDistrictId());
-                                    farmerLandDetails.setStateId(villageDTO1.getStateId());
-
-                                    farmerLandDetails.setStateName(villageDTO1.getStateName());
-                                    farmerLandDetails.setDistrictName(villageDTO1.getDistrictName());
-                                    farmerLandDetails.setTalukName(villageDTO1.getTalukName());
-                                    if (villageDTO1.getHobliName().equals("") || villageDTO1.getHobliName() == null) {
-                                        farmerLandDetails.setHobliName("");
-                                    } else {
-                                        farmerLandDetails.setHobliId(villageDTO1.getHobliId());
-                                    }
-                                    farmerLandDetails.setHobliName(villageDTO1.getHobliName());
-                                    farmerLandDetails.setVillageName(villageDTO1.getVillageName());
-                                }
-                            }else{
+                            Village village = villageRepository.findByHobliIdAndVillageCode(hobli.getHobliId(), String.valueOf(farmerLandDetails.getVillageCode()));
+                            if (village == null) {
                                 farmerLandDetails.setVillageId(null);
                                 farmerLandDetails.setHobliId(null);
                                 farmerLandDetails.setTalukId(null);
@@ -1050,9 +1019,31 @@ public class FarmerService {
                                 farmerLandDetails.setStateId(null);
 
                                 getFarmerResponse.setError(true);
-                                getFarmerResponse.setError_description("Hobli not found, please create hobli and then continue");
+                                getFarmerResponse.setError_description("Village not found, please create village and then continue");
+                            } else {
+                                VillageDTO villageDTO1 = villageRepository.getByVillageIdAndActive(village.getVillageId(), true);
+                                farmerLandDetails.setVillageId(villageDTO1.getVillageId());
+                                if (villageDTO1.getHobliId().equals("") || villageDTO1.getHobliId() == null) {
+                                    farmerLandDetails.setHobliId(0L);
+                                } else {
+                                    farmerLandDetails.setHobliId(villageDTO1.getHobliId());
+                                }
+                                farmerLandDetails.setTalukId(villageDTO1.getTalukId());
+                                farmerLandDetails.setDistrictId(villageDTO1.getDistrictId());
+                                farmerLandDetails.setStateId(villageDTO1.getStateId());
+
+                                farmerLandDetails.setStateName(villageDTO1.getStateName());
+                                farmerLandDetails.setDistrictName(villageDTO1.getDistrictName());
+                                farmerLandDetails.setTalukName(villageDTO1.getTalukName());
+                                if (villageDTO1.getHobliName().equals("") || villageDTO1.getHobliName() == null) {
+                                    farmerLandDetails.setHobliName("");
+                                } else {
+                                    farmerLandDetails.setHobliId(villageDTO1.getHobliId());
+                                }
+                                farmerLandDetails.setHobliName(villageDTO1.getHobliName());
+                                farmerLandDetails.setVillageName(villageDTO1.getVillageName());
                             }
-                        }else{
+                        } else {
                             farmerLandDetails.setVillageId(null);
                             farmerLandDetails.setHobliId(null);
                             farmerLandDetails.setTalukId(null);
@@ -1060,9 +1051,9 @@ public class FarmerService {
                             farmerLandDetails.setStateId(null);
 
                             getFarmerResponse.setError(true);
-                            getFarmerResponse.setError_description("Taluk not found, please create taluk and then continue");
+                            getFarmerResponse.setError_description("Hobli not found, please create hobli and then continue");
                         }
-                    }else{
+                    } else {
                         farmerLandDetails.setVillageId(null);
                         farmerLandDetails.setHobliId(null);
                         farmerLandDetails.setTalukId(null);
@@ -1070,8 +1061,18 @@ public class FarmerService {
                         farmerLandDetails.setStateId(null);
 
                         getFarmerResponse.setError(true);
-                        getFarmerResponse.setError_description("District not found, please create district and then continue");
+                        getFarmerResponse.setError_description("Taluk not found, please create taluk and then continue");
                     }
+                } else {
+                    farmerLandDetails.setVillageId(null);
+                    farmerLandDetails.setHobliId(null);
+                    farmerLandDetails.setTalukId(null);
+                    farmerLandDetails.setDistrictId(null);
+                    farmerLandDetails.setStateId(null);
+
+                    getFarmerResponse.setError(true);
+                    getFarmerResponse.setError_description("District not found, please create district and then continue");
+                }
 
                 /*if(responseWrapper1 != null) {
                 if(((LinkedHashMap) responseWrapper1.getContent()).get("error").equals(false)){
@@ -1094,32 +1095,33 @@ public class FarmerService {
                     farmerLandDetails.setStateId(null);
                 }*/
 
-                    farmerLandDetails.setHissa(getLandDetailsResponse.getHissano());
-                    farmerLandDetails.setSurveyNumber(String.valueOf(getLandDetailsResponse.getSurveyno()));
+                farmerLandDetails.setHissa(getLandDetailsResponse.getHissano());
+                farmerLandDetails.setSurveyNumber(String.valueOf(getLandDetailsResponse.getSurveyno()));
 
-                    farmerLandDetails.setOwnerName(getLandDetailsResponse.getOwnerName());
-                    farmerLandDetails.setSurNoc(String.valueOf(getLandDetailsResponse.getSurnoc()));
-                    farmerLandDetails.setAcre(Long.valueOf(getLandDetailsResponse.getAcre()));
-                    farmerLandDetails.setNameScore(Long.valueOf(getLandDetailsResponse.getNameScore()));
-                    farmerLandDetails.setOwnerNo(Long.valueOf(getLandDetailsResponse.getOwnerNo()));
-                    farmerLandDetails.setMainOwnerNo(Long.valueOf(String.valueOf(getLandDetailsResponse.getMainOwnerNo())));
-                    farmerLandDetails.setGunta(Long.valueOf(getLandDetailsResponse.getGunta()));
-                    farmerLandDetails.setFGunta(Double.valueOf(getLandDetailsResponse.getFgunta()));
-                    farmerLandDetails.setLandCode(Long.valueOf(getLandDetailsResponse.getLandCode()));
-                    farmerLandDetails.setDistrictCode(Long.valueOf(getLandDetailsResponse.getDistrictCode()));
-                    farmerLandDetails.setTalukCode(Long.valueOf(getLandDetailsResponse.getTalukCode()));
-                    farmerLandDetails.setHobliCode(Long.valueOf(String.valueOf(getLandDetailsResponse.getHobliCode())));
-                    farmerLandDetails.setVillageCode(Long.valueOf(getLandDetailsResponse.getVillageCode()));
+                farmerLandDetails.setOwnerName(getLandDetailsResponse.getOwnerName());
+                farmerLandDetails.setSurNoc(String.valueOf(getLandDetailsResponse.getSurnoc()));
+                farmerLandDetails.setAcre(Long.valueOf(getLandDetailsResponse.getAcre()));
+                farmerLandDetails.setNameScore(Long.valueOf(getLandDetailsResponse.getNameScore()));
+                farmerLandDetails.setOwnerNo(Long.valueOf(getLandDetailsResponse.getOwnerNo()));
+                farmerLandDetails.setMainOwnerNo(Long.valueOf(String.valueOf(getLandDetailsResponse.getMainOwnerNo())));
+                farmerLandDetails.setGunta(Long.valueOf(getLandDetailsResponse.getGunta()));
+                farmerLandDetails.setFGunta(Double.valueOf(getLandDetailsResponse.getFgunta()));
+                farmerLandDetails.setLandCode(Long.valueOf(getLandDetailsResponse.getLandCode()));
+                farmerLandDetails.setDistrictCode(Long.valueOf(getLandDetailsResponse.getDistrictCode()));
+                farmerLandDetails.setTalukCode(Long.valueOf(getLandDetailsResponse.getTalukCode()));
+                farmerLandDetails.setHobliCode(Long.valueOf(String.valueOf(getLandDetailsResponse.getHobliCode())));
+                farmerLandDetails.setVillageCode(Long.valueOf(getLandDetailsResponse.getVillageCode()));
 
-                    farmerLandDetailsList.add(farmerLandDetails);
-                }
-                getFarmerResponse.setFarmerLandDetailsDTOList(farmerLandDetailsList);
-                getFarmerResponse.setIsFruitService(1);
-                getFarmerResponse.setError(false);
+                farmerLandDetailsList.add(farmerLandDetails);
             }
+            getFarmerResponse.setFarmerLandDetailsDTOList(farmerLandDetailsList);
+            getFarmerResponse.setIsFruitService(1);
+            getFarmerResponse.setError(false);
+        }
 
         return getFarmerResponse;
     }
+
     @Transactional
     public GetFarmerResponse getFarmerDetailsByFruitsIdTest(GetFarmerRequest getFarmerRequest) {
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
@@ -1311,22 +1313,22 @@ public class FarmerService {
         }
         String joinColumn = "";
 
-        if(joinColumnType == 0){
+        if (joinColumnType == 0) {
             joinColumn = "farmer.farmerNumber";
-        }else if(joinColumnType == 1){
+        } else if (joinColumnType == 1) {
             joinColumn = "farmer.fruitsId";
-        }else{
+        } else {
             joinColumn = "farmer.mobileNumber";
         }
 
-        if(type == 0){
-            page = farmerRepository.getByActiveOrderByFarmerIdAsc(true,joinColumn, searchText,pageable);
-        }else if(type == 1) {
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmers(true,joinColumn, searchText, pageable);
-        }else if(type == 2){
+        if (type == 0) {
+            page = farmerRepository.getByActiveOrderByFarmerIdAsc(true, joinColumn, searchText, pageable);
+        } else if (type == 1) {
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmers(true, joinColumn, searchText, pageable);
+        } else if (type == 2) {
             page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
-        }else{
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(true,joinColumn, searchText, pageable);
+        } else {
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(true, joinColumn, searchText, pageable);
         }
         return convertDTOToMapResponse(page);
     }
@@ -1375,8 +1377,8 @@ public class FarmerService {
         Pageable pageable = PageRequest.of(Integer.parseInt(searchWithSortRequest.getPageNumber()), Integer.parseInt(searchWithSortRequest.getPageSize()), sort);
         Page<FarmerDTO> farmerDTOS;
         //if(searchWithSortRequest.getFarmerType().equals("0")) {
-            farmerDTOS = farmerRepository.getSortedFarmers(searchWithSortRequest.getJoinColumn(), searchWithSortRequest.getSearchText(), true, pageable);
-            // }else if(searchWithSortRequest.getFarmerType().equals("1")){
+        farmerDTOS = farmerRepository.getSortedFarmers(searchWithSortRequest.getJoinColumn(), searchWithSortRequest.getSearchText(), true, pageable);
+        // }else if(searchWithSortRequest.getFarmerType().equals("1")){
 //        }else{
 //            farmerDTOS = farmerRepository.getSortedFarmersForKAWithFruits(searchWithSortRequest.getJoinColumn(), searchWithSortRequest.getSearchText(), true, pageable);
 //        }/*else if(searchWithSortRequest.getFarmerType().equals("2")){
@@ -1488,7 +1490,7 @@ public class FarmerService {
             farmerResponse.setError(false);
         }
 
-        if(!farmerResponse.getError()) {
+        if (!farmerResponse.getError()) {
             farmerId = farmer2.getFarmerId();
 
             for (FarmerAddress farmerAddress : farmerRequest.getFarmerAddressList()) {
@@ -1585,9 +1587,67 @@ public class FarmerService {
     }
 */
 
-    @Transactional
+//    @Transactional
+//    public FarmerResponse editNonKarnatakaFarmers(EditNonKarnatakaFarmerRequest farmerRequest) throws Exception {
+//        Farmer farmer2 = new Farmer();
+//        FarmerResponse farmerResponse = new FarmerResponse();
+//
+//        Optional<Farmer> optionalFarmer = farmerRepository.findByFarmerId(farmerRequest.getFarmerId());
+//        if (!optionalFarmer.isPresent()) {
+//            farmerResponse.setError(true);
+//            farmerResponse.setError_description("Farmer not found");
+//            return farmerResponse;
+//        }
+//
+//        Farmer farmer = optionalFarmer.get();
+//        farmer.setFirstName(farmerRequest.getFirstName());
+//        farmer.setMiddleName(farmerRequest.getMiddleName());
+//        farmer.setLastName(farmerRequest.getLastName());
+//        farmer.setNameKan(farmerRequest.getNameKan());
+//        farmer.setFatherName(farmerRequest.getFatherName());
+//        farmer.setFatherNameKan(farmerRequest.getFatherNameKan());
+//        farmer.setDob(farmerRequest.getDob());
+//        farmer.setCasteId(farmerRequest.getCasteId());
+//        farmer.setMobileNumber(farmerRequest.getMobileNumber());
+//        farmer.setEpicNumber(farmerRequest.getEpicNumber());
+//        farmer.setPassbookNumber(farmerRequest.getPassbookNumber());
+//        farmer.setWithoutFruitsInwardCounter(0L);
+//        validator.validate(farmer);
+//
+//        // Check for duplicate Reeler Number
+////        List<Farmer> farmerListByNumber = farmerRepository.findByMobileNumber(farmer.getMobileNumber());
+////        if (!farmerListByNumber.isEmpty() && farmerListByNumber.stream().anyMatch(Farmer::getActive)) {
+////            farmerResponse.setError(true);
+////            farmerResponse.setError_description("Farmer Mobile Number already exists");
+////        } else {
+//            // If no duplicates found, save the reeler
+//            farmer2 = farmerRepository.save(farmer);
+//            farmerResponse = mapper.farmerEntityToObject(farmer2, FarmerResponse.class);
+//            farmerResponse.setError(false);
+////        }
+//
+//        if(!farmerResponse.getError()) {
+//
+//            for (EditFarmerAddressRequest editFarmerAddressRequest : farmerRequest.getEditFarmerAddressRequestList()) {
+//                FarmerAddress farmerAddress = mapper.editFarmerAddressObjectToEntity(editFarmerAddressRequest,FarmerAddress.class);
+//                farmerAddressRepository.save(farmerAddress);
+//            }
+//
+////            List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerRequest.getEditFarmerBankAccountRequest().getFarmerBankAccountNumber());
+////            if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().filter(FarmerBankAccount::getActive).findAny().isPresent()) {
+////                farmerResponse.setError(true);
+////                farmerResponse.setError_description("FarmerBankAccount number already exist");
+////            } else {
+//                FarmerBankAccount farmerBankAccount = mapper.editFarmerBankAccountObjectToEntity(farmerRequest.getEditFarmerBankAccountRequest(),FarmerBankAccount.class);
+//                FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerBankAccount);
+//                farmerResponse.setFarmerBankAccountId(farmerBankAccount1.getFarmerBankAccountId());
+////            }
+//        }
+//
+//        return farmerResponse;
+//    }
+
     public FarmerResponse editNonKarnatakaFarmers(EditNonKarnatakaFarmerRequest farmerRequest) throws Exception {
-        Farmer farmer2 = new Farmer();
         FarmerResponse farmerResponse = new FarmerResponse();
 
         Optional<Farmer> optionalFarmer = farmerRepository.findByFarmerId(farmerRequest.getFarmerId());
@@ -1610,40 +1670,49 @@ public class FarmerService {
         farmer.setEpicNumber(farmerRequest.getEpicNumber());
         farmer.setPassbookNumber(farmerRequest.getPassbookNumber());
         farmer.setWithoutFruitsInwardCounter(0L);
+
+        // Validate the farmer entity
         validator.validate(farmer);
 
-        // Check for duplicate Reeler Number
-        List<Farmer> farmerListByNumber = farmerRepository.findByMobileNumber(farmer.getMobileNumber());
-        if (!farmerListByNumber.isEmpty() && farmerListByNumber.stream().anyMatch(Farmer::getActive)) {
-            farmerResponse.setError(true);
-            farmerResponse.setError_description("Farmer Mobile Number already exists");
+        // Save the updated farmer details
+        Farmer updatedFarmer = farmerRepository.save(farmer);
+        farmerResponse = mapper.farmerEntityToObject(updatedFarmer, FarmerResponse.class);
+        farmerResponse.setError(false);
+
+        long farmerId = farmerResponse.getFarmerId();
+        if (farmerId > 0) {
+            // Update farmer bank account details if provided
+            EditFarmerBankAccountRequest editFarmerBankAccountRequest = farmerRequest.getEditFarmerBankAccountRequest();
+            if (editFarmerBankAccountRequest != null) {
+                editFarmerBankAccountRequest.setFarmerId(farmerId);
+                FarmerBankAccountResponse farmerBankAccountResponse = farmerBankAccountService.updateFarmerBankAccountDetails(editFarmerBankAccountRequest);
+                if (farmerBankAccountResponse != null && farmerBankAccountResponse.getFarmerBankAccountId() > 0) {
+                    farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
+                } else {
+                    farmerResponse.setError(true);
+                    farmerResponse.setError_description("Failed to update farmer bank account details");
+                    // Optionally handle the error or throw an exception
+                }
+            }
+
+            // Update farmer address details if provided
+            List<EditFarmerAddressRequest> editFarmerAddressRequests = farmerRequest.getEditFarmerAddressRequestList();
+            if (editFarmerAddressRequests != null && !editFarmerAddressRequests.isEmpty()) {
+                for (EditFarmerAddressRequest addressRequest : editFarmerAddressRequests) {
+                    addressRequest.setFarmerId(farmerId);
+                    farmerAddressService.updateFarmerAddressDetails(addressRequest);
+                    // Optionally handle response or errors if needed
+                }
+            }
         } else {
-            // If no duplicates found, save the reeler
-            farmer2 = farmerRepository.save(farmer);
-            farmerResponse = mapper.farmerEntityToObject(farmer2, FarmerResponse.class);
-            farmerResponse.setError(false);
-        }
-
-        if(!farmerResponse.getError()) {
-
-            for (EditFarmerAddressRequest editFarmerAddressRequest : farmerRequest.getEditFarmerAddressRequestList()) {
-                FarmerAddress farmerAddress = mapper.editFarmerAddressObjectToEntity(editFarmerAddressRequest,FarmerAddress.class);
-                farmerAddressRepository.save(farmerAddress);
-            }
-
-            List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerRequest.getEditFarmerBankAccountRequest().getFarmerBankAccountNumber());
-            if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().filter(FarmerBankAccount::getActive).findAny().isPresent()) {
-                farmerResponse.setError(true);
-                farmerResponse.setError_description("FarmerBankAccount number already exist");
-            } else {
-                FarmerBankAccount farmerBankAccount = mapper.editFarmerBankAccountObjectToEntity(farmerRequest.getEditFarmerBankAccountRequest(),FarmerBankAccount.class);
-                FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerBankAccount);
-                farmerResponse.setFarmerBankAccountId(farmerBankAccount1.getFarmerBankAccountId());
-            }
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Error occurred while updating Farmer details");
+            // Optionally handle the error or throw an exception
         }
 
         return farmerResponse;
     }
+
 
 
     @Transactional
