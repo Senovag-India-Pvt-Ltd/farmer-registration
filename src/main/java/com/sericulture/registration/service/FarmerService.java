@@ -1794,22 +1794,27 @@ public class FarmerService {
         talukId = (talukId == 0) ? null : talukId;
         villageId = (villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
-        Page<Object[]> applicablePage;
-        // applicableList = applicationFormRepository.getSubmittedListForDbt(statusList, financialYearId, schemeId, subSchemeId, applicationId, sanctionNo, fruitsId);
+//        Page<Object[]> applicablePage;
+//        // applicableList = applicationFormRepository.getSubmittedListForDbt(statusList, financialYearId, schemeId, subSchemeId, applicationId, sanctionNo, fruitsId);
+//        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+//        applicablePage  = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
+//        List<Object[]> applicableList = applicablePage.getContent();
+//        long totalRecords = applicablePage.getTotalElements();
+
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        applicablePage  = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
+        Page<Object[]> applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
         List<Object[]> applicableList = applicablePage.getContent();
         long totalRecords = applicablePage.getTotalElements();
 
 
-        farmerResponse(primaryDetailsResponseList, applicableList);
+        farmerResponse(primaryDetailsResponseList, applicableList, pageNumber, pageSize);
         rw.setTotalRecords(totalRecords);
         rw.setContent(primaryDetailsResponseList);
         return ResponseEntity.ok(rw);
     }
 
-    private static void farmerResponse(List<PrimaryDetailsResponse> primaryDetailsResponseList, List<Object[]> applicableList) {
-        int serialNumber = 1;
+    private static void farmerResponse(List<PrimaryDetailsResponse> primaryDetailsResponseList, List<Object[]> applicableList, int pageNumber, int pageSize) {
+        int serialNumber = pageNumber * pageSize + 1;
         for (Object[] arr : applicableList) {
             PrimaryDetailsResponse primaryDetailsResponse;
             primaryDetailsResponse = PrimaryDetailsResponse.builder()
@@ -1841,7 +1846,7 @@ public class FarmerService {
     public FileInputStream farmerReport(Long districtId,
                                         Long talukId,
                                         Long villageId,
-                                        Long tscMasterId) throws Exception {
+                                        Long tscMasterId, int pageNumber, int pageSize) throws Exception {
         List<PrimaryDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
 
 
@@ -1853,7 +1858,7 @@ public class FarmerService {
         Pageable pageable = null;
         applicablePage  = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
         List<Object[]> applicableList = applicablePage.getContent();
-        farmerResponse(primaryDetailsResponseList, applicableList);
+        farmerResponse(primaryDetailsResponseList, applicableList,pageNumber, pageSize);
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Sheet 1");
