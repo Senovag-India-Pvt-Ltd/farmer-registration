@@ -638,10 +638,12 @@ public ResponseEntity<?> primaryFarmerDetails(
     public ResponseEntity<?> farmerReport(@RequestParam(required = false) Long districtId,
                                           @RequestParam(required = false) Long talukId,
                                           @RequestParam(required = false) Long villageId,
-                                          @RequestParam(required = false) Long tscMasterId) {
+                                          @RequestParam(required = false) Long tscMasterId,
+                                          @RequestParam(defaultValue = "0") int pageNumber,
+                                          @RequestParam(defaultValue = "50") int pageSize) {
         try {
             System.out.println("enter to farmer report");
-            FileInputStream fileInputStream = farmerService.farmerReport(districtId, talukId, villageId, tscMasterId);
+            FileInputStream fileInputStream = farmerService.farmerReport(districtId, talukId, villageId, tscMasterId ,pageNumber, pageSize);
 
             InputStreamResource resource = new InputStreamResource(fileInputStream);
 
