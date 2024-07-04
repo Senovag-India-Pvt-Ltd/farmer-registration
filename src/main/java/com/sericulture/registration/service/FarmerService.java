@@ -1696,18 +1696,14 @@ public class FarmerService {
             }
 
             // Update farmer address details if provided
-            List<EditFarmerAddressRequest> editFarmerAddressRequests = farmerRequest.getEditFarmerAddressRequestList();
-            if (editFarmerAddressRequests != null && !editFarmerAddressRequests.isEmpty()) {
-                for (EditFarmerAddressRequest addressRequest : editFarmerAddressRequests) {
-                    addressRequest.setFarmerId(farmerId);
-                    farmerAddressService.updateFarmerAddressDetails(addressRequest);
-                    // Optionally handle response or errors if needed
-                }
+            EditFarmerAddressRequest addressRequest = farmerRequest.getEditFarmerAddressRequest();
+            if (addressRequest != null) {
+                addressRequest.setFarmerId(farmerId);
+                farmerAddressService.updateFarmerAddressDetails(addressRequest);
             }
         } else {
             farmerResponse.setError(true);
             farmerResponse.setError_description("Error occurred while updating Farmer details");
-            // Optionally handle the error or throw an exception
         }
 
         return farmerResponse;

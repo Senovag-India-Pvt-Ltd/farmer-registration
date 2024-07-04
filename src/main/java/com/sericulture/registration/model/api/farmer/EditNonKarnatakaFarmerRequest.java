@@ -91,8 +91,10 @@ public class EditNonKarnatakaFarmerRequest {
     @Schema(name = "isOtherStateFarmer", example = "0")
     private Boolean isOtherStateFarmer;
 
-    @Schema(name = "editFarmerAddressRequestList")
-    List<EditFarmerAddressRequest> editFarmerAddressRequestList;
+//    @Schema(name = "editFarmerAddressRequestList")
+//    List<EditFarmerAddressRequest> editFarmerAddressRequestList;
+    @Schema(name = "editFarmerAddressRequest")
+    EditFarmerAddressRequest editFarmerAddressRequest;
 
     @Schema(name = "editFarmerBankAccountRequest")
     EditFarmerBankAccountRequest editFarmerBankAccountRequest;
