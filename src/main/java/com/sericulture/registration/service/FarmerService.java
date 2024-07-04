@@ -1442,26 +1442,27 @@ public class FarmerService {
         farmer1.setEpicNumber(farmerRequest.getEpicNumber());
         farmer1.setPassbookNumber(farmerRequest.getPassbookNumber());
         farmer1.setFarmerTypeId(farmerRequest.getFarmerTypeId());
+        farmer1.setFarmerNumber(farmerRequest.getFarmerNumber());
 
         LocalDate today = Util.getISTLocalDate();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
         String formattedDate = today.format(formatter);
-        List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
-        SerialCounter serialCounter = new SerialCounter();
-        if (serialCounters.size() > 0) {
-            serialCounter = serialCounters.get(0);
-            long counterValue = 1L;
-            if (serialCounter.getOtherStateFarmerCounter() != null) {
-                counterValue = serialCounter.getOtherStateFarmerCounter() + 1;
-            }
-            serialCounter.setOtherStateFarmerCounter(counterValue);
-        } else {
-            serialCounter.setOtherStateFarmerCounter(1L);
-        }
-        serialCounterRepository.save(serialCounter);
-        String formattedNumber = String.format("%05d", serialCounter.getOtherStateFarmerCounter());
+//        List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
+//        SerialCounter serialCounter = new SerialCounter();
+//        if (serialCounters.size() > 0) {
+//            serialCounter = serialCounters.get(0);
+//            long counterValue = 1L;
+//            if (serialCounter.getOtherStateFarmerCounter() != null) {
+//                counterValue = serialCounter.getOtherStateFarmerCounter() + 1;
+//            }
+//            serialCounter.setOtherStateFarmerCounter(counterValue);
+//        } else {
+//            serialCounter.setOtherStateFarmerCounter(1L);
+//        }
+//        serialCounterRepository.save(serialCounter);
+//        String formattedNumber = String.format("%05d", serialCounter.getOtherStateFarmerCounter());
 
-        farmer1.setFarmerNumber(formattedNumber);
+//        farmer1.setFarmerNumber(formattedNumber);
 
 //        UUID uuid = UUID.randomUUID();
 //        String extension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());

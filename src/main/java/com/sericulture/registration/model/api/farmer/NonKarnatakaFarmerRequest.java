@@ -130,4 +130,7 @@ public class NonKarnatakaFarmerRequest {
     @Schema(name = "farmerBankAccount")
     FarmerBankAccount farmerBankAccount;
 
+    @Schema(name = "farmerNumber", example = "12345")
+    String farmerNumber;
+
 }
