@@ -307,7 +307,6 @@ public class ReelerService {
         }
         return reelerResponse;
     }
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedReelerDetails(final Pageable pageable){
         return convertToMapResponse(reelerRepository.findByActiveOrderByReelerIdAsc( true, pageable));
     }
@@ -341,7 +340,6 @@ public class ReelerService {
         return reelerResponse;
     }
 
-    @Transactional
     public ReelerResponse getById(int id){
         ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = reelerRepository.findByReelerIdAndActive(id,true);
@@ -596,7 +594,6 @@ public class ReelerService {
         return reelerResponse ;
     }
 
-    @Transactional
     public ReelerResponse getByReelingLicenseNumber(String reelingLicenseNumber){
         ReelerResponse reelerResponse = new ReelerResponse();
         ReelerDTO reeler = reelerRepository.getByReelerLicenseNumberAndActive(reelingLicenseNumber,true);
@@ -611,7 +608,6 @@ public class ReelerService {
         return reelerResponse;
     }
 
-    @Transactional
     public GetReelerResponse getReelerDetails(GetReelerRequest getReelerRequest){
         ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = reelerRepository.findByReelerIdAndActive(getReelerRequest.getReelerId(),true);
@@ -632,7 +628,6 @@ public class ReelerService {
         return getReelerResponse;
     }
 
-    @Transactional
     public GetReelerResponse getReelerDetailsByFruitsId(GetFruitsIdRequest getFruitsIdRequest){
         Reeler reeler = reelerRepository.findByFruitsIdAndActive(getFruitsIdRequest.getFruitsId(),true);
         if(reeler == null){
@@ -648,7 +643,6 @@ public class ReelerService {
 
         return getReelerResponse;
     }
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public ReelerResponse getByReelerIdJoin(int reelerId){
         ReelerResponse reelerResponse = new ReelerResponse();
         ReelerDTO reelerDTO = reelerRepository.getByReelerIdAndActive(reelerId, true);
@@ -662,7 +656,6 @@ public class ReelerService {
         return reelerResponse;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedReelerDetailsWithJoin(final Pageable pageable){
         return convertDTOToMapResponse(reelerRepository.getByActiveOrderByReelerIdAsc( true, pageable));
     }
@@ -698,12 +691,10 @@ public class ReelerService {
         return reelerResponse ;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> inactiveReelers(){
         return converListToResponse(reelerRepository.findByActiveAndIsActivatedOrderByReelerNameAsc( true,0));
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> getAllByActive(boolean isActive) {
         return convertListEntityToMapResponse(reelerRepository.findByActiveOrderByReelerNameAsc(isActive));
     }
@@ -726,7 +717,6 @@ public class ReelerService {
         response.put("totalItems", inactiveReelers.size());
         return response;
     }
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> searchByColumnAndSort(SearchWithSortRequest searchWithSortRequest){
         if(searchWithSortRequest.getSearchText() == null || searchWithSortRequest.getSearchText().equals("")){
             searchWithSortRequest.setSearchText("%%");
@@ -770,7 +760,6 @@ public class ReelerService {
         return response;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> searchByColumn(SearchByColumnRequest searchByColumnRequest){
         if(searchByColumnRequest.getSearchText() == null || searchByColumnRequest.getSearchText().equals("")){
             searchByColumnRequest.setSearchText("%%");

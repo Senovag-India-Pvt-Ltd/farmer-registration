@@ -58,7 +58,6 @@ public class FarmerTypeService {
     }
 
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedFarmerTypeDetails(final Pageable pageable){
         return convertToMapResponse(farmerTypeRepository.findByActiveOrderByFarmerTypeNameAsc( true, pageable));
     }
@@ -76,7 +75,6 @@ public class FarmerTypeService {
         return response;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getAllByActive(boolean isActive){
         return convertListEntityToMapResponse(farmerTypeRepository.findByActive(isActive));
     }
@@ -107,7 +105,6 @@ public class FarmerTypeService {
         return farmerTypeResponse;
     }
 
-    @Transactional
     public FarmerTypeResponse getById(int id){
         FarmerTypeResponse farmerTypeResponse = new FarmerTypeResponse();
         FarmerType farmerType = farmerTypeRepository.findByFarmerTypeIdAndActive(id,true);

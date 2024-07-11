@@ -267,7 +267,6 @@ public class FarmerService {
         return farmerResponse;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> getPaginatedFarmerDetails(final Pageable pageable) {
         return convertToMapResponse(farmerRepository.findByActiveOrderByFarmerIdAsc(true, pageable));
     }
@@ -301,7 +300,6 @@ public class FarmerService {
         return farmerResponse;
     }
 
-    @Transactional
     public FarmerResponse getById(int id) {
         FarmerResponse farmerResponse = new FarmerResponse();
         Farmer farmer = farmerRepository.findByFarmerIdAndActive(id, true);
@@ -500,7 +498,6 @@ public class FarmerService {
 
     }
 
-    @Transactional
     public GetFarmerResponse getFarmerDetailsByFruitsId(GetFarmerRequest getFarmerRequest) throws Exception {
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
         Farmer farmer = new Farmer();
@@ -630,7 +627,6 @@ public class FarmerService {
         return getFarmerResponse;
     }
 
-    @Transactional
     public GetFarmerResponse getFarmerDetailsByFruitsIdOrFarmerNumberOrMobileNumber(GetFarmerRequest getFarmerRequest) throws Exception {
         log.info("Entered to function");
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
@@ -894,7 +890,6 @@ public class FarmerService {
     }
 
 
-    @Transactional
     public GetFarmerResponse getDetailsByFruitsId(GetFarmerRequest getFarmerRequest) throws Exception {
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
         Farmer farmer = new Farmer();
@@ -1109,7 +1104,6 @@ public class FarmerService {
 
         return getFarmerResponse;
     }
-    @Transactional
     public GetFarmerResponse getFarmerDetailsByFruitsIdTest(GetFarmerRequest getFarmerRequest) {
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
         Farmer farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(), true);
@@ -1253,7 +1247,6 @@ public class FarmerService {
         return getFarmerResponse;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public FarmerResponse getByFarmerIdJoin(int farmerId) {
         FarmerResponse farmerResponse = new FarmerResponse();
         FarmerDTO farmerDTO = farmerRepository.getByFarmerIdAndActive(farmerId, true);
@@ -1285,12 +1278,10 @@ public class FarmerService {
 //        response.put("totalItems", farmerDTOList.size());
 //        return response;
 //    }
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> getPaginatedFarmerDetailsWithJoin(final Pageable pageable) {
         return convertDTOToMapResponse(farmerRepository.getByActiveOrderByFarmerIdAsc(true, pageable));
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText, int joinColumnType) {
         Page<FarmerDTO> page;
         if (searchText == null || searchText.equals("")) {
@@ -1333,7 +1324,6 @@ public class FarmerService {
         return response;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> searchByColumnAndSort(SearchWithSortRequest searchWithSortRequest) {
         if (searchWithSortRequest.getSearchText() == null || searchWithSortRequest.getSearchText().equals("")) {
             searchWithSortRequest.setSearchText("%%");

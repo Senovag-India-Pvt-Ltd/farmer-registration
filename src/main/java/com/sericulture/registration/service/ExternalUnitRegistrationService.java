@@ -55,12 +55,10 @@ public class ExternalUnitRegistrationService {
         return mapper.externalUnitRegistrationEntityToObject(externalUnitRegistrationRepository.save(externalUnitRegistration), ExternalUnitRegistrationResponse.class);
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> getPaginatedExternalUnitRegistrationDetails(final Pageable pageable) {
         return convertToMapResponse(externalUnitRegistrationRepository.findByActiveOrderByExternalUnitRegistrationIdAsc(true, pageable));
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> getAllByActive(boolean isActive) {
         return convertListToMapResponse(externalUnitRegistrationRepository.findByActiveOrderByExternalUnitRegistrationIdAsc(isActive));
 
@@ -82,7 +80,6 @@ public class ExternalUnitRegistrationService {
         return response;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedExternalUnitRegistrationDetailsWithJoin(final Pageable pageable){
         return convertDTOToMapResponse(externalUnitRegistrationRepository.getByActiveOrderByExternalUnitRegistrationIdAsc( true, pageable));
     }
@@ -99,7 +96,6 @@ public class ExternalUnitRegistrationService {
         return response;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getExternalUnitRegistrationByExternalUnitId(Long externalUnitTypeId){
         return convertListToMapResponse(externalUnitRegistrationRepository.findByExternalUnitTypeIdAndActive( externalUnitTypeId,true));
     }
@@ -130,7 +126,6 @@ public class ExternalUnitRegistrationService {
         return externalUnitRegistrationResponse;
     }
 
-    @Transactional
     public ExternalUnitRegistrationResponse getById(int id) {
         ExternalUnitRegistrationResponse externalUnitRegistrationResponse = new ExternalUnitRegistrationResponse();
         ExternalUnitRegistration externalUnitRegistration = externalUnitRegistrationRepository.findByExternalUnitRegistrationIdAndActive(id, true);
@@ -145,7 +140,6 @@ public class ExternalUnitRegistrationService {
         return externalUnitRegistrationResponse;
     }
 
-    @Transactional
     public ExternalUnitRegistrationResponse getByIdJoin(int id){
         ExternalUnitRegistrationResponse externalUnitRegistrationResponse = new ExternalUnitRegistrationResponse();
         ExternalUnitRegistrationDTO externalUnitRegistrationDTO = externalUnitRegistrationRepository.getByExternalUnitRegistrationIdAndActive(id,true);
@@ -189,7 +183,6 @@ public class ExternalUnitRegistrationService {
         return externalUnitRegistrationResponse;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> searchByColumnAndSort(SearchWithSortRequest searchWithSortRequest){
         if(searchWithSortRequest.getSearchText() == null || searchWithSortRequest.getSearchText().equals("")){
             searchWithSortRequest.setSearchText("%%");
