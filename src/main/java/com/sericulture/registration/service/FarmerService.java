@@ -456,7 +456,6 @@ public class FarmerService {
         return farmerResponse;
     }
 
-    @Transactional
     public GetFarmerResponse getFarmerDetails(GetFarmerRequest getFarmerRequest) {
         FarmerResponse farmerResponse = new FarmerResponse();
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
