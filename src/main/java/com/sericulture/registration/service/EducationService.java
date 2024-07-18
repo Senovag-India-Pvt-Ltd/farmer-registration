@@ -32,7 +32,6 @@ public class EducationService {
     @Autowired
     CustomValidator validator;
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public EducationResponse getEducationDetails(String code) {
         Education education = educationRepository.findByCode(code);
         log.info("The entity is:", education);
@@ -56,7 +55,6 @@ public class EducationService {
         }
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> getPaginatedEducationDetails(final Pageable pageable) {
         return convertToMapResponse(educationRepository.findByActiveOrderByEducationIdAsc( true, pageable));
     }

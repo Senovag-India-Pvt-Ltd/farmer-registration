@@ -37,7 +37,6 @@ public class FarmerFamilyService {
     @Autowired
     CustomValidator validator;
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public FarmerFamilyResponse getFarmerFamilyDetails(String farmerFamilyName){
         FarmerFamilyResponse farmerFamilyResponse = new FarmerFamilyResponse();
         FarmerFamily farmerFamily = farmerFamilyRepository.findByFarmerFamilyNameAndActive(farmerFamilyName,true);
@@ -77,7 +76,6 @@ public class FarmerFamilyService {
 //        return mapper.farmerFamilyEntityToObject(farmerFamilyRepository.save(farmerFamily),FarmerFamilyResponse.class);
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedFarmerFamilyDetails(final Pageable pageable){
         return convertToMapResponse(farmerFamilyRepository.findByActiveOrderByFarmerFamilyIdAsc( true, pageable));
     }
@@ -111,7 +109,6 @@ public class FarmerFamilyService {
         return farmerFamilyResponse;
     }
 
-    @Transactional
     public FarmerFamilyResponse getById(int id){
         FarmerFamilyResponse farmerFamilyResponse = new FarmerFamilyResponse();
         FarmerFamily farmerFamily = farmerFamilyRepository.findByFarmerFamilyIdAndActive(id,true);
@@ -126,7 +123,6 @@ public class FarmerFamilyService {
         return farmerFamilyResponse;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByFarmerId(int farmerId){
         Map<String, Object> response = new HashMap<>();
         List<FarmerFamily> familyList = farmerFamilyRepository.findByFarmerIdAndActive(farmerId, true);
@@ -141,7 +137,6 @@ public class FarmerFamilyService {
         }
     }
 
-    @Transactional
     public FarmerFamilyResponse getByIdJoin(int id){
         FarmerFamilyDTO farmerFamilyDTO = farmerFamilyRepository.getByFarmerFamilyIdAndActive(id,true);
         if(farmerFamilyDTO == null){
@@ -190,7 +185,6 @@ public class FarmerFamilyService {
         return response;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByFarmerIdJoin(int farmerId){
         Map<String, Object> response = new HashMap<>();
         List<FarmerFamilyDTO> farmerFamilyDTO = farmerFamilyRepository.getByFarmerIdAndActive(farmerId, true);

@@ -47,7 +47,6 @@ public class ReelerLicenseTransactionService {
         return mapper.reelerLicenseTransactionEntityToObject(reelerLicenseTransactionRepository.save(reelerLicenseTransaction),ReelerLicenseTransactionResponse.class);
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedReelerLicenseTransactionDetails(final Pageable pageable){
         return convertToMapResponse(reelerLicenseTransactionRepository.findByActiveOrderByReelerLicenseTransactionIdAsc( true, pageable));
     }
@@ -81,7 +80,6 @@ public class ReelerLicenseTransactionService {
         return reelerLicenseTransactionResponse;
     }
 
-    @Transactional
     public ReelerLicenseTransactionResponse getById(int id){
         ReelerLicenseTransactionResponse reelerLicenseTransactionResponse = new ReelerLicenseTransactionResponse();
         ReelerLicenseTransaction reelerLicenseTransaction = reelerLicenseTransactionRepository.findByReelerLicenseTransactionIdAndActive(id,true);

@@ -79,7 +79,6 @@ public class TraderLicenseService {
         return mapper.traderLicenseEntityToObject(traderLicenseRepository.save(traderLicense),TraderLicenseResponse.class);
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedTraderLicenseDetails(final Pageable pageable){
         return convertToMapResponse(traderLicenseRepository.findByActiveOrderByTraderLicenseIdAsc( true, pageable));
     }
@@ -97,7 +96,6 @@ public class TraderLicenseService {
         return response;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedTraderLicenseDetailsWithJoin(final Pageable pageable){
         return convertDTOToMapResponse(traderLicenseRepository.getByActiveOrderByTraderLicenseIdAsc( true, pageable));
     }
@@ -130,7 +128,6 @@ public class TraderLicenseService {
         return traderLicenseResponse;
     }
 
-    @Transactional
     public TraderLicenseResponse getById(int id){
         TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
         TraderLicense traderLicense = traderLicenseRepository.findByTraderLicenseIdAndActive(id,true);
@@ -146,7 +143,6 @@ public class TraderLicenseService {
         return traderLicenseResponse;
     }
 
-    @Transactional
     public TraderLicenseResponse getByIdJoin(int id){
         TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
         TraderLicenseDTO traderLicenseDTO = traderLicenseRepository.getByTraderLicenseIdAndActive(id,true);
@@ -206,7 +202,6 @@ public class TraderLicenseService {
         return traderLicenseResponse;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> searchByColumnAndSort(SearchWithSortRequest searchWithSortRequest){
         if(searchWithSortRequest.getSearchText() == null || searchWithSortRequest.getSearchText().equals("")){
             searchWithSortRequest.setSearchText("%%");
