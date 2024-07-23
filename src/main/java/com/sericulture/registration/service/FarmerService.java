@@ -1434,6 +1434,7 @@ public class FarmerService {
         farmer1.setPassbookNumber(farmerRequest.getPassbookNumber());
         farmer1.setFarmerTypeId(farmerRequest.getFarmerTypeId());
         farmer1.setFarmerNumber(farmerRequest.getFarmerNumber());
+        farmer1.setGenderId(farmerRequest.getGenderId());
 
         LocalDate today = Util.getISTLocalDate();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
