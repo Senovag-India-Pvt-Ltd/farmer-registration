@@ -50,7 +50,7 @@ public class ReelerVirtualBankAccountService {
         } else if (!reelerVirtualBankAccountList.isEmpty() && reelerVirtualBankAccountList.stream().filter(Predicate.not(ReelerVirtualBankAccount::getActive)).findAny().isPresent()) {
             //throw new ValidationException("Village name already exist with inactive state");
             reelerVirtualBankAccountResponse.setError(true);
-            reelerVirtualBankAccountResponse.setError_description("FarmerBankAccount number already exist with inactive state");
+            reelerVirtualBankAccountResponse.setError_description("Reeler virtual bank account number already exist with inactive state");
         } else {
             reelerVirtualBankAccountResponse = mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccountRepository.save(reelerVirtualBankAccount), ReelerVirtualBankAccountResponse.class);
             reelerVirtualBankAccountResponse.setError(false);
