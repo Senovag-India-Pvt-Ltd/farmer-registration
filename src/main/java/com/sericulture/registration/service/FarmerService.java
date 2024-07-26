@@ -1484,6 +1484,7 @@ public class FarmerService {
 
             for (FarmerAddress farmerAddress : farmerRequest.getFarmerAddressList()) {
                 farmerAddress.setFarmerId(farmerId);
+                farmerAddress.setDefaultAddress(true);
                 farmerAddressRepository.save(farmerAddress);
             }
 
@@ -1637,6 +1638,69 @@ public class FarmerService {
 //    }
 
     public FarmerResponse editNonKarnatakaFarmers(EditNonKarnatakaFarmerRequest farmerRequest) throws Exception {
+        FarmerResponse farmerResponse = new FarmerResponse();
+
+        Optional<Farmer> optionalFarmer = farmerRepository.findByFarmerId(farmerRequest.getFarmerId());
+        if (!optionalFarmer.isPresent()) {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Farmer not found");
+            return farmerResponse;
+        }
+
+        Farmer farmer = optionalFarmer.get();
+        farmer.setFirstName(farmerRequest.getFirstName());
+        farmer.setMiddleName(farmerRequest.getMiddleName());
+        farmer.setLastName(farmerRequest.getLastName());
+        farmer.setNameKan(farmerRequest.getNameKan());
+        farmer.setFatherName(farmerRequest.getFatherName());
+        farmer.setFatherNameKan(farmerRequest.getFatherNameKan());
+        farmer.setDob(farmerRequest.getDob());
+        farmer.setCasteId(farmerRequest.getCasteId());
+        farmer.setMobileNumber(farmerRequest.getMobileNumber());
+        farmer.setEpicNumber(farmerRequest.getEpicNumber());
+        farmer.setPassbookNumber(farmerRequest.getPassbookNumber());
+        farmer.setWithoutFruitsInwardCounter(0L);
+
+        // Validate the farmer entity
+        validator.validate(farmer);
+
+        // Save the updated farmer details
+        Farmer updatedFarmer = farmerRepository.save(farmer);
+        farmerResponse = mapper.farmerEntityToObject(updatedFarmer, FarmerResponse.class);
+        farmerResponse.setError(false);
+
+        long farmerId = farmerResponse.getFarmerId();
+        if (farmerId > 0) {
+            // Update farmer bank account details if provided
+            EditFarmerBankAccountRequest editFarmerBankAccountRequest = farmerRequest.getEditFarmerBankAccountRequest();
+            if (editFarmerBankAccountRequest != null) {
+                editFarmerBankAccountRequest.setFarmerId(farmerId);
+                FarmerBankAccountResponse farmerBankAccountResponse = farmerBankAccountService.updateFarmerBankAccountDetails(editFarmerBankAccountRequest);
+                if (farmerBankAccountResponse != null && farmerBankAccountResponse.getFarmerBankAccountId() > 0) {
+                    farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
+                } else {
+                    farmerResponse.setError(true);
+                    farmerResponse.setError_description("Failed to update farmer bank account details");
+                    // Optionally handle the error or throw an exception
+                }
+            }
+
+            // Update farmer address details if provided
+            EditFarmerAddressRequest addressRequest = farmerRequest.getEditFarmerAddressRequest();
+            if (addressRequest != null) {
+                addressRequest.setFarmerId(farmerId);
+                farmerAddressService.updateFarmerAddressDetails(addressRequest);
+            }
+        } else {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Error occurred while updating Farmer details");
+        }
+
+        return farmerResponse;
+    }
+
+    @Transactional
+    public FarmerResponse editKarnatakaFarmerWithoutFruitsIdDetails(EditNonKarnatakaFarmerRequest farmerRequest) throws Exception {
         FarmerResponse farmerResponse = new FarmerResponse();
 
         Optional<Farmer> optionalFarmer = farmerRepository.findByFarmerId(farmerRequest.getFarmerId());
