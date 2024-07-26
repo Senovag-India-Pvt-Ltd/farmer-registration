@@ -84,7 +84,7 @@ public class ReelerService {
         ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = mapper.reelerObjectToEntity(reelerRequest,Reeler.class);
         validator.validate(reeler);
-        List<Reeler> reelerListByLicenseNumber = reelerRepository.findByReelingLicenseNumber(reeler.getReelingLicenseNumber());
+        List<Reeler> reelerListByLicenseNumber = reelerRepository.findByReelingLicenseNumberAndActive(reeler.getReelingLicenseNumber(),true);
         if(!reelerListByLicenseNumber.isEmpty() && reelerListByLicenseNumber.stream().filter(Reeler::getActive).findAny().isPresent()){
             reelerResponse.setError(true);
             reelerResponse.setError_description("Reeler License Number already exist");
@@ -95,7 +95,7 @@ public class ReelerService {
 //            reelerResponse.setError_description("Reeler License Number already exist with inactive state");
         } else {
             // Check for duplicate Reeler Number
-            List<Reeler> reelerListByNumber = reelerRepository.findByReelerNumber(reeler.getReelerNumber());
+            List<Reeler> reelerListByNumber = reelerRepository.findByReelerNumberAndActive(reeler.getReelerNumber(),true);
             if (!reelerListByNumber.isEmpty() && reelerListByNumber.stream().anyMatch(Reeler::getActive)) {
                 reelerResponse.setError(true);
                 reelerResponse.setError_description("Reeler Number already exists");
@@ -145,30 +145,30 @@ public class ReelerService {
                 reelerResponse.setError(false);
 
                 //Once reeler created, trigger inspection if reeler created
-                if(savedResponse.getReelerId() != null) {
-                    InspectionTask inspectionTask = new InspectionTask();
-                    inspectionTask.setInspectionDate(LocalDate.now());
-                    inspectionTask.setStatus(1); //Open (Newly created)
-                    inspectionTask.setUserMasterId(reelerRequest.getInspectorId());
-                    inspectionTask.setRequestType("REELER_REGISTRATION");
-                    inspectionTask.setRequestTypeId(savedResponse.getReelerId());
-
-                    //To fetch inspection type
-                    RequestInspectionMapping requestInspectionMapping = requestInspectionMappingRepository.findByRequestTypeNameAndActive("REELER_REGISTRATION", true);
-
-                    if(requestInspectionMapping != null){
-                        inspectionTask.setInspectionType(requestInspectionMapping.getInspectionType());
-                        inspectionTaskRepository.save(inspectionTask);
-                        reelerResponse.setError(false);
-                    }else{
-                        reelerResponse.setError(true);
-                        reelerResponse.setError_description("Reeler saved, but inspection not saved");
-                    }
-
-                }else{
-                    reelerResponse.setError(true);
-                    reelerResponse.setError_description("Reeler not saved");
-                }
+//                if(savedResponse.getReelerId() != null) {
+//                    InspectionTask inspectionTask = new InspectionTask();
+//                    inspectionTask.setInspectionDate(LocalDate.now());
+//                    inspectionTask.setStatus(1); //Open (Newly created)
+//                    inspectionTask.setUserMasterId(reelerRequest.getInspectorId());
+//                    inspectionTask.setRequestType("REELER_REGISTRATION");
+//                    inspectionTask.setRequestTypeId(savedResponse.getReelerId());
+//
+//                    //To fetch inspection type
+//                    RequestInspectionMapping requestInspectionMapping = requestInspectionMappingRepository.findByRequestTypeNameAndActive("REELER_REGISTRATION", true);
+//
+//                    if(requestInspectionMapping != null){
+//                        inspectionTask.setInspectionType(requestInspectionMapping.getInspectionType());
+//                        inspectionTaskRepository.save(inspectionTask);
+//                        reelerResponse.setError(false);
+//                    }else{
+//                        reelerResponse.setError(true);
+//                        reelerResponse.setError_description("Reeler saved, but inspection not saved");
+//                    }
+//
+//                }else{
+//                    reelerResponse.setError(true);
+//                    reelerResponse.setError_description("Reeler not saved");
+//                }
             }
         }
         return reelerResponse;
@@ -188,7 +188,7 @@ public class ReelerService {
             reelerRequest.setBankAccountNumber("dummy_acc"+ uuid);
             Reeler reeler = mapper.reelerObjectToEntity(reelerRequest, Reeler.class);
             validator.validate(reeler);
-            List<Reeler> reelerListByLicenseNumber = reelerRepository.findByReelingLicenseNumber(reeler.getReelingLicenseNumber());
+            List<Reeler> reelerListByLicenseNumber = reelerRepository.findByReelingLicenseNumberAndActive(reeler.getReelingLicenseNumber(),true);
             if (!reelerListByLicenseNumber.isEmpty() && reelerListByLicenseNumber.stream().filter(Reeler::getActive).findAny().isPresent()) {
                 reelerResponse.setError(true);
                 reelerResponse.setError_description("Reeler License Number already exist");
@@ -199,7 +199,7 @@ public class ReelerService {
 //            reelerResponse.setError_description("Reeler License Number already exist with inactive state");
             } else {
                 // Check for duplicate Reeler Number
-                List<Reeler> reelerListByNumber = reelerRepository.findByReelerNumber(reeler.getReelerNumber());
+                List<Reeler> reelerListByNumber = reelerRepository.findByReelerNumberAndActive(reeler.getReelerNumber(),true);
                 if (!reelerListByNumber.isEmpty() && reelerListByNumber.stream().anyMatch(Reeler::getActive)) {
                     reelerResponse.setError(true);
                     reelerResponse.setError_description("Reeler Number already exists");

@@ -23,12 +23,12 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
 
     public List<Reeler> findByActiveOrderByReelerIdAsc(boolean isActive);
 
-    public ReelerTypeMaster findByReelerNumberAndActive(String reelerNumber, boolean isActive);
+//    public ReelerTypeMaster findByReelerNumberAndActive(String reelerNumber, boolean isActive);
 
 
-    public List<Reeler> findByReelingLicenseNumber(String reelingLicenseNumber);
+    public List<Reeler> findByReelingLicenseNumberAndActive(String reelingLicenseNumber, boolean isActive);
 
-   public List<Reeler> findByReelerNumber(String reelerNumber);
+   public List<Reeler> findByReelerNumberAndActive(String reelerNumber,boolean isActive);
 
     public List<Reeler> findByActiveOrderByReelerNameAsc(boolean isActive);
 
@@ -37,8 +37,10 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
     public Reeler findByReelerIdAndActive(long id, boolean isActive);
 
     public Reeler findByReelerIdAndActiveIn(@Param("ReelerId") long ReelerId, @Param("active") Set<Boolean> active);
+
     public Reeler findByFruitsIdAndActive(String fruitsId, boolean active);
-    public Reeler findByReelingLicenseNumberAndActive(String reelingLicenseNumber, boolean isActive);
+
+//    public Reeler findByReelingLicenseNumberAndActive(String reelingLicenseNumber, boolean isActive);
 
     List<Reeler> findByActiveAndIsActivatedOrderByReelerNameAsc(boolean isActive, int isActivated);
 
