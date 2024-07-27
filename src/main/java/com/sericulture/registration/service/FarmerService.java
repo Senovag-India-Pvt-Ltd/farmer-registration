@@ -1723,6 +1723,7 @@ public class FarmerService {
         farmer.setEpicNumber(farmerRequest.getEpicNumber());
         farmer.setPassbookNumber(farmerRequest.getPassbookNumber());
         farmer.setWithoutFruitsInwardCounter(0L);
+        farmer.setFarmerNumber(farmerRequest.getFarmerNumber());
 
         // Validate the farmer entity
         validator.validate(farmer);
