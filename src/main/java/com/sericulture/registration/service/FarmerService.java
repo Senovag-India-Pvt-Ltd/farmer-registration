@@ -1822,6 +1822,8 @@ public class FarmerService {
         farmer.setPassbookNumber(farmerRequest.getPassbookNumber());
         farmer.setWithoutFruitsInwardCounter(0L);
         farmer.setFarmerNumber(farmerRequest.getFarmerNumber());
+        farmer.setGenderId(farmerRequest.getGenderId());
+        farmer.setFarmerTypeId(farmerRequest.getFarmerTypeId());
 
         // Validate the farmer entity
         validator.validate(farmer);
