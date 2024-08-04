@@ -531,6 +531,25 @@ public class FarmerController {
                             }),
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
+    @PostMapping("/edit-karnataka-farmer-without-fruits-id")
+    public ResponseEntity<?> editKarnatakaFarmerWithoutFruitsIdDetails(@Valid @RequestBody EditNonKarnatakaFarmerRequest editNonKarnatakaFarmerRequest) throws Exception {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerResponse.class);
+
+        rw.setContent(farmerService.editKarnatakaFarmerWithoutFruitsIdDetails(editNonKarnatakaFarmerRequest));
+        return ResponseEntity.ok(rw);
+    }
+
+    @Operation(summary = "Insert Non Karnataka Farmer Details", description = "Creates Farmer Details in to DB")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Farmer name should be more than 1 characters.\",\"label\":\"name\",\"locale\":null}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
     @PostMapping("/add-karnataka-farmer-without-fruits-id")
     public ResponseEntity<?> addKarnatakaFarmerWithoutFruitsIdDetails(@Valid @RequestBody NonKarnatakaFarmerRequest farmerRequest) throws Exception {
         ResponseWrapper rw = ResponseWrapper.createWrapper(FarmerResponse.class);
