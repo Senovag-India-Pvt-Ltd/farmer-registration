@@ -1,6 +1,9 @@
 package com.sericulture.registration.controller;
 
+import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.ResponseWrapper;
+import com.sericulture.registration.model.api.ApplicationsDetailsDistrictReelerWiseRequest;
+import com.sericulture.registration.model.api.ApplicationsDetailsDistrictWiseRequest;
 import com.sericulture.registration.model.api.common.SearchByColumnRequest;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.farmer.FarmerResponse;
@@ -16,15 +19,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -640,4 +647,62 @@ public class ReelerController {
         rw.setContent(reelerService.reelerInitialAmount(headers,reelerInitialAmountRequest));
         return ResponseEntity.ok(rw);
     }
+
+    @PostMapping("/districtWiseReelerCount")
+    public ResponseEntity<?> districtWiseReelerCount(  ){
+        return reelerService.districtWiseReelerCount();
+
+    }
+
+    @PostMapping("/talukWiseReelerCount")
+    public ResponseEntity<?> talukWiseReelerCount(@RequestBody ApplicationsDetailsDistrictReelerWiseRequest applicationsDetailsDistrictReelerWiseRequest){
+        return reelerService.talukWiseReelerCount(applicationsDetailsDistrictReelerWiseRequest);
+
+    }
+
+    @PostMapping("/marketWiseReelerCount")
+    public ResponseEntity<?> marketWiseReelerCount(@RequestBody ApplicationsDetailsDistrictReelerWiseRequest applicationsDetailsDistrictReelerWiseRequest){
+        return reelerService.marketWiseReelerCount(applicationsDetailsDistrictReelerWiseRequest);
+
+    }
+
+    @PostMapping("/primaryReelerDetails")
+    public ResponseEntity<?> primaryReelerDetails(
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long talukId,
+            @RequestParam(required = false) Long villageId,
+            @RequestParam(required = false) Long marketId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        return reelerService.primaryReelerDetails(districtId, talukId, villageId, marketId, pageNumber, pageSize);
+    }
+    @PostMapping("/reeler-report")
+    public ResponseEntity<?> farmerReport(@RequestParam(required = false) Long districtId,
+                                          @RequestParam(required = false) Long talukId,
+                                          @RequestParam(required = false) Long villageId,
+                                          @RequestParam(required = false) Long marketId,
+                                          @RequestParam(defaultValue = "0") int pageNumber,
+                                          @RequestParam(defaultValue = "50") int pageSize) {
+        try {
+            System.out.println("enter to reeler report");
+            FileInputStream fileInputStream = reelerService.reelerReport(districtId, talukId, villageId, marketId ,pageNumber, pageSize);
+
+            InputStreamResource resource = new InputStreamResource(fileInputStream);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reeler_report" + Util.getISTLocalDate() + ".csv");
+            headers.setContentType(MediaType.parseMediaType("text/csv"));
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
+            HttpHeaders headers = new HttpHeaders();
+            return new ResponseEntity<>(ex.getMessage().getBytes(StandardCharsets.UTF_8), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

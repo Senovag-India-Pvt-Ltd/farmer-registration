@@ -662,4 +662,321 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
  )
  public List<ReelerSearchDTO> getReelerBySearchText(@Param("searchText") String searchText, @Param("joinColumn") String joinColumn);
 
+    @Query(nativeQuery = true,value = "select COUNT(reeler_id) as total_reeler_count\n" +
+            "from reeler;\n")
+    public List<Object[]> getReelerCountDetails( );
+
+
+    @Query(nativeQuery = true, value = """
+    SELECT 
+        d.district_name, 
+        COUNT(r.reeler_id) AS reeler_count
+    FROM 
+        reeler r
+    LEFT JOIN 
+        district d ON d.DISTRICT_ID = r.DISTRICT_ID AND d.active = 1
+    WHERE 
+        r.active = 1
+    GROUP BY 
+        d.district_name;
+""")
+    public List<Object[]> getDistrictWiseReelerCount();
+
+    @Query(nativeQuery = true, value = """
+    SELECT
+        t.taluk_name,
+        COUNT(r.reeler_id) AS reeler_count
+    FROM
+        reeler r
+    LEFT JOIN
+        taluk t ON t.taluk_id = r.taluk_id AND t.active = 1
+    LEFT JOIN
+        district d ON t.district_id = d.district_id
+    WHERE
+        r.active = 1
+        AND d.district_id = :districtId
+    GROUP BY
+        t.taluk_name;
+""")
+    public List<Object[]> getTalukWiseReelerCount(@Param("districtId") int districtId);
+
+
+
+    @Query(nativeQuery = true, value = """
+    WITH PrimaryAddress AS (
+        SELECT
+            rvba.reeler_id,
+            rvba.market_master_id,
+            ROW_NUMBER() OVER (PARTITION BY rvba.reeler_id ORDER BY rvba.market_master_id DESC) AS rn
+        FROM
+            reeler_virtual_bank_account rvba
+        WHERE
+            rvba.active = 1
+    )
+    SELECT 
+        mm.market_name, 
+        COUNT(r.reeler_id) AS reeler_count
+    FROM 
+        reeler r
+    LEFT JOIN 
+        PrimaryAddress pa ON pa.reeler_id = r.reeler_id AND pa.rn = 1
+    LEFT JOIN 
+        market_master mm ON mm.market_master_id = pa.market_master_id AND mm.active = 1
+    WHERE 
+        r.active = 1
+    GROUP BY 
+        mm.market_name;
+""")
+    public List<Object[]> getMarketWiseReelerCount();
+
+    @Query(nativeQuery = true, value = """
+    WITH PrimaryAddress AS (
+            SELECT
+                    rvba.reeler_id,
+            rvba.market_master_id,
+            ROW_NUMBER() OVER (PARTITION BY rvba.reeler_id ORDER BY rvba.market_master_id DESC) AS rn
+    FROM
+    reeler_virtual_bank_account rvba
+    WHERE
+    rvba.active = 1
+            )
+    SELECT
+    mm.market_name,
+    COUNT(r.reeler_id) AS reeler_count
+    FROM
+    reeler r
+    LEFT JOIN
+    PrimaryAddress pa ON pa.reeler_id = r.reeler_id AND pa.rn = 1
+    LEFT JOIN
+    market_master mm ON mm.market_master_id = pa.market_master_id AND mm.active = 1
+    WHERE
+    r.active = 1
+    AND pa.market_master_id = :marketId
+    GROUP BY
+    mm.market_name;
+    """)
+    public List<Object[]> getMarketWiseReelerCountByMarketId(@Param("marketId") int marketId);
+
+//    @Query(nativeQuery = true, value = """
+//    WITH PrimaryMarket AS (
+//        SELECT ROW_NUMBER() OVER (ORDER BY r.reeler_id ASC) AS row_id,
+//            r.reeler_id,
+//            r.DISTRICT_ID,
+//            r.TALUK_ID,
+//            r.HOBLI_ID,
+//            r.VILLAGE_ID,
+//            ROW_NUMBER() OVER (PARTITION BY r.reeler_id ORDER BY r.district_id DESC) AS rn
+//        FROM
+//            reeler r
+//        WHERE r.active = 1
+//    )
+//    SELECT
+//        r.reeler_id,
+//        r.name,
+//        r.fruits_id,
+//        r.reeling_license_number,
+//        r.father_name,
+//        r.passbook_number,
+//        r.reeler_number,
+//        r.ration_card,
+//        r.dob,
+//        d.DISTRICT_NAME,
+//        t.TALUK_NAME,
+//        h.hobli_name,
+//        v.village_name,
+//        r.bank_name,
+//        r.bank_account_number,
+//        r.branch_name,
+//        r.ifsc_code
+//    FROM
+//        reeler r
+//    LEFT JOIN
+//        PrimaryAddress pa ON pa.reeler_id = r.reeler_id AND pa.rn = 1
+//    LEFT JOIN
+//        reeler_virtual_bank_account rvba ON rvba.reeler_id = r.reeler_id
+//    LEFT JOIN
+//        district d ON pa.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
+//    LEFT JOIN
+//        taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
+//    LEFT JOIN
+//        hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
+//    LEFT JOIN
+//        village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+//    WHERE
+//        r.active = 1 AND
+//        (:districtId IS NULL OR pa.DISTRICT_ID = :districtId) AND
+//        (:talukId IS NULL OR pa.TALUK_ID = :talukId) AND
+//        (:villageId IS NULL OR pa.VILLAGE_ID = :villageId) AND
+//        (:marketId IS NULL OR rvba.market_master_id = :marketId)
+//""", countQuery = """
+//    WITH PrimaryAddress AS (
+//        SELECT ROW_NUMBER() OVER (ORDER BY r.reeler_id ASC) AS row_id,
+//            r.reeler_id,
+//            r.DISTRICT_ID,
+//            r.TALUK_ID,
+//            r.HOBLI_ID,
+//            r.VILLAGE_ID,
+//            ROW_NUMBER() OVER (PARTITION BY r.reeler_id ORDER BY r.district_id DESC) AS rn
+//        FROM
+//            reeler r
+//        WHERE r.active = 1
+//    )
+//    SELECT COUNT(*)
+//    FROM
+//        reeler r
+//    LEFT JOIN
+//        PrimaryAddress pa ON pa.reeler_id = r.reeler_id AND pa.rn = 1
+//    LEFT JOIN
+//        reeler_virtual_bank_account rvba ON rvba.reeler_id = r.reeler_id
+//    WHERE
+//        r.active = 1 AND
+//        (:districtId IS NULL OR pa.DISTRICT_ID = :districtId) AND
+//        (:talukId IS NULL OR pa.TALUK_ID = :talukId) AND
+//        (:villageId IS NULL OR pa.VILLAGE_ID = :villageId) AND
+//        (:marketId IS NULL OR rvba.market_master_id = :marketId)
+//""")
+//    Page<Object[]> getPrimaryReelerDetails(
+//            @Param("districtId") Long districtId,
+//            @Param("talukId") Long talukId,
+//            @Param("villageId") Long villageId,
+//            @Param("marketId") Long marketId,
+//            Pageable pageable);
+
+//    @Query(nativeQuery = true, value = """
+//    WITH PrimaryAddress AS (
+//        SELECT ROW_NUMBER() OVER (ORDER BY rvba.reeler_id ASC) AS row_id,
+//               rvba.reeler_id,
+//               rvba.market_master_Id,
+//               ROW_NUMBER() OVER (PARTITION BY rvba.reeler_id ORDER BY rvba.market_master_id DESC) AS rn
+//        FROM reeler_virtual_bank_account rvba
+//        WHERE rvba.active = 1
+//    )
+//    SELECT
+//        r.reeler_id,
+//        r.name,
+//        r.fruits_id,
+//        r.reeling_license_number,
+//        r.father_name,
+//        r.passbook_number,
+//        r.reeler_number,
+//        r.ration_card,
+//        r.dob,
+//        d.DISTRICT_NAME,
+//        t.TALUK_NAME,
+//        h.hobli_name,
+//        v.village_name,
+//        r.bank_name,
+//        r.bank_account_number,
+//        r.branch_name,
+//        r.ifsc_code
+//    FROM reeler r
+//    LEFT JOIN PrimaryAddress pa ON pa.reeler_id = r.reeler_id AND pa.rn = 1
+//    LEFT JOIN reeler_virtual_bank_account rvba ON rvba.reeler_id = r.reeler_id
+//    LEFT JOIN district d ON r.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
+//    LEFT JOIN taluk t ON r.TALUK_ID = t.TALUK_ID AND t.active = 1
+//    LEFT JOIN hobli h ON r.HOBLI_ID = h.HOBLI_ID AND h.active = 1
+//    LEFT JOIN village v ON r.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+//    WHERE r.active = 1 AND
+//          (:districtId IS NULL OR r.DISTRICT_ID = :districtId) AND
+//          (:talukId IS NULL OR r.TALUK_ID = :talukId) AND
+//          (:villageId IS NULL OR r.VILLAGE_ID = :villageId) AND
+//          (:marketId IS NULL OR rvba.market_master_id = :marketId)
+//""", countQuery = """
+//    WITH PrimaryAddress AS (
+//        SELECT ROW_NUMBER() OVER (ORDER BY rvba.reeler_id ASC) AS row_id,
+//               rvba.reeler_id,
+//               rvba.market_master_Id,
+//               ROW_NUMBER() OVER (PARTITION BY rvba.reeler_id ORDER BY rvba.market_master_id DESC) AS rn
+//        FROM reeler_virtual_bank_account rvba
+//        WHERE rvba.active = 1
+//    )
+//    SELECT COUNT(*)
+//    FROM reeler r
+//    LEFT JOIN PrimaryAddress pa ON pa.reeler_id = r.reeler_id AND pa.rn = 1
+//    LEFT JOIN reeler_virtual_bank_account rvba ON rvba.reeler_id = r.reeler_id
+//    WHERE r.active = 1 AND
+//          (:districtId IS NULL OR r.DISTRICT_ID = :districtId) AND
+//          (:talukId IS NULL OR r.TALUK_ID = :talukId) AND
+//          (:villageId IS NULL OR r.VILLAGE_ID = :villageId) AND
+//          (:marketId IS NULL OR rvba.market_master_id = :marketId)
+//""")
+//    Page<Object[]> getPrimaryReelerDetails(
+//            @Param("districtId") Long districtId,
+//            @Param("talukId") Long talukId,
+//            @Param("villageId") Long villageId,
+//            @Param("marketId") Long marketId,
+//            Pageable pageable);
+
+    @Query(nativeQuery = true, value = """
+    WITH PrimaryAddress AS (
+        SELECT rvba.reeler_id,
+               ROW_NUMBER() OVER (PARTITION BY rvba.reeler_id ORDER BY rvba.market_master_id DESC) AS rn
+        FROM reeler_virtual_bank_account rvba
+        WHERE rvba.active = 1
+    ),
+    FilteredReeler AS (
+        SELECT r.reeler_id
+        FROM reeler r
+        LEFT JOIN PrimaryAddress pa ON pa.reeler_id = r.reeler_id AND pa.rn = 1
+        LEFT JOIN reeler_virtual_bank_account rvba ON rvba.reeler_id = r.reeler_id
+        WHERE r.active = 1
+          AND (:districtId IS NULL OR r.DISTRICT_ID = :districtId)
+          AND (:talukId IS NULL OR r.TALUK_ID = :talukId)
+          AND (:villageId IS NULL OR r.VILLAGE_ID = :villageId)
+          AND (:marketId IS NULL OR rvba.market_master_id = :marketId)
+    )
+    SELECT
+        r.reeler_id,
+        r.name,
+        r.fruits_id,
+        r.reeling_license_number,
+        r.father_name,
+        r.passbook_number,
+        r.reeler_number,
+        r.ration_card,
+        r.dob,
+        d.DISTRICT_NAME,
+        t.TALUK_NAME,
+        h.hobli_name,
+        v.village_name,
+        r.bank_name,
+        r.bank_account_number,
+        r.branch_name,
+        r.ifsc_code
+    FROM reeler r
+    LEFT JOIN FilteredReeler fr ON fr.reeler_id = r.reeler_id
+    LEFT JOIN district d ON r.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
+    LEFT JOIN taluk t ON r.TALUK_ID = t.TALUK_ID AND t.active = 1
+    LEFT JOIN hobli h ON r.HOBLI_ID = h.HOBLI_ID AND h.active = 1
+    LEFT JOIN village v ON r.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+    WHERE r.active = 1
+    AND fr.reeler_id IS NOT NULL
+""", countQuery = """
+    WITH PrimaryAddress AS (
+        SELECT rvba.reeler_id,
+               ROW_NUMBER() OVER (PARTITION BY rvba.reeler_id ORDER BY rvba.market_master_id DESC) AS rn
+        FROM reeler_virtual_bank_account rvba
+        WHERE rvba.active = 1
+    ),
+    FilteredReeler AS (
+        SELECT r.reeler_id
+        FROM reeler r
+        LEFT JOIN PrimaryAddress pa ON pa.reeler_id = r.reeler_id AND pa.rn = 1
+        LEFT JOIN reeler_virtual_bank_account rvba ON rvba.reeler_id = r.reeler_id
+        WHERE r.active = 1
+          AND (:districtId IS NULL OR r.DISTRICT_ID = :districtId)
+          AND (:talukId IS NULL OR r.TALUK_ID = :talukId)
+          AND (:villageId IS NULL OR r.VILLAGE_ID = :villageId)
+          AND (:marketId IS NULL OR rvba.market_master_id = :marketId)
+    )
+    SELECT COUNT(DISTINCT fr.reeler_id)
+    FROM FilteredReeler fr
+""")
+    Page<Object[]> getPrimaryReelerDetails(
+            @Param("districtId") Long districtId,
+            @Param("talukId") Long talukId,
+            @Param("villageId") Long villageId,
+            @Param("marketId") Long marketId,
+            Pageable pageable);
+
 }

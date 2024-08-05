@@ -2182,7 +2182,7 @@ public class FarmerService {
             contentRow.createCell(1).setCellValue(primaryDetailsResponse.getMiddleName());
             contentRow.createCell(2).setCellValue(primaryDetailsResponse.getLastName());
             contentRow.createCell(3).setCellValue(primaryDetailsResponse.getFruitsId());
-            contentRow.createCell(4).setCellValue(primaryDetailsResponse.getFruitsId());
+            contentRow.createCell(4).setCellValue(primaryDetailsResponse.getFarmerNumber());
             contentRow.createCell(5).setCellValue(primaryDetailsResponse.getFatherName());
             contentRow.createCell(6).setCellValue(primaryDetailsResponse.getPassbookNumber());
             contentRow.createCell(7).setCellValue(primaryDetailsResponse.getEpicNumber());
