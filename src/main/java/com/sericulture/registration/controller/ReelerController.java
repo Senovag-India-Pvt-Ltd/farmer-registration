@@ -677,7 +677,7 @@ public class ReelerController {
         return reelerService.primaryReelerDetails(districtId, talukId, villageId, marketId, pageNumber, pageSize);
     }
     @PostMapping("/reeler-report")
-    public ResponseEntity<?> farmerReport(@RequestParam(required = false) Long districtId,
+    public ResponseEntity<?> reelerReport(@RequestParam(required = false) Long districtId,
                                           @RequestParam(required = false) Long talukId,
                                           @RequestParam(required = false) Long villageId,
                                           @RequestParam(required = false) Long marketId,
@@ -691,6 +691,39 @@ public class ReelerController {
 
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reeler_report" + Util.getISTLocalDate() + ".csv");
+            headers.setContentType(MediaType.parseMediaType("text/csv"));
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
+            HttpHeaders headers = new HttpHeaders();
+            return new ResponseEntity<>(ex.getMessage().getBytes(StandardCharsets.UTF_8), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/primaryReelerDetailsByMarket")
+    public ResponseEntity<?> primaryReelerDetails(
+            @RequestParam(required = false) Long marketId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        return reelerService.primaryReelerMarketDetails (marketId, pageNumber, pageSize);
+    }
+    @PostMapping("/reeler-market-report")
+    public ResponseEntity<?> farmerReport(@RequestParam(required = false) Long marketId,
+                                          @RequestParam(defaultValue = "0") int pageNumber,
+                                          @RequestParam(defaultValue = "50") int pageSize) {
+        try {
+            System.out.println("enter to reeler report");
+            FileInputStream fileInputStream = reelerService.reelerMarketReport(marketId,pageNumber, pageSize);
+
+            InputStreamResource resource = new InputStreamResource(fileInputStream);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reeler_market_report" + Util.getISTLocalDate() + ".csv");
             headers.setContentType(MediaType.parseMediaType("text/csv"));
 
             return ResponseEntity.ok()

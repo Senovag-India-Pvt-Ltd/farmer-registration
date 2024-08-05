@@ -32,4 +32,5 @@ public class PrimaryReelerDetailsResponse extends ResponseBody{
     private String reelerBankAccountNumber;
     private String reelerBankBranchName;
     private String reelerBankIfscCode;
+    private Long reelerMobileNumber;
 }
