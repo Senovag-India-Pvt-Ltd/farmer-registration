@@ -138,4 +138,10 @@ public class FarmerResponse {
 
     @Schema(name = "configuredInward", example = "1")
     private Long configuredInward;
+
+
+    @Schema(name = "farmerBankAccountNumber", example = "123")
+    String farmerBankAccountNumber;
+
+
 }

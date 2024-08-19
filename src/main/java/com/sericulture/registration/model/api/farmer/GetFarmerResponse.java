@@ -15,6 +15,7 @@ import com.sericulture.registration.model.entity.FarmerBankAccount;
 import com.sericulture.registration.model.entity.FarmerFamily;
 import com.sericulture.registration.model.entity.FarmerLandDetails;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.List;
@@ -60,6 +61,9 @@ public class GetFarmerResponse {
 
     @Schema(name = "isFruitService")
     Integer isFruitService;
+
+    @Pattern(regexp = "^[+0-9\\s]*$", message = "Mobile number must contain only numbers")
+
 
     @Schema(name = "error", example = "true")
     Boolean error;

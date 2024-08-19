@@ -641,7 +641,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "on reeler.reelerTypeMasterId = reelerTypeMaster.reelerTypeMasterId " +
             "where reeler.active = :isActive AND " +
             "(:joinColumn = 'reeler.mobileNumber' AND reeler.mobileNumber LIKE :searchText) OR " +
-            "(:joinColumn = 'reeler.reelingLicenseNumber' AND reeler.reelingLicenseNumber LIKE :searchText)"
+            "(:joinColumn = 'reeler.reelingLicenseNumber' AND reeler.reelingLicenseNumber LIKE :searchText) OR " +
+            "(:joinColumn = 'reeler.bankAccountNumber' AND reeler.bankAccountNumber LIKE :searchText)"
     )
     public Page<ReelerDTO> getSortedReelers(@Param("joinColumn") String joinColumn, @Param("searchText") String searchText, @Param("isActive") boolean isActive, Pageable pageable);
 
@@ -651,6 +652,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
          " CASE WHEN :joinColumn = 'reeler.mobileNumber' THEN reeler.mobileNumber " +
          "      WHEN :joinColumn = 'reeler.reelerName' THEN reeler.reelerName " +
          "      WHEN :joinColumn = 'reeler.reelingLicenseNumber' THEN reeler.reelingLicenseNumber " +
+         "      WHEN :joinColumn = 'reeler.bankAccountNumber' THEN reeler.bankAccountNumber " +
          "      ELSE null " +
          " END " +
          ") " +
@@ -658,7 +660,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
          "where reeler.active = true AND " +
          "(:joinColumn = 'reeler.mobileNumber' AND reeler.mobileNumber LIKE :searchText) OR " +
          "(:joinColumn = 'reeler.reelerName' AND reeler.reelerName LIKE :searchText) OR " +
-         "(:joinColumn = 'reeler.reelingLicenseNumber' AND reeler.reelingLicenseNumber LIKE :searchText)"
+         "(:joinColumn = 'reeler.bankAccountNumber' AND reeler.bankAccountNumber LIKE :searchText)"
+
  )
  public List<ReelerSearchDTO> getReelerBySearchText(@Param("searchText") String searchText, @Param("joinColumn") String joinColumn);
 
