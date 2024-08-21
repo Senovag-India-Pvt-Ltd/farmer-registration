@@ -62,9 +62,6 @@ public class GetFarmerResponse {
     @Schema(name = "isFruitService")
     Integer isFruitService;
 
-    @Pattern(regexp = "^[+0-9\\s]*$", message = "Mobile number must contain only numbers")
-
-
     @Schema(name = "error", example = "true")
     Boolean error;
 
