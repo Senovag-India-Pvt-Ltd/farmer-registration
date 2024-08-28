@@ -46,6 +46,9 @@ public class FarmerDTO {
     private String tscName;
     private String name;
     private Boolean isOtherStateFarmer;
+    private String farmerBankAccountNumber;
+
+
 
 
 }
