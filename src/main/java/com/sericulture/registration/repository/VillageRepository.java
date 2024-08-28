@@ -22,7 +22,7 @@ public interface VillageRepository extends PagingAndSortingRepository<Village, L
         public List<Village> findByVillageNameAndStateId(String villageName, long stateId);
     public Village findByVillageNameAndActive(String villageName,boolean isActive);
 
-    public Village findByHobliIdAndVillageCode(long hobliId, String villageCode);
+    public Village findByHobliIdAndVillageCodeAndActive(long hobliId, String villageCode,boolean active);
 
     @Query("select new com.sericulture.registration.model.dto.village.VillageDTO(" +
             " village.villageId," +
