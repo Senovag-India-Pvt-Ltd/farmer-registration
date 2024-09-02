@@ -187,7 +187,8 @@ public class TraderLicenseService {
             traderLicense.setLicenseChallanNumber(traderLicenseRequest.getLicenseChallanNumber());
             traderLicense.setGodownDetails(traderLicenseRequest.getGodownDetails());
             traderLicense.setSilkExchangeMahajar(traderLicenseRequest.getSilkExchangeMahajar());
-           // traderLicense.setLicenseNumberSequence(traderLicenseRequest.getLicenseNumberSequence());
+            traderLicense.setSilkType(traderLicenseRequest.getSilkType());
+            // traderLicense.setLicenseNumberSequence(traderLicenseRequest.getLicenseNumberSequence());
 
             traderLicense.setActive(true);
             TraderLicense traderLicense1 = traderLicenseRepository.save(traderLicense);
