@@ -129,4 +129,7 @@ public class FarmerRequest extends RequestBody {
 
     @Schema(name = "inspectorId", example = "1")
     Long inspectorId;
+
+    @Schema(name = "assignToInspectId", example = "1")
+    Long assignToInspectId;
 }

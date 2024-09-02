@@ -117,4 +117,7 @@ public class Farmer extends BaseEntity implements Serializable {
 
     @Column(name = "without_fruits_inward_counter")
     private Long withoutFruitsInwardCounter;
+
+    @Column(name = "user_master_id")
+    private Long assignToInspectId;
 }

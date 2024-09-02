@@ -46,6 +46,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.genderId, " +
             " farmer.casteId, " +
             " farmer.tscMasterId, " +
+            " farmer.assignToInspectId, " +
             " farmer.differentlyAbled, " +
             " farmer.email, " +
             " farmer.mobileNumber, " +
@@ -72,7 +73,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " tscMaster.name, " +
             " education.name," +
             " farmer.isOtherStateFarmer, " +
-            " farmerBankAccount.farmerBankAccountNumber" +
+            " farmerBankAccount.farmerBankAccountNumber," +
+            " userMaster.username" +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -87,6 +89,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.educationId = education.educationId " +
             "left join FarmerBankAccount farmerBankAccount " +
             "on farmer.farmerId = farmerBankAccount.farmerId " +
+            "left join UserMaster userMaster\n" +
+            "on farmer.assignToInspectId = userMaster.userMasterId " +
             "where farmer.active = :isActive AND farmer.farmerId = :id")
     public FarmerDTO getByFarmerIdAndActive(@Param("id") long id, @Param("isActive") boolean isActive);
 
@@ -101,6 +105,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.genderId, " +
             " farmer.casteId, " +
             " farmer.tscMasterId, " +
+            " farmer.assignToInspectId, " +
             " farmer.differentlyAbled, " +
             " farmer.email, " +
             " farmer.mobileNumber, " +
@@ -127,7 +132,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " tscMaster.name, " +
             " education.name," +
             " farmer.isOtherStateFarmer, " +
-            " farmerBankAccount.farmerBankAccountNumber" +
+            " farmerBankAccount.farmerBankAccountNumber," +
+            " userMaster.username" +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -142,6 +148,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.educationId = education.educationId " +
             "left join FarmerBankAccount farmerBankAccount " +
             "on farmer.farmerId = farmerBankAccount.farmerId " +
+            "left join UserMaster userMaster\n" +
+            "on farmer.assignToInspectId = userMaster.userMasterId " +
             "where farmer.active = :isActive " +
             "ORDER BY farmer.farmerNumber ASC"
     )
@@ -158,6 +166,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.genderId, " +
             " farmer.casteId, " +
             " farmer.tscMasterId, " +
+            " farmer.assignToInspectId, " +
             " farmer.differentlyAbled, " +
             " farmer.email, " +
             " farmer.mobileNumber, " +
@@ -184,7 +193,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " tscMaster.name, " +
             " education.name," +
             " farmer.isOtherStateFarmer, " +
-            " farmerBankAccount.farmerBankAccountNumber" +
+            " farmerBankAccount.farmerBankAccountNumber," +
+            " userMaster.username" +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -199,6 +209,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.educationId = education.educationId " +
             "left join FarmerBankAccount farmerBankAccount " +
             "on farmer.farmerId = farmerBankAccount.farmerId " +
+            "left join UserMaster userMaster\n" +
+            "on farmer.assignToInspectId = userMaster.userMasterId " +
             "where farmer.active = :isActive and " +
             "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.fruitsId' AND farmer.fruitsId LIKE :searchText) OR " +
@@ -219,6 +231,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.genderId, " +
             " farmer.casteId, " +
             " farmer.tscMasterId, " +
+            " farmer.assignToInspectId, " +
             " farmer.differentlyAbled, " +
             " farmer.email, " +
             " farmer.mobileNumber, " +
@@ -245,7 +258,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " tscMaster.name, " +
             " education.name," +
             " farmer.isOtherStateFarmer, " +
-            " farmerBankAccount.farmerBankAccountNumber" +
+            " farmerBankAccount.farmerBankAccountNumber," +
+            " userMaster.username" +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -260,6 +274,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.educationId = education.educationId " +
             "left join FarmerBankAccount farmerBankAccount " +
             "on farmer.farmerId = farmerBankAccount.farmerId " +
+            "left join UserMaster userMaster\n" +
+            "on farmer.assignToInspectId = userMaster.userMasterId " +
             "where farmer.active = :isActive and farmer.isOtherStateFarmer = true and " +
             "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.mobileNumber' AND farmer.mobileNumber LIKE :searchText) OR" +
@@ -279,6 +295,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.genderId, " +
             " farmer.casteId, " +
             " farmer.tscMasterId, " +
+            " farmer.assignToInspectId, " +
             " farmer.differentlyAbled, " +
             " farmer.email, " +
             " farmer.mobileNumber, " +
@@ -305,7 +322,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " tscMaster.name, " +
             " education.name," +
             " farmer.isOtherStateFarmer, " +
-            " farmerBankAccount.farmerBankAccountNumber" +
+            " farmerBankAccount.farmerBankAccountNumber," +
+            " userMaster.username" +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -320,6 +338,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.educationId = education.educationId " +
             "left join FarmerBankAccount farmerBankAccount " +
             "on farmer.farmerId = farmerBankAccount.farmerId " +
+            "left join UserMaster userMaster\n" +
+            "on farmer.assignToInspectId = userMaster.userMasterId " +
             "where farmer.active = :isActive and (farmer.isOtherStateFarmer = false or farmer.isOtherStateFarmer is null) and (farmer.fruitsId != '' and farmer.fruitsId is not null) and  " +
             "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.fruitsId' AND farmer.fruitsId LIKE :searchText) OR " +
@@ -340,6 +360,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.genderId, " +
             " farmer.casteId, " +
             " farmer.tscMasterId, " +
+            " farmer.assignToInspectId, " +
             " farmer.differentlyAbled, " +
             " farmer.email, " +
             " farmer.mobileNumber, " +
@@ -366,7 +387,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " tscMaster.name, " +
             " education.name," +
             " farmer.isOtherStateFarmer, " +
-            " farmerBankAccount.farmerBankAccountNumber" +
+            " farmerBankAccount.farmerBankAccountNumber," +
+            " userMaster.username" +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -381,6 +403,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.educationId = education.educationId " +
             "left join FarmerBankAccount farmerBankAccount " +
             "on farmer.farmerId = farmerBankAccount.farmerId " +
+            "left join UserMaster userMaster\n" +
+            "on farmer.assignToInspectId = userMaster.userMasterId " +
             "where farmer.active = :isActive and (farmer.isOtherStateFarmer = false or farmer.isOtherStateFarmer is NULL) and (farmer.fruitsId = '' or farmer.fruitsId is null) and " +
             "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.mobileNumber' AND farmer.mobileNumber LIKE :searchText) OR" +
@@ -400,6 +424,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.genderId, " +
             " farmer.casteId, " +
             " farmer.tscMasterId, " +
+            " farmer.assignToInspectId, " +
             " farmer.differentlyAbled, " +
             " farmer.email, " +
             " farmer.mobileNumber, " +
@@ -426,7 +451,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " tscMaster.name, " +
             " education.name," +
             " farmer.isOtherStateFarmer, " +
-            " farmerBankAccount.farmerBankAccountNumber" +
+            " farmerBankAccount.farmerBankAccountNumber," +
+            " userMaster.username" +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -441,6 +467,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "on farmer.educationId = education.educationId " +
             "left join FarmerBankAccount farmerBankAccount " +
             "on farmer.farmerId = farmerBankAccount.farmerId " +
+            "left join UserMaster userMaster\n" +
+            "on farmer.assignToInspectId = userMaster.userMasterId " +
             "where farmer.active = :isActive AND " +
             "(:joinColumn = 'farmer.fruitsId' AND farmer.fruitsId LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +

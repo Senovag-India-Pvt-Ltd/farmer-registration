@@ -370,6 +370,8 @@ public class FarmerService {
             farmer.setFatherNameKan(farmerRequest.getFatherNameKan());
             farmer.setFatherName(farmerRequest.getFatherName());
             farmer.setNameKan(farmerRequest.getNameKan());
+            farmer.setAssignToInspectId(farmerRequest.getAssignToInspectId());
+
 
             farmer.setActive(true);
             Farmer farmer1 = farmerRepository.save(farmer);

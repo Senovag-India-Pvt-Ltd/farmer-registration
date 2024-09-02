@@ -144,4 +144,12 @@ public class FarmerResponse {
     String farmerBankAccountNumber;
 
 
+    @Schema(name = "username", example = "Karnataka",required=true)
+    String username;
+
+    @Schema(name = "assignToInspectId", example = "Karnataka",required=true)
+    Long assignToInspectId;
+
+
+
 }
