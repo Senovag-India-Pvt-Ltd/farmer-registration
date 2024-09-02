@@ -57,6 +57,15 @@ public class FarmerAddressResponse {
     @Schema(name = "villageName", example = "Hodla")
     String villageName;
 
+    @Schema(name = "district", example = "566434", required = true)
+    String district;
+
+    @Schema(name = "taluk", example = "566434", required = true)
+    String taluk;
+
+    @Schema(name = "village", example = "566434", required = true)
+    String village;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 

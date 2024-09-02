@@ -36,6 +36,9 @@ public interface FarmerAddressRepository extends PagingAndSortingRepository<Farm
             " farmerAddress.talukId, " +
             " farmerAddress.hobliId, " +
             " farmerAddress.villageId, " +
+            " farmerAddress.taluk, " +
+            " farmerAddress.district, " +
+            " farmerAddress.village, " +
             " state.stateName, " +
             " district.districtName, " +
             " taluk.talukName, " +
@@ -67,6 +70,9 @@ public interface FarmerAddressRepository extends PagingAndSortingRepository<Farm
             " farmerAddress.talukId, " +
             " farmerAddress.hobliId, " +
             " farmerAddress.villageId, " +
+            " farmerAddress.taluk, " +
+            " farmerAddress.district, " +
+            " farmerAddress.village, " +
             " state.stateName, " +
             " district.districtName, " +
             " taluk.talukName, " +

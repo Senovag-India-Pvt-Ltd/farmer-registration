@@ -40,4 +40,13 @@ public class FarmerAddressRequest extends RequestBody {
 
     @Schema(name = "defaultAddress", example = "0")
     Boolean defaultAddress;
+
+    @Schema(name = "district", example = "566434", required = true)
+    String district;
+
+    @Schema(name = "taluk", example = "566434", required = true)
+    String taluk;
+
+    @Schema(name = "village", example = "566434", required = true)
+    String village;
 }

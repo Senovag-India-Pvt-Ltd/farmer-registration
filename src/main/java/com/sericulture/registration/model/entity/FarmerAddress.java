@@ -48,4 +48,14 @@ public class FarmerAddress extends BaseEntity implements Serializable {
 
     @Column(name = "DEFAULT_ADDRESS", columnDefinition = "TINYINT")
     private Boolean defaultAddress;
+
+    @Column(name = "district_name")
+    private String district;
+
+    @Column(name = "taluk_name")
+    private String taluk;
+
+    @Column(name = "village_name")
+    private String village;
+
 }
