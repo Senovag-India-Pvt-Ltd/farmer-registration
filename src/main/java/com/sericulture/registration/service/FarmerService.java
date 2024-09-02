@@ -656,6 +656,7 @@ public class FarmerService {
 
             //  GetFruitsResponse getFruitsResponse = fruitsApiService.getFarmerByFruitsIdWithResponse(fruitsFarmerDTO);
             String inputData = String.valueOf(fruitsApiService.getFarmerByFruitsId(fruitsFarmerDTO).getBody());
+            log.info("InputData" + inputData);
 
             if (inputData.equals("Error!, Please try again")) {
                 getFarmerResponse.setError(true);
@@ -665,6 +666,7 @@ public class FarmerService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
                 GetFruitsResponse getFruitsResponse = objectMapper.readValue(inputData, GetFruitsResponse.class);
+                log.info("getFruitsResponse"+ objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(getFruitsResponse));
 
                 Farmer farmer1 = new Farmer();
                 farmer1.setFruitsId(getFruitsResponse.getFarmerID());
@@ -736,20 +738,20 @@ public class FarmerService {
 //                villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
 //                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
 
-                    log.info("District code: " + farmerLandDetails.getDistrictCode());
-                    District district = districtRepository.findByDistrictCode(String.valueOf(getLandDetailsResponse.getDistrictCode()));
+                    log.info("District code: " + getLandDetailsResponse.getDistrictCode());
+                    District district = districtRepository.findByDistrictCodeAndActive(String.valueOf(getLandDetailsResponse.getDistrictCode()),true);
                     if (district != null) {
                         log.info("District name: " + district.getDistrictName() + ":districtId:" + district.getDistrictId() + ":lgDist:" + district.getDistrictCode());
                         log.info("Taluk code: " + getLandDetailsResponse.getTalukCode());
-                        Taluk taluk = talukRepository.findByDistrictIdAndTalukCode(district.getDistrictId(), String.valueOf(getLandDetailsResponse.getTalukCode()));
+                        Taluk taluk = talukRepository.findByDistrictIdAndTalukCodeAndActive(district.getDistrictId(), String.valueOf(getLandDetailsResponse.getTalukCode()),true);
                         if (taluk != null) {
                             log.info("Taluk name: " + taluk.getTalukName() + ":talukId:" + taluk.getTalukId() + ":districtId" + taluk.getDistrictId() + "lgTaluk:" + taluk.getLgTaluk());
                             log.info("Hobli code: " + getLandDetailsResponse.getHobliCode());
-                            Hobli hobli = hobliRepository.findByTalukIdAndHobliCode(taluk.getTalukId(), String.valueOf(getLandDetailsResponse.getHobliCode()));
+                            Hobli hobli = hobliRepository.findByTalukIdAndHobliCodeAndActive(taluk.getTalukId(), String.valueOf(getLandDetailsResponse.getHobliCode()),true);
                             if (hobli != null) {
                                 log.info("Hobli name: " + hobli.getHobliName() + ":hobliId:" + hobli.getHobliId() + ":districtId" + hobli.getDistrictId() + ":talukId:" + hobli.getTalukId());
                                 log.info("Village code: " + getLandDetailsResponse.getVillageCode());
-                                Village village = villageRepository.findByHobliIdAndVillageCode(hobli.getHobliId(), String.valueOf(getLandDetailsResponse.getVillageCode()));
+                                Village village = villageRepository.findByHobliIdAndVillageCodeAndActive(hobli.getHobliId(), String.valueOf(getLandDetailsResponse.getVillageCode()),true);
                                 if (village == null) {
                                     log.info("Village name: " + village.getVillageName() + ":hobliId:" + village.getHobliId() + ":districtId" + village.getDistrictId() + ":talukId:" + village.getTalukId() + ":villageId:" + village.getVillageId() + ":lgVillage:" + village.getLgVillage());
                                     farmerLandDetails.setVillageId(null);
@@ -997,15 +999,15 @@ public class FarmerService {
 //                villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
 //                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
 
-                District district = districtRepository.findByDistrictCode(String.valueOf(farmerLandDetails.getDistrictCode()));
+                District district = districtRepository.findByDistrictCodeAndActive(String.valueOf(farmerLandDetails.getDistrictCode()),true);
                 if (district != null) {
 
-                    Taluk taluk = talukRepository.findByDistrictIdAndTalukCode(district.getDistrictId(), String.valueOf(farmerLandDetails.getTalukCode()));
+                    Taluk taluk = talukRepository.findByDistrictIdAndTalukCodeAndActive(district.getDistrictId(), String.valueOf(farmerLandDetails.getTalukCode()),true);
                     if (taluk != null) {
-                        Hobli hobli = hobliRepository.findByTalukIdAndHobliCode(taluk.getTalukId(), String.valueOf(farmerLandDetails.getHobliCode()));
+                        Hobli hobli = hobliRepository.findByTalukIdAndHobliCodeAndActive(taluk.getTalukId(), String.valueOf(farmerLandDetails.getHobliCode()),true);
                         if (hobli != null) {
 
-                            Village village = villageRepository.findByHobliIdAndVillageCode(hobli.getHobliId(), String.valueOf(farmerLandDetails.getVillageCode()));
+                            Village village = villageRepository.findByHobliIdAndVillageCodeAndActive(hobli.getHobliId(), String.valueOf(farmerLandDetails.getVillageCode()),true);
                             if (village == null) {
                                 farmerLandDetails.setVillageId(null);
                                 farmerLandDetails.setHobliId(null);
