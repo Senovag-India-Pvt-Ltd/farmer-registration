@@ -82,6 +82,9 @@ public class TraderLicenseResponse {
     @Schema(name = "districtName", example = "Test")
     String districtName;
 
+    @Schema(name = "silkType", example = "Test")
+    String silkType;
+
 
     @Schema(name = "error", example = "true")
     Boolean error;

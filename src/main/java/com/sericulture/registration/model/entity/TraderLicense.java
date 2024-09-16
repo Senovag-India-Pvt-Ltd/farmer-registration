@@ -78,4 +78,7 @@ public class TraderLicense extends BaseEntity implements Serializable {
 
     @Column(name = "license_number_sequence")
     private Long licenseNumberSequence;
+
+    @Column(name = "silk_type")
+    private String silkType;
 }

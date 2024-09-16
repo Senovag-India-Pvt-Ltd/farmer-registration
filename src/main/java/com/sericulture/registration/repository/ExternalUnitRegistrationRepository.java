@@ -37,6 +37,7 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             " externalUnitRegistration.externalUnitNumber," +
             " externalUnitRegistration.organisationName," +
             " externalUnitRegistration.raceMasterId," +
+            " externalUnitRegistration.capacity,"+
             " externalUnitType.externalUnitTypeName," +
             " raceMaster.raceMasterName" +
             ") \n" +
@@ -59,6 +60,7 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             " externalUnitRegistration.externalUnitNumber," +
             " externalUnitRegistration.organisationName," +
             " externalUnitRegistration.raceMasterId," +
+            " externalUnitRegistration.capacity,"+
             " externalUnitType.externalUnitTypeName," +
             " raceMaster.raceMasterName" +
             ") \n" +
@@ -80,6 +82,7 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
         " externalUnitRegistration.externalUnitNumber," +
         " externalUnitRegistration.organisationName," +
         " externalUnitRegistration.raceMasterId," +
+        " externalUnitRegistration.capacity,"+
         " externalUnitType.externalUnitTypeName," +
         " raceMaster.raceMasterName" +
         ") \n" +

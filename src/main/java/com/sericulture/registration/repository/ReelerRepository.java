@@ -117,7 +117,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.walletAmount," +
             " reeler.reelerNumber," +
             " reeler.reelerTypeMasterId," +
-            " reelerTypeMaster.reelerTypeMasterName " +
+            " reelerTypeMaster.reelerTypeMasterName," +
+            " userMaster.username" +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -140,10 +141,15 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "on reeler.villageId = village.villageId " +
             "left join ReelerTypeMaster reelerTypeMaster " +
             "on reeler.reelerTypeMasterId = reelerTypeMaster.reelerTypeMasterId " +
+            "left join UserMaster userMaster\n" +
+            "on reeler.assignToInspectId = userMaster.userMasterId " +
             "where reeler.active = :isActive AND reeler.reelerId = :id")
     public ReelerDTO getByReelerIdAndActive(@Param("id") long id, @Param("isActive") boolean isActive);
 
- @Query("select new com.sericulture.registration.model.dto.reeler.ReelerDTO(" +
+//    public List<Reeler> findByTscMasterIdAndActiveOrderByTscName(long tscMasterId, boolean isActive);
+
+
+    @Query("select new com.sericulture.registration.model.dto.reeler.ReelerDTO(" +
          " reeler.reelerId, " +
          " reeler.reelerName, " +
          " reeler.wardNumber, " +
@@ -216,7 +222,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
          " reeler.walletAmount," +
          " reeler.reelerNumber," +
          " reeler.reelerTypeMasterId," +
-         " reelerTypeMaster.reelerTypeMasterName " +
+         " reelerTypeMaster.reelerTypeMasterName," +
+         " userMaster.username" +
          ") " +
          "from Reeler reeler " +
          "left join Caste caste " +
@@ -239,6 +246,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
          "on reeler.villageId = village.villageId " +
          "left join ReelerTypeMaster reelerTypeMaster " +
          "on reeler.reelerTypeMasterId = reelerTypeMaster.reelerTypeMasterId " +
+         "left join UserMaster userMaster\n" +
+         "on reeler.assignToInspectId = userMaster.userMasterId " +
          "where reeler.active = :isActive AND reeler.reelingLicenseNumber = :id")
  public ReelerDTO getByReelerLicenseNumberAndActive(@Param("id") String id, @Param("isActive") boolean isActive);
 
@@ -316,7 +325,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.walletAmount," +
             " reeler.reelerNumber," +
             " reeler.reelerTypeMasterId," +
-            " reelerTypeMaster.reelerTypeMasterName " +
+            " reelerTypeMaster.reelerTypeMasterName," +
+            " userMaster.username" +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -339,6 +349,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "on reeler.villageId = village.villageId " +
             "left join ReelerTypeMaster reelerTypeMaster " +
             "on reeler.reelerTypeMasterId = reelerTypeMaster.reelerTypeMasterId " +
+            "left join UserMaster userMaster\n" +
+            "on reeler.assignToInspectId = userMaster.userMasterId " +
             "where reeler.active = :isActive AND reeler.mobileNumber = :mobileNumber")
     public ReelerDTO getByMobileNumberAndActive(@Param("mobileNumber") String mobileNumber, @Param("isActive") boolean isActive);
 
@@ -415,7 +427,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.walletAmount," +
             " reeler.reelerNumber," +
             " reeler.reelerTypeMasterId," +
-            " reelerTypeMaster.reelerTypeMasterName " +
+            " reelerTypeMaster.reelerTypeMasterName," +
+            " userMaster.username" +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -438,6 +451,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "on reeler.villageId = village.villageId " +
             "left join ReelerTypeMaster reelerTypeMaster " +
             "on reeler.reelerTypeMasterId = reelerTypeMaster.reelerTypeMasterId " +
+            "left join UserMaster userMaster\n" +
+            "on reeler.assignToInspectId = userMaster.userMasterId " +
             "where reeler.active = :isActive AND reeler.reelerNumber = :reelerNumber")
     public ReelerDTO getByReelerNumberAndActive(@Param("reelerNumber") String reelerNumber,@Param("isActive") boolean isActive);
 
@@ -515,7 +530,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.walletAmount," +
             " reeler.reelerNumber," +
             " reeler.reelerTypeMasterId," +
-            " reelerTypeMaster.reelerTypeMasterName " +
+            " reelerTypeMaster.reelerTypeMasterName," +
+            " userMaster.username" +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -538,6 +554,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "on reeler.villageId = village.villageId " +
             "left join ReelerTypeMaster reelerTypeMaster " +
             "on reeler.reelerTypeMasterId = reelerTypeMaster.reelerTypeMasterId " +
+            "left join UserMaster userMaster\n" +
+            "on reeler.assignToInspectId = userMaster.userMasterId " +
             "where reeler.active = :isActive " +
             "ORDER BY reeler.reelerName ASC"
     )
@@ -616,7 +634,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.walletAmount," +
             " reeler.reelerNumber," +
             " reeler.reelerTypeMasterId," +
-            " reelerTypeMaster.reelerTypeMasterName " +
+            " reelerTypeMaster.reelerTypeMasterName," +
+            " userMaster.username" +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -639,9 +658,12 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "on reeler.villageId = village.villageId " +
             "left join ReelerTypeMaster reelerTypeMaster " +
             "on reeler.reelerTypeMasterId = reelerTypeMaster.reelerTypeMasterId " +
+            "left join UserMaster userMaster\n" +
+            "on reeler.assignToInspectId = userMaster.userMasterId " +
             "where reeler.active = :isActive AND " +
             "(:joinColumn = 'reeler.mobileNumber' AND reeler.mobileNumber LIKE :searchText) OR " +
-            "(:joinColumn = 'reeler.reelingLicenseNumber' AND reeler.reelingLicenseNumber LIKE :searchText)"
+            "(:joinColumn = 'reeler.reelingLicenseNumber' AND reeler.reelingLicenseNumber LIKE :searchText) OR " +
+            "(:joinColumn = 'reeler.bankAccountNumber' AND reeler.bankAccountNumber LIKE :searchText)"
     )
     public Page<ReelerDTO> getSortedReelers(@Param("joinColumn") String joinColumn, @Param("searchText") String searchText, @Param("isActive") boolean isActive, Pageable pageable);
 
@@ -651,6 +673,7 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
          " CASE WHEN :joinColumn = 'reeler.mobileNumber' THEN reeler.mobileNumber " +
          "      WHEN :joinColumn = 'reeler.reelerName' THEN reeler.reelerName " +
          "      WHEN :joinColumn = 'reeler.reelingLicenseNumber' THEN reeler.reelingLicenseNumber " +
+         "      WHEN :joinColumn = 'reeler.bankAccountNumber' THEN reeler.bankAccountNumber " +
          "      ELSE null " +
          " END " +
          ") " +
@@ -658,7 +681,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
          "where reeler.active = true AND " +
          "(:joinColumn = 'reeler.mobileNumber' AND reeler.mobileNumber LIKE :searchText) OR " +
          "(:joinColumn = 'reeler.reelerName' AND reeler.reelerName LIKE :searchText) OR " +
-         "(:joinColumn = 'reeler.reelingLicenseNumber' AND reeler.reelingLicenseNumber LIKE :searchText)"
+         "(:joinColumn = 'reeler.bankAccountNumber' AND reeler.bankAccountNumber LIKE :searchText)"
+
  )
  public List<ReelerSearchDTO> getReelerBySearchText(@Param("searchText") String searchText, @Param("joinColumn") String joinColumn);
 

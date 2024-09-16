@@ -16,9 +16,13 @@ public class FarmerAddressDTO {
     private Long talukId;
     private Long hobliId;
     private Long villageId;
+    private String taluk;
+    private String district;
+    private String village;
     private String stateName;
     private String districtName;
     private String talukName;
     private String hobliName;
     private String villageName;
+
 }

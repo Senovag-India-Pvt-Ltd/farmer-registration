@@ -130,4 +130,7 @@ public class EditFarmerRequest extends RequestBody {
 
     @Schema(name = "isOtherStateFarmer", example = "0")
     private Boolean isOtherStateFarmer;
+
+    @Schema(name = "assignToInspectId", example = "1")
+    Long assignToInspectId;
 }

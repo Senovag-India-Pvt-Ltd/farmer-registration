@@ -15,6 +15,7 @@ import com.sericulture.registration.model.entity.FarmerBankAccount;
 import com.sericulture.registration.model.entity.FarmerFamily;
 import com.sericulture.registration.model.entity.FarmerLandDetails;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.List;

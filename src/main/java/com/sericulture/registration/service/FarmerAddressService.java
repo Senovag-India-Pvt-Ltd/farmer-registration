@@ -147,6 +147,10 @@ public class FarmerAddressService {
             farmerAddress.setAddressText(farmerAddressRequest.getAddressText());
             farmerAddress.setPincode(farmerAddressRequest.getPincode());
             farmerAddress.setDefaultAddress(farmerAddressRequest.getDefaultAddress());
+            farmerAddress.setVillage(farmerAddressRequest.getVillage());
+            farmerAddress.setDistrict(farmerAddressRequest.getDistrict());
+            farmerAddress.setTaluk(farmerAddressRequest.getTaluk());
+
             farmerAddress.setActive(true);
             FarmerAddress farmerAddress1 = farmerAddressRepository.save(farmerAddress);
             farmerAddressResponse = mapper.farmerAddressEntityToObject(farmerAddress1, FarmerAddressResponse.class);

@@ -171,6 +171,7 @@ public class ExternalUnitRegistrationService {
             externalUnitRegistration.setExternalUnitTypeId(externalUnitRegistrationRequest.getExternalUnitTypeId());
             externalUnitRegistration.setOrganisationName(externalUnitRegistrationRequest.getOrganisationName());
             externalUnitRegistration.setRaceMasterId(externalUnitRegistrationRequest.getRaceMasterId());
+            externalUnitRegistration.setCapacity(externalUnitRegistrationRequest.getCapacity());
             externalUnitRegistration.setActive(true);
             ExternalUnitRegistration externalUnitRegistration1 = externalUnitRegistrationRepository.save(externalUnitRegistration);
             externalUnitRegistrationResponse = mapper.externalUnitRegistrationEntityToObject(externalUnitRegistration1, ExternalUnitRegistrationResponse.class);

@@ -2,6 +2,7 @@ package com.sericulture.registration.model.api.reeler;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.Date;
@@ -231,6 +232,9 @@ public class ReelerResponse {
 
     @Schema(name = "reelerTypeMasterName", example = "3674637")
     String reelerTypeMasterName;
+
+    @Schema(name = "username", example = "Karnataka",required=true)
+    String username;
 
     @Schema(name = "error", example = "true")
     Boolean error;
