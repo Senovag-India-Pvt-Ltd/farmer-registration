@@ -39,18 +39,29 @@ public class AWSS3ClientConfig {
                 .build();
     }
 
+//    @Bean
+//    @Profile("prod")
+//            public AmazonS3 prods3client() {
+//                log.info("Inside prods3client");
+//                AwsClientBuilder.EndpointConfiguration  endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(host,"");
+////                String[] parts = host.split("\\.");
+//                BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
+//                return AmazonS3ClientBuilder.standard()
+////                       .withRegion(Regions.fromName(parts[1]))
+//                        .withRegion(Regions.fromName(region))
+//                        .withEndpointConfiguration(endpointConfiguration)
+//                        .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+//                        .build();
+//        }
     @Bean
     @Profile("prod")
-            public AmazonS3 prods3client() {
-                log.info("Inside prods3client");
-                AwsClientBuilder.EndpointConfiguration  endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(host,"");
-//                String[] parts = host.split("\\.");
-                BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
-                return AmazonS3ClientBuilder.standard()
-//                       .withRegion(Regions.fromName(parts[1]))
-                        .withRegion(Regions.fromName(region))
-                        .withEndpointConfiguration(endpointConfiguration)
-                        .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-                        .build();
-        }
+    public AmazonS3 prods3client() {
+        log.info("Inside prods3client");
+        AwsClientBuilder.EndpointConfiguration endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(host, "");
+        BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
+        return AmazonS3ClientBuilder.standard()
+                .withEndpointConfiguration(endpointConfiguration)
+                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+                .build();
+    }
 }
