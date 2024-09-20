@@ -41,7 +41,6 @@ public class FarmerBankAccountService {
     @Autowired
     S3Controller s3Controller;
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public FarmerBankAccountResponse getFarmerBankAccountDetails(String farmerBankAccountNumber) {
         FarmerBankAccountResponse farmerBankAccountResponse = new FarmerBankAccountResponse();
         FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerBankAccountNumberAndActive(farmerBankAccountNumber, true);
@@ -76,7 +75,6 @@ public class FarmerBankAccountService {
         return farmerBankAccountResponse;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> getPaginatedFarmerBankAccountDetails(final Pageable pageable) {
         return convertToMapResponse(farmerBankAccountRepository.findByActiveOrderByFarmerBankAccountIdAsc(true, pageable));
     }
@@ -110,7 +108,6 @@ public class FarmerBankAccountService {
         return farmerBankAccountResponse;
     }
 
-    @Transactional
     public FarmerBankAccountResponse getById(int id) {
         FarmerBankAccountResponse farmerBankAccountResponse = new FarmerBankAccountResponse();
         FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerBankAccountIdAndActive(id, true);
@@ -125,7 +122,6 @@ public class FarmerBankAccountService {
         return farmerBankAccountResponse;
     }
 
-    @Transactional
     public FarmerBankAccountResponse getByFarmerId(int id) {
         FarmerBankAccountResponse farmerBankAccountResponse = new FarmerBankAccountResponse();
         FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerIdAndActive(id, true);

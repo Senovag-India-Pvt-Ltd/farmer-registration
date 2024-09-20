@@ -53,7 +53,6 @@ public class FarmerAddressService {
 
 
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedFarmerAddressDetails(final Pageable pageable){
         return convertToMapResponse(farmerAddressRepository.findByActiveOrderByFarmerAddressIdAsc( true, pageable));
     }
@@ -87,7 +86,6 @@ public class FarmerAddressService {
         return farmerAddressResponse;
     }
 
-    @Transactional
     public FarmerAddressResponse getById(int id){
         FarmerAddressResponse farmerAddressResponse = new FarmerAddressResponse();
         FarmerAddress farmerAddress = farmerAddressRepository.findByFarmerAddressIdAndActive(id,true);
@@ -102,7 +100,6 @@ public class FarmerAddressService {
         return farmerAddressResponse;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByFarmerId(int farmerId){
         Map<String, Object> response = new HashMap<>();
         List<FarmerAddress> farmerAddress = farmerAddressRepository.findByFarmerIdAndActive(farmerId, true);
@@ -117,7 +114,6 @@ public class FarmerAddressService {
         }
     }
 
-    @Transactional
     public FarmerAddressResponse getByIdJoin(int id){
         FarmerAddressResponse farmerAddressResponse = new FarmerAddressResponse();
         FarmerAddressDTO farmerAddressDTO = farmerAddressRepository.getByFarmerAddressIdAndActive(id,true);
@@ -151,6 +147,10 @@ public class FarmerAddressService {
             farmerAddress.setAddressText(farmerAddressRequest.getAddressText());
             farmerAddress.setPincode(farmerAddressRequest.getPincode());
             farmerAddress.setDefaultAddress(farmerAddressRequest.getDefaultAddress());
+            farmerAddress.setVillage(farmerAddressRequest.getVillage());
+            farmerAddress.setDistrict(farmerAddressRequest.getDistrict());
+            farmerAddress.setTaluk(farmerAddressRequest.getTaluk());
+
             farmerAddress.setActive(true);
             FarmerAddress farmerAddress1 = farmerAddressRepository.save(farmerAddress);
             farmerAddressResponse = mapper.farmerAddressEntityToObject(farmerAddress1, FarmerAddressResponse.class);
@@ -174,7 +174,6 @@ public class FarmerAddressService {
     }
 
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByFarmerIdJoin(int farmerId){
         Map<String, Object> response = new HashMap<>();
         List<FarmerAddressDTO> farmerAddressDTO = farmerAddressRepository.getByFarmerIdAndActive(farmerId, true);

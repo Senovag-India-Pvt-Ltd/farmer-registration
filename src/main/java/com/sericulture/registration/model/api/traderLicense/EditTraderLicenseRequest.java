@@ -85,4 +85,7 @@ public class EditTraderLicenseRequest extends RequestBody {
 
     @Schema(name = "licenseNumberSequence", example = "1")
     Long licenseNumberSequence;
+
+    @Schema(name = "silkType", example = "Test")
+    String silkType;
 }

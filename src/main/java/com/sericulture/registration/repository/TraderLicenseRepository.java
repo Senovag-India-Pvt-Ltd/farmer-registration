@@ -38,6 +38,7 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.traderLicenseNumber," +
             " traderLicense.representativeDetails," +
             " traderLicense.licenseFee," +
+            " traderLicense.silkType," +
             " traderLicense.licenseChallanNumber," +
             " traderLicense.godownDetails," +
             " traderLicense.silkExchangeMahajar," +
@@ -75,6 +76,7 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.traderLicenseNumber," +
             " traderLicense.representativeDetails," +
             " traderLicense.licenseFee," +
+            " traderLicense.silkType," +
             " traderLicense.licenseChallanNumber," +
             " traderLicense.godownDetails," +
             " traderLicense.silkExchangeMahajar," +
@@ -112,6 +114,7 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.traderLicenseNumber," +
             " traderLicense.representativeDetails," +
             " traderLicense.licenseFee," +
+            " traderLicense.silkType," +
             " traderLicense.licenseChallanNumber," +
             " traderLicense.godownDetails," +
             " traderLicense.silkExchangeMahajar," +

@@ -39,4 +39,7 @@ public class EditExternalUnitRegistrationRequest extends RequestBody {
 
     @Schema(name = "raceMasterId", example = "1")
     Long raceMasterId;
+
+    @Schema(name = "capacity", example = "Test")
+    String capacity;
 }

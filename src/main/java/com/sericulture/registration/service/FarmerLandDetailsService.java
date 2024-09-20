@@ -49,7 +49,6 @@ public class FarmerLandDetailsService {
         return mapper.farmerLandDetailsEntityToObject(farmerLandDetailsRepository.save(farmerLandDetails),FarmerLandDetailsResponse.class);
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedFarmerLandDetailsDetails(final Pageable pageable){
         return convertToMapResponse(farmerLandDetailsRepository.findByActiveOrderByFarmerLandDetailsIdAsc( true, pageable));
     }
@@ -83,7 +82,6 @@ public class FarmerLandDetailsService {
         return farmerLandDetailsResponse;
     }
 
-    @Transactional
     public FarmerLandDetailsResponse getById(int id){
         FarmerLandDetailsResponse farmerLandDetailsResponse = new FarmerLandDetailsResponse();
         FarmerLandDetails farmerLandDetails = farmerLandDetailsRepository.findByFarmerLandDetailsIdAndActive(id,true);
@@ -98,7 +96,6 @@ public class FarmerLandDetailsService {
         return farmerLandDetailsResponse;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByFarmerId(int farmerId) {
         Map<String, Object> response = new HashMap<>();
         List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerIdAndActive(farmerId, true);
@@ -122,7 +119,6 @@ public class FarmerLandDetailsService {
         return response;
     }
 
-    @Transactional
     public FarmerLandDetailsResponse getByIdJoin(int id){
         FarmerLandDetailsResponse farmerLandDetailsResponse = new FarmerLandDetailsResponse();
         FarmerLandDetailsDTO farmerLandDetailsDTO = farmerLandDetailsRepository.getByFarmerLandDetailsIdAndActive(id,true);
@@ -206,7 +202,6 @@ public class FarmerLandDetailsService {
         return farmerLandDetailsResponse;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByFarmerIdJoin(int farmerId){
         Map<String, Object> response = new HashMap<>();
         List<FarmerLandDetailsDTO> farmerLandDetailsDTO = farmerLandDetailsRepository.getByFarmerIdAndActive(farmerId, true);

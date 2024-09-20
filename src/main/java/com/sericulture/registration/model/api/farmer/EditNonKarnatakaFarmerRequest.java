@@ -98,4 +98,7 @@ public class EditNonKarnatakaFarmerRequest {
 
     @Schema(name = "editFarmerBankAccountRequest")
     EditFarmerBankAccountRequest editFarmerBankAccountRequest;
+
+    @Schema(name = "farmerNumber", example = "12345")
+    String farmerNumber;
 }

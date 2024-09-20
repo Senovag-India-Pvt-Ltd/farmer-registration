@@ -10,6 +10,7 @@ import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.farmer.*;
 import com.sericulture.registration.model.api.farmerAddress.EditFarmerAddressRequest;
 import com.sericulture.registration.model.api.farmerBankAccount.EditFarmerBankAccountRequest;
+import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountRequest;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
@@ -279,7 +280,6 @@ public class FarmerService {
         return farmerResponse;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> getPaginatedFarmerDetails(final Pageable pageable) {
         return convertToMapResponse(farmerRepository.findByActiveOrderByFarmerIdAsc(true, pageable));
     }
@@ -313,7 +313,6 @@ public class FarmerService {
         return farmerResponse;
     }
 
-    @Transactional
     public FarmerResponse getById(int id) {
         FarmerResponse farmerResponse = new FarmerResponse();
         Farmer farmer = farmerRepository.findByFarmerIdAndActive(id, true);
@@ -371,6 +370,8 @@ public class FarmerService {
             farmer.setFatherNameKan(farmerRequest.getFatherNameKan());
             farmer.setFatherName(farmerRequest.getFatherName());
             farmer.setNameKan(farmerRequest.getNameKan());
+            farmer.setAssignToInspectId(farmerRequest.getAssignToInspectId());
+
 
             farmer.setActive(true);
             Farmer farmer1 = farmerRepository.save(farmer);
@@ -470,7 +471,6 @@ public class FarmerService {
         return farmerResponse;
     }
 
-    @Transactional
     public GetFarmerResponse getFarmerDetails(GetFarmerRequest getFarmerRequest) {
         FarmerResponse farmerResponse = new FarmerResponse();
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
@@ -512,7 +512,6 @@ public class FarmerService {
 
     }
 
-    @Transactional
     public GetFarmerResponse getFarmerDetailsByFruitsId(GetFarmerRequest getFarmerRequest) throws Exception {
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
         Farmer farmer = new Farmer();
@@ -642,7 +641,6 @@ public class FarmerService {
         return getFarmerResponse;
     }
 
-    @Transactional
     public GetFarmerResponse getFarmerDetailsByFruitsIdOrFarmerNumberOrMobileNumber(GetFarmerRequest getFarmerRequest) throws Exception {
         log.info("Entered to function");
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
@@ -660,6 +658,7 @@ public class FarmerService {
 
             //  GetFruitsResponse getFruitsResponse = fruitsApiService.getFarmerByFruitsIdWithResponse(fruitsFarmerDTO);
             String inputData = String.valueOf(fruitsApiService.getFarmerByFruitsId(fruitsFarmerDTO).getBody());
+            log.info("InputData" + inputData);
 
             if (inputData.equals("Error!, Please try again")) {
                 getFarmerResponse.setError(true);
@@ -669,6 +668,7 @@ public class FarmerService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
                 GetFruitsResponse getFruitsResponse = objectMapper.readValue(inputData, GetFruitsResponse.class);
+                log.info("getFruitsResponse"+ objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(getFruitsResponse));
 
                 Farmer farmer1 = new Farmer();
                 farmer1.setFruitsId(getFruitsResponse.getFarmerID());
@@ -740,20 +740,20 @@ public class FarmerService {
 //                villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
 //                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
 
-                    log.info("District code: " + farmerLandDetails.getDistrictCode());
-                    District district = districtRepository.findByDistrictCode(String.valueOf(getLandDetailsResponse.getDistrictCode()));
+                    log.info("District code: " + getLandDetailsResponse.getDistrictCode());
+                    District district = districtRepository.findByDistrictCodeAndActive(String.valueOf(getLandDetailsResponse.getDistrictCode()),true);
                     if (district != null) {
                         log.info("District name: " + district.getDistrictName() + ":districtId:" + district.getDistrictId() + ":lgDist:" + district.getDistrictCode());
                         log.info("Taluk code: " + getLandDetailsResponse.getTalukCode());
-                        Taluk taluk = talukRepository.findByDistrictIdAndTalukCode(district.getDistrictId(), String.valueOf(getLandDetailsResponse.getTalukCode()));
+                        Taluk taluk = talukRepository.findByDistrictIdAndTalukCodeAndActive(district.getDistrictId(), String.valueOf(getLandDetailsResponse.getTalukCode()),true);
                         if (taluk != null) {
                             log.info("Taluk name: " + taluk.getTalukName() + ":talukId:" + taluk.getTalukId() + ":districtId" + taluk.getDistrictId() + "lgTaluk:" + taluk.getLgTaluk());
                             log.info("Hobli code: " + getLandDetailsResponse.getHobliCode());
-                            Hobli hobli = hobliRepository.findByTalukIdAndHobliCode(taluk.getTalukId(), String.valueOf(getLandDetailsResponse.getHobliCode()));
+                            Hobli hobli = hobliRepository.findByTalukIdAndHobliCodeAndActive(taluk.getTalukId(), String.valueOf(getLandDetailsResponse.getHobliCode()),true);
                             if (hobli != null) {
                                 log.info("Hobli name: " + hobli.getHobliName() + ":hobliId:" + hobli.getHobliId() + ":districtId" + hobli.getDistrictId() + ":talukId:" + hobli.getTalukId());
                                 log.info("Village code: " + getLandDetailsResponse.getVillageCode());
-                                Village village = villageRepository.findByHobliIdAndVillageCode(hobli.getHobliId(), String.valueOf(getLandDetailsResponse.getVillageCode()));
+                                Village village = villageRepository.findByHobliIdAndVillageCodeAndActive(hobli.getHobliId(), String.valueOf(getLandDetailsResponse.getVillageCode()),true);
                                 if (village == null) {
                                     log.info("Village name: " + village.getVillageName() + ":hobliId:" + village.getHobliId() + ":districtId" + village.getDistrictId() + ":talukId:" + village.getTalukId() + ":villageId:" + village.getVillageId() + ":lgVillage:" + village.getLgVillage());
                                     farmerLandDetails.setVillageId(null);
@@ -906,7 +906,6 @@ public class FarmerService {
     }
 
 
-    @Transactional
     public GetFarmerResponse getDetailsByFruitsId(GetFarmerRequest getFarmerRequest) throws Exception {
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
         Farmer farmer = new Farmer();
@@ -1008,15 +1007,15 @@ public class FarmerService {
 //                villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
 //                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
 
-                District district = districtRepository.findByDistrictCode(String.valueOf(farmerLandDetails.getDistrictCode()));
+                District district = districtRepository.findByDistrictCodeAndActive(String.valueOf(farmerLandDetails.getDistrictCode()),true);
                 if (district != null) {
 
-                    Taluk taluk = talukRepository.findByDistrictIdAndTalukCode(district.getDistrictId(), String.valueOf(farmerLandDetails.getTalukCode()));
+                    Taluk taluk = talukRepository.findByDistrictIdAndTalukCodeAndActive(district.getDistrictId(), String.valueOf(farmerLandDetails.getTalukCode()),true);
                     if (taluk != null) {
-                        Hobli hobli = hobliRepository.findByTalukIdAndHobliCode(taluk.getTalukId(), String.valueOf(farmerLandDetails.getHobliCode()));
+                        Hobli hobli = hobliRepository.findByTalukIdAndHobliCodeAndActive(taluk.getTalukId(), String.valueOf(farmerLandDetails.getHobliCode()),true);
                         if (hobli != null) {
 
-                            Village village = villageRepository.findByHobliIdAndVillageCode(hobli.getHobliId(), String.valueOf(farmerLandDetails.getVillageCode()));
+                            Village village = villageRepository.findByHobliIdAndVillageCodeAndActive(hobli.getHobliId(), String.valueOf(farmerLandDetails.getVillageCode()),true);
                             if (village == null) {
                                 farmerLandDetails.setVillageId(null);
                                 farmerLandDetails.setHobliId(null);
@@ -1127,8 +1126,6 @@ public class FarmerService {
 
         return getFarmerResponse;
     }
-
-    @Transactional
     public GetFarmerResponse getFarmerDetailsByFruitsIdTest(GetFarmerRequest getFarmerRequest) {
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
         Farmer farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(), true);
@@ -1272,7 +1269,6 @@ public class FarmerService {
         return getFarmerResponse;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public FarmerResponse getByFarmerIdJoin(int farmerId) {
         FarmerResponse farmerResponse = new FarmerResponse();
         FarmerDTO farmerDTO = farmerRepository.getByFarmerIdAndActive(farmerId, true);
@@ -1304,12 +1300,10 @@ public class FarmerService {
 //        response.put("totalItems", farmerDTOList.size());
 //        return response;
 //    }
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> getPaginatedFarmerDetailsWithJoin(final Pageable pageable) {
         return convertDTOToMapResponse(farmerRepository.getByActiveOrderByFarmerIdAsc(true, pageable));
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText, int joinColumnType) {
         Page<FarmerDTO> page;
         if (searchText == null || searchText.equals("")) {
@@ -1352,7 +1346,6 @@ public class FarmerService {
         return response;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Object> searchByColumnAndSort(SearchWithSortRequest searchWithSortRequest) {
         if (searchWithSortRequest.getSearchText() == null || searchWithSortRequest.getSearchText().equals("")) {
             searchWithSortRequest.setSearchText("%%");
@@ -1431,92 +1424,169 @@ public class FarmerService {
         return farmerResponse;
     }
 
+//    @Transactional
+//    public FarmerResponse insertNonKarnatakaFarmers(NonKarnatakaFarmerRequest farmerRequest) throws Exception {
+//        Farmer farmer2 = new Farmer();
+//        Long farmerId;
+//        FarmerRequest farmer1 = new FarmerRequest();
+//        farmerRequest.setIsOtherStateFarmer(true);
+//        FarmerResponse farmerResponse = new FarmerResponse();
+//        farmer1.setIsOtherStateFarmer(true);
+//        farmer1.setFirstName(farmerRequest.getFirstName());
+//        farmer1.setMiddleName(farmerRequest.getMiddleName());
+//        farmer1.setLastName(farmerRequest.getLastName());
+//        farmer1.setNameKan(farmerRequest.getNameKan());
+//        farmer1.setFatherName(farmerRequest.getFatherName());
+//        farmer1.setFatherNameKan(farmerRequest.getFatherNameKan());
+//        farmer1.setDob(farmerRequest.getDob());
+//        farmer1.setCasteId(farmerRequest.getCasteId());
+//        farmer1.setMobileNumber(farmerRequest.getMobileNumber());
+//        farmer1.setEpicNumber(farmerRequest.getEpicNumber());
+//        farmer1.setPassbookNumber(farmerRequest.getPassbookNumber());
+//        farmer1.setFarmerTypeId(farmerRequest.getFarmerTypeId());
+//        farmer1.setFarmerNumber(farmerRequest.getFarmerNumber());
+//        farmer1.setGenderId(farmerRequest.getGenderId());
+//
+//        LocalDate today = Util.getISTLocalDate();
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
+//        String formattedDate = today.format(formatter);
+////        List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
+////        SerialCounter serialCounter = new SerialCounter();
+////        if (serialCounters.size() > 0) {
+////            serialCounter = serialCounters.get(0);
+////            long counterValue = 1L;
+////            if (serialCounter.getOtherStateFarmerCounter() != null) {
+////                counterValue = serialCounter.getOtherStateFarmerCounter() + 1;
+////            }
+////            serialCounter.setOtherStateFarmerCounter(counterValue);
+////        } else {
+////            serialCounter.setOtherStateFarmerCounter(1L);
+////        }
+////        serialCounterRepository.save(serialCounter);
+////        String formattedNumber = String.format("%05d", serialCounter.getOtherStateFarmerCounter());
+//
+////        farmer1.setFarmerNumber(formattedNumber);
+//
+////        UUID uuid = UUID.randomUUID();
+////        String extension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
+////        String fileName = "farmer/" + uuid + "_" + extension;
+////        s3Controller.uploadFile(multipartFile, fileName);
+////        farmer1.setPhotoPath(fileName);
+//
+//        Farmer farmer = mapper.farmerObjectToEntity(farmer1, Farmer.class);
+//        farmer.setWithoutFruitsInwardCounter(0L);
+//        validator.validate(farmer);
+//
+//
+//        // Check for duplicate Reeler Number
+//        List<Farmer> farmerListByNumber = farmerRepository.findByMobileNumber(farmer.getMobileNumber());
+//        if (!farmerListByNumber.isEmpty() && farmerListByNumber.stream().anyMatch(Farmer::getActive)) {
+//            farmerResponse.setError(true);
+//            farmerResponse.setError_description("Farmer Mobile Number already exists");
+//        } else {
+//            // If no duplicates found, save the reeler
+//            farmer2 = farmerRepository.save(farmer);
+//            farmerResponse = mapper.farmerEntityToObject(farmer2, FarmerResponse.class);
+//            farmerResponse.setError(false);
+//        }
+//
+//        if (!farmerResponse.getError()) {
+//            farmerId = farmer2.getFarmerId();
+//
+//            for (FarmerAddress farmerAddress : farmerRequest.getFarmerAddressList()) {
+//                farmerAddress.setFarmerId(farmerId);
+//                farmerAddress.setDefaultAddress(true);
+//                farmerAddressRepository.save(farmerAddress);
+//            }
+//
+//            List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerRequest.getFarmerBankAccount().getFarmerBankAccountNumber());
+//            if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().filter(FarmerBankAccount::getActive).findAny().isPresent()) {
+//                farmerResponse.setError(true);
+//                farmerResponse.setError_description("FarmerBankAccount number already exist");
+//            } else {
+//                farmerRequest.getFarmerBankAccount().setFarmerId(farmerId);
+//                FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerRequest.getFarmerBankAccount());
+//                farmerResponse.setFarmerBankAccountId(farmerBankAccount1.getFarmerBankAccountId());
+//            }
+//        }
+//
+//        return farmerResponse;
+//    }
+
     @Transactional
     public FarmerResponse insertNonKarnatakaFarmers(NonKarnatakaFarmerRequest farmerRequest) throws Exception {
-        Farmer farmer2 = new Farmer();
-        Long farmerId;
-        FarmerRequest farmer1 = new FarmerRequest();
-        farmerRequest.setIsOtherStateFarmer(true);
         FarmerResponse farmerResponse = new FarmerResponse();
-        farmer1.setIsOtherStateFarmer(true);
-        farmer1.setFirstName(farmerRequest.getFirstName());
-        farmer1.setMiddleName(farmerRequest.getMiddleName());
-        farmer1.setLastName(farmerRequest.getLastName());
-        farmer1.setNameKan(farmerRequest.getNameKan());
-        farmer1.setFatherName(farmerRequest.getFatherName());
-        farmer1.setFatherNameKan(farmerRequest.getFatherNameKan());
-        farmer1.setDob(farmerRequest.getDob());
-        farmer1.setCasteId(farmerRequest.getCasteId());
-        farmer1.setMobileNumber(farmerRequest.getMobileNumber());
-        farmer1.setEpicNumber(farmerRequest.getEpicNumber());
-        farmer1.setPassbookNumber(farmerRequest.getPassbookNumber());
-        farmer1.setFarmerTypeId(farmerRequest.getFarmerTypeId());
-        farmer1.setFarmerNumber(farmerRequest.getFarmerNumber());
 
-        LocalDate today = Util.getISTLocalDate();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
-        String formattedDate = today.format(formatter);
-//        List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
-//        SerialCounter serialCounter = new SerialCounter();
-//        if (serialCounters.size() > 0) {
-//            serialCounter = serialCounters.get(0);
-//            long counterValue = 1L;
-//            if (serialCounter.getOtherStateFarmerCounter() != null) {
-//                counterValue = serialCounter.getOtherStateFarmerCounter() + 1;
-//            }
-//            serialCounter.setOtherStateFarmerCounter(counterValue);
-//        } else {
-//            serialCounter.setOtherStateFarmerCounter(1L);
-//        }
-//        serialCounterRepository.save(serialCounter);
-//        String formattedNumber = String.format("%05d", serialCounter.getOtherStateFarmerCounter());
+        try {
+            // Initialize FarmerRequest
+            FarmerRequest farmer1 = new FarmerRequest();
+            farmerRequest.setIsOtherStateFarmer(true);
+            farmer1.setIsOtherStateFarmer(true);
+            farmer1.setFirstName(farmerRequest.getFirstName());
+            farmer1.setMiddleName(farmerRequest.getMiddleName());
+            farmer1.setLastName(farmerRequest.getLastName());
+            farmer1.setNameKan(farmerRequest.getNameKan());
+            farmer1.setFatherName(farmerRequest.getFatherName());
+            farmer1.setFatherNameKan(farmerRequest.getFatherNameKan());
+            farmer1.setDob(farmerRequest.getDob());
+            farmer1.setCasteId(farmerRequest.getCasteId());
+            farmer1.setMobileNumber(farmerRequest.getMobileNumber());
+            farmer1.setEpicNumber(farmerRequest.getEpicNumber());
+            farmer1.setPassbookNumber(farmerRequest.getPassbookNumber());
+            farmer1.setFarmerTypeId(farmerRequest.getFarmerTypeId());
+            farmer1.setFarmerNumber(farmerRequest.getFarmerNumber());
+            farmer1.setGenderId(farmerRequest.getGenderId());
 
-//        farmer1.setFarmerNumber(formattedNumber);
+            // Formatting Date
+            LocalDate today = Util.getISTLocalDate();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
+            String formattedDate = today.format(formatter);
 
-//        UUID uuid = UUID.randomUUID();
-//        String extension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
-//        String fileName = "farmer/" + uuid + "_" + extension;
-//        s3Controller.uploadFile(multipartFile, fileName);
-//        farmer1.setPhotoPath(fileName);
+            // Convert to Farmer Entity
+            Farmer farmer = mapper.farmerObjectToEntity(farmer1, Farmer.class);
+            farmer.setWithoutFruitsInwardCounter(0L);
+            validator.validate(farmer);
 
-        Farmer farmer = mapper.farmerObjectToEntity(farmer1, Farmer.class);
-        farmer.setWithoutFruitsInwardCounter(0L);
-        validator.validate(farmer);
+            // Check for duplicate Mobile Number
+            List<Farmer> farmerListByNumber = farmerRepository.findByMobileNumber(farmer.getMobileNumber());
+            if (!farmerListByNumber.isEmpty() && farmerListByNumber.stream().anyMatch(Farmer::getActive)) {
+                throw new Exception("Farmer Mobile Number already exists");
+            }
 
-
-        // Check for duplicate Reeler Number
-        List<Farmer> farmerListByNumber = farmerRepository.findByMobileNumber(farmer.getMobileNumber());
-        if (!farmerListByNumber.isEmpty() && farmerListByNumber.stream().anyMatch(Farmer::getActive)) {
-            farmerResponse.setError(true);
-            farmerResponse.setError_description("Farmer Mobile Number already exists");
-        } else {
-            // If no duplicates found, save the reeler
-            farmer2 = farmerRepository.save(farmer);
-            farmerResponse = mapper.farmerEntityToObject(farmer2, FarmerResponse.class);
+            // Save Farmer
+            Farmer savedFarmer = farmerRepository.save(farmer);
+            farmerResponse = mapper.farmerEntityToObject(savedFarmer, FarmerResponse.class);
             farmerResponse.setError(false);
-        }
 
-        if (!farmerResponse.getError()) {
-            farmerId = farmer2.getFarmerId();
+            Long farmerId = savedFarmer.getFarmerId();
 
+            // Save Farmer Addresses
             for (FarmerAddress farmerAddress : farmerRequest.getFarmerAddressList()) {
                 farmerAddress.setFarmerId(farmerId);
+                farmerAddress.setDefaultAddress(true);
                 farmerAddressRepository.save(farmerAddress);
             }
 
+            // Check for duplicate Bank Account
             List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerRequest.getFarmerBankAccount().getFarmerBankAccountNumber());
             if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().filter(FarmerBankAccount::getActive).findAny().isPresent()) {
-                farmerResponse.setError(true);
-                farmerResponse.setError_description("FarmerBankAccount number already exist");
-            } else {
-                farmerRequest.getFarmerBankAccount().setFarmerId(farmerId);
-                FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerRequest.getFarmerBankAccount());
-                farmerResponse.setFarmerBankAccountId(farmerBankAccount1.getFarmerBankAccountId());
+                throw new Exception("FarmerBankAccount number already exists");
             }
+
+            // Save Farmer Bank Account
+            farmerRequest.getFarmerBankAccount().setFarmerId(farmerId);
+            FarmerBankAccount savedFarmerBankAccount = farmerBankAccountRepository.save(farmerRequest.getFarmerBankAccount());
+            farmerResponse.setFarmerBankAccountId(savedFarmerBankAccount.getFarmerBankAccountId());
+
+        } catch (Exception e) {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description(e.getMessage());
+            throw new ValidationException(String.format(e.getMessage()));
         }
 
         return farmerResponse;
     }
+
 
    /* @Transactional
     public FarmerResponse updateNonKarnatakaFarmer(EditNonKarnatakaFarmerRequest farmerRequest) throws Exception {
@@ -1676,6 +1746,94 @@ public class FarmerService {
         farmer.setEpicNumber(farmerRequest.getEpicNumber());
         farmer.setPassbookNumber(farmerRequest.getPassbookNumber());
         farmer.setWithoutFruitsInwardCounter(0L);
+        farmer.setFarmerNumber(farmerRequest.getFarmerNumber());
+        farmer.setFarmerTypeId(farmerRequest.getFarmerTypeId());
+        farmer.setGenderId(farmerRequest.getGenderId());
+        farmer.setNameKan(farmerRequest.getNameKan());
+        farmer.setPhotoPath(farmerRequest.getPhotoPath());
+
+        // Validate the farmer entity
+        validator.validate(farmer);
+
+        // Save the updated farmer details
+        Farmer updatedFarmer = farmerRepository.save(farmer);
+        farmerResponse = mapper.farmerEntityToObject(updatedFarmer, FarmerResponse.class);
+        farmerResponse.setError(false);
+
+        long farmerId = farmerResponse.getFarmerId();
+        if (farmerId > 0) {
+            // Update farmer bank account details if provided
+            EditFarmerBankAccountRequest editFarmerBankAccountRequest = farmerRequest.getEditFarmerBankAccountRequest();
+            if (editFarmerBankAccountRequest != null && editFarmerBankAccountRequest.getFarmerBankAccountId() != 0) {
+                editFarmerBankAccountRequest.setFarmerId(farmerId);
+                FarmerBankAccountResponse farmerBankAccountResponse = farmerBankAccountService.updateFarmerBankAccountDetails(editFarmerBankAccountRequest);
+                if (farmerBankAccountResponse != null && farmerBankAccountResponse.getFarmerBankAccountId() > 0) {
+                    farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
+                } else {
+                    farmerResponse.setError(true);
+                    farmerResponse.setError_description("Failed to update farmer bank account details");
+                    // Optionally handle the error or throw an exception
+                }
+            }else {
+                FarmerBankAccountRequest farmerBankAccountRequest = new FarmerBankAccountRequest();
+                farmerBankAccountRequest.setFarmerId(farmerId);
+                farmerBankAccountRequest.setFarmerBankName(editFarmerBankAccountRequest.getFarmerBankName());
+                farmerBankAccountRequest.setFarmerBankBranchName(editFarmerBankAccountRequest.getFarmerBankBranchName());
+                farmerBankAccountRequest.setFarmerBankAccountNumber(editFarmerBankAccountRequest.getFarmerBankAccountNumber());
+                farmerBankAccountRequest.setFarmerBankIfscCode(editFarmerBankAccountRequest.getFarmerBankIfscCode());
+                farmerBankAccountRequest.setAccountImagePath(editFarmerBankAccountRequest.getAccountImagePath());
+                FarmerBankAccountResponse farmerBankAccountResponse = farmerBankAccountService.insertFarmerBankAccountDetails(farmerBankAccountRequest);
+                if (farmerBankAccountResponse != null && farmerBankAccountResponse.getFarmerBankAccountId() > 0) {
+                    farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
+                } else {
+                    farmerResponse.setError(true);
+                    farmerResponse.setError_description("Failed to Save farmer bank account details");
+                    // Optionally handle the error or throw an exception
+                }
+
+            }
+
+            // Update farmer address details if provided
+            EditFarmerAddressRequest addressRequest = farmerRequest.getEditFarmerAddressRequest();
+            if (addressRequest != null) {
+                addressRequest.setFarmerId(farmerId);
+                farmerAddressService.updateFarmerAddressDetails(addressRequest);
+            }
+        } else {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Error occurred while updating Farmer details");
+        }
+
+        return farmerResponse;
+    }
+
+    @Transactional
+    public FarmerResponse editKarnatakaFarmerWithoutFruitsIdDetails(EditNonKarnatakaFarmerRequest farmerRequest) throws Exception {
+        FarmerResponse farmerResponse = new FarmerResponse();
+
+        Optional<Farmer> optionalFarmer = farmerRepository.findByFarmerId(farmerRequest.getFarmerId());
+        if (!optionalFarmer.isPresent()) {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Farmer not found");
+            return farmerResponse;
+        }
+
+        Farmer farmer = optionalFarmer.get();
+        farmer.setFirstName(farmerRequest.getFirstName());
+        farmer.setMiddleName(farmerRequest.getMiddleName());
+        farmer.setLastName(farmerRequest.getLastName());
+        farmer.setNameKan(farmerRequest.getNameKan());
+        farmer.setFatherName(farmerRequest.getFatherName());
+        farmer.setFatherNameKan(farmerRequest.getFatherNameKan());
+        farmer.setDob(farmerRequest.getDob());
+        farmer.setCasteId(farmerRequest.getCasteId());
+        farmer.setMobileNumber(farmerRequest.getMobileNumber());
+        farmer.setEpicNumber(farmerRequest.getEpicNumber());
+        farmer.setPassbookNumber(farmerRequest.getPassbookNumber());
+        farmer.setWithoutFruitsInwardCounter(0L);
+        farmer.setFarmerNumber(farmerRequest.getFarmerNumber());
+        farmer.setGenderId(farmerRequest.getGenderId());
+        farmer.setFarmerTypeId(farmerRequest.getFarmerTypeId());
 
         // Validate the farmer entity
         validator.validate(farmer);
@@ -1722,41 +1880,44 @@ public class FarmerService {
         Farmer farmer2 = new Farmer();
         Long farmerId;
         FarmerRequest farmer1 = new FarmerRequest();
-        farmerRequest.setIsOtherStateFarmer(false);
         FarmerResponse farmerResponse = new FarmerResponse();
-        farmer1.setIsOtherStateFarmer(false);
-        farmer1.setFirstName(farmerRequest.getFirstName());
-        farmer1.setMiddleName(farmerRequest.getMiddleName());
-        farmer1.setLastName(farmerRequest.getLastName());
-        farmer1.setNameKan(farmerRequest.getNameKan());
-        farmer1.setFatherName(farmerRequest.getFatherName());
-        farmer1.setFatherNameKan(farmerRequest.getFatherNameKan());
-        farmer1.setDob(farmerRequest.getDob());
-        farmer1.setCasteId(farmerRequest.getCasteId());
-        farmer1.setMobileNumber(farmerRequest.getMobileNumber());
-        farmer1.setEpicNumber(farmerRequest.getEpicNumber());
-        farmer1.setPassbookNumber(farmerRequest.getPassbookNumber());
-        farmer1.setFarmerTypeId(farmerRequest.getFarmerTypeId());
+        try{
+            farmerRequest.setIsOtherStateFarmer(false);
+            farmer1.setIsOtherStateFarmer(false);
+            farmer1.setFirstName(farmerRequest.getFirstName());
+            farmer1.setMiddleName(farmerRequest.getMiddleName());
+            farmer1.setLastName(farmerRequest.getLastName());
+            farmer1.setNameKan(farmerRequest.getNameKan());
+            farmer1.setFatherName(farmerRequest.getFatherName());
+            farmer1.setFatherNameKan(farmerRequest.getFatherNameKan());
+            farmer1.setDob(farmerRequest.getDob());
+            farmer1.setCasteId(farmerRequest.getCasteId());
+            farmer1.setMobileNumber(farmerRequest.getMobileNumber());
+            farmer1.setEpicNumber(farmerRequest.getEpicNumber());
+            farmer1.setPassbookNumber(farmerRequest.getPassbookNumber());
+            farmer1.setFarmerTypeId(farmerRequest.getFarmerTypeId());
+            farmer1.setFarmerNumber(farmerRequest.getFarmerNumber());
+            farmer1.setGenderId(farmerRequest.getGenderId());
 
-        LocalDate today = Util.getISTLocalDate();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
-        String formattedDate = today.format(formatter);
-        List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
-        SerialCounter serialCounter = new SerialCounter();
-        if (serialCounters.size() > 0) {
-            serialCounter = serialCounters.get(0);
-            long counterValue = 1L;
-            if (serialCounter.getFarmerFruitsIdCounterNumber() != null) {
-                counterValue = serialCounter.getFarmerFruitsIdCounterNumber() + 1;
+            LocalDate today = Util.getISTLocalDate();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
+            String formattedDate = today.format(formatter);
+            List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
+            SerialCounter serialCounter = new SerialCounter();
+            if (serialCounters.size() > 0) {
+                serialCounter = serialCounters.get(0);
+                long counterValue = 1L;
+                if (serialCounter.getFarmerFruitsIdCounterNumber() != null) {
+                    counterValue = serialCounter.getFarmerFruitsIdCounterNumber() + 1;
+                }
+                serialCounter.setFarmerFruitsIdCounterNumber(counterValue);
+            } else {
+                serialCounter.setFarmerFruitsIdCounterNumber(1L);
             }
-            serialCounter.setFarmerFruitsIdCounterNumber(counterValue);
-        } else {
-            serialCounter.setFarmerFruitsIdCounterNumber(1L);
-        }
-        serialCounterRepository.save(serialCounter);
-        String formattedNumber = String.format("%05d", serialCounter.getFarmerFruitsIdCounterNumber());
+            serialCounterRepository.save(serialCounter);
+            String formattedNumber = String.format("%05d", serialCounter.getFarmerFruitsIdCounterNumber());
 
-        farmer1.setFarmerNumber("KSWFID"+formattedNumber);
+            farmer1.setFarmerNumber("KSWFID"+formattedNumber);
 
 //        UUID uuid = UUID.randomUUID();
 //        String extension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
@@ -1764,40 +1925,44 @@ public class FarmerService {
 //        s3Controller.uploadFile(multipartFile, fileName);
 //        farmer1.setPhotoPath(fileName);
 
-        Farmer farmer = mapper.farmerObjectToEntity(farmer1, Farmer.class);
-        farmer.setWithoutFruitsInwardCounter(0L);
-        validator.validate(farmer);
+            Farmer farmer = mapper.farmerObjectToEntity(farmer1, Farmer.class);
+            farmer.setWithoutFruitsInwardCounter(0L);
+            validator.validate(farmer);
 
 
-        // Check for duplicate Reeler Number
-        List<Farmer> farmerListByNumber = farmerRepository.findByMobileNumber(farmer.getMobileNumber());
-        if (!farmerListByNumber.isEmpty() && farmerListByNumber.stream().anyMatch(Farmer::getActive)) {
-            farmerResponse.setError(true);
-            farmerResponse.setError_description("Farmer Mobile Number already exists");
-        } else {
-            // If no duplicates found, save the reeler
-            farmer2 = farmerRepository.save(farmer);
-            farmerResponse = mapper.farmerEntityToObject(farmer2, FarmerResponse.class);
-            farmerResponse.setError(false);
-        }
-
-        if(!farmerResponse.getError()) {
-            farmerId = farmer2.getFarmerId();
-
-            for (FarmerAddress farmerAddress : farmerRequest.getFarmerAddressList()) {
-                farmerAddress.setFarmerId(farmerId);
-                farmerAddressRepository.save(farmerAddress);
-            }
-
-            List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerRequest.getFarmerBankAccount().getFarmerBankAccountNumber());
-            if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().filter(FarmerBankAccount::getActive).findAny().isPresent()) {
-                farmerResponse.setError(true);
-                farmerResponse.setError_description("FarmerBankAccount number already exist");
+            // Check for duplicate Reeler Number
+            List<Farmer> farmerListByNumber = farmerRepository.findByMobileNumber(farmer.getMobileNumber());
+            if (!farmerListByNumber.isEmpty() && farmerListByNumber.stream().anyMatch(Farmer::getActive)) {
+                throw new Exception("Farmer Mobile Number already exists");
             } else {
-                farmerRequest.getFarmerBankAccount().setFarmerId(farmerId);
-                FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerRequest.getFarmerBankAccount());
-                farmerResponse.setFarmerBankAccountId(farmerBankAccount1.getFarmerBankAccountId());
+                // If no duplicates found, save the reeler
+                farmer2 = farmerRepository.save(farmer);
+                farmerResponse = mapper.farmerEntityToObject(farmer2, FarmerResponse.class);
+                farmerResponse.setError(false);
             }
+
+            if(!farmerResponse.getError()) {
+                farmerId = farmer2.getFarmerId();
+
+                for (FarmerAddress farmerAddress : farmerRequest.getFarmerAddressList()) {
+                    farmerAddress.setFarmerId(farmerId);
+                    farmerAddress.setDefaultAddress(true);
+                    farmerAddressRepository.save(farmerAddress);
+                }
+
+                List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumber(farmerRequest.getFarmerBankAccount().getFarmerBankAccountNumber());
+                if (!farmerBankAccountList.isEmpty() && farmerBankAccountList.stream().filter(FarmerBankAccount::getActive).findAny().isPresent()) {
+                    throw new Exception("FarmerBankAccount number already exists");
+                } else {
+                    farmerRequest.getFarmerBankAccount().setFarmerId(farmerId);
+                    FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerRequest.getFarmerBankAccount());
+                    farmerResponse.setFarmerBankAccountId(farmerBankAccount1.getFarmerBankAccountId());
+                }
+            }
+        }catch (Exception e){
+            farmerResponse.setError(true);
+            farmerResponse.setError_description(e.getMessage());
+            throw new ValidationException(String.format(e.getMessage()));
         }
 
         return farmerResponse;
@@ -2027,7 +2192,7 @@ public class FarmerService {
             contentRow.createCell(1).setCellValue(primaryDetailsResponse.getMiddleName());
             contentRow.createCell(2).setCellValue(primaryDetailsResponse.getLastName());
             contentRow.createCell(3).setCellValue(primaryDetailsResponse.getFruitsId());
-            contentRow.createCell(4).setCellValue(primaryDetailsResponse.getFruitsId());
+            contentRow.createCell(4).setCellValue(primaryDetailsResponse.getFarmerNumber());
             contentRow.createCell(5).setCellValue(primaryDetailsResponse.getFatherName());
             contentRow.createCell(6).setCellValue(primaryDetailsResponse.getPassbookNumber());
             contentRow.createCell(7).setCellValue(primaryDetailsResponse.getEpicNumber());

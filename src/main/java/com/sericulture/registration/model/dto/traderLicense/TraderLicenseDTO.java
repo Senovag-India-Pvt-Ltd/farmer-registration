@@ -26,6 +26,7 @@ public class TraderLicenseDTO {
     private String traderLicenseNumber;
     private String representativeDetails;
     private Double licenseFee;
+    private String silkType;
     private String licenseChallanNumber;
     private String godownDetails;
     private String silkExchangeMahajar;
@@ -33,4 +34,5 @@ public class TraderLicenseDTO {
     private String traderTypeMasterName;
     private String stateName;
     private String districtName;
+
 }

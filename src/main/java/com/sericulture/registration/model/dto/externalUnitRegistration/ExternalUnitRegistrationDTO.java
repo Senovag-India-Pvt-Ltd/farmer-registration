@@ -19,6 +19,7 @@ public class ExternalUnitRegistrationDTO {
     private String externalUnitNumber;
     private String organisationName;
     private Long raceMasterId;
+    private String capacity;
     private String externalUnitTypeName;
     private String raceMasterName;
 }

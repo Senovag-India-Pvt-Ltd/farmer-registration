@@ -50,7 +50,7 @@ public class ReelerVirtualBankAccountService {
         } else if (!reelerVirtualBankAccountList.isEmpty() && reelerVirtualBankAccountList.stream().filter(Predicate.not(ReelerVirtualBankAccount::getActive)).findAny().isPresent()) {
             //throw new ValidationException("Village name already exist with inactive state");
             reelerVirtualBankAccountResponse.setError(true);
-            reelerVirtualBankAccountResponse.setError_description("FarmerBankAccount number already exist with inactive state");
+            reelerVirtualBankAccountResponse.setError_description("Reeler virtual bank account number already exist with inactive state");
         } else {
             reelerVirtualBankAccountResponse = mapper.reelerVirtualBankAccountEntityToObject(reelerVirtualBankAccountRepository.save(reelerVirtualBankAccount), ReelerVirtualBankAccountResponse.class);
             reelerVirtualBankAccountResponse.setError(false);
@@ -58,7 +58,6 @@ public class ReelerVirtualBankAccountService {
         return reelerVirtualBankAccountResponse;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getPaginatedReelerVirtualBankAccountDetails(final Pageable pageable){
         return convertToMapResponse(reelerVirtualBankAccountRepository.findByActiveOrderByReelerVirtualBankAccountIdAsc( true, pageable));
     }
@@ -76,7 +75,6 @@ public class ReelerVirtualBankAccountService {
         return response;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getReelersByMarketId(long marketId){
         return convertToMapResponse(reelerVirtualBankAccountRepository.getByReelersByMarketId( marketId,true));
     }
@@ -107,7 +105,6 @@ public class ReelerVirtualBankAccountService {
         return reelerVirtualBankAccountResponse;
     }
 
-    @Transactional
     public ReelerVirtualBankAccountResponse getById(int id){
         ReelerVirtualBankAccountResponse reelerVirtualBankAccountResponse = new ReelerVirtualBankAccountResponse();
         ReelerVirtualBankAccount reelerVirtualBankAccount = reelerVirtualBankAccountRepository.findByReelerVirtualBankAccountIdAndActive(id,true);
@@ -122,7 +119,6 @@ public class ReelerVirtualBankAccountService {
         return reelerVirtualBankAccountResponse;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByReelerId(int ReelerId) {
         Map<String, Object> response = new HashMap<>();
         List<ReelerVirtualBankAccount> reelerList = reelerVirtualBankAccountRepository.findByReelerIdAndActive(ReelerId, true);
@@ -136,7 +132,6 @@ public class ReelerVirtualBankAccountService {
 //        return convertListToMapResponse(reelerList);
         }
     }
-    @Transactional
     public ReelerVirtualBankAccountResponse getReelerDetailsByReelerNumberOrMobileNumber(GetReelerRequest getReelerRequest) throws Exception{
         ReelerVirtualBankAccountResponse reelerResponse = new ReelerVirtualBankAccountResponse();
         ReelerVirtualBankAccountDTO reelerVirtualBankAccount = new ReelerVirtualBankAccountDTO();
@@ -159,7 +154,6 @@ public class ReelerVirtualBankAccountService {
     }
 
 
-    @Transactional
     public ReelerVirtualBankAccountResponse getByIdJoin(int id){
         ReelerVirtualBankAccountResponse reelerVirtualBankAccountResponse = new ReelerVirtualBankAccountResponse();
         ReelerVirtualBankAccountDTO reelerVirtualBankAccountDTO = reelerVirtualBankAccountRepository.getByReelerVirtualBankAccountIdAndActive(id,true);
@@ -218,7 +212,6 @@ public class ReelerVirtualBankAccountService {
         response.put("totalItems", reelerVirtualBankAccountList.size());
         return response;
     }
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String,Object> getByReelerIdJoin(int reelerID){
         Map<String, Object> response = new HashMap<>();
         List<ReelerVirtualBankAccountDTO> reelerVirtualBankAccountDTO = reelerVirtualBankAccountRepository.getByReelerIdAndActive(reelerID, true);
