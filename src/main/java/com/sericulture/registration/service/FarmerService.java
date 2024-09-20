@@ -980,11 +980,17 @@ public class FarmerService {
                 farmer1.setCasteId(0L);
             }
 
-            if (getFruitsResponse.getPhysicallyChallenged().equals("No")) {
+            if (getFruitsResponse.getPhysicallyChallenged() == null) {
                 farmer1.setDifferentlyAbled(false);
             } else {
-                farmer1.setDifferentlyAbled(true);
+                if (getFruitsResponse.getPhysicallyChallenged().equals("No")) {
+                    farmer1.setDifferentlyAbled(false);
+                } else {
+                    farmer1.setDifferentlyAbled(true);
+                }
             }
+
+
             getFarmerResponse.setFarmerResponse(mapper.farmerEntityToObject(farmer1, FarmerResponse.class));
 
             List<FarmerAddressDTO> farmerAddressDTOList = new ArrayList<>();
