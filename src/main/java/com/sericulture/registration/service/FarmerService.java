@@ -1298,34 +1298,84 @@ public class FarmerService {
         return convertDTOToMapResponse(farmerRepository.getByActiveOrderByFarmerIdAsc(true, pageable));
     }
 
-    public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText, int joinColumnType) {
-        Page<FarmerDTO> page;
-        if (searchText == null || searchText.equals("")) {
-            searchText = "%%";
-        } else {
-            searchText = "%" + searchText + "%";
-        }
-        String joinColumn = "";
+//    public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText, int joinColumnType) {
+//        Page<FarmerDTO> page;
+//        if (searchText == null || searchText.equals("")) {
+//            searchText = "%%";
+//        } else {
+//            searchText = "%" + searchText + "%";
+//        }
+//        String joinColumn = "";
+//
+//        if (joinColumnType == 0) {
+//            joinColumn = "farmer.farmerNumber";
+//        } else if (joinColumnType == 1) {
+//            joinColumn = "farmer.fruitsId";
+//        } else {
+//            joinColumn = "farmer.mobileNumber";
+//        }
+//
+//        if (type == 0) {
+//            page = farmerRepository.getByActiveOrderByFarmerIdAsc(true, joinColumn, searchText, pageable);
+//        } else if (type == 1) {
+//            page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmers(true, joinColumn, searchText, pageable);
+//        } else if (type == 2) {
+//            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
+//        } else {
+//            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(true, joinColumn, searchText, pageable);
+//        }
+//        return convertDTOToMapResponse(page);
+//    }
+public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText, int joinColumnType) {
+    Page<FarmerDTO> page;
 
-        if (joinColumnType == 0) {
-            joinColumn = "farmer.farmerNumber";
-        } else if (joinColumnType == 1) {
-            joinColumn = "farmer.fruitsId";
-        } else {
-            joinColumn = "farmer.mobileNumber";
-        }
-
-        if (type == 0) {
-            page = farmerRepository.getByActiveOrderByFarmerIdAsc(true, joinColumn, searchText, pageable);
-        } else if (type == 1) {
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmers(true, joinColumn, searchText, pageable);
-        } else if (type == 2) {
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
-        } else {
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(true, joinColumn, searchText, pageable);
-        }
-        return convertDTOToMapResponse(page);
+    // Handle null or empty searchText
+    if (StringUtils.hasText(searchText)) {
+        searchText = "%" + searchText + "%";
+    } else {
+        searchText = "%%";
     }
+
+    // Determine the join column based on joinColumnType
+    String joinColumn;
+    switch (joinColumnType) {
+        case 0:
+            joinColumn = "farmer.farmerNumber";
+            break;
+        case 1:
+            joinColumn = "farmer.fruitsId";
+            break;
+        case 2:
+            joinColumn = "farmer.mobileNumber";
+            break;
+        case 3:
+            joinColumn = "farmerBankAccount.farmerBankAccountNumber";
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid joinColumnType: " + joinColumnType);
+    }
+
+    // Handle different type values
+    switch (type) {
+        case 0:
+            page = farmerRepository.getByActiveOrderByFarmerIdAsc(true, joinColumn, searchText, pageable);
+            break;
+        case 1:
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmers(true, joinColumn, searchText, pageable);
+            break;
+        case 2:
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
+            break;
+        case 3:
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
+            break;
+        default:
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(true, joinColumn, searchText, pageable);
+            break;
+    }
+
+    return convertDTOToMapResponse(page);
+}
 
 
     private Map<String, Object> convertDTOToMapResponse(final Page<FarmerDTO> activeFarmers) {
