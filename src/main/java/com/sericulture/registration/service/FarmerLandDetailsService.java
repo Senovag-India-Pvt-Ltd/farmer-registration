@@ -49,6 +49,65 @@ public class FarmerLandDetailsService {
         return mapper.farmerLandDetailsEntityToObject(farmerLandDetailsRepository.save(farmerLandDetails),FarmerLandDetailsResponse.class);
     }
 
+    public FarmerLandDetailsRequest editToFarmerLandDetailsRequest(EditFarmerLandDetailsRequest editRequest) {
+        FarmerLandDetailsRequest landDetailsRequest = new FarmerLandDetailsRequest();
+        // Set fields from editRequest to landDetailsRequest
+        landDetailsRequest.setFarmerId(editRequest.getFarmerId());
+        landDetailsRequest.setFarmerLandDetailsId(editRequest.getFarmerLandDetailsId());
+        landDetailsRequest.setCategoryNumber(editRequest.getCategoryNumber());
+        landDetailsRequest.setSoilTypeId(editRequest.getSoilTypeId());
+        landDetailsRequest.setHissa(editRequest.getHissa());
+        landDetailsRequest.setMulberryArea(editRequest.getMulberryArea());
+        landDetailsRequest.setMulberrySourceId(editRequest.getMulberrySourceId());
+        landDetailsRequest.setMulberryVarietyId(editRequest.getMulberryVarietyId());
+        landDetailsRequest.setPlantationDate(editRequest.getPlantationDate());
+        landDetailsRequest.setSpacing(editRequest.getSpacing());
+        landDetailsRequest.setPlantationTypeId(editRequest.getPlantationTypeId());
+        landDetailsRequest.setIrrigationSourceId(editRequest.getIrrigationSourceId());
+        landDetailsRequest.setIrrigationTypeId(editRequest.getIrrigationTypeId());
+        landDetailsRequest.setRearingHouseDetails(editRequest.getRearingHouseDetails());
+        landDetailsRequest.setIrrigationSourceId(editRequest.getIrrigationSourceId());
+        landDetailsRequest.setIrrigationTypeId(editRequest.getIrrigationTypeId());
+        landDetailsRequest.setRearingHouseDetails(editRequest.getRearingHouseDetails());
+        landDetailsRequest.setRoofTypeId(editRequest.getRoofTypeId());
+        landDetailsRequest.setSilkWormVarietyId(editRequest.getSilkWormVarietyId());
+        landDetailsRequest.setRearingCapacityCrops(editRequest.getRearingCapacityCrops());
+        landDetailsRequest.setRearingCapacityDlf(editRequest.getRearingCapacityDlf());
+        landDetailsRequest.setSubsidyAvailed(editRequest.getSubsidyAvailed());
+        landDetailsRequest.setSubsidyId(editRequest.getSubsidyId());
+        landDetailsRequest.setLoanDetails(editRequest.getLoanDetails());
+        landDetailsRequest.setEquipmentDetails(editRequest.getEquipmentDetails());
+        landDetailsRequest.setGpsLat(editRequest.getGpsLat());
+        landDetailsRequest.setGpsLng(editRequest.getGpsLng());
+        landDetailsRequest.setSurveyNumber(editRequest.getSurveyNumber());
+        landDetailsRequest.setStateId(editRequest.getStateId());
+        landDetailsRequest.setDistrictId(editRequest.getDistrictId());
+        landDetailsRequest.setTalukId(editRequest.getTalukId());
+        landDetailsRequest.setVillageId(editRequest.getVillageId());
+        landDetailsRequest.setHobliId(editRequest.getHobliId());
+        landDetailsRequest.setAddress(editRequest.getAddress());
+        landDetailsRequest.setPincode(editRequest.getPincode());
+        landDetailsRequest.setOwnerName(editRequest.getOwnerName());
+        landDetailsRequest.setAddress(editRequest.getAddress());
+        landDetailsRequest.setPincode(editRequest.getPincode());
+        landDetailsRequest.setOwnerName(editRequest.getOwnerName());
+        landDetailsRequest.setSurNoc(editRequest.getSurNoc());
+        landDetailsRequest.setNameScore(editRequest.getNameScore());
+        landDetailsRequest.setOwnerNo(editRequest.getOwnerNo());
+        landDetailsRequest.setMainOwnerNo(editRequest.getMainOwnerNo());
+        landDetailsRequest.setAcre(editRequest.getAcre());
+        landDetailsRequest.setGunta(editRequest.getGunta());
+        landDetailsRequest.setFGunta(editRequest.getFGunta());
+        landDetailsRequest.setLandCode(editRequest.getLandCode());
+        landDetailsRequest.setDistrictCode(editRequest.getDistrictCode());
+        landDetailsRequest.setTalukCode(editRequest.getTalukCode());
+        landDetailsRequest.setHobliCode(editRequest.getHobliCode());
+        landDetailsRequest.setVillageCode(editRequest.getVillageCode());
+        // Set other fields as necessary...
+        return landDetailsRequest;
+    }
+
+
     public Map<String,Object> getPaginatedFarmerLandDetailsDetails(final Pageable pageable){
         return convertToMapResponse(farmerLandDetailsRepository.findByActiveOrderByFarmerLandDetailsIdAsc( true, pageable));
     }
