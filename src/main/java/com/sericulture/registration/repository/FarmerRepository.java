@@ -732,4 +732,35 @@ Page<Object[]> getPrimaryFarmerDetails(
         @Param("tscMasterId") Long tscMasterId,
         Pageable pageable);
 
+    @Query(nativeQuery = true, value = """
+        SELECT CONCAT(f.first_name, ' ', f.middle_name) AS full_name,
+               fa.address_text,
+               f.FARMER_ID,
+               f.fruits_id
+        FROM FARMER f
+        JOIN farmer_address fa ON f.FARMER_ID = fa.FARMER_ID
+        WHERE fa.default_address = 1
+        AND f.fruits_id = :fruitsId
+        AND f.active = 1;
+        """)
+        public List<Object[]> getFruitsDetails(String fruitsId);
+
+    @Query(nativeQuery = true, value = """
+    SELECT
+    fld.farmer_land_details_id,
+    fld.survey_number,
+    v.VILLAGE_NAME
+            FROM
+    farmer_land_details fld
+    JOIN
+    farmer f ON fld.farmer_id = f.farmer_id
+            JOIN
+    village v ON fld.village_id = v.VILLAGE_ID
+            WHERE
+    f.fruits_id = :fruitsId
+    AND f.active = 1;
+    """)
+
+    public List<Object[]> getFarmerLandDetails(String fruitsId);
+
 }

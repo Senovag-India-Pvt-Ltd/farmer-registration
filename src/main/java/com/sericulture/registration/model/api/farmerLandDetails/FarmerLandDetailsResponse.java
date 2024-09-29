@@ -13,6 +13,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FarmerLandDetailsResponse {
 
