@@ -1010,5 +1010,16 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             Pageable pageable
     );
 
+    @Query(nativeQuery = true, value = """
+        SELECT CONCAT(r.name, ' ', r.father_name) AS full_name,
+               r.address,
+               r.REELER_ID,
+               r.fruits_id
+        FROM REELER r
+        Where r.fruits_id = :fruitsId
+        AND r.active = 1;
+        """)
+    public List<Object[]> getReelerDetailsByFruitsId(String fruitsId);
+
 
 }
