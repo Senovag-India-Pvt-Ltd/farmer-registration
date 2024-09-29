@@ -11,6 +11,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FarmerResponse {
     @Schema(name = "farmerId", example = "1")
@@ -149,6 +150,14 @@ public class FarmerResponse {
 
     @Schema(name = "assignToInspectId", example = "Karnataka",required=true)
     Long assignToInspectId;
+
+    @Schema(name = "fullName", example = "Karnataka",required=true)
+    String fullName;
+
+    @Schema(name = "address", example = "Karnataka",required=true)
+    String address;
+
+
 
 
 

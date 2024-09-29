@@ -13,6 +13,8 @@ import com.sericulture.registration.model.api.farmerBankAccount.EditFarmerBankAc
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountRequest;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyResponse;
+import com.sericulture.registration.model.api.farmerLandDetails.EditFarmerLandDetailsRequest;
+import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsRequest;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
 import com.sericulture.registration.model.api.fruitsApi.GetFruitsResponse;
 import com.sericulture.registration.model.api.fruitsApi.GetLandDetailsResponse;
@@ -470,6 +472,160 @@ public class FarmerService {
 
         return farmerResponse;
     }
+
+    @Transactional
+    public FarmerResponse updateFruitsId(EditCompleteFarmerRequest editCompleteFarmerRequest) {
+        EditFarmerRequest farmerRequest = editCompleteFarmerRequest.getEditFarmerRequest();
+        if (farmerRequest.getIsOtherStateFarmer() == null) {
+            farmerRequest.setIsOtherStateFarmer(false);
+        }
+        FarmerResponse farmerResponse = new FarmerResponse();
+        /*List<Farmer> farmerList = farmerRepository.findByFarmerNumber(farmerRequest.getFarmerNumber());
+        if(farmerList.size()>0){
+            throw new ValidationException("farmer already exists with this name, duplicates are not allowed.");
+        }
+*/
+        Farmer farmer = farmerRepository.findByFarmerIdAndActiveIn(farmerRequest.getFarmerId(), Set.of(true, false));
+        if (Objects.nonNull(farmer)) {
+            farmer.setFarmerNumber(farmerRequest.getFarmerNumber());
+            farmer.setFruitsId(farmerRequest.getFruitsId());
+            farmer.setFirstName(farmerRequest.getFirstName());
+            farmer.setMiddleName(farmerRequest.getMiddleName());
+            farmer.setTscMasterId(farmerRequest.getTscMasterId());
+            farmer.setLastName(farmerRequest.getLastName());
+            farmer.setDob(farmerRequest.getDob());
+            farmer.setGenderId(farmerRequest.getGenderId());
+            farmer.setGenderId(farmerRequest.getGenderId());
+            farmer.setCasteId(farmerRequest.getCasteId());
+            farmer.setDifferentlyAbled(farmerRequest.getDifferentlyAbled());
+            farmer.setEmail(farmerRequest.getEmail());
+            farmer.setMobileNumber(farmerRequest.getMobileNumber());
+            farmer.setAadhaarNumber(farmerRequest.getAadhaarNumber());
+            farmer.setEpicNumber(farmerRequest.getEpicNumber());
+            farmer.setRationCardNumber(farmerRequest.getRationCardNumber());
+            farmer.setTotalLandHolding(farmerRequest.getTotalLandHolding());
+            farmer.setPassbookNumber(farmerRequest.getPassbookNumber());
+            farmer.setLandCategoryId(farmerRequest.getLandCategoryId());
+            farmer.setEducationId(farmerRequest.getEducationId());
+            farmer.setRepresentativeId(farmerRequest.getRepresentativeId());
+            farmer.setKhazaneRecipientId(farmerRequest.getKhazaneRecipientId());
+            farmer.setPhotoPath(farmerRequest.getPhotoPath());
+            farmer.setFarmerTypeId(farmerRequest.getFarmerTypeId());
+            farmer.setMinority(farmerRequest.getMinority());
+            farmer.setRdNumber(farmerRequest.getRdNumber());
+            farmer.setCasteStatus(farmerRequest.getCasteStatus());
+            farmer.setGenderStatus(farmerRequest.getGenderStatus());
+            farmer.setFatherNameKan(farmerRequest.getFatherNameKan());
+            farmer.setFatherName(farmerRequest.getFatherName());
+            farmer.setNameKan(farmerRequest.getNameKan());
+
+            farmer.setActive(true);
+            Farmer farmer1 = farmerRepository.save(farmer);
+            farmerResponse = mapper.farmerEntityToObject(farmer1, FarmerResponse.class);
+
+            if (farmerResponse.getFarmerId() > 0) {
+                //Save farmer bank acc details
+                editCompleteFarmerRequest.getEditFarmerBankAccountRequest().setFarmerId(farmerResponse.getFarmerId());
+                FarmerBankAccountResponse farmerBankAccountResponse = farmerBankAccountService.updateFarmerBankAccountDetails(editCompleteFarmerRequest.getEditFarmerBankAccountRequest());
+                if (farmerBankAccountResponse.getFarmerBankAccountId() > 0) {
+                    farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
+                }
+                if (editCompleteFarmerRequest.getEditFarmerFamilyRequests() != null) {
+                    for (int i = 0; i < editCompleteFarmerRequest.getEditFarmerFamilyRequests().size(); i++) {
+                        editCompleteFarmerRequest.getEditFarmerFamilyRequests().get(i).setFarmerId(farmerResponse.getFarmerId());
+                        farmerFamilyService.updateFarmerFamilyDetails(editCompleteFarmerRequest.getEditFarmerFamilyRequests().get(i));
+                    }
+                }
+
+                for (int i = 0; i < editCompleteFarmerRequest.getEditFarmerAddressRequests().size(); i++) {
+                    editCompleteFarmerRequest.getEditFarmerAddressRequests().get(i).setFarmerId(farmerResponse.getFarmerId());
+                    farmerAddressService.updateFarmerAddressDetails(editCompleteFarmerRequest.getEditFarmerAddressRequests().get(i));
+                }
+
+//                for (int i = 0; i < editCompleteFarmerRequest.getEditFarmerLandDetailsRequests().size(); i++) {
+//                    editCompleteFarmerRequest.getEditFarmerLandDetailsRequests().get(i).setFarmerId(farmerResponse.getFarmerId());
+//                    farmerLandDetailsService.updateFarmerLandDetailsDetails(editCompleteFarmerRequest.getEditFarmerLandDetailsRequests().get(i));
+//                }
+
+                // Handle farmer land details even when empty
+//                List<EditFarmerLandDetailsRequest> landDetailsRequests = editCompleteFarmerRequest.getEditFarmerLandDetailsRequests();
+//                if (landDetailsRequests == null || landDetailsRequests.isEmpty()) {
+//                    // Create a default land details entry if required, or skip saving.
+//                    FarmerLandDetailsRequest defaultLandRequest = new FarmerLandDetailsRequest();
+//                    defaultLandRequest.setFarmerId(farmerResponse.getFarmerId());
+//                    // Add default or mandatory fields to the land request...
+//                    farmerLandDetailsService.insertFarmerLandDetailsDetails(defaultLandRequest);
+//                } else {
+//                    for (int i = 0; i < editCompleteFarmerRequest.getEditFarmerLandDetailsRequests().size(); i++) {
+//                        editCompleteFarmerRequest.getEditFarmerLandDetailsRequests().get(i).setFarmerId(farmerResponse.getFarmerId());
+//                        farmerLandDetailsService.updateFarmerLandDetailsDetails(editCompleteFarmerRequest.getEditFarmerLandDetailsRequests().get(i));
+//                    }
+//                }
+//            }
+                // Handle farmer land details
+//                List<EditFarmerLandDetailsRequest> landDetailsRequests = editCompleteFarmerRequest.getEditFarmerLandDetailsRequests();
+//                if (landDetailsRequests == null || landDetailsRequests.isEmpty()) {
+//                    // Create a default land details entry if required
+//                    FarmerLandDetailsRequest defaultLandRequest = new FarmerLandDetailsRequest();
+//                    defaultLandRequest.setFarmerId(farmerResponse.getFarmerId());
+//                    // Set other mandatory fields for the default land entry
+//                    // e.g., defaultLandRequest.setLandArea(...);
+//                    farmerLandDetailsService.insertFarmerLandDetailsDetails(defaultLandRequest);
+//                } else {
+//                    // Iterate through land details requests and save them
+//                    for (EditFarmerLandDetailsRequest landRequest : landDetailsRequests) {
+//                        landRequest.setFarmerId(farmerResponse.getFarmerId());
+//                        // Check if farmerLandDetailsId is null to save as new
+//                        if (landRequest.getFarmerLandDetailsId() == null) {
+//                            farmerLandDetailsService.insertFarmerLandDetailsDetails(landRequest); // Call save method instead of update
+//                        } else {
+//                            farmerLandDetailsService.updateFarmerLandDetailsDetails(landRequest); // Update if ID exists
+//                        }
+//                    }
+//                }
+//            }
+// Handle farmer land details
+                List<EditFarmerLandDetailsRequest> landDetailsRequests = editCompleteFarmerRequest.getEditFarmerLandDetailsRequests();
+                if (landDetailsRequests == null || landDetailsRequests.isEmpty()) {
+                    // Create a default land details entry if required
+                    FarmerLandDetailsRequest defaultLandRequest = new FarmerLandDetailsRequest();
+                    defaultLandRequest.setFarmerId(farmerResponse.getFarmerId());
+                    // Set other mandatory fields for the default land entry
+                    // e.g., defaultLandRequest.setLandArea(...);
+                    farmerLandDetailsService.insertFarmerLandDetailsDetails(defaultLandRequest);
+                } else {
+                    // Iterate through land details requests and save them
+                    for (EditFarmerLandDetailsRequest landRequest : landDetailsRequests) {
+                        landRequest.setFarmerId(farmerResponse.getFarmerId());
+                        // Check if farmerLandDetailsId is null to save as new
+                        if (landRequest.getFarmerLandDetailsId() == null) {
+                            // Convert EditFarmerLandDetailsRequest to FarmerLandDetailsRequest
+                            FarmerLandDetailsRequest newLandDetailsRequest = farmerLandDetailsService.editToFarmerLandDetailsRequest(landRequest);
+                            farmerLandDetailsService.insertFarmerLandDetailsDetails(newLandDetailsRequest); // Call save method instead of update
+                        }
+//                        else {
+//                            // Convert EditFarmerLandDetailsRequest to FarmerLandDetailsRequest for updating
+//                            EditFarmerLandDetailsRequest updateLandDetailsRequest = farmerLandDetailsService.editToFarmerLandDetailsRequest(landRequest);
+//                            farmerLandDetailsService.updateFarmerLandDetailsDetails(updateLandDetailsRequest); // Update if ID exists
+//                        }
+                    }
+                }
+            }
+
+
+            farmerResponse.setError(false);
+        } else {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Error occurred while fetching Farmer");
+            // throw new ValidationException("Error occurred while fetching village");
+        }
+
+        return farmerResponse;
+    }
+
+
+
+
 
     public GetFarmerResponse getFarmerDetails(GetFarmerRequest getFarmerRequest) {
         FarmerResponse farmerResponse = new FarmerResponse();
@@ -1304,34 +1460,84 @@ public class FarmerService {
         return convertDTOToMapResponse(farmerRepository.getByActiveOrderByFarmerIdAsc(true, pageable));
     }
 
-    public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText, int joinColumnType) {
-        Page<FarmerDTO> page;
-        if (searchText == null || searchText.equals("")) {
-            searchText = "%%";
-        } else {
-            searchText = "%" + searchText + "%";
-        }
-        String joinColumn = "";
+//    public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText, int joinColumnType) {
+//        Page<FarmerDTO> page;
+//        if (searchText == null || searchText.equals("")) {
+//            searchText = "%%";
+//        } else {
+//            searchText = "%" + searchText + "%";
+//        }
+//        String joinColumn = "";
+//
+//        if (joinColumnType == 0) {
+//            joinColumn = "farmer.farmerNumber";
+//        } else if (joinColumnType == 1) {
+//            joinColumn = "farmer.fruitsId";
+//        } else {
+//            joinColumn = "farmer.mobileNumber";
+//        }
+//
+//        if (type == 0) {
+//            page = farmerRepository.getByActiveOrderByFarmerIdAsc(true, joinColumn, searchText, pageable);
+//        } else if (type == 1) {
+//            page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmers(true, joinColumn, searchText, pageable);
+//        } else if (type == 2) {
+//            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
+//        } else {
+//            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(true, joinColumn, searchText, pageable);
+//        }
+//        return convertDTOToMapResponse(page);
+//    }
+public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText, int joinColumnType) {
+    Page<FarmerDTO> page;
 
-        if (joinColumnType == 0) {
-            joinColumn = "farmer.farmerNumber";
-        } else if (joinColumnType == 1) {
-            joinColumn = "farmer.fruitsId";
-        } else {
-            joinColumn = "farmer.mobileNumber";
-        }
-
-        if (type == 0) {
-            page = farmerRepository.getByActiveOrderByFarmerIdAsc(true, joinColumn, searchText, pageable);
-        } else if (type == 1) {
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmers(true, joinColumn, searchText, pageable);
-        } else if (type == 2) {
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
-        } else {
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(true, joinColumn, searchText, pageable);
-        }
-        return convertDTOToMapResponse(page);
+    // Handle null or empty searchText
+    if (StringUtils.hasText(searchText)) {
+        searchText = "%" + searchText + "%";
+    } else {
+        searchText = "%%";
     }
+
+    // Determine the join column based on joinColumnType
+    String joinColumn;
+    switch (joinColumnType) {
+        case 0:
+            joinColumn = "farmer.farmerNumber";
+            break;
+        case 1:
+            joinColumn = "farmer.fruitsId";
+            break;
+        case 2:
+            joinColumn = "farmer.mobileNumber";
+            break;
+        case 3:
+            joinColumn = "farmerBankAccount.farmerBankAccountNumber";
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid joinColumnType: " + joinColumnType);
+    }
+
+    // Handle different type values
+    switch (type) {
+        case 0:
+            page = farmerRepository.getByActiveOrderByFarmerIdAsc(true, joinColumn, searchText, pageable);
+            break;
+        case 1:
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmers(true, joinColumn, searchText, pageable);
+            break;
+        case 2:
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
+            break;
+        case 3:
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
+            break;
+        default:
+            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(true, joinColumn, searchText, pageable);
+            break;
+    }
+
+    return convertDTOToMapResponse(page);
+}
 
 
     private Map<String, Object> convertDTOToMapResponse(final Page<FarmerDTO> activeFarmers) {
@@ -1926,7 +2132,8 @@ public class FarmerService {
 //        farmer1.setPhotoPath(fileName);
 
             Farmer farmer = mapper.farmerObjectToEntity(farmer1, Farmer.class);
-            farmer.setWithoutFruitsInwardCounter(0L);
+            farmer.setWithoutFruitsInwardCounter(1L);
+//           farmer.setWithoutFruitsInwardCounter(farmerRequest.getWithoutFruitsInwardCounter());
             validator.validate(farmer);
 
 

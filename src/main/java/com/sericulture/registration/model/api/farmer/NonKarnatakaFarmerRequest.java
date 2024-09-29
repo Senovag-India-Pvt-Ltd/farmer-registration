@@ -11,6 +11,7 @@ import com.sericulture.registration.model.entity.FarmerBankAccount;
 import com.sericulture.registration.model.entity.FarmerFamily;
 import com.sericulture.registration.model.entity.FarmerLandDetails;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
@@ -132,5 +133,8 @@ public class NonKarnatakaFarmerRequest {
 
     @Schema(name = "farmerNumber", example = "12345")
     String farmerNumber;
+
+    @Column(name = "without_fruits_inward_counter")
+    Long withoutFruitsInwardCounter;
 
 }

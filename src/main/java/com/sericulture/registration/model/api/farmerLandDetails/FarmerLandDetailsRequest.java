@@ -18,6 +18,9 @@ public class FarmerLandDetailsRequest extends RequestBody {
     @Schema(name = "farmerId", example = "1", required = true)
     Long farmerId;
 
+    @Schema(name = "farmerLandDetailsId", example = "1", required = true)
+    Long farmerLandDetailsId;
+
   //  @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Category number must contain only letters and numbers")
     @Schema(name = "categoryNumber", example = "1")
     private String categoryNumber;
