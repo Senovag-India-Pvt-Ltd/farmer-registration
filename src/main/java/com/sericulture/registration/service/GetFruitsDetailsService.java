@@ -79,8 +79,9 @@ public class GetFruitsDetailsService {
         for (Object[] arr : landDetails) {
             FarmerLandDetailsResponse response = FarmerLandDetailsResponse.builder()
                     .farmerLandDetailsId(Util.objectToInteger(arr[0]))
-                    .surveyNumber(Util.objectToString(arr[1]))
-                    .villageName(Util.objectToString(arr[2]))
+                    .farmerId(Util.objectToLong(arr[1]))
+                    .surveyNumber(Util.objectToString(arr[2]))
+                    .villageName(Util.objectToString(arr[3]))
                     .build();
             responses.add(response);
         }

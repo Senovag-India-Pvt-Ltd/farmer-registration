@@ -748,6 +748,7 @@ Page<Object[]> getPrimaryFarmerDetails(
     @Query(nativeQuery = true, value = """
     SELECT
     fld.farmer_land_details_id,
+    f.farmer_id,
     fld.survey_number,
     v.VILLAGE_NAME
             FROM
