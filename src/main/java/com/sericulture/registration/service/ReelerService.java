@@ -606,6 +606,31 @@ public class ReelerService {
         return reelerResponse ;
     }
 
+    @Transactional
+    public ReelerResponse updateReelerProfileDetails(EditReelerRequest reelerRequest){
+        ReelerResponse reelerResponse = new ReelerResponse();
+        /*List<Reeler> reelerList = reelerRepository.findByReelerName(reelerRequest.getReelerName());
+        if(reelerList.size()>0){
+            throw new ValidationException("Reeler already exists with this name, duplicates are not allowed.");
+        }*/
+
+        Reeler reeler = reelerRepository.findByReelerIdAndActiveIn(reelerRequest.getReelerId(), Set.of(true,false));
+        if(Objects.nonNull(reeler)){
+            reeler.setTscMasterId(reelerRequest.getTscMasterId());
+            reeler.setMobileNumber(reelerRequest.getMobileNumber());
+            reeler.setActive(true);
+            Reeler reeler1 = reelerRepository.save(reeler);
+            reelerResponse = mapper.reelerEntityToObject(reeler1, ReelerResponse.class);
+            reelerResponse.setError(false);
+        } else {
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Error occurred while fetching reeler");
+            // throw new ValidationException("Error occurred while fetching village");
+        }
+
+        return reelerResponse ;
+    }
+
     public ReelerResponse getByReelingLicenseNumber(String reelingLicenseNumber){
         ReelerResponse reelerResponse = new ReelerResponse();
         ReelerDTO reeler = reelerRepository.getByReelerLicenseNumberAndActive(reelingLicenseNumber,true);

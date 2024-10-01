@@ -355,6 +355,15 @@ public class ReelerController {
         return ResponseEntity.ok(rw);
     }
 
+    @PostMapping("/edit-reeler-profile")
+    public ResponseEntity<?> editReelerProfileDetails(
+            @Valid @RequestBody final EditReelerRequest editReelerRequest
+    ) {
+        ResponseWrapper<ReelerResponse> rw = ResponseWrapper.createWrapper(ReelerResponse.class);
+        rw.setContent(reelerService.updateReelerProfileDetails(editReelerRequest));
+        return ResponseEntity.ok(rw);
+    }
+
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ok Response"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
