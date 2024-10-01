@@ -389,6 +389,34 @@ public class FarmerService {
     }
 
     @Transactional
+    public FarmerResponse updateFarmerProfileDetails(EditFarmerRequest farmerRequest) {
+        if (farmerRequest.getIsOtherStateFarmer() == null) {
+            farmerRequest.setIsOtherStateFarmer(false);
+        }
+        FarmerResponse farmerResponse = new FarmerResponse();
+        /*List<Farmer> farmerList = farmerRepository.findByFarmerNumber(farmerRequest.getFarmerNumber());
+        if(farmerList.size()>0){
+            throw new ValidationException("farmer already exists with this name, duplicates are not allowed.");
+        }
+*/
+        Farmer farmer = farmerRepository.findByFarmerIdAndActiveIn(farmerRequest.getFarmerId(), Set.of(true, false));
+        if (Objects.nonNull(farmer)) {
+            farmer.setMobileNumber(farmerRequest.getMobileNumber());
+            farmer.setTscMasterId(farmerRequest.getTscMasterId());
+            farmer.setActive(true);
+            Farmer farmer1 = farmerRepository.save(farmer);
+            farmerResponse = mapper.farmerEntityToObject(farmer1, FarmerResponse.class);
+            farmerResponse.setError(false);
+        } else {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Error occurred while fetching Farmer");
+            // throw new ValidationException("Error occurred while fetching village");
+        }
+
+        return farmerResponse;
+    }
+
+    @Transactional
     public FarmerResponse editCompleteFarmerDetails(EditCompleteFarmerRequest editCompleteFarmerRequest) {
         EditFarmerRequest farmerRequest = editCompleteFarmerRequest.getEditFarmerRequest();
         if (farmerRequest.getIsOtherStateFarmer() == null) {

@@ -211,6 +211,15 @@ public class FarmerController {
         return ResponseEntity.ok(rw);
     }
 
+    @PostMapping("/edit-farmer-profile")
+    public ResponseEntity<?> editFarmerProfileDetails(
+            @Valid @RequestBody final EditFarmerRequest editFarmerRequest
+    ) {
+        ResponseWrapper<FarmerResponse> rw = ResponseWrapper.createWrapper(FarmerResponse.class);
+        rw.setContent(farmerService.updateFarmerProfileDetails(editFarmerRequest));
+        return ResponseEntity.ok(rw);
+    }
+
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Object saved details"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
