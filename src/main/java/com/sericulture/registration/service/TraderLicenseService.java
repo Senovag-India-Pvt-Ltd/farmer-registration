@@ -2,9 +2,12 @@ package com.sericulture.registration.service;
 
 import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
+import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountResponse;
 import com.sericulture.registration.model.api.traderLicense.EditTraderLicenseRequest;
+import com.sericulture.registration.model.api.traderLicense.GetTraderLicenseRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseResponse;
+import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO;
 import com.sericulture.registration.model.entity.SerialCounter;
 import com.sericulture.registration.model.entity.TraderLicense;
@@ -172,13 +175,13 @@ public class TraderLicenseService {
             traderLicense.setFirstName(traderLicenseRequest.getFirstName());
             traderLicense.setMiddleName(traderLicenseRequest.getMiddleName());
             traderLicense.setLastName(traderLicenseRequest.getLastName());
-
+            traderLicense.setMobileNumber(traderLicenseRequest.getMobileNumber());
             traderLicense.setFatherName(traderLicenseRequest.getFatherName());
             traderLicense.setStateId(traderLicenseRequest.getStateId());
             traderLicense.setDistrictId(traderLicenseRequest.getDistrictId());
             traderLicense.setAddress(traderLicenseRequest.getAddress());
             traderLicense.setPremisesDescription(traderLicenseRequest.getPremisesDescription());
-
+            traderLicense.setMarketMasterId(traderLicenseRequest.getMarketMasterId());
             traderLicense.setApplicationDate(traderLicenseRequest.getApplicationDate());
             traderLicense.setApplicationNumber(traderLicenseRequest.getApplicationNumber());
             traderLicense.setTraderLicenseNumber(traderLicenseRequest.getLicenseChallanNumber());
@@ -245,6 +248,45 @@ public class TraderLicenseService {
 
         return response;
     }
+
+    public Map<String,Object> getTradersByMarketId(long marketId){
+        return convertTraderDTOToMapResponse(traderLicenseRepository.getByTradersByMarketId( marketId,true));
+    }
+
+    private Map<String, Object> convertTraderDTOToMapResponse(final List<TraderLicenseDTO> activeTraderLicenses) {
+        Map<String, Object> response = new HashMap<>();
+
+        List<TraderLicenseResponse> traderLicenseResponses = activeTraderLicenses.stream()
+                .map(traderLicense -> mapper.traderLicenseDTOToObject(traderLicense,TraderLicenseResponse.class)).collect(Collectors.toList());
+        response.put("traderLicense",traderLicenseResponses);
+        response.put("totalItems", activeTraderLicenses.size());
+        return response;
+    }
+
+    public TraderLicenseResponse getTraderDetailsByMobileOrReelerNumber(GetTraderLicenseRequest getTraderLicenseRequest) throws Exception{
+        TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
+        TraderLicenseDTO traderLicenseDTO = new TraderLicenseDTO();
+        if(getTraderLicenseRequest.getTraderLicenseNumber() != null && !getTraderLicenseRequest.getTraderLicenseNumber().equals("")) {
+            traderLicenseDTO = traderLicenseRepository.getByTraderLicenseByMarketIdAndTraderLicenseNumber(getTraderLicenseRequest.getMarketId(), getTraderLicenseRequest.getTraderLicenseNumber(), true);
+//        }else if(getTraderLicenseRequest.getTraderLicenseNumber() != null && !getTraderLicenseRequest.getTraderLicenseNumber().equals("")){
+//            traderLicenseDTO = traderLicenseRepository.getByReelerByMarketIdAndReelerNumber(getTraderLicenseRequest.getMarketId(),getTraderLicenseRequest.getTraderLicenseNumber(), true);
+//        }
+        }else{
+            traderLicenseDTO = traderLicenseRepository.getByTraderLicenseByMarketIdAndMobileNumber(getTraderLicenseRequest.getMarketId(),getTraderLicenseRequest.getMobileNumber(), true);
+        }
+        if(traderLicenseDTO == null){
+            traderLicenseResponse.setError(true);
+            traderLicenseResponse.setError_description("Invalid id");
+        }else{
+            traderLicenseResponse =  mapper.traderLicenseDTOToObject(traderLicenseDTO, TraderLicenseResponse.class);
+            traderLicenseResponse.setError(false);
+        }
+        log.info("Entity is ",traderLicenseDTO);
+        return traderLicenseResponse;
+    }
+
+
+
 
 
 }

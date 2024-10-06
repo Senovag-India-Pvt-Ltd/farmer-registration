@@ -85,6 +85,18 @@ public class TraderLicenseResponse {
     @Schema(name = "silkType", example = "Test")
     String silkType;
 
+    @Schema(name = "mobileNumber",  example = "1")
+    String mobileNumber;
+
+    @Schema(name = "marketMasterId",  example = "1")
+    String marketMasterId;
+
+    @Schema(name = "walletAmount",  example = "1")
+    Double walletAmount;
+
+    @Schema(name = "marketMasterName",  example = "1")
+    String marketMasterName;
+
 
     @Schema(name = "error", example = "true")
     Boolean error;

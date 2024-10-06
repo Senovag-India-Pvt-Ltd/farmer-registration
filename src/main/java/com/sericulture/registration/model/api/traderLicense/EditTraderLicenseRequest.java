@@ -88,4 +88,10 @@ public class EditTraderLicenseRequest extends RequestBody {
 
     @Schema(name = "silkType", example = "Test")
     String silkType;
+
+    @Schema(name = "marketMasterId", example = "1")
+    Long marketMasterId;
+
+    @Schema(name = "mobileNumber",  example = "1")
+    String mobileNumber;
 }

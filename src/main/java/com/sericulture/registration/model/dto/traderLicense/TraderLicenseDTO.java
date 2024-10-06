@@ -33,6 +33,10 @@ public class TraderLicenseDTO {
     private Long licenseNumberSequence;
     private String traderTypeMasterName;
     private String stateName;
+    private String marketMasterName;
+    private Long marketMasterId;
+    private Double walletAmount;
+    private String mobileNumber;
     private String districtName;
 
 }

@@ -2,7 +2,9 @@ package com.sericulture.registration.controller;
 
 import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
+import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountResponse;
 import com.sericulture.registration.model.api.traderLicense.EditTraderLicenseRequest;
+import com.sericulture.registration.model.api.traderLicense.GetTraderLicenseRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseResponse;
 import com.sericulture.registration.service.TraderLicenseService;
@@ -279,4 +281,24 @@ public class TraderLicenseController {
         rw.setContent(traderLicenseService.searchByColumnAndSort(searchWithSortRequest));
         return ResponseEntity.ok(rw);
     }
+
+    @PostMapping("/get-trader-details-by-trader-number-or-mobile-number")
+    public ResponseEntity<?> getTraderDetailsByMobileOrReelerNumber(
+            @Valid @RequestBody GetTraderLicenseRequest getTraderLicenseRequest
+    ) throws Exception {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerVirtualBankAccountResponse.class);
+        rw.setContent(traderLicenseService.getTraderDetailsByMobileOrReelerNumber(getTraderLicenseRequest));
+        return ResponseEntity.ok(rw);
+    }
+
+    @GetMapping("/get-traders-by-market-id/{marketId}")
+    public ResponseEntity<?> getTradersByMarketId(
+            @PathVariable final Long marketId
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(TraderLicenseResponse.class);
+
+        rw.setContent(traderLicenseService.getTradersByMarketId(marketId));
+        return ResponseEntity.ok(rw);
+    }
+
 }

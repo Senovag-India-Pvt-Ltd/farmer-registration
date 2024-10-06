@@ -81,4 +81,13 @@ public class TraderLicense extends BaseEntity implements Serializable {
 
     @Column(name = "silk_type")
     private String silkType;
+
+    @Column(name = "wallet_amount")
+    private Double walletAmount;
+
+    @Column(name = "market_master_id")
+    private Long marketMasterId;
+
+    @Column(name = "mobile_number")
+    private String mobileNumber;
 }

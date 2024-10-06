@@ -1,6 +1,7 @@
 package com.sericulture.registration.repository;
 
 import com.sericulture.registration.model.dto.externalUnitRegistration.ExternalUnitRegistrationDTO;
+import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO;
 import com.sericulture.registration.model.entity.TraderLicense;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -45,11 +47,17 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.licenseNumberSequence," +
             " traderTypeMaster.traderTypeMasterName," +
             " state.stateName," +
+            " marketMaster.marketMasterName," +
+            " traderLicense.marketMasterId," +
+            " traderLicense.walletAmount," +
+            " traderLicense.mobileNumber," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
             "left join trader_type_master traderTypeMaster\n" +
             "on traderLicense.traderTypeMasterId = traderTypeMaster.traderTypeMasterId " +
+            "left join market_master marketMaster\n" +
+            "on traderLicense.marketMasterId = marketMaster.marketMasterId " +
             "left join State state\n" +
             "on traderLicense.stateId = state.stateId " +
             "left join District district\n" +
@@ -83,11 +91,17 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.licenseNumberSequence," +
             " traderTypeMaster.traderTypeMasterName," +
             " state.stateName," +
+            " marketMaster.marketMasterName," +
+            " traderLicense.marketMasterId," +
+            " traderLicense.walletAmount," +
+            " traderLicense.mobileNumber," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
             "left join trader_type_master traderTypeMaster\n" +
             "on traderLicense.traderTypeMasterId = traderTypeMaster.traderTypeMasterId " +
+            "left join market_master marketMaster\n" +
+            "on traderLicense.marketMasterId = marketMaster.marketMasterId " +
             "left join State state\n" +
             "on traderLicense.stateId = state.stateId " +
             "left join District district\n" +
@@ -121,11 +135,17 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.licenseNumberSequence," +
             " traderTypeMaster.traderTypeMasterName," +
             " state.stateName," +
+            " marketMaster.marketMasterName," +
+            " traderLicense.marketMasterId," +
+            " traderLicense.walletAmount," +
+            " traderLicense.mobileNumber," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
             "left join trader_type_master traderTypeMaster\n" +
             "on traderLicense.traderTypeMasterId = traderTypeMaster.traderTypeMasterId " +
+            "left join market_master marketMaster\n" +
+            "on traderLicense.marketMasterId = marketMaster.marketMasterId " +
             "left join State state\n" +
             "on traderLicense.stateId = state.stateId " +
             "left join District district\n" +
@@ -136,4 +156,131 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             "(:joinColumn = 'traderLicense.firstName' AND traderLicense.firstName LIKE :searchText)"
     )
     public Page<TraderLicenseDTO> getSortedTraderLicenses(@Param("joinColumn") String joinColumn, @Param("searchText") String searchText, @Param("isActive") boolean isActive, Pageable pageable);
+
+    @Query("select new com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO(" +
+            " traderLicense.traderLicenseId," +
+            " traderLicense.arnNumber," +
+            " traderLicense.traderTypeMasterId," +
+            " traderLicense.firstName," +
+            " traderLicense.middleName," +
+            " traderLicense.lastName," +
+            " traderLicense.fatherName," +
+            " traderLicense.stateId," +
+            " traderLicense.districtId," +
+            " traderLicense.address," +
+            " traderLicense.premisesDescription," +
+            " traderLicense.applicationDate," +
+            " traderLicense.applicationNumber," +
+            " traderLicense.traderLicenseNumber," +
+            " traderLicense.representativeDetails," +
+            " traderLicense.licenseFee," +
+            " traderLicense.silkType," +
+            " traderLicense.licenseChallanNumber," +
+            " traderLicense.godownDetails," +
+            " traderLicense.silkExchangeMahajar," +
+            " traderLicense.licenseNumberSequence," +
+            " traderTypeMaster.traderTypeMasterName," +
+            " state.stateName," +
+            " marketMaster.marketMasterName," +
+            " traderLicense.marketMasterId," +
+            " traderLicense.walletAmount," +
+            " traderLicense.mobileNumber," +
+            " district.districtName" +
+            ") \n" +
+            "from TraderLicense traderLicense\n" +
+            "left join trader_type_master traderTypeMaster\n" +
+            "on traderLicense.traderTypeMasterId = traderTypeMaster.traderTypeMasterId " +
+            "left join market_master marketMaster\n" +
+            "on traderLicense.marketMasterId = marketMaster.marketMasterId " +
+            "left join State state\n" +
+            "on traderLicense.stateId = state.stateId " +
+            "left join District district\n" +
+            "on traderLicense.districtId = district.districtId " +
+            "where traderLicense.active = :isActive AND traderLicense.marketMasterId = :marketId AND traderLicense.traderLicenseNumber = :traderLicenseNumber")
+    public TraderLicenseDTO getByTraderLicenseByMarketIdAndTraderLicenseNumber(@Param("marketId") long marketId, @Param("traderLicenseNumber") String reelingLicenseNumber, @Param("isActive") boolean isActive);
+
+    @Query("select new com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO(" +
+            " traderLicense.traderLicenseId," +
+            " traderLicense.arnNumber," +
+            " traderLicense.traderTypeMasterId," +
+            " traderLicense.firstName," +
+            " traderLicense.middleName," +
+            " traderLicense.lastName," +
+            " traderLicense.fatherName," +
+            " traderLicense.stateId," +
+            " traderLicense.districtId," +
+            " traderLicense.address," +
+            " traderLicense.premisesDescription," +
+            " traderLicense.applicationDate," +
+            " traderLicense.applicationNumber," +
+            " traderLicense.traderLicenseNumber," +
+            " traderLicense.representativeDetails," +
+            " traderLicense.licenseFee," +
+            " traderLicense.silkType," +
+            " traderLicense.licenseChallanNumber," +
+            " traderLicense.godownDetails," +
+            " traderLicense.silkExchangeMahajar," +
+            " traderLicense.licenseNumberSequence," +
+            " traderTypeMaster.traderTypeMasterName," +
+            " state.stateName," +
+            " marketMaster.marketMasterName," +
+            " traderLicense.marketMasterId," +
+            " traderLicense.walletAmount," +
+            " traderLicense.mobileNumber," +
+            " district.districtName" +
+            ") \n" +
+            "from TraderLicense traderLicense\n" +
+            "left join trader_type_master traderTypeMaster\n" +
+            "on traderLicense.traderTypeMasterId = traderTypeMaster.traderTypeMasterId " +
+            "left join market_master marketMaster\n" +
+            "on traderLicense.marketMasterId = marketMaster.marketMasterId " +
+            "left join State state\n" +
+            "on traderLicense.stateId = state.stateId " +
+            "left join District district\n" +
+            "on traderLicense.districtId = district.districtId " +
+            "where traderLicense.active = :isActive AND traderLicense.marketMasterId = :marketId AND traderLicense.mobileNumber = :mobileNumber")
+    public TraderLicenseDTO getByTraderLicenseByMarketIdAndMobileNumber(@Param("marketId") long marketId, @Param("mobileNumber") String mobileNumber, @Param("isActive") boolean isActive);
+
+
+    @Query("select new com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO(" +
+            " traderLicense.traderLicenseId," +
+            " traderLicense.arnNumber," +
+            " traderLicense.traderTypeMasterId," +
+            " traderLicense.firstName," +
+            " traderLicense.middleName," +
+            " traderLicense.lastName," +
+            " traderLicense.fatherName," +
+            " traderLicense.stateId," +
+            " traderLicense.districtId," +
+            " traderLicense.address," +
+            " traderLicense.premisesDescription," +
+            " traderLicense.applicationDate," +
+            " traderLicense.applicationNumber," +
+            " traderLicense.traderLicenseNumber," +
+            " traderLicense.representativeDetails," +
+            " traderLicense.licenseFee," +
+            " traderLicense.silkType," +
+            " traderLicense.licenseChallanNumber," +
+            " traderLicense.godownDetails," +
+            " traderLicense.silkExchangeMahajar," +
+            " traderLicense.licenseNumberSequence," +
+            " traderTypeMaster.traderTypeMasterName," +
+            " state.stateName," +
+            " marketMaster.marketMasterName," +
+            " traderLicense.marketMasterId," +
+            " traderLicense.walletAmount," +
+            " traderLicense.mobileNumber," +
+            " district.districtName" +
+            ") \n" +
+            "from TraderLicense traderLicense\n" +
+            "left join trader_type_master traderTypeMaster\n" +
+            "on traderLicense.traderTypeMasterId = traderTypeMaster.traderTypeMasterId " +
+            "left join market_master marketMaster\n" +
+            "on traderLicense.marketMasterId = marketMaster.marketMasterId " +
+            "left join State state\n" +
+            "on traderLicense.stateId = state.stateId " +
+            "left join District district\n" +
+            "on traderLicense.districtId = district.districtId " +
+            "where traderLicense.active = :isActive AND traderLicense.marketMasterId = :marketId order by traderLicense.firstName ASC")
+    public List<TraderLicenseDTO> getByTradersByMarketId(@Param("marketId") long marketId, @Param("isActive") boolean isActive);
 }
