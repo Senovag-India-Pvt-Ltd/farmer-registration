@@ -1,6 +1,7 @@
 package com.sericulture.registration.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sericulture.registration.BankTransaction.BankTransactionController;
 import com.sericulture.registration.BankTransaction.GenericBankTransactionRequest;
@@ -12,14 +13,21 @@ import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.*;
 import com.sericulture.registration.model.api.common.SearchByColumnRequest;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
+import com.sericulture.registration.model.api.farmer.FarmerResponse;
 import com.sericulture.registration.model.api.farmer.GetFarmerRequest;
+import com.sericulture.registration.model.api.farmer.GetFarmerResponse;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
+import com.sericulture.registration.model.api.fruitsApi.GetFruitsResponse;
+import com.sericulture.registration.model.api.fruitsApi.GetLandDetailsResponse;
 import com.sericulture.registration.model.api.reeler.*;
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerDTO;
+import com.sericulture.registration.model.dto.farmer.FarmerLandDetailsDTO;
+import com.sericulture.registration.model.dto.fruitsApi.FruitsFarmerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerSearchDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
+import com.sericulture.registration.model.dto.village.VillageDTO;
 import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
@@ -92,12 +100,12 @@ public class ReelerService {
     RequestInspectionMappingRepository requestInspectionMappingRepository;
 
     @Transactional
-    public ReelerResponse insertReelerDetails(ReelerRequest reelerRequest){
+    public ReelerResponse insertReelerDetails(ReelerRequest reelerRequest) {
         ReelerResponse reelerResponse = new ReelerResponse();
-        Reeler reeler = mapper.reelerObjectToEntity(reelerRequest,Reeler.class);
+        Reeler reeler = mapper.reelerObjectToEntity(reelerRequest, Reeler.class);
         validator.validate(reeler);
-        List<Reeler> reelerListByLicenseNumber = reelerRepository.findByReelingLicenseNumberAndActive(reeler.getReelingLicenseNumber(),true);
-        if(!reelerListByLicenseNumber.isEmpty() && reelerListByLicenseNumber.stream().filter(Reeler::getActive).findAny().isPresent()){
+        List<Reeler> reelerListByLicenseNumber = reelerRepository.findByReelingLicenseNumberAndActive(reeler.getReelingLicenseNumber(), true);
+        if (!reelerListByLicenseNumber.isEmpty() && reelerListByLicenseNumber.stream().filter(Reeler::getActive).findAny().isPresent()) {
             reelerResponse.setError(true);
             reelerResponse.setError_description("Reeler License Number already exist");
 //        }
@@ -107,7 +115,7 @@ public class ReelerService {
 //            reelerResponse.setError_description("Reeler License Number already exist with inactive state");
         } else {
             // Check for duplicate Reeler Number
-            List<Reeler> reelerListByNumber = reelerRepository.findByReelerNumberAndActive(reeler.getReelerNumber(),true);
+            List<Reeler> reelerListByNumber = reelerRepository.findByReelerNumberAndActive(reeler.getReelerNumber(), true);
             if (!reelerListByNumber.isEmpty() && reelerListByNumber.stream().anyMatch(Reeler::getActive)) {
                 reelerResponse.setError(true);
                 reelerResponse.setError_description("Reeler Number already exists");
@@ -121,7 +129,7 @@ public class ReelerService {
                 String formattedDate = today.format(formatter);
                 List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
                 SerialCounter serialCounter = new SerialCounter();
-                if(reelerRequest.getTransferReelerId() == 0) {
+                if (reelerRequest.getTransferReelerId() == 0) {
                     if (serialCounters.size() > 0) {
                         serialCounter = serialCounters.get(0);
                         long counterValue = 1L;
@@ -135,8 +143,8 @@ public class ReelerService {
                     serialCounterRepository.save(serialCounter);
                     String formattedNumber = String.format("%05d", serialCounter.getReelerCounterNumber());
 
-                    reeler.setArnNumber("NRL/"+formattedDate+"/"+formattedNumber);
-                }else{
+                    reeler.setArnNumber("NRL/" + formattedDate + "/" + formattedNumber);
+                } else {
                     if (serialCounters.size() > 0) {
                         serialCounter = serialCounters.get(0);
                         long counterValue = 1L;
@@ -150,7 +158,7 @@ public class ReelerService {
                     serialCounterRepository.save(serialCounter);
                     String formattedNumber = String.format("%05d", serialCounter.getReelerCounterNumber());
 
-                    reeler.setArnNumber("TRL/"+formattedDate+"/"+formattedNumber);
+                    reeler.setArnNumber("TRL/" + formattedDate + "/" + formattedNumber);
                 }
                 Reeler savedResponse = reelerRepository.save(reeler);
                 reelerResponse = mapper.reelerEntityToObject(savedResponse, ReelerResponse.class);
@@ -187,20 +195,20 @@ public class ReelerService {
     }
 
     @Transactional
-    public ReelerResponse dummyReelerDetails(ReelerRequest reelerRequest){
+    public ReelerResponse dummyReelerDetails(ReelerRequest reelerRequest) {
         ReelerResponse reelerResponse = new ReelerResponse();
-        for(int i=0; i< 1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             UUID uuid = UUID.randomUUID();
-            reelerRequest.setReelerName("dummy_reeler"+ uuid);
+            reelerRequest.setReelerName("dummy_reeler" + uuid);
             reelerRequest.setPassbookNumber(String.valueOf(uuid));
             reelerRequest.setReelerNumber(String.valueOf(uuid));
             reelerRequest.setLicenseReceiptNumber(String.valueOf(uuid));
             reelerRequest.setReelingLicenseNumber(String.valueOf(uuid));
             reelerRequest.setMobileNumber(String.valueOf(uuid));
-            reelerRequest.setBankAccountNumber("dummy_acc"+ uuid);
+            reelerRequest.setBankAccountNumber("dummy_acc" + uuid);
             Reeler reeler = mapper.reelerObjectToEntity(reelerRequest, Reeler.class);
             validator.validate(reeler);
-            List<Reeler> reelerListByLicenseNumber = reelerRepository.findByReelingLicenseNumberAndActive(reeler.getReelingLicenseNumber(),true);
+            List<Reeler> reelerListByLicenseNumber = reelerRepository.findByReelingLicenseNumberAndActive(reeler.getReelingLicenseNumber(), true);
             if (!reelerListByLicenseNumber.isEmpty() && reelerListByLicenseNumber.stream().filter(Reeler::getActive).findAny().isPresent()) {
                 reelerResponse.setError(true);
                 reelerResponse.setError_description("Reeler License Number already exist");
@@ -211,7 +219,7 @@ public class ReelerService {
 //            reelerResponse.setError_description("Reeler License Number already exist with inactive state");
             } else {
                 // Check for duplicate Reeler Number
-                List<Reeler> reelerListByNumber = reelerRepository.findByReelerNumberAndActive(reeler.getReelerNumber(),true);
+                List<Reeler> reelerListByNumber = reelerRepository.findByReelerNumberAndActive(reeler.getReelerNumber(), true);
                 if (!reelerListByNumber.isEmpty() && reelerListByNumber.stream().anyMatch(Reeler::getActive)) {
                     reelerResponse.setError(true);
                     reelerResponse.setError_description("Reeler Number already exists");
@@ -265,9 +273,9 @@ public class ReelerService {
     }
 
     @Transactional
-    public ReelerResponse insertTransferReelerDetails(ReelerRequest reelerRequest){
+    public ReelerResponse insertTransferReelerDetails(ReelerRequest reelerRequest) {
         ReelerResponse reelerResponse = new ReelerResponse();
-        Reeler reeler = mapper.reelerObjectToEntity(reelerRequest,Reeler.class);
+        Reeler reeler = mapper.reelerObjectToEntity(reelerRequest, Reeler.class);
         validator.validate(reeler);
         // If no duplicates found, save the reeler
         LocalDate today = Util.getISTLocalDate();
@@ -288,12 +296,12 @@ public class ReelerService {
         serialCounterRepository.save(serialCounter);
         String formattedNumber = String.format("%05d", serialCounter.getReelerCounterNumber());
 
-        reeler.setArnNumber("TRL/"+formattedDate+"/"+formattedNumber);
+        reeler.setArnNumber("TRL/" + formattedDate + "/" + formattedNumber);
 
         Reeler savedResponse = reelerRepository.save(reeler);
         reelerResponse = mapper.reelerEntityToObject(savedResponse, ReelerResponse.class);
         //Once transfer of license done, trigger inspection if created
-        if(savedResponse.getReelerId() != null) {
+        if (savedResponse.getReelerId() != null) {
             InspectionTask inspectionTask = new InspectionTask();
             inspectionTask.setInspectionDate(LocalDate.now());
             inspectionTask.setStatus(1); //Open (Newly created)
@@ -304,31 +312,32 @@ public class ReelerService {
             //To fetch inspection type
             RequestInspectionMapping requestInspectionMapping = requestInspectionMappingRepository.findByRequestTypeNameAndActive("REELER_LICENSE_RENEWAL", true);
 
-            if(requestInspectionMapping != null){
+            if (requestInspectionMapping != null) {
                 inspectionTask.setInspectionType(requestInspectionMapping.getInspectionType());
                 inspectionTaskRepository.save(inspectionTask);
                 reelerResponse.setError(false);
-            }else{
+            } else {
                 reelerResponse.setError(true);
                 reelerResponse.setError_description("Reeler license transferred, but inspection not saved");
             }
 
-        }else{
+        } else {
             reelerResponse.setError(true);
             reelerResponse.setError_description("Reeler license not transferred");
         }
         return reelerResponse;
     }
-    public Map<String,Object> getPaginatedReelerDetails(final Pageable pageable){
-        return convertToMapResponse(reelerRepository.findByActiveOrderByReelerIdAsc( true, pageable));
+
+    public Map<String, Object> getPaginatedReelerDetails(final Pageable pageable) {
+        return convertToMapResponse(reelerRepository.findByActiveOrderByReelerIdAsc(true, pageable));
     }
 
     private Map<String, Object> convertToMapResponse(final Page<Reeler> activeReelers) {
         Map<String, Object> response = new HashMap<>();
 
         List<ReelerResponse> reelerResponses = activeReelers.getContent().stream()
-                .map(reeler -> mapper.reelerEntityToObject(reeler,ReelerResponse.class)).collect(Collectors.toList());
-        response.put("reeler",reelerResponses);
+                .map(reeler -> mapper.reelerEntityToObject(reeler, ReelerResponse.class)).collect(Collectors.toList());
+        response.put("reeler", reelerResponses);
         response.put("currentPage", activeReelers.getNumber());
         response.put("totalItems", activeReelers.getTotalElements());
         response.put("totalPages", activeReelers.getTotalPages());
@@ -352,19 +361,20 @@ public class ReelerService {
         return reelerResponse;
     }
 
-    public ReelerResponse getById(int id){
+    public ReelerResponse getById(int id) {
         ReelerResponse reelerResponse = new ReelerResponse();
-        Reeler reeler = reelerRepository.findByReelerIdAndActive(id,true);
-        if(reeler == null){
+        Reeler reeler = reelerRepository.findByReelerIdAndActive(id, true);
+        if (reeler == null) {
             reelerResponse.setError(true);
             reelerResponse.setError_description("Invalid id");
-        }else{
-            reelerResponse =  mapper.reelerEntityToObject(reeler,ReelerResponse.class);
+        } else {
+            reelerResponse = mapper.reelerEntityToObject(reeler, ReelerResponse.class);
             reelerResponse.setError(false);
         }
-        log.info("Entity is ",reeler);
+        log.info("Entity is ", reeler);
         return reelerResponse;
     }
+
     @Transactional
     public ReelerResponse updateReelerStatus(UpdateReelerStatusRequest updateReelerStatusRequest) {
         ReelerResponse reelerResponse = new ReelerResponse();
@@ -384,13 +394,13 @@ public class ReelerService {
             // throw new ValidationException("Error occurred while fetching village");
         }
 
-        return reelerResponse ;
+        return reelerResponse;
     }
 
     @Transactional
     public ReelerResponse reelerInitialAmount(HttpHeaders httpHeader, ReelerInitialAmountRequest reelerInitialAmountRequest) {
-        log.debug("Reeler initial amount request",reelerInitialAmountRequest);
-        if(reelerInitialAmountRequest.getInitialAmount() == null || reelerInitialAmountRequest.getVirtualAccount() == null || reelerInitialAmountRequest.getVirtualAccount().equals("")){
+        log.debug("Reeler initial amount request", reelerInitialAmountRequest);
+        if (reelerInitialAmountRequest.getInitialAmount() == null || reelerInitialAmountRequest.getVirtualAccount() == null || reelerInitialAmountRequest.getVirtualAccount().equals("")) {
             throw new ValidationException("Please provide required information");
         }
         log.info("Reeler required data provided");
@@ -450,12 +460,12 @@ public class ReelerService {
 
                     ObjectMapper mapper1 = new ObjectMapper();
                     JsonNode jsonNode = mapper1.valueToTree(genericBankTransactionRequest);
-                    log.debug("Request for reeler inital amount:",jsonNode);
+                    log.debug("Request for reeler inital amount:", jsonNode);
                     bankTransactionController.creditTransaction(httpHeader, jsonNode);
 
                     reelerResponse.setError(false);
                 }
-            }catch (Exception ex){
+            } catch (Exception ex) {
                 log.error(ex.toString());
                 ex.printStackTrace();
             }
@@ -465,7 +475,7 @@ public class ReelerService {
             // throw new ValidationException("Error occurred while fetching village");
         }
 
-        return reelerResponse ;
+        return reelerResponse;
     }
 
     @Transactional
@@ -483,20 +493,20 @@ public class ReelerService {
             String formattedDate = today.format(formatter);
             List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
             SerialCounter serialCounter = new SerialCounter();
-            if(serialCounters.size()>0){
+            if (serialCounters.size() > 0) {
                 serialCounter = serialCounters.get(0);
                 long counterValue = 1L;
-                if(serialCounter.getReelerLicenseRenewalCounterNumber() != null){
-                    counterValue =serialCounter.getReelerLicenseRenewalCounterNumber() + 1;
+                if (serialCounter.getReelerLicenseRenewalCounterNumber() != null) {
+                    counterValue = serialCounter.getReelerLicenseRenewalCounterNumber() + 1;
                 }
                 serialCounter.setReelerLicenseRenewalCounterNumber(counterValue);
-            }else{
+            } else {
                 serialCounter.setReelerLicenseRenewalCounterNumber(1L);
             }
             serialCounterRepository.save(serialCounter);
             String formattedNumber = String.format("%05d", serialCounter.getReelerCounterNumber());
 
-            reeler.setArnNumber("RRL/"+formattedDate+"/"+formattedNumber);
+            reeler.setArnNumber("RRL/" + formattedDate + "/" + formattedNumber);
 
 
             Reeler savedReeler = reelerRepository.save(reeler);
@@ -520,15 +530,15 @@ public class ReelerService {
     }
 
     @Transactional
-    public ReelerResponse updateReelerDetails(EditReelerRequest reelerRequest){
+    public ReelerResponse updateReelerDetails(EditReelerRequest reelerRequest) {
         ReelerResponse reelerResponse = new ReelerResponse();
         /*List<Reeler> reelerList = reelerRepository.findByReelerName(reelerRequest.getReelerName());
         if(reelerList.size()>0){
             throw new ValidationException("Reeler already exists with this name, duplicates are not allowed.");
         }*/
 
-        Reeler reeler = reelerRepository.findByReelerIdAndActiveIn(reelerRequest.getReelerId(), Set.of(true,false));
-        if(Objects.nonNull(reeler)){
+        Reeler reeler = reelerRepository.findByReelerIdAndActiveIn(reelerRequest.getReelerId(), Set.of(true, false));
+        if (Objects.nonNull(reeler)) {
             reeler.setReelerName(reelerRequest.getReelerName());
             reeler.setWardNumber(reelerRequest.getWardNumber());
             reeler.setPassbookNumber(reelerRequest.getPassbookNumber());
@@ -556,7 +566,7 @@ public class ReelerService {
             reeler.setGpsLat(reelerRequest.getGpsLat());
             reeler.setGpsLng(reelerRequest.getGpsLng());
             reeler.setInspectionDate(reelerRequest.getInspectionDate());
-          //  reeler.setArnNumber(reelerRequest.getArnNumber());
+            //  reeler.setArnNumber(reelerRequest.getArnNumber());
             reeler.setChakbandiLat(reelerRequest.getChakbandiLat());
             reeler.setChakbandiLng(reelerRequest.getChakbandiLng());
             reeler.setAddress(reelerRequest.getAddress());
@@ -603,19 +613,19 @@ public class ReelerService {
             // throw new ValidationException("Error occurred while fetching village");
         }
 
-        return reelerResponse ;
+        return reelerResponse;
     }
 
     @Transactional
-    public ReelerResponse updateReelerProfileDetails(EditReelerRequest reelerRequest){
+    public ReelerResponse updateReelerProfileDetails(EditReelerRequest reelerRequest) {
         ReelerResponse reelerResponse = new ReelerResponse();
         /*List<Reeler> reelerList = reelerRepository.findByReelerName(reelerRequest.getReelerName());
         if(reelerList.size()>0){
             throw new ValidationException("Reeler already exists with this name, duplicates are not allowed.");
         }*/
 
-        Reeler reeler = reelerRepository.findByReelerIdAndActiveIn(reelerRequest.getReelerId(), Set.of(true,false));
-        if(Objects.nonNull(reeler)){
+        Reeler reeler = reelerRepository.findByReelerIdAndActiveIn(reelerRequest.getReelerId(), Set.of(true, false));
+        if (Objects.nonNull(reeler)) {
             reeler.setTscMasterId(reelerRequest.getTscMasterId());
             reeler.setMobileNumber(reelerRequest.getMobileNumber());
             reeler.setActive(true);
@@ -628,27 +638,27 @@ public class ReelerService {
             // throw new ValidationException("Error occurred while fetching village");
         }
 
-        return reelerResponse ;
-    }
-
-    public ReelerResponse getByReelingLicenseNumber(String reelingLicenseNumber){
-        ReelerResponse reelerResponse = new ReelerResponse();
-        ReelerDTO reeler = reelerRepository.getByReelerLicenseNumberAndActive(reelingLicenseNumber,true);
-        if(reeler == null){
-            reelerResponse.setError(true);
-            reelerResponse.setError_description("Invalid id");
-        }else{
-            reelerResponse =  mapper.reelerDTOToObject(reeler,ReelerResponse.class);
-            reelerResponse.setError(false);
-        }
-        log.info("Entity is ",reeler);
         return reelerResponse;
     }
 
-    public GetReelerResponse getReelerDetails(GetReelerRequest getReelerRequest){
+    public ReelerResponse getByReelingLicenseNumber(String reelingLicenseNumber) {
         ReelerResponse reelerResponse = new ReelerResponse();
-        Reeler reeler = reelerRepository.findByReelerIdAndActive(getReelerRequest.getReelerId(),true);
-        if(reeler == null){
+        ReelerDTO reeler = reelerRepository.getByReelerLicenseNumberAndActive(reelingLicenseNumber, true);
+        if (reeler == null) {
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Invalid id");
+        } else {
+            reelerResponse = mapper.reelerDTOToObject(reeler, ReelerResponse.class);
+            reelerResponse.setError(false);
+        }
+        log.info("Entity is ", reeler);
+        return reelerResponse;
+    }
+
+    public GetReelerResponse getReelerDetails(GetReelerRequest getReelerRequest) {
+        ReelerResponse reelerResponse = new ReelerResponse();
+        Reeler reeler = reelerRepository.findByReelerIdAndActive(getReelerRequest.getReelerId(), true);
+        if (reeler == null) {
             reelerResponse.setError(true);
             reelerResponse.setError_description("Invalid id");
         }
@@ -665,9 +675,9 @@ public class ReelerService {
         return getReelerResponse;
     }
 
-    public GetReelerResponse getReelerDetailsByFruitsId(GetFruitsIdRequest getFruitsIdRequest){
-        Reeler reeler = reelerRepository.findByFruitsIdAndActive(getFruitsIdRequest.getFruitsId(),true);
-        if(reeler == null){
+    public GetReelerResponse getReelerDetailsByFruitsId(GetFruitsIdRequest getFruitsIdRequest) {
+        Reeler reeler = reelerRepository.findByFruitsIdAndActive(getFruitsIdRequest.getFruitsId(), true);
+        if (reeler == null) {
             throw new ValidationException("Invalid reeler id");
         }
         List<ReelerVirtualBankAccount> reelerVirtualBankAccountList = reelerVirtualBankAccountRepository.findByReelerIdAndActive(reeler.getReelerId(), true);
@@ -680,21 +690,22 @@ public class ReelerService {
 
         return getReelerResponse;
     }
-    public ReelerResponse getByReelerIdJoin(int reelerId){
+
+    public ReelerResponse getByReelerIdJoin(int reelerId) {
         ReelerResponse reelerResponse = new ReelerResponse();
         ReelerDTO reelerDTO = reelerRepository.getByReelerIdAndActive(reelerId, true);
-        if(reelerDTO==null){
+        if (reelerDTO == null) {
             reelerResponse.setError(true);
             reelerResponse.setError_description("Invalid id");
-        }else{
-            reelerResponse =  mapper.reelerDTOToObject(reelerDTO,ReelerResponse.class);
+        } else {
+            reelerResponse = mapper.reelerDTOToObject(reelerDTO, ReelerResponse.class);
             reelerResponse.setError(false);
         }
         return reelerResponse;
     }
 
-    public Map<String,Object> getPaginatedReelerDetailsWithJoin(final Pageable pageable){
-        return convertDTOToMapResponse(reelerRepository.getByActiveOrderByReelerIdAsc( true, pageable));
+    public Map<String, Object> getPaginatedReelerDetailsWithJoin(final Pageable pageable) {
+        return convertDTOToMapResponse(reelerRepository.getByActiveOrderByReelerIdAsc(true, pageable));
     }
 
 
@@ -702,8 +713,8 @@ public class ReelerService {
         Map<String, Object> response = new HashMap<>();
 
         List<ReelerResponse> reelerResponses = activeReelers.getContent().stream()
-                .map(reeler -> mapper.reelerDTOToObject(reeler,ReelerResponse.class)).collect(Collectors.toList());
-        response.put("reeler",reelerResponses);
+                .map(reeler -> mapper.reelerDTOToObject(reeler, ReelerResponse.class)).collect(Collectors.toList());
+        response.put("reeler", reelerResponses);
         response.put("currentPage", activeReelers.getNumber());
         response.put("totalItems", activeReelers.getTotalElements());
         response.put("totalPages", activeReelers.getTotalPages());
@@ -711,10 +722,10 @@ public class ReelerService {
     }
 
     @Transactional
-    public ReelerResponse activateReeler(ActivateReelerRequest activateReelerRequest){
+    public ReelerResponse activateReeler(ActivateReelerRequest activateReelerRequest) {
         ReelerResponse reelerResponse = new ReelerResponse();
-        Reeler reeler = reelerRepository.findByReelerIdAndActiveIn(activateReelerRequest.getReelerId(), Set.of(true,false));
-        if(Objects.nonNull(reeler)){
+        Reeler reeler = reelerRepository.findByReelerIdAndActiveIn(activateReelerRequest.getReelerId(), Set.of(true, false));
+        if (Objects.nonNull(reeler)) {
             reeler.setIsActivated(activateReelerRequest.getIsActivated());
             reeler.setActive(true);
             Reeler reeler1 = reelerRepository.save(reeler);
@@ -725,11 +736,11 @@ public class ReelerService {
             reelerResponse.setError_description("Error occurred while fetching reeler");
         }
 
-        return reelerResponse ;
+        return reelerResponse;
     }
 
-    public Map<String,Object> inactiveReelers(){
-        return converListToResponse(reelerRepository.findByActiveAndIsActivatedOrderByReelerNameAsc( true,0));
+    public Map<String, Object> inactiveReelers() {
+        return converListToResponse(reelerRepository.findByActiveAndIsActivatedOrderByReelerNameAsc(true, 0));
     }
 
     public Map<String, Object> getAllByActive(boolean isActive) {
@@ -749,38 +760,39 @@ public class ReelerService {
         Map<String, Object> response = new HashMap<>();
 
         List<ReelerResponse> reelerResponses = inactiveReelers.stream()
-                .map(reeler -> mapper.reelerEntityToObject(reeler,ReelerResponse.class)).collect(Collectors.toList());
-        response.put("reeler",reelerResponses);
+                .map(reeler -> mapper.reelerEntityToObject(reeler, ReelerResponse.class)).collect(Collectors.toList());
+        response.put("reeler", reelerResponses);
         response.put("totalItems", inactiveReelers.size());
         return response;
     }
-    public Map<String,Object> searchByColumnAndSort(SearchWithSortRequest searchWithSortRequest){
-        if(searchWithSortRequest.getSearchText() == null || searchWithSortRequest.getSearchText().equals("")){
+
+    public Map<String, Object> searchByColumnAndSort(SearchWithSortRequest searchWithSortRequest) {
+        if (searchWithSortRequest.getSearchText() == null || searchWithSortRequest.getSearchText().equals("")) {
             searchWithSortRequest.setSearchText("%%");
-        }else{
+        } else {
             searchWithSortRequest.setSearchText("%" + searchWithSortRequest.getSearchText() + "%");
         }
-        if(searchWithSortRequest.getSortColumn() == null || searchWithSortRequest.getSortColumn().equals("")){
+        if (searchWithSortRequest.getSortColumn() == null || searchWithSortRequest.getSortColumn().equals("")) {
             searchWithSortRequest.setSortColumn("reelerName");
         }
-        if(searchWithSortRequest.getSortOrder() == null || searchWithSortRequest.getSortOrder().equals("")){
+        if (searchWithSortRequest.getSortOrder() == null || searchWithSortRequest.getSortOrder().equals("")) {
             searchWithSortRequest.setSortOrder("asc");
         }
-        if(searchWithSortRequest.getPageNumber() == null || searchWithSortRequest.getPageNumber().equals("")){
+        if (searchWithSortRequest.getPageNumber() == null || searchWithSortRequest.getPageNumber().equals("")) {
             searchWithSortRequest.setPageNumber("0");
         }
-        if(searchWithSortRequest.getPageSize() == null || searchWithSortRequest.getPageSize().equals("")){
+        if (searchWithSortRequest.getPageSize() == null || searchWithSortRequest.getPageSize().equals("")) {
             searchWithSortRequest.setPageSize("5");
         }
         Sort sort;
-        if(searchWithSortRequest.getSortOrder().equals("asc")){
+        if (searchWithSortRequest.getSortOrder().equals("asc")) {
             sort = Sort.by(Sort.Direction.ASC, searchWithSortRequest.getSortColumn());
-        }else{
+        } else {
             sort = Sort.by(Sort.Direction.DESC, searchWithSortRequest.getSortColumn());
         }
         Pageable pageable = PageRequest.of(Integer.parseInt(searchWithSortRequest.getPageNumber()), Integer.parseInt(searchWithSortRequest.getPageSize()), sort);
-        Page<ReelerDTO> reelerDTOS = reelerRepository.getSortedReelers(searchWithSortRequest.getJoinColumn(),searchWithSortRequest.getSearchText(),true, pageable);
-        log.info("Entity is ",reelerDTOS);
+        Page<ReelerDTO> reelerDTOS = reelerRepository.getSortedReelers(searchWithSortRequest.getJoinColumn(), searchWithSortRequest.getSearchText(), true, pageable);
+        log.info("Entity is ", reelerDTOS);
         return convertPageableDTOToMapResponse(reelerDTOS);
     }
 
@@ -788,8 +800,8 @@ public class ReelerService {
         Map<String, Object> response = new HashMap<>();
 
         List<ReelerResponse> reelerResponses = activeReelers.getContent().stream()
-                .map(reeler -> mapper.reelerDTOToObject(reeler,ReelerResponse.class)).collect(Collectors.toList());
-        response.put("reeler",reelerResponses);
+                .map(reeler -> mapper.reelerDTOToObject(reeler, ReelerResponse.class)).collect(Collectors.toList());
+        response.put("reeler", reelerResponses);
         response.put("currentPage", activeReelers.getNumber());
         response.put("totalItems", activeReelers.getTotalElements());
         response.put("totalPages", activeReelers.getTotalPages());
@@ -797,18 +809,78 @@ public class ReelerService {
         return response;
     }
 
-    public Map<String,Object> searchByColumn(SearchByColumnRequest searchByColumnRequest){
-        if(searchByColumnRequest.getSearchText() == null || searchByColumnRequest.getSearchText().equals("")){
+    public Map<String, Object> searchByColumn(SearchByColumnRequest searchByColumnRequest) {
+        if (searchByColumnRequest.getSearchText() == null || searchByColumnRequest.getSearchText().equals("")) {
             searchByColumnRequest.setSearchText("%%");
-        }else{
+        } else {
             searchByColumnRequest.setSearchText("%" + searchByColumnRequest.getSearchText() + "%");
         }
-        if(searchByColumnRequest.getSearchColumn() == null || searchByColumnRequest.getSearchColumn().equals("")){
+        if (searchByColumnRequest.getSearchColumn() == null || searchByColumnRequest.getSearchColumn().equals("")) {
             searchByColumnRequest.setSearchColumn("reeler.reelerName");
         }
-        List<ReelerSearchDTO> reelerDTOList = reelerRepository.getReelerBySearchText(searchByColumnRequest.getSearchText(),searchByColumnRequest.getSearchColumn());
-        log.info("Entity is ",reelerDTOList);
+        List<ReelerSearchDTO> reelerDTOList = reelerRepository.getReelerBySearchText(searchByColumnRequest.getSearchText(), searchByColumnRequest.getSearchColumn());
+        log.info("Entity is ", reelerDTOList);
         return convertPageableDTOToMapResponse(reelerDTOList);
+    }
+
+    public ResponseEntity<?> getReelerDetailsByFruitsIdOrReelerNumberOrMobileNumberOrReelerLicenseNumber(SearchRequest searchRequest) throws Exception {
+        log.info("Entered to function");
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+        List<Object[]> objects = new ArrayList<>();
+        List<ReelerDetailsResponse> reelerDetailsResponseList = new ArrayList<>();
+        if (Objects.equals(searchRequest.getType(), "mobileNumber")) {
+            if (searchRequest.getText() != null && !searchRequest.getText().equals("")) {
+                if (reelerRepository.getReelerDetails(searchRequest.getText(), searchRequest.getType()).isEmpty()) {
+                    throw new ValidationException("Invalid mobile number");
+                } else {
+                    objects = reelerRepository.getReelerDetails(searchRequest.getText(), searchRequest.getType());
+                }
+            }
+        } else if (Objects.equals(searchRequest.getType(), "reelerNumber")) {
+            if (searchRequest.getText() != null && !searchRequest.getText().equals("")) {
+                if (reelerRepository.getReelerDetails(searchRequest.getText(), searchRequest.getType()).isEmpty()) {
+                    throw new ValidationException("Invalid reeler number");
+                } else {
+                    objects = reelerRepository.getReelerDetails(searchRequest.getText(), searchRequest.getType());
+                }
+            }
+        } else {
+            if (!reelerRepository.findByReelingLicenseNumberAndActive(searchRequest.getText(), true).isEmpty()) {
+                objects = reelerRepository.getReelerDetails(searchRequest.getText(), searchRequest.getType());
+            } else {
+                throw new ValidationException("Invalid reeling license number");
+            }
+        }
+        if (objects.size() > 0) {
+            for (Object[] arr : objects) {
+                ReelerDetailsResponse reelerDetailsResponse;
+                reelerDetailsResponse = ReelerDetailsResponse.builder()
+                        .reelerId(Util.objectToLong(arr[0]))
+                        .name(Util.objectToString(arr[1]))
+                        .passbookNumber(Util.objectToString(arr[2]))
+                        .fatherName(Util.objectToString(arr[3]))
+                        .dob(Util.objectToLocalDate(arr[4]))
+                        .gender(Util.objectToString(arr[5]))
+                        .casteTitle(Util.objectToString(arr[6]))
+                        .mobileNumber(Util.objectToString(arr[7]))
+                        .arnNumber(Util.objectToString(arr[8]))
+                        .stateName(Util.objectToString(arr[9]))
+                        .districtName(Util.objectToString(arr[10]))
+                        .talukName(Util.objectToString(arr[11]))
+                        .hobliName(Util.objectToString(arr[12]))
+                        .villageName(Util.objectToString(arr[13]))
+                        .address(Util.objectToString(arr[14]))
+                        .pincode(Util.objectToString(arr[15]))
+                        .virtualAccountNumber(Util.objectToString(arr[16]))
+                        .reelerLicenseNumber(Util.objectToString(arr[17]))
+                        .reelerNumber(Util.objectToString(arr[18]))
+                        .build();
+                reelerDetailsResponseList.add(reelerDetailsResponse);
+            }
+        }
+        rw.setContent(reelerDetailsResponseList);
+        log.info("Response is {}", rw.getContent());
+        return ResponseEntity.ok(rw);
     }
 
     private Map<String, Object> convertPageableDTOToMapResponse(final List<ReelerSearchDTO> activeReelers) {
@@ -816,18 +888,19 @@ public class ReelerService {
 
 //        List<ReelerResponse> reelerResponses = activeReelers.stream()
 //                .map(reelerDTO -> mapper.reelerDTOToObject(reelerDTO,ReelerResponse.class)).collect(Collectors.toList());
-        response.put("reelers",activeReelers);
+        response.put("reelers", activeReelers);
         response.put("totalItems", activeReelers.size());
         return response;
     }
+
     @Transactional
     public ReelerResponse updateMahajarDetailsPath(MultipartFile multipartFile, String reelerId) throws Exception {
         ReelerResponse reelerResponse = new ReelerResponse();
-        Reeler reeler = reelerRepository.findByReelerIdAndActive(Long.parseLong(reelerId),true);
+        Reeler reeler = reelerRepository.findByReelerIdAndActive(Long.parseLong(reelerId), true);
         if (Objects.nonNull(reeler)) {
             UUID uuid = UUID.randomUUID();
             String extension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
-            String fileName = "reeler/"+reeler.getReelerId()+"_"+reelerId+"_"+uuid+"_"+extension;
+            String fileName = "reeler/" + reeler.getReelerId() + "_" + reelerId + "_" + uuid + "_" + extension;
             s3Controller.uploadFile(multipartFile, fileName);
             reeler.setMahajarDetails(fileName);
             Reeler reeler1 = reelerRepository.save(reeler);
@@ -841,7 +914,7 @@ public class ReelerService {
         return reelerResponse;
     }
 
-    public ResponseEntity<?> districtWiseReelerCount( ) {
+    public ResponseEntity<?> districtWiseReelerCount() {
 
         ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
 
@@ -978,9 +1051,9 @@ public class ReelerService {
         villageId = (villageId == 0) ? null : villageId;
         marketId = (marketId == 0) ? null : marketId;
         Pageable pageable = null;
-        applicablePage  = reelerRepository.getPrimaryReelerDetails(districtId, talukId, villageId, marketId, pageable);
+        applicablePage = reelerRepository.getPrimaryReelerDetails(districtId, talukId, villageId, marketId, pageable);
         List<Object[]> applicableList = applicablePage.getContent();
-        reelerResponse(primaryDetailsResponseList, applicableList,pageNumber, pageSize);
+        reelerResponse(primaryDetailsResponseList, applicableList, pageNumber, pageSize);
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Sheet 1");
@@ -1008,7 +1081,7 @@ public class ReelerService {
         //Dynamic data binds here
         //Starting 0th and 1st column cells are hardcoded, So dynamic data column starts from 2nd column
         int dataStartsFrom = 1;
-        for(int i=0; i<primaryDetailsResponseList.size(); i++){
+        for (int i = 0; i < primaryDetailsResponseList.size(); i++) {
             Row contentRow = sheet.createRow(dataStartsFrom);
             PrimaryReelerDetailsResponse primaryDetailsResponse = primaryDetailsResponseList.get(i);
             contentRow.createCell(0).setCellValue(primaryDetailsResponse.getFirstName());
@@ -1046,7 +1119,7 @@ public class ReelerService {
         String directoryPath = Paths.get(userHome, "Downloads").toString();
         Path directory = Paths.get(directoryPath);
         Files.createDirectories(directory);
-        Path filePath = directory.resolve("reelers"+Util.getISTLocalDate()+".xlsx");
+        Path filePath = directory.resolve("reelers" + Util.getISTLocalDate() + ".xlsx");
 
         // Write the workbook content to the specified file path
         FileOutputStream fileOut = new FileOutputStream(filePath.toString());
@@ -1058,8 +1131,8 @@ public class ReelerService {
     }
 
     public ResponseEntity<?> primaryReelerMarketDetails(
-                                                  Long marketId,
-                                                  int pageNumber, int pageSize) {
+            Long marketId,
+            int pageNumber, int pageSize) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
         List<PrimaryReelerDetailsResponse> primaryReelerDetailsResponseList = new ArrayList<>();
 
@@ -1109,8 +1182,8 @@ public class ReelerService {
     }
 
     public FileInputStream reelerMarketReport(
-                                        Long marketId,
-                                        int pageNumber, int pageSize) throws Exception {
+            Long marketId,
+            int pageNumber, int pageSize) throws Exception {
         List<PrimaryReelerDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
 
 
@@ -1120,9 +1193,9 @@ public class ReelerService {
 //        villageId = (villageId == 0) ? null : villageId;
         marketId = (marketId == 0) ? null : marketId;
         Pageable pageable = null;
-        applicablePage  = reelerRepository.getPrimaryReelerDetailsByMarket( marketId, pageable);
+        applicablePage = reelerRepository.getPrimaryReelerDetailsByMarket(marketId, pageable);
         List<Object[]> applicableList = applicablePage.getContent();
-        reelerResponse(primaryDetailsResponseList, applicableList,pageNumber, pageSize);
+        reelerResponse(primaryDetailsResponseList, applicableList, pageNumber, pageSize);
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Sheet 1");
@@ -1149,7 +1222,7 @@ public class ReelerService {
         //Dynamic data binds here
         //Starting 0th and 1st column cells are hardcoded, So dynamic data column starts from 2nd column
         int dataStartsFrom = 1;
-        for(int i=0; i<primaryDetailsResponseList.size(); i++){
+        for (int i = 0; i < primaryDetailsResponseList.size(); i++) {
             Row contentRow = sheet.createRow(dataStartsFrom);
             PrimaryReelerDetailsResponse primaryDetailsResponse = primaryDetailsResponseList.get(i);
             contentRow.createCell(0).setCellValue(primaryDetailsResponse.getFirstName());
@@ -1186,7 +1259,7 @@ public class ReelerService {
         String directoryPath = Paths.get(userHome, "Downloads").toString();
         Path directory = Paths.get(directoryPath);
         Files.createDirectories(directory);
-        Path filePath = directory.resolve("reelers"+Util.getISTLocalDate()+".xlsx");
+        Path filePath = directory.resolve("reelers" + Util.getISTLocalDate() + ".xlsx");
 
         // Write the workbook content to the specified file path
         FileOutputStream fileOut = new FileOutputStream(filePath.toString());

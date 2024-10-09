@@ -4,6 +4,7 @@ import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.ApplicationsDetailsDistrictReelerWiseRequest;
 import com.sericulture.registration.model.api.ApplicationsDetailsDistrictWiseRequest;
+import com.sericulture.registration.model.api.SearchRequest;
 import com.sericulture.registration.model.api.common.SearchByColumnRequest;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.farmer.FarmerResponse;
@@ -67,7 +68,7 @@ public class ReelerController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
     @PostMapping("/add")
-    public ResponseEntity<?> addReelerDetails(@Valid @RequestBody ReelerRequest reelerRequest){
+    public ResponseEntity<?> addReelerDetails(@Valid @RequestBody ReelerRequest reelerRequest) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerResponse.class);
 
         rw.setContent(reelerService.insertReelerDetails(reelerRequest));
@@ -86,7 +87,7 @@ public class ReelerController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
     @PostMapping("/dummy-add")
-    public ResponseEntity<?> dummyReelerDetails(@Valid @RequestBody ReelerRequest reelerRequest){
+    public ResponseEntity<?> dummyReelerDetails(@Valid @RequestBody ReelerRequest reelerRequest) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerResponse.class);
 
         rw.setContent(reelerService.dummyReelerDetails(reelerRequest));
@@ -105,7 +106,7 @@ public class ReelerController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
     @PostMapping("/transfer-reeler-license")
-    public ResponseEntity<?> transferReelerLicense(@Valid @RequestBody ReelerRequest reelerRequest){
+    public ResponseEntity<?> transferReelerLicense(@Valid @RequestBody ReelerRequest reelerRequest) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerResponse.class);
 
         rw.setContent(reelerService.insertTransferReelerDetails(reelerRequest));
@@ -114,7 +115,7 @@ public class ReelerController {
 
     @GetMapping("/list")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "No Content - inserted successfully",content =
+            @ApiResponse(responseCode = "204", description = "No Content - inserted successfully", content =
                     {
                             @Content(mediaType = "application/json", schema =
                             @Schema(example = "{\"content\":{\"totalItems\":1,\"reeler\":[{\"id\":1,\"reelerName\":\"\",\"relationShipId\":\"1\",\"farmerId\":\"1\"},{\"id\":2,\"reelerName\":\"ReelerName 1\",\"farmerId\":\"2\", \"relatioshipId\":\"2\"}],\"totalPages\":1,\"currentPage\":0},\"errorMessages\":[]}"))
@@ -481,6 +482,7 @@ public class ReelerController {
         rw.setContent(reelerService.getReelerDetailsByFruitsId(getFruitsIdRequest));
         return ResponseEntity.ok(rw);
     }
+
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ok Response"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
@@ -503,7 +505,7 @@ public class ReelerController {
 
     @GetMapping("/list-with-join")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "No Content - inserted successfully",content =
+            @ApiResponse(responseCode = "204", description = "No Content - inserted successfully", content =
                     {
                             @Content(mediaType = "application/json", schema =
                             @Schema(example = "{\"content\":{\"totalItems\":6,\"reeler\":[{\"id\":10,\"reelerName\":\"\",\"reelerId\":1,},{\"id\":11,\"reelerName\":\"Shimoga\",\"reelerId\":1,},{\"id\":13,\"reelerName\":\"Hubli\",\"reelerId\":1,}],\"totalPages\":1,\"currentPage\":0},\"errorMessages\":[]}"))
@@ -547,7 +549,7 @@ public class ReelerController {
 
     @GetMapping("/get-all")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "No Content - inserted successfully",content =
+            @ApiResponse(responseCode = "204", description = "No Content - inserted successfully", content =
                     {
                             @Content(mediaType = "application/json", schema =
                             @Schema(example = "{\"content\":{\"totalItems\":6,\"reeler\":[{\"id\":10,\"reelerName\":\"\"},{\"id\":11,\"reelerName\":\"Byndoor\"},{\"id\":13,\"reelerName\":\"Uppunda\"}],\"totalPages\":1,\"currentPage\":0},\"errorMessages\":[]}"))
@@ -587,6 +589,7 @@ public class ReelerController {
         rw.setContent(reelerService.inactiveReelers());
         return ResponseEntity.ok(rw);
     }
+
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Object saved details"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
@@ -653,24 +656,24 @@ public class ReelerController {
     ) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(ReelerResponse.class);
 
-        rw.setContent(reelerService.reelerInitialAmount(headers,reelerInitialAmountRequest));
+        rw.setContent(reelerService.reelerInitialAmount(headers, reelerInitialAmountRequest));
         return ResponseEntity.ok(rw);
     }
 
     @PostMapping("/districtWiseReelerCount")
-    public ResponseEntity<?> districtWiseReelerCount(  ){
+    public ResponseEntity<?> districtWiseReelerCount() {
         return reelerService.districtWiseReelerCount();
 
     }
 
     @PostMapping("/talukWiseReelerCount")
-    public ResponseEntity<?> talukWiseReelerCount(@RequestBody ApplicationsDetailsDistrictReelerWiseRequest applicationsDetailsDistrictReelerWiseRequest){
+    public ResponseEntity<?> talukWiseReelerCount(@RequestBody ApplicationsDetailsDistrictReelerWiseRequest applicationsDetailsDistrictReelerWiseRequest) {
         return reelerService.talukWiseReelerCount(applicationsDetailsDistrictReelerWiseRequest);
 
     }
 
     @PostMapping("/marketWiseReelerCount")
-    public ResponseEntity<?> marketWiseReelerCount(@RequestBody ApplicationsDetailsDistrictReelerWiseRequest applicationsDetailsDistrictReelerWiseRequest){
+    public ResponseEntity<?> marketWiseReelerCount(@RequestBody ApplicationsDetailsDistrictReelerWiseRequest applicationsDetailsDistrictReelerWiseRequest) {
         return reelerService.marketWiseReelerCount(applicationsDetailsDistrictReelerWiseRequest);
 
     }
@@ -685,6 +688,7 @@ public class ReelerController {
             @RequestParam(defaultValue = "50") int pageSize) {
         return reelerService.primaryReelerDetails(districtId, talukId, villageId, marketId, pageNumber, pageSize);
     }
+
     @PostMapping("/reeler-report")
     public ResponseEntity<?> reelerReport(@RequestParam(required = false) Long districtId,
                                           @RequestParam(required = false) Long talukId,
@@ -694,7 +698,7 @@ public class ReelerController {
                                           @RequestParam(defaultValue = "50") int pageSize) {
         try {
             System.out.println("enter to reeler report");
-            FileInputStream fileInputStream = reelerService.reelerReport(districtId, talukId, villageId, marketId ,pageNumber, pageSize);
+            FileInputStream fileInputStream = reelerService.reelerReport(districtId, talukId, villageId, marketId, pageNumber, pageSize);
 
             InputStreamResource resource = new InputStreamResource(fileInputStream);
 
@@ -719,15 +723,16 @@ public class ReelerController {
             @RequestParam(required = false) Long marketId,
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "50") int pageSize) {
-        return reelerService.primaryReelerMarketDetails (marketId, pageNumber, pageSize);
+        return reelerService.primaryReelerMarketDetails(marketId, pageNumber, pageSize);
     }
+
     @PostMapping("/reeler-market-report")
     public ResponseEntity<?> farmerReport(@RequestParam(required = false) Long marketId,
                                           @RequestParam(defaultValue = "0") int pageNumber,
                                           @RequestParam(defaultValue = "50") int pageSize) {
         try {
             System.out.println("enter to reeler report");
-            FileInputStream fileInputStream = reelerService.reelerMarketReport(marketId,pageNumber, pageSize);
+            FileInputStream fileInputStream = reelerService.reelerMarketReport(marketId, pageNumber, pageSize);
 
             InputStreamResource resource = new InputStreamResource(fileInputStream);
 
@@ -745,6 +750,26 @@ public class ReelerController {
             HttpHeaders headers = new HttpHeaders();
             return new ResponseEntity<>(ex.getMessage().getBytes(StandardCharsets.UTF_8), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
+    @PostMapping("/get-reeler-details-by-fruits-id-or-reeler-number-or-mobile-number-or-reeler-license-number")
+    public ResponseEntity<?> getReelerDetailsByFruitsIdOrFarmerNumberorMobileNumberorReelerLicenseNumber(
+            @Valid @RequestBody SearchRequest searchRequest
+    ) throws Exception {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(GetReelerResponse.class);
+        rw.setContent(reelerService.getReelerDetailsByFruitsIdOrReelerNumberOrMobileNumberOrReelerLicenseNumber(searchRequest));
+        return ResponseEntity.ok(rw);
     }
 
 }

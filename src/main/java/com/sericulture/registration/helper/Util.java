@@ -55,6 +55,17 @@ public final class Util {
         return object == null ? 0 : Long.parseLong(String.valueOf(object));
     }
 
+    public static LocalDate objectToLocalDate(Object object) {
+        if (object == null) {
+            return null;
+        }
+        String dateString = String.valueOf(object);
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss[.S]");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate date = LocalDate.parse(dateString, inputFormatter);
+        return LocalDate.parse(date.format(outputFormatter), outputFormatter);
+    }
+
     public static String getCRN(LocalDate date, int marketId, int allottedLotId) {
         String dateInString = date.toString();
         return (dateInString.replace("-", "") + String.format("%03d", marketId) + String.format("%04d", allottedLotId));
@@ -92,18 +103,22 @@ public final class Util {
 
     public static JwtPayloadData getTokenValues() {
         Principal principal = SecurityContextHolder.getContext().getAuthentication();
-        String token = ((UserInfoDetails)((UsernamePasswordAuthenticationToken) principal).getPrincipal()).getJwtToken();
+        String token = ((UserInfoDetails) ((UsernamePasswordAuthenticationToken) principal).getPrincipal()).getJwtToken();
         return TokenDecrypterUtil.extractJwtPayload(token);
     }
+
     public static Integer getMarketId(JwtPayloadData jwtPayloadData) {
         return jwtPayloadData.getMarketId();
     }
+
     public static Integer getGodownId(JwtPayloadData jwtPayloadData) {
         return jwtPayloadData.getGodownId();
     }
+
     public static Integer getUserType(JwtPayloadData jwtPayloadData) {
         return jwtPayloadData.getUserType();
     }
+
     public static String getUserId(JwtPayloadData jwtPayloadData) {
         return jwtPayloadData.getUsername();
     }
@@ -112,6 +127,7 @@ public final class Util {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
         return LocalDateTime.parse(value, dtf);
     }
+
     public static LocalDate parseStringToLocalDate(String value, String format) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
         return LocalDate.parse(value, dtf);
