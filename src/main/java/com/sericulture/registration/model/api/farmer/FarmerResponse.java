@@ -157,6 +157,9 @@ public class FarmerResponse {
     @Schema(name = "address", example = "Karnataka",required=true)
     String address;
 
+    @Schema(name = "villageName", example = "Karnataka",required=true)
+    String villageName;
+
 
 
 

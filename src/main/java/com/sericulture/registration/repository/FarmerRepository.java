@@ -733,12 +733,15 @@ Page<Object[]> getPrimaryFarmerDetails(
         Pageable pageable);
 
     @Query(nativeQuery = true, value = """
-        SELECT CONCAT(f.first_name, ' ', f.middle_name) AS full_name,
-               fa.address_text,
-               f.FARMER_ID,
-               f.fruits_id
-        FROM FARMER f
-        Left JOIN farmer_address fa ON f.FARMER_ID = fa.FARMER_ID
+    SELECT CONCAT(f.first_name, ' ', f.middle_name) AS full_name,
+                    f.father_name,
+                   fa.address_text,
+                   f.FARMER_ID,
+                   f.fruits_id,
+                   v.VILLAGE_NAME
+            FROM FARMER f
+            Left JOIN farmer_address fa ON f.FARMER_ID = fa.FARMER_ID
+            Left JOIN VILLAGE v  ON v.VILLAGE_ID = fa.VILLAGE_ID
         WHERE fa.default_address = 1
         AND f.fruits_id = :fruitsId
         AND f.active = 1;
