@@ -845,7 +845,7 @@ public class ReelerService {
                 }
             }
         } else {
-            if (!reelerRepository.findByReelingLicenseNumberAndActive(searchRequest.getText(), true).isEmpty()) {
+            if (!reelerRepository.getReelerDetails(searchRequest.getText(), searchRequest.getType()).isEmpty()) {
                 objects = reelerRepository.getReelerDetails(searchRequest.getText(), searchRequest.getType());
             } else {
                 throw new ValidationException("Invalid reeling license number");

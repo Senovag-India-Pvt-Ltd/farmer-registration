@@ -733,12 +733,15 @@ Page<Object[]> getPrimaryFarmerDetails(
         Pageable pageable);
 
     @Query(nativeQuery = true, value = """
-        SELECT CONCAT(f.first_name, ' ', f.middle_name) AS full_name,
-               fa.address_text,
-               f.FARMER_ID,
-               f.fruits_id
-        FROM FARMER f
-        Left JOIN farmer_address fa ON f.FARMER_ID = fa.FARMER_ID
+    SELECT CONCAT(f.first_name, ' ', f.middle_name) AS full_name,
+                    f.father_name,
+                   fa.address_text,
+                   f.FARMER_ID,
+                   f.fruits_id,
+                   v.VILLAGE_NAME
+            FROM FARMER f
+            Left JOIN farmer_address fa ON f.FARMER_ID = fa.FARMER_ID
+            Left JOIN VILLAGE v  ON v.VILLAGE_ID = fa.VILLAGE_ID
         WHERE fa.default_address = 1
         AND f.fruits_id = :fruitsId
         AND f.active = 1;
@@ -763,5 +766,56 @@ Page<Object[]> getPrimaryFarmerDetails(
     """)
 
     public List<Object[]> getFarmerLandDetails(String fruitsId);
+
+    @Query(nativeQuery = true, value = """
+    WITH PrimaryAddress AS (
+        SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
+               fa.farmer_id,
+               fa.STATE_ID,
+               fa.DISTRICT_ID,
+               fa.TALUK_ID,
+               fa.HOBLI_ID,
+               fa.VILLAGE_ID,
+               ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
+        FROM farmer_address fa
+        WHERE fa.active = 1
+    )
+    SELECT
+        f.farmer_id,
+        f.first_name,
+        f.middle_name,
+        f.last_name,
+        f.fruits_id,
+        f.farmer_number,
+        f.father_name,
+        f.dob,
+        f.mobile_number,
+        d.DISTRICT_NAME,
+        t.TALUK_NAME,
+        h.hobli_name,
+        v.village_name,
+        cm.source_of_dfls,
+        cm.numbers_of_dfls,
+        cm.lot_numbers_of_the_rsp,
+        s.state_name,
+        cm.race_of_dfls,
+        rm.race_name
+    FROM farmer f
+    LEFT JOIN PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
+    LEFT JOIN state s ON pa.state_id = s.state_id AND s.active = 1
+    LEFT JOIN district d ON pa.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
+    LEFT JOIN taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
+    LEFT JOIN hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
+    LEFT JOIN village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+    INNER JOIN chowki_management cm ON cm.farmer_id = f.farmer_id
+    LEFT JOIN
+    race_master rm ON rm.race_id = cm.race_of_dfls AND rm.active = 1
+    WHERE
+        (:type = 'mobileNumber' AND f.mobile_number = :text) OR
+        (:type = 'farmerNumber' AND f.farmer_number = :text) OR
+        (:type = 'fruitsId' AND f.fruits_id = :text)
+""")
+    List<Object[]> getFarmerDetailsForSeedCocoonMarket(String text, String type);
+
 
 }

@@ -49,9 +49,11 @@ public class GetFruitsDetailsService {
         for (Object[] arr : fruitsDetails) {
             FarmerResponse response = FarmerResponse.builder()
                     .fullName(Util.objectToString(arr[0]))
-                    .address(Util.objectToString(arr[1]))
-                    .farmerId(Util.objectToLong(arr[2]))
-                    .fruitsId(Util.objectToString(arr[3]))
+                    .fatherName(Util.objectToString(arr[1]))
+                    .address(Util.objectToString(arr[2]))
+                    .farmerId(Util.objectToLong(arr[3]))
+                    .fruitsId(Util.objectToString(arr[4]))
+                    .villageName(Util.objectToString(arr[5]))
                     .build();
             responses.add(response);
         }
