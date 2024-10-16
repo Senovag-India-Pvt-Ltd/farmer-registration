@@ -1063,5 +1063,42 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             """)
     List<Object[]> getReelerDetails(String text, String type);
 
+    @Query(nativeQuery = true, value = """
+    SELECT
+        r.reeler_id,
+        r.name,
+        r.passbook_number,
+        r.father_name,
+        r.dob,
+        r.gender,
+        r.mobile_number,
+        r.arn_number,
+        s.STATE_NAME,
+        d.DISTRICT_NAME,
+        t.TALUK_NAME,
+        h.HOBLI_NAME,
+        v.VILLAGE_NAME,
+        r.address,
+        r.pincode,
+        rvba.virtual_account_number,
+        r.reeling_license_number,
+        r.reeler_number,
+        r.fruits_id
+    FROM reeler r
+    LEFT JOIN caste c ON c.caste_id = r.caste_id
+    LEFT JOIN STATE s ON s.STATE_ID = r.state_id
+    LEFT JOIN DISTRICT d ON d.DISTRICT_ID = r.district_id
+    LEFT JOIN TALUK t ON t.TALUK_ID = r.taluk_id
+    LEFT JOIN HOBLI h ON h.HOBLI_ID = r.hobli_id
+    LEFT JOIN VILLAGE v ON v.VILLAGE_ID = r.village_id
+    LEFT JOIN tsc_master tm ON tm.tsc_master_id = r.tsc_master_id
+    LEFT JOIN reeler_virtual_bank_account rvba ON rvba.reeler_id = r.reeler_id
+    WHERE
+        (
+            (r.reeling_license_number = :text AND :text NOT LIKE 'FID%') OR
+            (r.fruits_id LIKE 'FID%' AND r.fruits_id = :text)
+        )
+    """)
+    List<Object[]> getReelerDetailsByFruitsIdAndReelingLicenseNumber(String text);
 
 }

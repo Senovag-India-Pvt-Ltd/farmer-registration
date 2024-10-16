@@ -883,6 +883,59 @@ public class ReelerService {
         return ResponseEntity.ok(rw);
     }
 
+    public ResponseEntity<?> getReelerDetailsByFruitsIdAndReelingLicenseNumber(SearchRequest searchRequest) throws Exception {
+        log.info("Entered to function");
+        // Initialize response wrapper and the response list
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+        List<Object[]> objects = new ArrayList<>();
+        List<ReelerDetailsResponse> reelerDetailsResponseList = new ArrayList<>();
+
+        // Validate the search text
+        if (searchRequest.getText() == null || searchRequest.getText().isEmpty()) {
+            throw new ValidationException("Search text cannot be empty");
+        }
+
+        // Fetch the data using the repository method
+        objects = reelerRepository.getReelerDetailsByFruitsIdAndReelingLicenseNumber(searchRequest.getText());
+
+        // Check if any results were returned
+        if (objects.isEmpty()) {
+            throw new ValidationException("No reeler details found for the given ID or reeling license number");
+        }
+
+        // Map the result to the response object
+        for (Object[] arr : objects) {
+            ReelerDetailsResponse reelerDetailsResponse = ReelerDetailsResponse.builder()
+                    .reelerId(Util.objectToLong(arr[0]))
+                    .name(Util.objectToString(arr[1]))
+                    .passbookNumber(Util.objectToString(arr[2]))
+                    .fatherName(Util.objectToString(arr[3]))
+                    .dob(Util.objectToLocalDate(arr[4]))
+                    .gender(Util.objectToString(arr[5]))
+                    .mobileNumber(Util.objectToString(arr[6]))
+                    .arnNumber(Util.objectToString(arr[7]))
+                    .stateName(Util.objectToString(arr[8]))
+                    .districtName(Util.objectToString(arr[9]))
+                    .talukName(Util.objectToString(arr[10]))
+                    .hobliName(Util.objectToString(arr[11]))
+                    .villageName(Util.objectToString(arr[12]))
+                    .address(Util.objectToString(arr[13]))
+                    .pincode(Util.objectToString(arr[14]))
+                    .virtualAccountNumber(Util.objectToString(arr[15]))
+                    .reelerLicenseNumber(Util.objectToString(arr[16]))
+                    .reelerNumber(Util.objectToString(arr[17]))
+                    .fruitsId(Util.objectToString(arr[18]))
+                    .build();
+            reelerDetailsResponseList.add(reelerDetailsResponse);
+        }
+
+        // Set response content and return it
+        rw.setContent(reelerDetailsResponseList);
+        log.info("Response is {}", rw.getContent());
+        return ResponseEntity.ok(rw);
+    }
+
+
     private Map<String, Object> convertPageableDTOToMapResponse(final List<ReelerSearchDTO> activeReelers) {
         Map<String, Object> response = new HashMap<>();
 

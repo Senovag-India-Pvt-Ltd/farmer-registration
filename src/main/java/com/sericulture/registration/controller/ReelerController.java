@@ -772,4 +772,13 @@ public class ReelerController {
         return ResponseEntity.ok(rw);
     }
 
+    @PostMapping("/get-reeler-details-by-fruits-id-or-reeler-license-number")
+    public ResponseEntity<?> getReelerDetailsByFruitsIdAndReelingLicenseNumber(
+            @Valid @RequestBody SearchRequest searchRequest
+    ) throws Exception {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(GetReelerResponse.class);
+        rw.setContent(reelerService.getReelerDetailsByFruitsIdAndReelingLicenseNumber(searchRequest));
+        return ResponseEntity.ok(rw);
+    }
+
 }

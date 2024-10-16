@@ -31,4 +31,5 @@ public class ReelerDetailsResponse {
     private String virtualAccountNumber;
     private String reelerLicenseNumber;
     private String reelerNumber;
+    private String fruitsId;
 }
