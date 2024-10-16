@@ -2,11 +2,13 @@ package com.sericulture.registration.service;
 
 import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
+import com.sericulture.registration.model.api.reeler.ReelerResponse;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountResponse;
 import com.sericulture.registration.model.api.traderLicense.EditTraderLicenseRequest;
 import com.sericulture.registration.model.api.traderLicense.GetTraderLicenseRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseRequest;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseResponse;
+import com.sericulture.registration.model.dto.reeler.ReelerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO;
 import com.sericulture.registration.model.entity.SerialCounter;
@@ -261,6 +263,19 @@ public class TraderLicenseService {
         response.put("traderLicense",traderLicenseResponses);
         response.put("totalItems", activeTraderLicenses.size());
         return response;
+    }
+    public TraderLicenseResponse getByTraderLicenseNumber(String traderLicenseNumber) {
+        TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
+        TraderLicenseDTO traderLicense = traderLicenseRepository.getByTraderLicenseNumberAndActive(traderLicenseNumber, true);
+        if (traderLicense == null) {
+            traderLicenseResponse.setError(true);
+            traderLicenseResponse.setError_description("Invalid id");
+        } else {
+            traderLicenseResponse = mapper.traderLicenseDTOToObject(traderLicense, TraderLicenseResponse.class);
+            traderLicenseResponse.setError(false);
+        }
+        log.info("Entity is ", traderLicense);
+        return traderLicenseResponse;
     }
 
     public TraderLicenseResponse getTraderDetailsByMobileOrReelerNumber(GetTraderLicenseRequest getTraderLicenseRequest) throws Exception{

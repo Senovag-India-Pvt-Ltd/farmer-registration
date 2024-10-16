@@ -1,6 +1,7 @@
 package com.sericulture.registration.repository;
 
 import com.sericulture.registration.model.dto.externalUnitRegistration.ExternalUnitRegistrationDTO;
+import com.sericulture.registration.model.dto.reeler.ReelerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO;
 import com.sericulture.registration.model.entity.TraderLicense;
@@ -109,6 +110,49 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             "where traderLicense.active = :isActive AND traderLicense.traderLicenseId = :id "
     )
     public TraderLicenseDTO getByTraderLicenseIdAndActive(long id, boolean isActive);
+
+    @Query("select new com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO(" +
+            " traderLicense.traderLicenseId," +
+            " traderLicense.arnNumber," +
+            " traderLicense.traderTypeMasterId," +
+            " traderLicense.firstName," +
+            " traderLicense.middleName," +
+            " traderLicense.lastName," +
+            " traderLicense.fatherName," +
+            " traderLicense.stateId," +
+            " traderLicense.districtId," +
+            " traderLicense.address," +
+            " traderLicense.premisesDescription," +
+            " traderLicense.applicationDate," +
+            " traderLicense.applicationNumber," +
+            " traderLicense.traderLicenseNumber," +
+            " traderLicense.representativeDetails," +
+            " traderLicense.licenseFee," +
+            " traderLicense.silkType," +
+            " traderLicense.licenseChallanNumber," +
+            " traderLicense.godownDetails," +
+            " traderLicense.silkExchangeMahajar," +
+            " traderLicense.licenseNumberSequence," +
+            " traderTypeMaster.traderTypeMasterName," +
+            " state.stateName," +
+            " marketMaster.marketMasterName," +
+            " traderLicense.marketMasterId," +
+            " traderLicense.walletAmount," +
+            " traderLicense.mobileNumber," +
+            " district.districtName" +
+            ") \n" +
+            "from TraderLicense traderLicense\n" +
+            "left join trader_type_master traderTypeMaster\n" +
+            "on traderLicense.traderTypeMasterId = traderTypeMaster.traderTypeMasterId " +
+            "left join market_master marketMaster\n" +
+            "on traderLicense.marketMasterId = marketMaster.marketMasterId " +
+            "left join State state\n" +
+            "on traderLicense.stateId = state.stateId " +
+            "left join District district\n" +
+            "on traderLicense.districtId = district.districtId " +
+            "where traderLicense.active = :isActive AND traderLicense.traderLicenseNumber = :id "
+    )
+    public TraderLicenseDTO getByTraderLicenseNumberAndActive(@Param("id") String id, @Param("isActive") boolean isActive);
 
 
     @Query("select new com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO(" +

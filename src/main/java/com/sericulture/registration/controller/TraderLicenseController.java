@@ -281,7 +281,26 @@ public class TraderLicenseController {
         rw.setContent(traderLicenseService.searchByColumnAndSort(searchWithSortRequest));
         return ResponseEntity.ok(rw);
     }
+    @GetMapping("/get-by-trader-license-number/{traderLicenseNumber}")
+    public ResponseEntity<?> getByTraderLicenseNumber(
+            @PathVariable final String traderLicenseNumber
+    ) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(TraderLicenseResponse.class);
 
+        rw.setContent(traderLicenseService.getByTraderLicenseNumber(traderLicenseNumber));
+        return ResponseEntity.ok(rw);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok Response"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+                    content =
+                            {
+                                    @Content(mediaType = "application/json", schema =
+                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+                            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+    })
     @PostMapping("/get-trader-details-by-trader-number-or-mobile-number")
     public ResponseEntity<?> getTraderDetailsByMobileOrReelerNumber(
             @Valid @RequestBody GetTraderLicenseRequest getTraderLicenseRequest
