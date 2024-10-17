@@ -37,5 +37,6 @@ public class FarmerDetailsResponse {
     private String lotNumberRsp;
     private Long raceOfDfls;
     private String raceName;
+    private String fitnessCertificatePath;
 
 }

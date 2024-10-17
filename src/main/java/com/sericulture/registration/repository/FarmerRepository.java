@@ -794,12 +794,13 @@ Page<Object[]> getPrimaryFarmerDetails(
         t.TALUK_NAME,
         h.hobli_name,
         v.village_name,
-        cm.source_of_dfls,
-        cm.numbers_of_dfls,
-        cm.lot_numbers_of_the_rsp,
+        sadod.rate_per100dfls_price,
+        sadod.number_of_dfls_disposed,
+        sadod.lot_number,
         s.state_name,
-        cm.race_of_dfls,
-        rm.race_name
+        sadod.race_id,
+        rm.race_name,
+        fc.fitness_certificate_path
     FROM farmer f
     LEFT JOIN PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
     LEFT JOIN state s ON pa.state_id = s.state_id AND s.active = 1
@@ -807,9 +808,12 @@ Page<Object[]> getPrimaryFarmerDetails(
     LEFT JOIN taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
     LEFT JOIN hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
     LEFT JOIN village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
-    INNER JOIN chowki_management cm ON cm.farmer_id = f.farmer_id
+    Inner JOIN
+    sale_and_disposal_of_dfls sadod ON sadod.fruits_id = f.fruits_id
+    INNER JOIN
+     fitness_certificate fc ON fc.farmer_id = f.FARMER_ID AND fc.active = 1
     LEFT JOIN
-    race_master rm ON rm.race_id = cm.race_of_dfls AND rm.active = 1
+    race_master rm ON rm.race_id = sadod.race_id AND rm.active = 1
     WHERE
         (:type = 'mobileNumber' AND f.mobile_number = :text) OR
         (:type = 'farmerNumber' AND f.farmer_number = :text) OR

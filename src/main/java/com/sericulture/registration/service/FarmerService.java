@@ -2518,6 +2518,7 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
                         .stateName(Util.objectToString(arr[16]))
                         .raceOfDfls(Util.objectToLong(arr[17]))
                         .raceName(Util.objectToString(arr[18]))
+                        .fitnessCertificatePath(Util.objectToString(arr[19]))
                         .build();
                 farmerDetailsResponseList.add(farmerDetailsResponse);
             }
