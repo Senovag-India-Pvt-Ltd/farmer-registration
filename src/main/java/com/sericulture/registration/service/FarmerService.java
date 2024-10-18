@@ -18,6 +18,7 @@ import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetail
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
 import com.sericulture.registration.model.api.fruitsApi.GetFruitsResponse;
 import com.sericulture.registration.model.api.fruitsApi.GetLandDetailsResponse;
+import com.sericulture.registration.model.api.reeler.ReelerDetailsResponse;
 import com.sericulture.registration.model.api.reeler.ReelerResponse;
 import com.sericulture.registration.model.dto.caste.CasteDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerDTO;
@@ -375,6 +376,34 @@ public class FarmerService {
             farmer.setAssignToInspectId(farmerRequest.getAssignToInspectId());
 
 
+            farmer.setActive(true);
+            Farmer farmer1 = farmerRepository.save(farmer);
+            farmerResponse = mapper.farmerEntityToObject(farmer1, FarmerResponse.class);
+            farmerResponse.setError(false);
+        } else {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Error occurred while fetching Farmer");
+            // throw new ValidationException("Error occurred while fetching village");
+        }
+
+        return farmerResponse;
+    }
+
+    @Transactional
+    public FarmerResponse updateFarmerProfileDetails(EditFarmerRequest farmerRequest) {
+        if (farmerRequest.getIsOtherStateFarmer() == null) {
+            farmerRequest.setIsOtherStateFarmer(false);
+        }
+        FarmerResponse farmerResponse = new FarmerResponse();
+        /*List<Farmer> farmerList = farmerRepository.findByFarmerNumber(farmerRequest.getFarmerNumber());
+        if(farmerList.size()>0){
+            throw new ValidationException("farmer already exists with this name, duplicates are not allowed.");
+        }
+*/
+        Farmer farmer = farmerRepository.findByFarmerIdAndActiveIn(farmerRequest.getFarmerId(), Set.of(true, false));
+        if (Objects.nonNull(farmer)) {
+            farmer.setMobileNumber(farmerRequest.getMobileNumber());
+            farmer.setTscMasterId(farmerRequest.getTscMasterId());
             farmer.setActive(true);
             Farmer farmer1 = farmerRepository.save(farmer);
             farmerResponse = mapper.farmerEntityToObject(farmer1, FarmerResponse.class);
@@ -2441,4 +2470,69 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
         workbook.close();
         return fileIn;
     }
+
+    public List<FarmerDetailsResponse> getFarmerDetailsByFruitsIdOrMobileNumberOrCsbRegisterNumber(SearchRequest searchRequest) throws Exception {
+        List<Object[]> objects = new ArrayList<>();
+        List<FarmerDetailsResponse> farmerDetailsResponseList = new ArrayList<>();
+
+        // Check the type and fetch farmer details
+        if (Objects.equals(searchRequest.getType(), "fruitsId")) {
+            if (searchRequest.getText() != null && !searchRequest.getText().isEmpty()) {
+                objects = farmerRepository.getFarmerDetailsForSeedCocoonMarket(searchRequest.getText(), searchRequest.getType());
+                if (objects.isEmpty()) {
+                    throw new ValidationException("Invalid Fruits Id");
+                }
+            }
+        } else if (Objects.equals(searchRequest.getType(), "mobileNumber")) {
+            if (searchRequest.getText() != null && !searchRequest.getText().isEmpty()) {
+                objects = farmerRepository.getFarmerDetailsForSeedCocoonMarket(searchRequest.getText(), searchRequest.getType());
+                if (objects.isEmpty()) {
+                    throw new ValidationException("Invalid Mobile number");
+                }
+            }
+        } else if (Objects.equals(searchRequest.getType(), "farmerNumber")) {
+            if (searchRequest.getText() != null && !searchRequest.getText().isEmpty()) {
+                objects = farmerRepository.getFarmerDetailsForSeedCocoonMarket(searchRequest.getText(), searchRequest.getType());
+                if (objects.isEmpty()) {
+                    throw new ValidationException("Invalid Farmer Number");
+                }
+            }
+        } else {
+            throw new ValidationException("Invalid search type");
+        }
+
+        // Map the result to FarmerDetailsResponse
+        if (!objects.isEmpty()) {
+            for (Object[] arr : objects) {
+                FarmerDetailsResponse farmerDetailsResponse = FarmerDetailsResponse.builder()
+                        .farmerId(Util.objectToLong(arr[0]))
+                        .firstName(Util.objectToString(arr[1]))
+                        .middleName(Util.objectToString(arr[2]))
+                        .lastName(Util.objectToString(arr[3]))
+                        .fruitsId(Util.objectToString(arr[4]))
+                        .farmerNumber(Util.objectToString(arr[5]))
+                        .fatherName(Util.objectToString(arr[6]))
+                        .dob(Util.objectToString(arr[7]))
+                        .mobileNumber(Util.objectToString(arr[8]))
+                        .districtName(Util.objectToString(arr[9]))
+                        .talukName(Util.objectToString(arr[10]))
+                        .hobliName(Util.objectToString(arr[11]))
+                        .villageName(Util.objectToString(arr[12]))
+                        .dflsSource(Util.objectToString(arr[13]))
+                        .numbersOfDfls(Util.objectToString(arr[14]))
+                        .lotNumberRsp(Util.objectToString(arr[15]))
+                        .stateName(Util.objectToString(arr[16]))
+                        .raceOfDfls(Util.objectToLong(arr[17]))
+                        .raceName(Util.objectToString(arr[18]))
+                        .fitnessCertificatePath(Util.objectToString(arr[19]))
+                        .build();
+                farmerDetailsResponseList.add(farmerDetailsResponse);
+            }
+        }
+
+        return farmerDetailsResponseList;
+    }
+
+
+
 }

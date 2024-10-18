@@ -3,12 +3,14 @@ package com.sericulture.registration.controller;
 import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.ApplicationsDetailsDistrictWiseRequest;
+import com.sericulture.registration.model.api.SearchRequest;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationResponse;
 import com.sericulture.registration.model.api.farmer.*;
 import com.sericulture.registration.model.api.farmerAddress.FarmerAddressResponse;
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountResponse;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
+import com.sericulture.registration.model.api.reeler.GetReelerResponse;
 import com.sericulture.registration.service.FarmerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -208,6 +211,15 @@ public class FarmerController {
     ) {
         ResponseWrapper<FarmerResponse> rw = ResponseWrapper.createWrapper(FarmerResponse.class);
         rw.setContent(farmerService.updateFarmerDetails(editFarmerRequest));
+        return ResponseEntity.ok(rw);
+    }
+
+    @PostMapping("/edit-farmer-profile")
+    public ResponseEntity<?> editFarmerProfileDetails(
+            @Valid @RequestBody final EditFarmerRequest editFarmerRequest
+    ) {
+        ResponseWrapper<FarmerResponse> rw = ResponseWrapper.createWrapper(FarmerResponse.class);
+        rw.setContent(farmerService.updateFarmerProfileDetails(editFarmerRequest));
         return ResponseEntity.ok(rw);
     }
 
@@ -718,5 +730,24 @@ public ResponseEntity<?> primaryFarmerDetails(
 //            return new ResponseEntity<>(ex.getMessage().getBytes(StandardCharsets.UTF_8), org.springframework.http.HttpStatus.OK);
 //        }
 //    }
+
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Ok Response"),
+//            @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
+//                    content =
+//                            {
+//                                    @Content(mediaType = "application/json", schema =
+//                                    @Schema(example = "{\"content\":null,\"errorMessages\":[{\"errorType\":\"VALIDATION\",\"message\":[{\"message\":\"Invalid Id\",\"label\":\"NON_LABEL_MESSAGE\",\"locale\":null}]}]}"))
+//                            }),
+//            @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
+//    })
+@PostMapping("/get-farmer-details-by-fruits-id-or-mobile-number-or-csb-register-number")
+public ResponseEntity<?> getFarmerDetailsByFruitsIdOrMobileNumberOrCsbRegisterNumber(
+        @Valid @RequestBody SearchRequest searchRequest
+) throws Exception {
+    List<FarmerDetailsResponse> farmerDetailsResponseList = farmerService.getFarmerDetailsByFruitsIdOrMobileNumberOrCsbRegisterNumber(searchRequest);
+    return ResponseEntity.ok(farmerDetailsResponseList);
+}
+
 
 }

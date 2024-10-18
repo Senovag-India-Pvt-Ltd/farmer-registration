@@ -261,6 +261,38 @@ public class FarmerLandDetailsService {
         return farmerLandDetailsResponse;
     }
 
+    @Transactional
+        public FarmerLandDetailsResponse updateFarmerLandInfoDetails(EditFarmerLandDetailsRequest farmerLandDetailsRequest){
+        FarmerLandDetailsResponse farmerLandDetailsResponse = new FarmerLandDetailsResponse();
+       /* List<FarmerLandDetails> farmerLandDetailsList = farmerLandDetailsRepository.findByFarmerLandDetailsName(farmerLandDetailsRequest.getFarmerLandDetailsName());
+        if(farmerLandDetailsList.size()>0){
+            throw new ValidationException("FarmerLandDetails already exists with this name, duplicates are not allowed.");
+        }*/
+
+        FarmerLandDetails farmerLandDetails = farmerLandDetailsRepository.findByFarmerLandDetailsIdAndActiveIn(farmerLandDetailsRequest.getFarmerLandDetailsId(), Set.of(true,false));
+        if(Objects.nonNull(farmerLandDetails)){
+            farmerLandDetails.setFarmerId(farmerLandDetailsRequest.getFarmerId());
+            farmerLandDetails.setMulberryArea(farmerLandDetailsRequest.getMulberryArea());
+            farmerLandDetails.setMulberrySourceId(farmerLandDetailsRequest.getMulberrySourceId());
+            farmerLandDetails.setMulberryVarietyId(farmerLandDetailsRequest.getMulberryVarietyId());
+            farmerLandDetails.setRearingCapacityDlf(farmerLandDetailsRequest.getRearingCapacityDlf());
+            farmerLandDetails.setRoofTypeId(farmerLandDetailsRequest.getRoofTypeId());
+            farmerLandDetails.setSilkWormVarietyId(farmerLandDetailsRequest.getSilkWormVarietyId());
+            farmerLandDetails.setRearingCapacityCrops(farmerLandDetailsRequest.getRearingCapacityCrops());
+
+            farmerLandDetails.setActive(true);
+            FarmerLandDetails farmerLandDetails1 = farmerLandDetailsRepository.save(farmerLandDetails);
+            farmerLandDetailsResponse = mapper.farmerLandDetailsEntityToObject(farmerLandDetails1, FarmerLandDetailsResponse.class);
+            farmerLandDetailsResponse.setError(false);
+        } else {
+            farmerLandDetailsResponse.setError(true);
+            farmerLandDetailsResponse.setError_description("Error occurred while fetching farmerLandDetails");
+            // throw new ValidationException("Error occurred while fetching village");
+        }
+
+        return farmerLandDetailsResponse;
+    }
+
     public Map<String,Object> getByFarmerIdJoin(int farmerId){
         Map<String, Object> response = new HashMap<>();
         List<FarmerLandDetailsDTO> farmerLandDetailsDTO = farmerLandDetailsRepository.getByFarmerIdAndActive(farmerId, true);

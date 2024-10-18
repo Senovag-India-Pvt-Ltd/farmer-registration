@@ -7,7 +7,9 @@ import com.sericulture.registration.model.api.CheckInspectionStatusRequest;
 import com.sericulture.registration.model.api.GetFruitsDetailsResponse;
 import com.sericulture.registration.model.api.farmer.FarmerResponse;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsResponse;
+import com.sericulture.registration.model.api.reeler.ReelerResponse;
 import com.sericulture.registration.repository.FarmerRepository;
+import com.sericulture.registration.repository.ReelerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,9 @@ public class GetFruitsDetailsService {
 
     @Autowired
     FarmerRepository farmerRepository;
+
+    @Autowired
+    ReelerRepository reelerRepository;
 
     public ResponseEntity<?> getInspectionFarmerDetailsByFruitsId(CheckInspectionStatusRequest checkInspectionStatusRequest) {
         ResponseWrapper<List<GetFruitsDetailsResponse>> rw = ResponseWrapper.createWrapper(List.class);
@@ -44,9 +49,11 @@ public class GetFruitsDetailsService {
         for (Object[] arr : fruitsDetails) {
             FarmerResponse response = FarmerResponse.builder()
                     .fullName(Util.objectToString(arr[0]))
-                    .address(Util.objectToString(arr[1]))
-                    .farmerId(Util.objectToLong(arr[2]))
-                    .fruitsId(Util.objectToString(arr[3]))
+                    .fatherName(Util.objectToString(arr[1]))
+                    .address(Util.objectToString(arr[2]))
+                    .farmerId(Util.objectToLong(arr[3]))
+                    .fruitsId(Util.objectToString(arr[4]))
+                    .villageName(Util.objectToString(arr[5]))
                     .build();
             responses.add(response);
         }
@@ -74,11 +81,30 @@ public class GetFruitsDetailsService {
         for (Object[] arr : landDetails) {
             FarmerLandDetailsResponse response = FarmerLandDetailsResponse.builder()
                     .farmerLandDetailsId(Util.objectToInteger(arr[0]))
-                    .surveyNumber(Util.objectToString(arr[1]))
-                    .villageName(Util.objectToString(arr[2]))
+                    .farmerId(Util.objectToLong(arr[1]))
+                    .surveyNumber(Util.objectToString(arr[2]))
+                    .villageName(Util.objectToString(arr[3]))
                     .build();
             responses.add(response);
         }
+        return responses;
+    }
+
+    public List<ReelerResponse> getReelerDetailsByFruitsId(String fruitsId) {
+        List<Object[]> reelerDetails = reelerRepository.getReelerDetailsByFruitsId(fruitsId);
+        List<ReelerResponse> responses = new ArrayList<>();
+
+        for (Object[] arr : reelerDetails) {
+            ReelerResponse response = ReelerResponse.builder()
+                    .reelerName(Util.objectToString(arr[0]))
+                    .address(Util.objectToString(arr[1]))
+                    .reelerId(Util.objectToLong(arr[2]))
+                    .fruitsId(Util.objectToString(arr[3]))
+                    .build();
+
+            responses.add(response);
+        }
+
         return responses;
     }
 

@@ -12,6 +12,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReelerResponse {
     @Schema(name = "reelerId", example = "1")
