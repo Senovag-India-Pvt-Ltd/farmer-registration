@@ -32,6 +32,15 @@ public class FarmerBankAccountResponse {
     @Schema(name = "accountImagePath", example = "/example.jpg")
     String accountImagePath;
 
+    @Schema(name = "reasonMasterId", example = "reasonMasterId")
+    Long reasonMasterId;
+
+    @Schema(name = "remark", example = "remark")
+    String remark;
+
+    @Schema(name = "lock", example = "1")
+    Boolean lock;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 

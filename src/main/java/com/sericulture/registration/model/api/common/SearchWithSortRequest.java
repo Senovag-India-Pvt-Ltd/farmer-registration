@@ -10,15 +10,15 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class SearchWithSortRequest {
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Search text must contain only letters and numbers")
+//    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Search text must contain only letters and numbers")
     @Schema(name = "searchText", example = "shimoga")
     String searchText;
 
-    @Pattern(regexp = "^[a-zA-Z0-9.\\s]*$", message = "Join column must contain only letters and numbers")
+//    @Pattern(regexp = "^[a-zA-Z0-9.\\s]*$", message = "Join column must contain only letters and numbers")
     @Schema(name = "joinColumn", example = "district.districtName")
     String joinColumn;
 
-    @Pattern(regexp = "^[a-zA-Z0-9.\\s]*$", message = "Sort Column must contain only letters and numbers")
+//    @Pattern(regexp = "^[a-zA-Z0-9.\\s]*$", message = "Sort Column must contain only letters and numbers")
     @Schema(name = "sortColumn", example = "districtName")
     String sortColumn;
 
@@ -34,7 +34,7 @@ public class SearchWithSortRequest {
     @Schema(name = "pageSize", example = "10")
     String pageSize;
 
-    @Pattern(regexp = "^[0-9]*$", message = "Farmer type must contain only numbers")
+//    @Pattern(regexp = "^[0-9]*$", message = "Farmer type must contain only numbers")
     @Schema(name = "farmerType", example = "0")
     String farmerType;
 }

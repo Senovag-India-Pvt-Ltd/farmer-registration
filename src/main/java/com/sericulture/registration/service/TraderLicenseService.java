@@ -186,7 +186,7 @@ public class TraderLicenseService {
             traderLicense.setMarketMasterId(traderLicenseRequest.getMarketMasterId());
             traderLicense.setApplicationDate(traderLicenseRequest.getApplicationDate());
             traderLicense.setApplicationNumber(traderLicenseRequest.getApplicationNumber());
-            traderLicense.setTraderLicenseNumber(traderLicenseRequest.getLicenseChallanNumber());
+            traderLicense.setTraderLicenseNumber(traderLicenseRequest.getTraderLicenseNumber());
             traderLicense.setRepresentativeDetails(traderLicenseRequest.getRepresentativeDetails());
             traderLicense.setLicenseFee(traderLicenseRequest.getLicenseFee());
             traderLicense.setLicenseChallanNumber(traderLicenseRequest.getLicenseChallanNumber());

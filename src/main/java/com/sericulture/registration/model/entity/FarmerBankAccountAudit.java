@@ -14,10 +14,15 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Getter
 @Setter
-public class FarmerBankAccount extends BaseEntity implements Serializable {
+public class FarmerBankAccountAudit extends BaseEntity implements Serializable {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FARMER_BANK_ACCOUNT_SEQ")
-    @SequenceGenerator(name = "FARMER_BANK_ACCOUNT_SEQ", sequenceName = "FARMER_BANK_ACCOUNT_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "farmer_bank_account_audit_seq")
+    @SequenceGenerator(name = "farmer_bank_account_audit_seq", sequenceName = "farmer_bank_account_audit_seq", allocationSize = 1)
+
+    @Column(name = "farmer_bank_account_audit_id")
+    private Long farmerBankAccountAuditId;
+
     @Column(name = "FARMER_BANK_ACCOUNT_ID")
     private Long farmerBankAccountId;
 
@@ -37,15 +42,10 @@ public class FarmerBankAccount extends BaseEntity implements Serializable {
     @Column(name = "FARMER_ID")
     private Long farmerId;
 
-    @Column(name = "account_image_path")
-    private String accountImagePath;
-
     @Column(name = "reason_master_id")
     private Long reasonMasterId;
 
     @Column(name = "remark")
     private String remark;
 
-    @Column(name = "lock", columnDefinition = "TINYINT")
-    private Boolean lock;
 }
