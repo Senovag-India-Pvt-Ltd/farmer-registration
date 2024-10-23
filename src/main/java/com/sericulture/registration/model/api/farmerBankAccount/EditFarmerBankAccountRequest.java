@@ -36,4 +36,13 @@ public class EditFarmerBankAccountRequest extends RequestBody {
 //    @Pattern(regexp = "^[a-zA-Z0-9-/_.\\s]*$", message = "Account image path must contain only letters and numbers")
     @Schema(name = "accountImagePath", example = "/example.jpg")
     String accountImagePath;
+
+    @Schema(name = "reasonMasterId", example = "reasonMasterId")
+    Long reasonMasterId;
+
+    @Schema(name = "remark", example = "remark")
+    String remark;
+
+    @Schema(name = "lock", example = "1")
+    Boolean lock;
 }

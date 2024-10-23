@@ -275,7 +275,7 @@ public class TraderLicenseController {
     })
     @PostMapping("/search")
     public ResponseEntity<?> search(
-            @Valid @RequestBody final SearchWithSortRequest searchWithSortRequest
+           @RequestBody final SearchWithSortRequest searchWithSortRequest
     ) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(Map.class);
         rw.setContent(traderLicenseService.searchByColumnAndSort(searchWithSortRequest));
