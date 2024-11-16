@@ -46,6 +46,9 @@ public class ExternalUnitRegistrationResponse {
     @Schema(name = "capacity", example = "Test")
     String capacity;
 
+    @Schema(name = "userMasterId", example = "1")
+    Long userMasterId;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 

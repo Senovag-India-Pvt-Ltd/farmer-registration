@@ -119,8 +119,8 @@ public final class Util {
         return jwtPayloadData.getUserType();
     }
 
-    public static String getUserId(JwtPayloadData jwtPayloadData) {
-        return jwtPayloadData.getUsername();
+    public static Long getUserId(JwtPayloadData jwtPayloadData) {
+        return jwtPayloadData.getUserMasterId();
     }
 
     public static LocalDateTime parseStringToLocalDateTime(String value, String format) {

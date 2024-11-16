@@ -1,5 +1,6 @@
 package com.sericulture.registration.service;
 
+import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationResponse;
 import com.sericulture.registration.model.api.externalUnitRegistration.EditExternalUnitRegistrationRequest;
@@ -42,18 +43,23 @@ public class ExternalUnitRegistrationService {
     @Transactional
     public ExternalUnitRegistrationResponse insertExternalUnitRegistrationDetails(ExternalUnitRegistrationRequest externalUnitRegistrationRequest) {
         ExternalUnitRegistrationResponse externalUnitRegistrationResponse = new ExternalUnitRegistrationResponse();
+
+        // Map request to entity
         ExternalUnitRegistration externalUnitRegistration = mapper.externalUnitRegistrationObjectToEntity(externalUnitRegistrationRequest, ExternalUnitRegistration.class);
+
+        // Retrieve userMasterId from JWT token and set it on the entity
+        externalUnitRegistration.setUserMasterId(Util.getUserId(Util.getTokenValues()));
+
+        // Validate the entity
         validator.validate(externalUnitRegistration);
-       /* List<ExternalUnitRegistration> externalUnitRegistrationList = externalUnitRegistrationRepository.findByExternalUnitRegistrationName(externalUnitRegistrationRequest.getExternalUnitRegistrationName());
-        if(!externalUnitRegistrationList.isEmpty() && externalUnitRegistrationList.stream().filter(ExternalUnitRegistration::getActive).findAny().isPresent()){
-            throw new ValidationException("ExternalUnitRegistration name already exist");
-        }
-        if(!externalUnitRegistrationList.isEmpty() && externalUnitRegistrationList.stream().filter(Predicate.not(ExternalUnitRegistration::getActive)).findAny().isPresent()){
-            throw new ValidationException("ExternalUnitRegistration name already exist with inactive state");
-        }*/
-//        return mapper.externalUnitRegistrationEntityToObject(externalUnitRegistrationRepository.save(externalUnitRegistration),ExternalUnitRegistrationResponse.class);
-        return mapper.externalUnitRegistrationEntityToObject(externalUnitRegistrationRepository.save(externalUnitRegistration), ExternalUnitRegistrationResponse.class);
+
+        // Save and map the response
+        return mapper.externalUnitRegistrationEntityToObject(
+                externalUnitRegistrationRepository.save(externalUnitRegistration),
+                ExternalUnitRegistrationResponse.class
+        );
     }
+
 
     public Map<String, Object> getPaginatedExternalUnitRegistrationDetails(final Pageable pageable) {
         return convertToMapResponse(externalUnitRegistrationRepository.findByActiveOrderByExternalUnitRegistrationIdAsc(true, pageable));
@@ -171,6 +177,7 @@ public class ExternalUnitRegistrationService {
             externalUnitRegistration.setExternalUnitTypeId(externalUnitRegistrationRequest.getExternalUnitTypeId());
             externalUnitRegistration.setOrganisationName(externalUnitRegistrationRequest.getOrganisationName());
             externalUnitRegistration.setRaceMasterId(externalUnitRegistrationRequest.getRaceMasterId());
+            externalUnitRegistration.setUserMasterId(Util.getUserId(Util.getTokenValues()));
             externalUnitRegistration.setCapacity(externalUnitRegistrationRequest.getCapacity());
             externalUnitRegistration.setActive(true);
             ExternalUnitRegistration externalUnitRegistration1 = externalUnitRegistrationRepository.save(externalUnitRegistration);

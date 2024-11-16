@@ -23,6 +23,9 @@ public class ExternalUnitRegistration extends BaseEntity implements Serializable
     @Column(name = "external_unit_type_id")
     private Long externalUnitTypeId;
 
+    @Column(name = "user_master_id")
+    private Long userMasterId;
+
     @Column(name = "name")
     private String name;
 
