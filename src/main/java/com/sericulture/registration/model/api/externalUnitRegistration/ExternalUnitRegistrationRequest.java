@@ -16,7 +16,7 @@ public class ExternalUnitRegistrationRequest extends RequestBody {
     @Schema(name = "externalUnitTypeId", example = "1")
     Long externalUnitTypeId;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Name must contain only letters and numbers")
+//    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Name must contain only letters and numbers")
     @Schema(name = "name", example = "Test")
     String name;
 
@@ -24,20 +24,23 @@ public class ExternalUnitRegistrationRequest extends RequestBody {
     @Schema(name = "address", example = "Test")
     String address;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "License number must contain only letters and numbers")
+//    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "License number must contain only letters and numbers")
     @Schema(name = "licenseNumber", example = "435435")
     String licenseNumber;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "External unit number must contain only letters and numbers")
+//    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "External unit number must contain only letters and numbers")
     @Schema(name = "externalUnitNumber", example = "S5346")
     String externalUnitNumber;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Organization name must contain only letters and numbers")
+//    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Organization name must contain only letters and numbers")
     @Schema(name = "organisationName", example = "Test")
     String organisationName;
 
     @Schema(name = "raceMasterId", example = "1")
     Long raceMasterId;
+
+    @Schema(name = "userMasterId", example = "1")
+    Long userMasterId;
 
     @Schema(name = "capacity", example = "Test")
     String capacity;
