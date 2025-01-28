@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -41,6 +42,9 @@ public class ReelerResponse {
 
     @Schema(name = "dob", example = "2023-11-03 16:27:35.907")
     Date dob;
+
+    @Schema(name = "dateOfBirth", example = "2023-11-03 16:27:35.907")
+    LocalDate dateOfBirth;
 
     @Schema(name = "rationCard", example = "Test")
     String rationCard;

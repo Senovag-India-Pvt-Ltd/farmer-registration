@@ -1322,4 +1322,36 @@ public class ReelerService {
         workbook.close();
         return fileIn;
     }
+
+    public List<ReelerDetailsResponse> getReelerDetailsByUserMasterId(Long userId) {
+        List<Object[]> chowkiDetails = reelerRepository.getReelerDetailsByUserMasterId(userId);
+        List<ReelerDetailsResponse> responses = new ArrayList<>();
+
+        for (Object[] arr : chowkiDetails) {
+            ReelerDetailsResponse response = ReelerDetailsResponse.builder()
+                    .reelerId(Util.objectToLong(arr[0]))
+                    .name(Util.objectToString(arr[1]))
+                    .passbookNumber(Util.objectToString(arr[2]))
+                    .fatherName(Util.objectToString(arr[3]))
+                    .dob(Util.objectToLocalDate(arr[4]))
+                    .gender(Util.objectToString(arr[5]))
+                    .mobileNumber(Util.objectToString(arr[6]))
+                    .arnNumber(Util.objectToString(arr[7]))
+                    .stateName(Util.objectToString(arr[8]))
+                    .districtName(Util.objectToString(arr[9]))
+                    .talukName(Util.objectToString(arr[10]))
+                    .hobliName(Util.objectToString(arr[11]))
+                    .villageName(Util.objectToString(arr[12]))
+                    .address(Util.objectToString(arr[13]))
+                    .pincode(Util.objectToString(arr[14]))
+                    .reelerLicenseNumber(Util.objectToString(arr[15]))
+                    .reelerNumber(Util.objectToString(arr[16]))
+                    .fruitsId(Util.objectToString(arr[17]))
+                    .build();
+
+            responses.add(response);
+        }
+
+        return responses;
+    }
 }
