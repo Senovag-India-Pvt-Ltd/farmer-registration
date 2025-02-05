@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -779,6 +780,11 @@ public class ReelerController {
         ResponseWrapper rw = ResponseWrapper.createWrapper(GetReelerResponse.class);
         rw.setContent(reelerService.getReelerDetailsByFruitsIdAndReelingLicenseNumber(searchRequest));
         return ResponseEntity.ok(rw);
+    }
+
+    @GetMapping("/get-reeler-details-by-assigned-inspect")
+    public List<ReelerDetailsResponse> getReelerDetailsByUserMasterId() {
+        return reelerService.getReelerDetailsByUserMasterId(Util.getUserId(Util.getTokenValues()));
     }
 
 }
