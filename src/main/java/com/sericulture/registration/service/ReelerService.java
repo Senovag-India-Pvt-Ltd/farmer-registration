@@ -626,7 +626,7 @@ public class ReelerService {
 
         Reeler reeler = reelerRepository.findByReelerIdAndActiveIn(reelerRequest.getReelerId(), Set.of(true, false));
         if (Objects.nonNull(reeler)) {
-            reeler.setMahajarDetails(reelerRequest.getMahajarDetails());
+//            reeler.setMahajarDetails(reelerRequest.getMahajarDetails());
             reeler.setGpsLat(reelerRequest.getGpsLat());
             reeler.setGpsLng(reelerRequest.getGpsLng());
             reeler.setInspectionDate(reelerRequest.getInspectionDate());

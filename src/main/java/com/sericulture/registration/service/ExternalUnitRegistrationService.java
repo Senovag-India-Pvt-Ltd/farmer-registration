@@ -10,9 +10,11 @@ import com.sericulture.registration.model.api.traderLicense.TraderLicenseRespons
 import com.sericulture.registration.model.dto.externalUnitRegistration.ExternalUnitRegistrationDTO;
 import com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO;
 import com.sericulture.registration.model.entity.ExternalUnitRegistration;
+import com.sericulture.registration.model.entity.SerialCounter;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.ExternalUnitRegistrationRepository;
+import com.sericulture.registration.repository.SerialCounterRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -40,6 +44,28 @@ public class ExternalUnitRegistrationService {
     @Autowired
     CustomValidator validator;
 
+    @Autowired
+    SerialCounterRepository serialCounterRepository;
+
+//    @Transactional
+//    public ExternalUnitRegistrationResponse insertExternalUnitRegistrationDetails(ExternalUnitRegistrationRequest externalUnitRegistrationRequest) {
+//        ExternalUnitRegistrationResponse externalUnitRegistrationResponse = new ExternalUnitRegistrationResponse();
+//
+//        // Map request to entity
+//        ExternalUnitRegistration externalUnitRegistration = mapper.externalUnitRegistrationObjectToEntity(externalUnitRegistrationRequest, ExternalUnitRegistration.class);
+//
+//        // Retrieve userMasterId from JWT token and set it on the entity
+//        externalUnitRegistration.setUserMasterId(Util.getUserId(Util.getTokenValues()));
+//
+//        // Validate the entity
+//        validator.validate(externalUnitRegistration);
+//
+//        // Save and map the response
+//        return mapper.externalUnitRegistrationEntityToObject(
+//                externalUnitRegistrationRepository.save(externalUnitRegistration),
+//                ExternalUnitRegistrationResponse.class
+//        );
+//    }
     @Transactional
     public ExternalUnitRegistrationResponse insertExternalUnitRegistrationDetails(ExternalUnitRegistrationRequest externalUnitRegistrationRequest) {
         ExternalUnitRegistrationResponse externalUnitRegistrationResponse = new ExternalUnitRegistrationResponse();
@@ -53,12 +79,36 @@ public class ExternalUnitRegistrationService {
         // Validate the entity
         validator.validate(externalUnitRegistration);
 
+        // Generate ARN Number
+        LocalDate today = Util.getISTLocalDate();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
+        String formattedDate = today.format(formatter);
+
+        List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
+        SerialCounter serialCounter = new SerialCounter();
+
+        if (!serialCounters.isEmpty()) {
+            serialCounter = serialCounters.get(0);
+            long counterValue = (serialCounter.getExternalCounterNumber() != null)
+                    ? serialCounter.getExternalCounterNumber() + 1
+                    : 1L;
+            serialCounter.setExternalCounterNumber(counterValue);
+        } else {
+            serialCounter.setExternalCounterNumber(1L);
+        }
+
+        serialCounterRepository.save(serialCounter);
+        String formattedNumber = String.format("%05d", serialCounter.getExternalCounterNumber());
+
+        externalUnitRegistration.setExternalUnitNumber("EUN/" + formattedDate + "/" + formattedNumber);
+
         // Save and map the response
         return mapper.externalUnitRegistrationEntityToObject(
                 externalUnitRegistrationRepository.save(externalUnitRegistration),
                 ExternalUnitRegistrationResponse.class
         );
     }
+
 
 
     public Map<String, Object> getPaginatedExternalUnitRegistrationDetails(final Pageable pageable) {
