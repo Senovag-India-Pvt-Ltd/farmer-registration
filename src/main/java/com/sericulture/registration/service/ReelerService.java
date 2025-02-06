@@ -633,6 +633,7 @@ public class ReelerService {
             //  reeler.setArnNumber(reelerRequest.getArnNumber());
             reeler.setChakbandiLat(reelerRequest.getChakbandiLat());
             reeler.setChakbandiLng(reelerRequest.getChakbandiLng());
+            reeler.setIsReelerInspected(1);
 
             reeler.setActive(true);
             Reeler reeler1 = reelerRepository.save(reeler);
