@@ -617,6 +617,37 @@ public class ReelerService {
     }
 
     @Transactional
+    public ReelerResponse updateReelerGPSDetails(EditReelerRequest reelerRequest) {
+        ReelerResponse reelerResponse = new ReelerResponse();
+        /*List<Reeler> reelerList = reelerRepository.findByReelerName(reelerRequest.getReelerName());
+        if(reelerList.size()>0){
+            throw new ValidationException("Reeler already exists with this name, duplicates are not allowed.");
+        }*/
+
+        Reeler reeler = reelerRepository.findByReelerIdAndActiveIn(reelerRequest.getReelerId(), Set.of(true, false));
+        if (Objects.nonNull(reeler)) {
+            reeler.setMahajarDetails(reelerRequest.getMahajarDetails());
+            reeler.setGpsLat(reelerRequest.getGpsLat());
+            reeler.setGpsLng(reelerRequest.getGpsLng());
+            reeler.setInspectionDate(reelerRequest.getInspectionDate());
+            //  reeler.setArnNumber(reelerRequest.getArnNumber());
+            reeler.setChakbandiLat(reelerRequest.getChakbandiLat());
+            reeler.setChakbandiLng(reelerRequest.getChakbandiLng());
+
+            reeler.setActive(true);
+            Reeler reeler1 = reelerRepository.save(reeler);
+            reelerResponse = mapper.reelerEntityToObject(reeler1, ReelerResponse.class);
+            reelerResponse.setError(false);
+        } else {
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Error occurred while fetching reeler");
+            // throw new ValidationException("Error occurred while fetching village");
+        }
+
+        return reelerResponse;
+    }
+
+    @Transactional
     public ReelerResponse updateReelerProfileDetails(EditReelerRequest reelerRequest) {
         ReelerResponse reelerResponse = new ReelerResponse();
         /*List<Reeler> reelerList = reelerRepository.findByReelerName(reelerRequest.getReelerName());
@@ -628,6 +659,15 @@ public class ReelerService {
         if (Objects.nonNull(reeler)) {
             reeler.setTscMasterId(reelerRequest.getTscMasterId());
             reeler.setMobileNumber(reelerRequest.getMobileNumber());
+            reeler.setMahajarDetails(reelerRequest.getMahajarDetails());
+            reeler.setMahajarEast(reelerRequest.getMahajarEast());
+            reeler.setMahajarWest(reelerRequest.getMahajarWest());
+            reeler.setMahajarNorth(reelerRequest.getMahajarNorth());
+            reeler.setMahajarSouth(reelerRequest.getMahajarSouth());
+            reeler.setMahajarNorthEast(reelerRequest.getMahajarNorthEast());
+            reeler.setMahajarNorthWest(reelerRequest.getMahajarNorthWest());
+            reeler.setMahajarSouthEast(reelerRequest.getMahajarSouthEast());
+            reeler.setMahajarSouthWest(reelerRequest.getMahajarSouthWest());
             reeler.setActive(true);
             Reeler reeler1 = reelerRepository.save(reeler);
             reelerResponse = mapper.reelerEntityToObject(reeler1, ReelerResponse.class);
