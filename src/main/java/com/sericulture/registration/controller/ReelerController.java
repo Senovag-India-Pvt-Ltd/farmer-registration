@@ -357,6 +357,15 @@ public class ReelerController {
         return ResponseEntity.ok(rw);
     }
 
+    @PostMapping("/edit-reeler-gps-details")
+    public ResponseEntity<?> updateReelerGPSDetails(
+            @Valid @RequestBody final EditReelerRequest editReelerRequest
+    ) {
+        ResponseWrapper<ReelerResponse> rw = ResponseWrapper.createWrapper(ReelerResponse.class);
+        rw.setContent(reelerService.updateReelerGPSDetails(editReelerRequest));
+        return ResponseEntity.ok(rw);
+    }
+
     @PostMapping("/edit-reeler-profile")
     public ResponseEntity<?> editReelerProfileDetails(
             @Valid @RequestBody final EditReelerRequest editReelerRequest

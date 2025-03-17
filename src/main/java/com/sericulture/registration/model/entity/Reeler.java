@@ -219,5 +219,8 @@ public class Reeler extends BaseEntity implements Serializable {
     @Column(name = "tsc_master_id")
     private Long tscMasterId;
 
+    @Column(name = "is_reeler_inspected")
+    private int isReelerInspected;
+
 
 }

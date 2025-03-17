@@ -1129,7 +1129,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
     LEFT JOIN HOBLI h ON h.HOBLI_ID = r.hobli_id
     LEFT JOIN VILLAGE v ON v.VILLAGE_ID = r.village_id
     LEFT JOIN tsc_master tm ON tm.tsc_master_id = r.tsc_master_id
-    WHERE r.assign_to_inspect_id = :userMasterId
+    WHERE r.is_reeler_inspected = 0
+    AND r.assign_to_inspect_id = :userMasterId
 """)
     List<Object[]> getReelerDetailsByUserMasterId(@Param("userMasterId") Long userMasterId);
 
