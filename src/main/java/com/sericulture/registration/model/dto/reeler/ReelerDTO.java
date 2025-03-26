@@ -86,4 +86,5 @@ public class ReelerDTO {
     private Long reelerTypeMasterId;
     private String reelerTypeMasterName;
     private String username;
+    private String aadhaarNumber;
 }
