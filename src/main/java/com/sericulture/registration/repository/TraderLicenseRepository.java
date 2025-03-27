@@ -4,6 +4,7 @@ import com.sericulture.registration.model.dto.externalUnitRegistration.ExternalU
 import com.sericulture.registration.model.dto.reeler.ReelerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO;
+import com.sericulture.registration.model.entity.Taluk;
 import com.sericulture.registration.model.entity.TraderLicense;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,8 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
     public TraderLicense save(TraderLicense farmerAddress);
 
     public TraderLicense findByTraderLicenseIdAndActive(long id, boolean isActive);
+
+    public List<TraderLicense> findByTraderTypeMasterIdAndTraderLicenseNumberAndLicenseChallanNumberAndActive(long traderTypeMasterId, String traderLicenseNumber,String licenseChallanNumber,boolean isActive);
 
     public TraderLicense findByTraderLicenseIdAndActiveIn(@Param("traderLicenseId") long traderLicenseId, @Param("active") Set<Boolean> active);
     @Query("select new com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO(" +
@@ -52,6 +55,9 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.marketMasterId," +
             " traderLicense.walletAmount," +
             " traderLicense.mobileNumber," +
+            " traderLicense.virtualAccountNumber," +
+            " traderLicense.ifscCode," +
+            " traderLicense.branchName," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
@@ -96,6 +102,9 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.marketMasterId," +
             " traderLicense.walletAmount," +
             " traderLicense.mobileNumber," +
+            " traderLicense.virtualAccountNumber," +
+            " traderLicense.ifscCode," +
+            " traderLicense.branchName," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
@@ -139,6 +148,9 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.marketMasterId," +
             " traderLicense.walletAmount," +
             " traderLicense.mobileNumber," +
+            " traderLicense.virtualAccountNumber," +
+            " traderLicense.ifscCode," +
+            " traderLicense.branchName," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
@@ -183,6 +195,9 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.marketMasterId," +
             " traderLicense.walletAmount," +
             " traderLicense.mobileNumber," +
+            " traderLicense.virtualAccountNumber," +
+            " traderLicense.ifscCode," +
+            " traderLicense.branchName," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
@@ -229,6 +244,9 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.marketMasterId," +
             " traderLicense.walletAmount," +
             " traderLicense.mobileNumber," +
+            " traderLicense.virtualAccountNumber," +
+            " traderLicense.ifscCode," +
+            " traderLicense.branchName," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
@@ -271,6 +289,9 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.marketMasterId," +
             " traderLicense.walletAmount," +
             " traderLicense.mobileNumber," +
+            " traderLicense.virtualAccountNumber," +
+            " traderLicense.ifscCode," +
+            " traderLicense.branchName," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
@@ -314,6 +335,9 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.marketMasterId," +
             " traderLicense.walletAmount," +
             " traderLicense.mobileNumber," +
+            " traderLicense.virtualAccountNumber," +
+            " traderLicense.ifscCode," +
+            " traderLicense.branchName," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +

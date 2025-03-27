@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -89,7 +90,7 @@ public class TraderLicenseResponse {
     String mobileNumber;
 
     @Schema(name = "marketMasterId",  example = "1")
-    String marketMasterId;
+    Long marketMasterId;
 
     @Schema(name = "walletAmount",  example = "1")
     Double walletAmount;
@@ -97,11 +98,22 @@ public class TraderLicenseResponse {
     @Schema(name = "marketMasterName",  example = "1")
     String marketMasterName;
 
+    @Schema(name = "virtualAccountNumber", example = "3654643675")
+    String virtualAccountNumber;
+
+    @Schema(name = "branchName", example = "Bengaluru")
+    String branchName;
+
+    @Schema(name = "ifscCode", example = "SBI00457")
+    String ifscCode;
 
     @Schema(name = "error", example = "true")
     Boolean error;
 
     @Schema(name = "error_description", example = "Username or password is incorrect")
     String error_description;
+
+    private List<Long> traderLicenseIds;
+
 
 }

@@ -90,4 +90,14 @@ public class TraderLicense extends BaseEntity implements Serializable {
 
     @Column(name = "mobile_number")
     private String mobileNumber;
+
+    @Column(name = "virtual_account_number")
+    private String virtualAccountNumber;
+
+    @Column(name = "branch_name")
+    private String branchName;
+
+    @Column(name = "ifsc_code")
+    private String ifscCode;
+
 }

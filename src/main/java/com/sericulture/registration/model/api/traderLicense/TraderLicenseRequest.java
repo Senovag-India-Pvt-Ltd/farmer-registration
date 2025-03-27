@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -79,4 +80,6 @@ public class TraderLicenseRequest extends RequestBody {
 
     @Schema(name = "mobileNumber",  example = "1")
     String mobileNumber;
+
+    private List<TraderLicenseDetailsRequest> traderLicenseDetailsRequests;
 }

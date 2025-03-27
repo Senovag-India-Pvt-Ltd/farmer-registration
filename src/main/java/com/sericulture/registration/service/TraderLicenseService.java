@@ -4,10 +4,7 @@ import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.reeler.ReelerResponse;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountResponse;
-import com.sericulture.registration.model.api.traderLicense.EditTraderLicenseRequest;
-import com.sericulture.registration.model.api.traderLicense.GetTraderLicenseRequest;
-import com.sericulture.registration.model.api.traderLicense.TraderLicenseRequest;
-import com.sericulture.registration.model.api.traderLicense.TraderLicenseResponse;
+import com.sericulture.registration.model.api.traderLicense.*;
 import com.sericulture.registration.model.dto.reeler.ReelerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO;
@@ -50,39 +47,106 @@ public class TraderLicenseService {
     @Autowired
     SerialCounterRepository serialCounterRepository;
 
-    @Transactional
-    public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest traderLicenseRequest){
-        TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
-        TraderLicense traderLicense = mapper.traderLicenseObjectToEntity(traderLicenseRequest,TraderLicense.class);
-        validator.validate(traderLicense);
-        /*List<TraderLicense> traderLicenseList = traderLicenseRepository.findByTraderLicenseNumber(traderLicenseRequest.getTraderLicenseNumber());
-        if(!traderLicenseList.isEmpty() && traderLicenseList.stream().filter(TraderLicense::getActive).findAny().isPresent()){
-            throw new ValidationException("TraderLicense number already exist");
-        }
-        if(!traderLicenseList.isEmpty() && traderLicenseList.stream().filter(Predicate.not(TraderLicense::getActive)).findAny().isPresent()){
-            throw new ValidationException("TraderLicense number already exist with inactive traderLicense");
-        }*/
-        LocalDate today = Util.getISTLocalDate();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
-        String formattedDate = today.format(formatter);
-        List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
-        SerialCounter serialCounter = new SerialCounter();
-        if(serialCounters.size()>0){
-            serialCounter = serialCounters.get(0);
-            long counterValue = 1L;
-            if(serialCounter.getTraderCounterNumber() != null){
-                counterValue =serialCounter.getTraderCounterNumber() + 1;
-            }
-            serialCounter.setTraderCounterNumber(counterValue);
-        }else{
-            serialCounter.setTraderCounterNumber(1L);
-        }
-        serialCounterRepository.save(serialCounter);
-        String formattedNumber = String.format("%05d", serialCounter.getTraderCounterNumber());
+//    @Transactional
+//    public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest traderLicenseRequest){
+//        TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
+//        TraderLicense traderLicense = mapper.traderLicenseObjectToEntity(traderLicenseRequest,TraderLicense.class);
+//        validator.validate(traderLicense);
+//        List<TraderLicense> traderLicenseList = traderLicenseRepository.findByTraderTypeMasterIdAndTraderLicenseNumberAndLicenseChallanNumberAndActive(traderLicenseRequest.getTraderTypeMasterId(),traderLicenseRequest.getTraderLicenseNumber(),traderLicenseRequest.getLicenseChallanNumber(),true);
+//        if(!traderLicenseList.isEmpty() && traderLicenseList.stream().filter(TraderLicense::getActive).findAny().isPresent()){
+//            traderLicenseResponse.setError(true);
+//            traderLicenseResponse.setError_description("Trader License is already exist");
+//            return traderLicenseResponse;
+//        }
+////        if(!traderLicenseList.isEmpty() && traderLicenseList.stream().filter(Predicate.not(TraderLicense::getActive)).findAny().isPresent()){
+////            throw new ValidationException("TraderLicense number already exist with inactive traderLicense");
+////        }
+//        LocalDate today = Util.getISTLocalDate();
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
+//        String formattedDate = today.format(formatter);
+//        List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
+//        SerialCounter serialCounter = new SerialCounter();
+//        if(serialCounters.size()>0){
+//            serialCounter = serialCounters.get(0);
+//            long counterValue = 1L;
+//            if(serialCounter.getTraderCounterNumber() != null){
+//                counterValue =serialCounter.getTraderCounterNumber() + 1;
+//            }
+//            serialCounter.setTraderCounterNumber(counterValue);
+//        }else{
+//            serialCounter.setTraderCounterNumber(1L);
+//        }
+//        serialCounterRepository.save(serialCounter);
+//        String formattedNumber = String.format("%05d", serialCounter.getTraderCounterNumber());
+//
+//        traderLicense.setArnNumber("NTL/"+formattedDate+"/"+formattedNumber);
+//        return mapper.traderLicenseEntityToObject(traderLicenseRepository.save(traderLicense),TraderLicenseResponse.class);
+//    }
 
-        traderLicense.setArnNumber("NTL/"+formattedDate+"/"+formattedNumber);
-        return mapper.traderLicenseEntityToObject(traderLicenseRepository.save(traderLicense),TraderLicenseResponse.class);
+@Transactional
+public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest traderLicenseRequest) {
+    TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
+    List<Long> traderLicenseIds = new ArrayList<>(); // Store IDs of saved records
+
+    // Check if a trader license already exists
+    List<TraderLicense> traderLicenseList = traderLicenseRepository.findByTraderTypeMasterIdAndTraderLicenseNumberAndLicenseChallanNumberAndActive(
+            traderLicenseRequest.getTraderTypeMasterId(),
+            traderLicenseRequest.getTraderLicenseNumber(),
+            traderLicenseRequest.getLicenseChallanNumber(),
+            true);
+
+    if (!traderLicenseList.isEmpty() && traderLicenseList.stream().anyMatch(TraderLicense::getActive)) {
+        traderLicenseResponse.setError(true);
+        traderLicenseResponse.setError_description("Trader License already exists");
+        return traderLicenseResponse;
     }
+
+    // Generate ARN Number only once
+    LocalDate today = Util.getISTLocalDate();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
+    String formattedDate = today.format(formatter);
+
+    List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
+    SerialCounter serialCounter = serialCounters.isEmpty() ? new SerialCounter() : serialCounters.get(0);
+
+    long counterValue = (serialCounter.getTraderCounterNumber() != null) ? serialCounter.getTraderCounterNumber() + 1 : 1L;
+    serialCounter.setTraderCounterNumber(counterValue);
+    serialCounterRepository.save(serialCounter);
+
+    String formattedNumber = String.format("%05d", serialCounter.getTraderCounterNumber());
+    String arnNumber = "NTL/" + formattedDate + "/" + formattedNumber; // Single ARN for all
+
+    // Loop through details and save each entry with the same ARN number
+    for (TraderLicenseDetailsRequest details : traderLicenseRequest.getTraderLicenseDetailsRequests()) {
+        TraderLicense traderLicense = mapper.traderLicenseObjectToEntity(traderLicenseRequest, TraderLicense.class);
+        validator.validate(traderLicense);
+
+        traderLicense.setArnNumber(arnNumber); // Assign the same ARN Number
+
+        // Setting fields from TraderLicenseDetailsRequest
+        traderLicense.setVirtualAccountNumber(details.getVirtualAccountNumber());
+        traderLicense.setBranchName(details.getBranchName());
+        traderLicense.setIfscCode(details.getIfscCode());
+        traderLicense.setMarketMasterId(details.getMarketMasterId());
+
+        // Save trader license and get the generated ID
+        traderLicense = traderLicenseRepository.save(traderLicense);
+
+        // Store the generated IDs
+        traderLicenseIds.add(traderLicense.getTraderLicenseId());
+    }
+
+    // Update response after all iterations
+    traderLicenseResponse.setError(false);
+    traderLicenseResponse.setTraderLicenseIds(traderLicenseIds); // Store multiple IDs
+    traderLicenseResponse.setArnNumber(arnNumber); // Return only ONE ARN Number
+
+    return traderLicenseResponse;
+}
+
+
+
+
 
     public Map<String,Object> getPaginatedTraderLicenseDetails(final Pageable pageable){
         return convertToMapResponse(traderLicenseRepository.findByActiveOrderByTraderLicenseIdAsc( true, pageable));
@@ -193,7 +257,9 @@ public class TraderLicenseService {
             traderLicense.setGodownDetails(traderLicenseRequest.getGodownDetails());
             traderLicense.setSilkExchangeMahajar(traderLicenseRequest.getSilkExchangeMahajar());
             traderLicense.setSilkType(traderLicenseRequest.getSilkType());
-            // traderLicense.setLicenseNumberSequence(traderLicenseRequest.getLicenseNumberSequence());
+            traderLicense.setBranchName(traderLicenseRequest.getBranchName());
+            traderLicense.setVirtualAccountNumber(traderLicenseRequest.getVirtualAccountNumber());
+            traderLicense.setIfscCode(traderLicenseRequest.getIfscCode());
 
             traderLicense.setActive(true);
             TraderLicense traderLicense1 = traderLicenseRepository.save(traderLicense);

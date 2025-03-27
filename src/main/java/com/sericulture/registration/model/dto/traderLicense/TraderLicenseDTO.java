@@ -37,6 +37,9 @@ public class TraderLicenseDTO {
     private Long marketMasterId;
     private Double walletAmount;
     private String mobileNumber;
+    private String virtualAccountNumber;
+    private String ifscCode;
+    private String branchName;
     private String districtName;
 
 }
