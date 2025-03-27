@@ -88,6 +88,14 @@ public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest tra
     TraderLicenseResponse traderLicenseResponse = new TraderLicenseResponse();
     List<Long> traderLicenseIds = new ArrayList<>(); // Store IDs of saved records
 
+    // Validate if TraderLicenseDetailsRequest is empty
+    if (traderLicenseRequest.getTraderLicenseDetailsRequests() == null
+            || traderLicenseRequest.getTraderLicenseDetailsRequests().isEmpty()) {
+        traderLicenseResponse.setError(true);
+        traderLicenseResponse.setError_description("Fill the Virtual Bank Details");
+        return traderLicenseResponse;
+    }
+
     // Check if a trader license already exists
     List<TraderLicense> traderLicenseList = traderLicenseRepository.findByTraderTypeMasterIdAndTraderLicenseNumberAndLicenseChallanNumberAndActive(
             traderLicenseRequest.getTraderTypeMasterId(),

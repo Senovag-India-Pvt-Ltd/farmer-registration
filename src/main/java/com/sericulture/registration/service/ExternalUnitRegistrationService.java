@@ -2,9 +2,7 @@ package com.sericulture.registration.service;
 
 import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
-import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationResponse;
-import com.sericulture.registration.model.api.externalUnitRegistration.EditExternalUnitRegistrationRequest;
-import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationRequest;
+import com.sericulture.registration.model.api.externalUnitRegistration.*;
 import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationResponse;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseResponse;
 import com.sericulture.registration.model.dto.externalUnitRegistration.ExternalUnitRegistrationDTO;
@@ -66,50 +64,108 @@ public class ExternalUnitRegistrationService {
 //                ExternalUnitRegistrationResponse.class
 //        );
 //    }
+//    @Transactional
+//    public ExternalUnitRegistrationResponse insertExternalUnitRegistrationDetails(ExternalUnitRegistrationRequest externalUnitRegistrationRequest) {
+//        ExternalUnitRegistrationResponse externalUnitRegistrationResponse = new ExternalUnitRegistrationResponse();
+//
+//        // Map request to entity
+//        ExternalUnitRegistration externalUnitRegistration = mapper.externalUnitRegistrationObjectToEntity(externalUnitRegistrationRequest, ExternalUnitRegistration.class);
+//
+//        // Retrieve userMasterId from JWT token and set it on the entity
+//        externalUnitRegistration.setUserMasterId(Util.getUserId(Util.getTokenValues()));
+//
+//        // Validate the entity
+//        validator.validate(externalUnitRegistration);
+//
+//        // Generate ARN Number
+//        LocalDate today = Util.getISTLocalDate();
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
+//        String formattedDate = today.format(formatter);
+//
+//        List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
+//        SerialCounter serialCounter = new SerialCounter();
+//
+//        if (!serialCounters.isEmpty()) {
+//            serialCounter = serialCounters.get(0);
+//            long counterValue = (serialCounter.getExternalCounterNumber() != null)
+//                    ? serialCounter.getExternalCounterNumber() + 1
+//                    : 1L;
+//            serialCounter.setExternalCounterNumber(counterValue);
+//        } else {
+//            serialCounter.setExternalCounterNumber(1L);
+//        }
+//
+//        serialCounterRepository.save(serialCounter);
+//        String formattedNumber = String.format("%05d", serialCounter.getExternalCounterNumber());
+//
+//        externalUnitRegistration.setExternalUnitNumber("EUN/" + formattedDate + "/" + formattedNumber);
+//
+//        // Save and map the response
+//        return mapper.externalUnitRegistrationEntityToObject(
+//                externalUnitRegistrationRepository.save(externalUnitRegistration),
+//                ExternalUnitRegistrationResponse.class
+//        );
+//    }
+
     @Transactional
     public ExternalUnitRegistrationResponse insertExternalUnitRegistrationDetails(ExternalUnitRegistrationRequest externalUnitRegistrationRequest) {
-        ExternalUnitRegistrationResponse externalUnitRegistrationResponse = new ExternalUnitRegistrationResponse();
+        ExternalUnitRegistrationResponse response = new ExternalUnitRegistrationResponse();
+        List<Long> externalUnitRegistrationIds = new ArrayList<>();
 
-        // Map request to entity
-        ExternalUnitRegistration externalUnitRegistration = mapper.externalUnitRegistrationObjectToEntity(externalUnitRegistrationRequest, ExternalUnitRegistration.class);
+        // Validate if ExternalUnitRegistrationDetailsRequest is empty
+        if (externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests() == null
+                || externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests().isEmpty()) {
+            response.setError(true);
+            response.setError_description("Fill the Virtual Bank details");
+            return response;
+        }
 
-        // Retrieve userMasterId from JWT token and set it on the entity
-        externalUnitRegistration.setUserMasterId(Util.getUserId(Util.getTokenValues()));
-
-        // Validate the entity
-        validator.validate(externalUnitRegistration);
-
-        // Generate ARN Number
+        // Generate a single External Unit Number
         LocalDate today = Util.getISTLocalDate();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
         String formattedDate = today.format(formatter);
 
         List<SerialCounter> serialCounters = serialCounterRepository.findByActive(true);
-        SerialCounter serialCounter = new SerialCounter();
+        SerialCounter serialCounter = serialCounters.isEmpty() ? new SerialCounter() : serialCounters.get(0);
 
-        if (!serialCounters.isEmpty()) {
-            serialCounter = serialCounters.get(0);
-            long counterValue = (serialCounter.getExternalCounterNumber() != null)
-                    ? serialCounter.getExternalCounterNumber() + 1
-                    : 1L;
-            serialCounter.setExternalCounterNumber(counterValue);
-        } else {
-            serialCounter.setExternalCounterNumber(1L);
+        long counterValue = (serialCounter.getExternalCounterNumber() != null) ? serialCounter.getExternalCounterNumber() + 1 : 1L;
+        serialCounter.setExternalCounterNumber(counterValue);
+        serialCounterRepository.save(serialCounter);
+
+        String formattedNumber = String.format("%05d", serialCounter.getExternalCounterNumber());
+        String externalUnitNumber = "EUN/" + formattedDate + "/" + formattedNumber;
+
+        // Loop through details and save each entry with the same External Unit Number
+        for (ExternalUnitRegistrationDetailsRequest details : externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests()) {
+            ExternalUnitRegistration externalUnitRegistration = mapper.externalUnitRegistrationObjectToEntity(externalUnitRegistrationRequest, ExternalUnitRegistration.class);
+
+            // Set userMasterId from JWT token
+            externalUnitRegistration.setUserMasterId(Util.getUserId(Util.getTokenValues()));
+
+            // Set additional fields
+            externalUnitRegistration.setVirtualAccountNumber(details.getVirtualAccountNumber());
+            externalUnitRegistration.setBranchName(details.getBranchName());
+            externalUnitRegistration.setIfscCode(details.getIfscCode());
+            externalUnitRegistration.setMarketMasterId(details.getMarketMasterId());
+
+            // Assign the same External Unit Number
+            externalUnitRegistration.setExternalUnitNumber(externalUnitNumber);
+
+            // Validate entity
+            validator.validate(externalUnitRegistration);
+
+            // Save entity and store its ID
+            externalUnitRegistration = externalUnitRegistrationRepository.save(externalUnitRegistration);
+            externalUnitRegistrationIds.add(externalUnitRegistration.getExternalUnitRegistrationId());
         }
 
-        serialCounterRepository.save(serialCounter);
-        String formattedNumber = String.format("%05d", serialCounter.getExternalCounterNumber());
+        // Set response data
+        response.setExternalUnitRegistrationIds(externalUnitRegistrationIds);
+        response.setExternalUnitNumber(externalUnitNumber);
+        response.setError(false);
 
-        externalUnitRegistration.setExternalUnitNumber("EUN/" + formattedDate + "/" + formattedNumber);
-
-        // Save and map the response
-        return mapper.externalUnitRegistrationEntityToObject(
-                externalUnitRegistrationRepository.save(externalUnitRegistration),
-                ExternalUnitRegistrationResponse.class
-        );
+        return response;
     }
-
-
 
     public Map<String, Object> getPaginatedExternalUnitRegistrationDetails(final Pageable pageable) {
         return convertToMapResponse(externalUnitRegistrationRepository.findByActiveOrderByExternalUnitRegistrationIdAsc(true, pageable));
@@ -229,6 +285,11 @@ public class ExternalUnitRegistrationService {
             externalUnitRegistration.setRaceMasterId(externalUnitRegistrationRequest.getRaceMasterId());
             externalUnitRegistration.setUserMasterId(Util.getUserId(Util.getTokenValues()));
             externalUnitRegistration.setCapacity(externalUnitRegistrationRequest.getCapacity());
+            externalUnitRegistration.setVirtualAccountNumber(externalUnitRegistrationRequest.getVirtualAccountNumber());
+            externalUnitRegistration.setBranchName(externalUnitRegistrationRequest.getBranchName());
+            externalUnitRegistration.setIfscCode(externalUnitRegistrationRequest.getIfscCode());
+            externalUnitRegistration.setMarketMasterId(externalUnitRegistrationRequest.getMarketMasterId());
+            externalUnitRegistration.setLotNumberNomenclature(externalUnitRegistrationRequest.getLotNumberNomenclature());
             externalUnitRegistration.setActive(true);
             ExternalUnitRegistration externalUnitRegistration1 = externalUnitRegistrationRepository.save(externalUnitRegistration);
             externalUnitRegistrationResponse = mapper.externalUnitRegistrationEntityToObject(externalUnitRegistration1, ExternalUnitRegistrationResponse.class);

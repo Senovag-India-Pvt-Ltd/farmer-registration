@@ -39,6 +39,11 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             " externalUnitRegistration.raceMasterId," +
             " externalUnitRegistration.capacity,"+
             " externalUnitType.externalUnitTypeName," +
+            " externalUnitRegistration.virtualAccountNumber,"+
+            " externalUnitRegistration.ifscCode,"+
+            " externalUnitRegistration.branchName,"+
+            " marketMaster.marketMasterName,"+
+            " externalUnitRegistration.lotNumberNomenclature,"+
             " raceMaster.raceMasterName" +
             ") \n" +
             "from ExternalUnitRegistration externalUnitRegistration\n" +
@@ -46,6 +51,8 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             "on externalUnitRegistration.externalUnitTypeId = externalUnitType.externalUnitTypeId " +
             "left join RaceMaster raceMaster\n" +
             "on externalUnitRegistration.raceMasterId = raceMaster.raceMasterId " +
+            "left join market_master marketMaster\n" +
+            "on externalUnitRegistration.marketMasterId = marketMaster.marketMasterId " +
             "where externalUnitRegistration.active = :isActive " +
             "ORDER BY externalUnitRegistration.name ASC"
     )
@@ -62,6 +69,11 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             " externalUnitRegistration.raceMasterId," +
             " externalUnitRegistration.capacity,"+
             " externalUnitType.externalUnitTypeName," +
+            " externalUnitRegistration.virtualAccountNumber,"+
+            " externalUnitRegistration.ifscCode,"+
+            " externalUnitRegistration.branchName,"+
+            " marketMaster.marketMasterName,"+
+            " externalUnitRegistration.lotNumberNomenclature,"+
             " raceMaster.raceMasterName" +
             ") \n" +
             "from ExternalUnitRegistration externalUnitRegistration\n" +
@@ -69,6 +81,8 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             "on externalUnitRegistration.externalUnitTypeId = externalUnitType.externalUnitTypeId " +
             "left join RaceMaster raceMaster\n" +
             "on externalUnitRegistration.raceMasterId = raceMaster.raceMasterId " +
+            "left join market_master marketMaster\n" +
+            "on externalUnitRegistration.marketMasterId = marketMaster.marketMasterId " +
             "where externalUnitRegistration.active = :isActive AND externalUnitRegistration.externalUnitRegistrationId = :id "
     )
     public ExternalUnitRegistrationDTO getByExternalUnitRegistrationIdAndActive(long id, boolean isActive);
@@ -84,6 +98,11 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
         " externalUnitRegistration.raceMasterId," +
         " externalUnitRegistration.capacity,"+
         " externalUnitType.externalUnitTypeName," +
+        " externalUnitRegistration.virtualAccountNumber,"+
+        " externalUnitRegistration.ifscCode,"+
+        " externalUnitRegistration.branchName,"+
+        " marketMaster.marketMasterName,"+
+        " externalUnitRegistration.lotNumberNomenclature,"+
         " raceMaster.raceMasterName" +
         ") \n" +
         "from ExternalUnitRegistration externalUnitRegistration\n" +
@@ -91,6 +110,8 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
         "on externalUnitRegistration.externalUnitTypeId = externalUnitType.externalUnitTypeId " +
         "left join RaceMaster raceMaster\n" +
         "on externalUnitRegistration.raceMasterId = raceMaster.raceMasterId " +
+        "left join market_master marketMaster\n" +
+        "on externalUnitRegistration.marketMasterId = marketMaster.marketMasterId " +
         "where externalUnitRegistration.active = :isActive AND " +
         "(:joinColumn = 'externalUnitType.externalUnitTypeName' AND externalUnitType.externalUnitTypeName LIKE :searchText) OR " +
         "(:joinColumn = 'externalUnitRegistration.licenseNumber' AND externalUnitRegistration.licenseNumber LIKE :searchText) OR " +

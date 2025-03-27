@@ -94,4 +94,13 @@ public class EditTraderLicenseRequest extends RequestBody {
 
     @Schema(name = "mobileNumber",  example = "1")
     String mobileNumber;
+
+    @Schema(name = "virtualAccountNumber", example = "3654643675")
+    String virtualAccountNumber;
+
+    @Schema(name = "branchName", example = "Bengaluru")
+    String branchName;
+
+    @Schema(name = "ifscCode", example = "SBI00457")
+    String ifscCode;
 }

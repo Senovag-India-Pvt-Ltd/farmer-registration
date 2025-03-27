@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -49,9 +50,29 @@ public class ExternalUnitRegistrationResponse {
     @Schema(name = "userMasterId", example = "1")
     Long userMasterId;
 
+    @Schema(name = "virtualAccountNumber", example = "3654643675")
+    String virtualAccountNumber;
+
+    @Schema(name = "branchName", example = "Bengaluru")
+    String branchName;
+
+    @Schema(name = "ifscCode", example = "SBI00457")
+    String ifscCode;
+
+    @Schema(name = "marketMasterId", example = "1")
+    Long marketMasterId;
+
+    @Schema(name = "marketMasterName", example = "SBI00457")
+    String marketMasterName;
+
+    @Schema(name = "lotNumberNomenclature", example = "Test")
+    String lotNumberNomenclature;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 
     @Schema(name = "error_description", example = "Username or password is incorrect")
     String error_description;
+
+    private List<Long> externalUnitRegistrationIds;
 }

@@ -46,4 +46,19 @@ public class ExternalUnitRegistration extends BaseEntity implements Serializable
 
     @Column(name = "capacity")
     private String capacity;
+
+    @Column(name = "market_master_id")
+    private Long marketMasterId;
+
+    @Column(name = "virtual_account_number")
+    private String virtualAccountNumber;
+
+    @Column(name = "branch_name")
+    private String branchName;
+
+    @Column(name = "ifsc_code")
+    private String ifscCode;
+
+    @Column(name = "lot_number_nomenclature")
+    private String lotNumberNomenclature;
 }
