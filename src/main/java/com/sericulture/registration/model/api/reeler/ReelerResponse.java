@@ -241,6 +241,9 @@ public class ReelerResponse {
     @Schema(name = "username", example = "Karnataka",required=true)
     String username;
 
+    @Schema(name = "aadhaarNumber", example = "aadhaarNumber")
+    String aadhaarNumber;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 

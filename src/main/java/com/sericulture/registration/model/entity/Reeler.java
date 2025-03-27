@@ -222,5 +222,8 @@ public class Reeler extends BaseEntity implements Serializable {
     @Column(name = "is_reeler_inspected")
     private int isReelerInspected;
 
+    @Column(name = "aadhaar_number")
+    private String aadhaarNumber;
+
 
 }

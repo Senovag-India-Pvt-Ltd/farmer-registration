@@ -74,7 +74,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " education.name," +
             " farmer.isOtherStateFarmer, " +
             " farmerBankAccount.farmerBankAccountNumber," +
-            " userMaster.username" +
+            " userMaster.username," +
+            " farmer.aadhaarNumber" +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -133,7 +134,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " education.name," +
             " farmer.isOtherStateFarmer, " +
             " farmerBankAccount.farmerBankAccountNumber," +
-            " userMaster.username" +
+            " userMaster.username," +
+            " farmer.aadhaarNumber" +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -194,7 +196,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " education.name," +
             " farmer.isOtherStateFarmer, " +
             " farmerBankAccount.farmerBankAccountNumber," +
-            " userMaster.username" +
+            " userMaster.username," +
+            " farmer.aadhaarNumber" +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -259,7 +262,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " education.name," +
             " farmer.isOtherStateFarmer, " +
             " farmerBankAccount.farmerBankAccountNumber," +
-            " userMaster.username" +
+            " userMaster.username," +
+            " farmer.aadhaarNumber" +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -323,7 +327,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " education.name," +
             " farmer.isOtherStateFarmer, " +
             " farmerBankAccount.farmerBankAccountNumber," +
-            " userMaster.username" +
+            " userMaster.username," +
+            " farmer.aadhaarNumber" +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -388,7 +393,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " education.name," +
             " farmer.isOtherStateFarmer, " +
             " farmerBankAccount.farmerBankAccountNumber," +
-            " userMaster.username" +
+            " userMaster.username," +
+            " farmer.aadhaarNumber" +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +
@@ -452,7 +458,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " education.name," +
             " farmer.isOtherStateFarmer, " +
             " farmerBankAccount.farmerBankAccountNumber," +
-            " userMaster.username" +
+            " userMaster.username," +
+            " farmer.aadhaarNumber" +
             ") " +
             "from Farmer farmer " +
             "left join Caste caste " +

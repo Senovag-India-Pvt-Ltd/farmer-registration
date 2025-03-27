@@ -248,4 +248,7 @@ public class ReelerRequest extends RequestBody {
 
     @Schema(name = "inspectorId", example = "1")
     Long inspectorId;
+
+    @Schema(name = "aadhaarNumber", example = "aadhaarNumber")
+    String aadhaarNumber;
 }
