@@ -816,9 +816,11 @@ Page<Object[]> getPrimaryFarmerDetails(
     LEFT JOIN hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
     LEFT JOIN village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
     Inner JOIN
-    sale_and_disposal_of_dfls sadod ON sadod.fruits_id = f.fruits_id
-    INNER JOIN
-     fitness_certificate fc ON fc.farmer_id = f.FARMER_ID AND fc.active = 1
+    sale_and_disposal_of_dfls sadod ON sadod.fruits_id = f.fruits_id AND (sadod.is_disposed = 0 OR sadod.is_disposed IS NULL) AND  sadod.active = 1
+    INNER JOIN fitness_certificate fc
+       ON fc.farmer_id = f.FARMER_ID
+       AND fc.active = 1
+       AND fc.is_fc_issued = 1
     LEFT JOIN
     race_master rm ON rm.race_id = sadod.race_id AND rm.active = 1
     WHERE
