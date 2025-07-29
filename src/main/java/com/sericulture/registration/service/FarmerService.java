@@ -200,10 +200,16 @@ public class FarmerService {
     @Transactional
     public FarmerResponse insertCompleteFarmerDetails(FarmerSaveRequest farmerSaveRequest) {
         FarmerRequest farmerRequest = farmerSaveRequest.getFarmerRequest();
+        FarmerResponse farmerResponse = new FarmerResponse();
+        Farmer farmerCheck = farmerRepository.findByFruitsIdAndActive(farmerRequest.getFruitsId(), true);
+        if (farmerCheck != null) {
+            farmerResponse.setError(true);
+            farmerResponse.setError_description("Farmer already saved and please check the provided bank details is already exists");
+            return farmerResponse;
+        }
         if (farmerRequest.getIsOtherStateFarmer() == null) {
             farmerRequest.setIsOtherStateFarmer(false);
         }
-        FarmerResponse farmerResponse = new FarmerResponse();
         Farmer farmer = mapper.farmerObjectToEntity(farmerRequest, Farmer.class);
         farmer.setWithoutFruitsInwardCounter(0L);
         validator.validate(farmer);
@@ -653,9 +659,6 @@ public class FarmerService {
     }
 
 
-
-
-
     public GetFarmerResponse getFarmerDetails(GetFarmerRequest getFarmerRequest) {
         FarmerResponse farmerResponse = new FarmerResponse();
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
@@ -853,7 +856,7 @@ public class FarmerService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
                 GetFruitsResponse getFruitsResponse = objectMapper.readValue(inputData, GetFruitsResponse.class);
-                log.info("getFruitsResponse"+ objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(getFruitsResponse));
+                log.info("getFruitsResponse" + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(getFruitsResponse));
 
                 Farmer farmer1 = new Farmer();
                 farmer1.setFruitsId(getFruitsResponse.getFarmerID());
@@ -926,19 +929,19 @@ public class FarmerService {
 //                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
 
                     log.info("District code: " + getLandDetailsResponse.getDistrictCode());
-                    District district = districtRepository.findByDistrictCodeAndActive(String.valueOf(getLandDetailsResponse.getDistrictCode()),true);
+                    District district = districtRepository.findByDistrictCodeAndActive(String.valueOf(getLandDetailsResponse.getDistrictCode()), true);
                     if (district != null) {
                         log.info("District name: " + district.getDistrictName() + ":districtId:" + district.getDistrictId() + ":lgDist:" + district.getDistrictCode());
                         log.info("Taluk code: " + getLandDetailsResponse.getTalukCode());
-                        Taluk taluk = talukRepository.findByDistrictIdAndTalukCodeAndActive(district.getDistrictId(), String.valueOf(getLandDetailsResponse.getTalukCode()),true);
+                        Taluk taluk = talukRepository.findByDistrictIdAndTalukCodeAndActive(district.getDistrictId(), String.valueOf(getLandDetailsResponse.getTalukCode()), true);
                         if (taluk != null) {
                             log.info("Taluk name: " + taluk.getTalukName() + ":talukId:" + taluk.getTalukId() + ":districtId" + taluk.getDistrictId() + "lgTaluk:" + taluk.getLgTaluk());
                             log.info("Hobli code: " + getLandDetailsResponse.getHobliCode());
-                            Hobli hobli = hobliRepository.findByTalukIdAndHobliCodeAndActive(taluk.getTalukId(), String.valueOf(getLandDetailsResponse.getHobliCode()),true);
+                            Hobli hobli = hobliRepository.findByTalukIdAndHobliCodeAndActive(taluk.getTalukId(), String.valueOf(getLandDetailsResponse.getHobliCode()), true);
                             if (hobli != null) {
                                 log.info("Hobli name: " + hobli.getHobliName() + ":hobliId:" + hobli.getHobliId() + ":districtId" + hobli.getDistrictId() + ":talukId:" + hobli.getTalukId());
                                 log.info("Village code: " + getLandDetailsResponse.getVillageCode());
-                                Village village = villageRepository.findByHobliIdAndVillageCodeAndActive(hobli.getHobliId(), String.valueOf(getLandDetailsResponse.getVillageCode()),true);
+                                Village village = villageRepository.findByHobliIdAndVillageCodeAndActive(hobli.getHobliId(), String.valueOf(getLandDetailsResponse.getVillageCode()), true);
                                 if (village == null) {
                                     log.info("Village name: " + village.getVillageName() + ":hobliId:" + village.getHobliId() + ":districtId" + village.getDistrictId() + ":talukId:" + village.getTalukId() + ":villageId:" + village.getVillageId() + ":lgVillage:" + village.getLgVillage());
                                     farmerLandDetails.setVillageId(null);
@@ -1186,15 +1189,15 @@ public class FarmerService {
 //                villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
 //                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
 
-                District district = districtRepository.findByDistrictCodeAndActive(String.valueOf(farmerLandDetails.getDistrictCode()),true);
+                District district = districtRepository.findByDistrictCodeAndActive(String.valueOf(farmerLandDetails.getDistrictCode()), true);
                 if (district != null) {
 
-                    Taluk taluk = talukRepository.findByDistrictIdAndTalukCodeAndActive(district.getDistrictId(), String.valueOf(farmerLandDetails.getTalukCode()),true);
+                    Taluk taluk = talukRepository.findByDistrictIdAndTalukCodeAndActive(district.getDistrictId(), String.valueOf(farmerLandDetails.getTalukCode()), true);
                     if (taluk != null) {
-                        Hobli hobli = hobliRepository.findByTalukIdAndHobliCodeAndActive(taluk.getTalukId(), String.valueOf(farmerLandDetails.getHobliCode()),true);
+                        Hobli hobli = hobliRepository.findByTalukIdAndHobliCodeAndActive(taluk.getTalukId(), String.valueOf(farmerLandDetails.getHobliCode()), true);
                         if (hobli != null) {
 
-                            Village village = villageRepository.findByHobliIdAndVillageCodeAndActive(hobli.getHobliId(), String.valueOf(farmerLandDetails.getVillageCode()),true);
+                            Village village = villageRepository.findByHobliIdAndVillageCodeAndActive(hobli.getHobliId(), String.valueOf(farmerLandDetails.getVillageCode()), true);
                             if (village == null) {
                                 farmerLandDetails.setVillageId(null);
                                 farmerLandDetails.setHobliId(null);
@@ -1305,6 +1308,7 @@ public class FarmerService {
 
         return getFarmerResponse;
     }
+
     public GetFarmerResponse getFarmerDetailsByFruitsIdTest(GetFarmerRequest getFarmerRequest) {
         GetFarmerResponse getFarmerResponse = new GetFarmerResponse();
         Farmer farmer = farmerRepository.findByFruitsIdAndActive(getFarmerRequest.getFruitsId(), true);
@@ -1483,7 +1487,7 @@ public class FarmerService {
         return convertDTOToMapResponse(farmerRepository.getByActiveOrderByFarmerIdAsc(true, pageable));
     }
 
-//    public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText, int joinColumnType) {
+    //    public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText, int joinColumnType) {
 //        Page<FarmerDTO> page;
 //        if (searchText == null || searchText.equals("")) {
 //            searchText = "%%";
@@ -1511,56 +1515,56 @@ public class FarmerService {
 //        }
 //        return convertDTOToMapResponse(page);
 //    }
-public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText, int joinColumnType) {
-    Page<FarmerDTO> page;
+    public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText, int joinColumnType) {
+        Page<FarmerDTO> page;
 
-    // Handle null or empty searchText
-    if (StringUtils.hasText(searchText)) {
-        searchText = "%" + searchText + "%";
-    } else {
-        searchText = "%%";
+        // Handle null or empty searchText
+        if (StringUtils.hasText(searchText)) {
+            searchText = "%" + searchText + "%";
+        } else {
+            searchText = "%%";
+        }
+
+        // Determine the join column based on joinColumnType
+        String joinColumn;
+        switch (joinColumnType) {
+            case 0:
+                joinColumn = "farmer.farmerNumber";
+                break;
+            case 1:
+                joinColumn = "farmer.fruitsId";
+                break;
+            case 2:
+                joinColumn = "farmer.mobileNumber";
+                break;
+            case 3:
+                joinColumn = "farmerBankAccount.farmerBankAccountNumber";
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid joinColumnType: " + joinColumnType);
+        }
+
+        // Handle different type values
+        switch (type) {
+            case 0:
+                page = farmerRepository.getByActiveOrderByFarmerIdAsc(true, joinColumn, searchText, pageable);
+                break;
+            case 1:
+                page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmers(true, joinColumn, searchText, pageable);
+                break;
+            case 2:
+                page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
+                break;
+            case 3:
+                page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
+                break;
+            default:
+                page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(true, joinColumn, searchText, pageable);
+                break;
+        }
+
+        return convertDTOToMapResponse(page);
     }
-
-    // Determine the join column based on joinColumnType
-    String joinColumn;
-    switch (joinColumnType) {
-        case 0:
-            joinColumn = "farmer.farmerNumber";
-            break;
-        case 1:
-            joinColumn = "farmer.fruitsId";
-            break;
-        case 2:
-            joinColumn = "farmer.mobileNumber";
-            break;
-        case 3:
-            joinColumn = "farmerBankAccount.farmerBankAccountNumber";
-            break;
-        default:
-            throw new IllegalArgumentException("Invalid joinColumnType: " + joinColumnType);
-    }
-
-    // Handle different type values
-    switch (type) {
-        case 0:
-            page = farmerRepository.getByActiveOrderByFarmerIdAsc(true, joinColumn, searchText, pageable);
-            break;
-        case 1:
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmers(true, joinColumn, searchText, pageable);
-            break;
-        case 2:
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
-            break;
-        case 3:
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
-            break;
-        default:
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(true, joinColumn, searchText, pageable);
-            break;
-    }
-
-    return convertDTOToMapResponse(page);
-}
 
 
     private Map<String, Object> convertDTOToMapResponse(final Page<FarmerDTO> activeFarmers) {
@@ -1696,11 +1700,12 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
 //
 ////        farmer1.setFarmerNumber(formattedNumber);
 //
-////        UUID uuid = UUID.randomUUID();
-////        String extension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
-////        String fileName = "farmer/" + uuid + "_" + extension;
-////        s3Controller.uploadFile(multipartFile, fileName);
-////        farmer1.setPhotoPath(fileName);
+
+    /// /        UUID uuid = UUID.randomUUID();
+    /// /        String extension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
+    /// /        String fileName = "farmer/" + uuid + "_" + extension;
+    /// /        s3Controller.uploadFile(multipartFile, fileName);
+    /// /        farmer1.setPhotoPath(fileName);
 //
 //        Farmer farmer = mapper.farmerObjectToEntity(farmer1, Farmer.class);
 //        farmer.setWithoutFruitsInwardCounter(0L);
@@ -1741,7 +1746,6 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
 //
 //        return farmerResponse;
 //    }
-
     @Transactional
     public FarmerResponse insertNonKarnatakaFarmers(NonKarnatakaFarmerRequest farmerRequest) throws Exception {
         FarmerResponse farmerResponse = new FarmerResponse();
@@ -1946,12 +1950,12 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
 //                FarmerBankAccount farmerBankAccount = mapper.editFarmerBankAccountObjectToEntity(farmerRequest.getEditFarmerBankAccountRequest(),FarmerBankAccount.class);
 //                FarmerBankAccount farmerBankAccount1 = farmerBankAccountRepository.save(farmerBankAccount);
 //                farmerResponse.setFarmerBankAccountId(farmerBankAccount1.getFarmerBankAccountId());
-////            }
+
+    /// /            }
 //        }
 //
 //        return farmerResponse;
 //    }
-
     public FarmerResponse editNonKarnatakaFarmers(EditNonKarnatakaFarmerRequest farmerRequest) throws Exception {
         FarmerResponse farmerResponse = new FarmerResponse();
 
@@ -2003,7 +2007,7 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
                     farmerResponse.setError_description("Failed to update farmer bank account details");
                     // Optionally handle the error or throw an exception
                 }
-            }else {
+            } else {
                 FarmerBankAccountRequest farmerBankAccountRequest = new FarmerBankAccountRequest();
                 farmerBankAccountRequest.setFarmerId(farmerId);
                 farmerBankAccountRequest.setFarmerBankName(editFarmerBankAccountRequest.getFarmerBankName());
@@ -2103,14 +2107,13 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
     }
 
 
-
     @Transactional
     public FarmerResponse insertKarnatakaFarmersWithoutFruitsId(NonKarnatakaFarmerRequest farmerRequest) throws Exception {
         Farmer farmer2 = new Farmer();
         Long farmerId;
         FarmerRequest farmer1 = new FarmerRequest();
         FarmerResponse farmerResponse = new FarmerResponse();
-        try{
+        try {
             farmerRequest.setIsOtherStateFarmer(false);
             farmer1.setIsOtherStateFarmer(false);
             farmer1.setFirstName(farmerRequest.getFirstName());
@@ -2146,7 +2149,7 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
             serialCounterRepository.save(serialCounter);
             String formattedNumber = String.format("%05d", serialCounter.getFarmerFruitsIdCounterNumber());
 
-            farmer1.setFarmerNumber("KSWFID"+formattedNumber);
+            farmer1.setFarmerNumber("KSWFID" + formattedNumber);
 
 //        UUID uuid = UUID.randomUUID();
 //        String extension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
@@ -2171,7 +2174,7 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
                 farmerResponse.setError(false);
             }
 
-            if(!farmerResponse.getError()) {
+            if (!farmerResponse.getError()) {
                 farmerId = farmer2.getFarmerId();
 
                 for (FarmerAddress farmerAddress : farmerRequest.getFarmerAddressList()) {
@@ -2189,7 +2192,7 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
                     farmerResponse.setFarmerBankAccountId(farmerBankAccount1.getFarmerBankAccountId());
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             farmerResponse.setError(true);
             farmerResponse.setError_description(e.getMessage());
             throw new ValidationException(String.format(e.getMessage()));
@@ -2219,7 +2222,7 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
         SerialCounter serialCounter = new SerialCounter();
         if (serialCounters.size() > 0) {
             serialCounter = serialCounters.get(0);
-        }else{
+        } else {
             serialCounter.setFarmerWithoutFruitsAllowedNumber(0L);
         }
 
@@ -2232,13 +2235,13 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
     public FarmerResponse updateFarmerWithoutFruitsIdCounter(UpdateFruitsIdAllowedCounter farmerRequest) throws Exception {
         FarmerResponse farmerResponse = new FarmerResponse();
         Farmer farmer = farmerRepository.findByFarmerIdAndActive(farmerRequest.getFarmerId(), true);
-        if(farmer == null){
+        if (farmer == null) {
             farmerResponse.setError(true);
             farmerResponse.setError_description("Error occured while fetching farmer details");
-        }else{
-            if(farmer.getWithoutFruitsInwardCounter() == null){
+        } else {
+            if (farmer.getWithoutFruitsInwardCounter() == null) {
                 farmer.setWithoutFruitsInwardCounter(1L);
-            }else{
+            } else {
                 farmer.setWithoutFruitsInwardCounter(farmer.getWithoutFruitsInwardCounter() + 1L);
             }
             farmerRepository.save(farmer);
@@ -2247,7 +2250,7 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
         return farmerResponse;
     }
 
-    public ResponseEntity<?> totalFarmerCount( ) {
+    public ResponseEntity<?> totalFarmerCount() {
 
         ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
 
@@ -2268,7 +2271,7 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
     }
 
 
-    public ResponseEntity<?> districtWiseFarmerCount( ) {
+    public ResponseEntity<?> districtWiseFarmerCount() {
 
         ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
 
@@ -2384,9 +2387,9 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
         villageId = (villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
         Pageable pageable = null;
-        applicablePage  = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
+        applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
         List<Object[]> applicableList = applicablePage.getContent();
-        farmerResponse(primaryDetailsResponseList, applicableList,pageNumber, pageSize);
+        farmerResponse(primaryDetailsResponseList, applicableList, pageNumber, pageSize);
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Sheet 1");
@@ -2415,7 +2418,7 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
         //Dynamic data binds here
         //Starting 0th and 1st column cells are hardcoded, So dynamic data column starts from 2nd column
         int dataStartsFrom = 1;
-        for(int i=0; i<primaryDetailsResponseList.size(); i++){
+        for (int i = 0; i < primaryDetailsResponseList.size(); i++) {
             Row contentRow = sheet.createRow(dataStartsFrom);
             PrimaryDetailsResponse primaryDetailsResponse = primaryDetailsResponseList.get(i);
             contentRow.createCell(0).setCellValue(primaryDetailsResponse.getFirstName());
@@ -2454,7 +2457,7 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
         String directoryPath = Paths.get(userHome, "Downloads").toString();
         Path directory = Paths.get(directoryPath);
         Files.createDirectories(directory);
-        Path filePath = directory.resolve("farmers"+Util.getISTLocalDate()+".xlsx");
+        Path filePath = directory.resolve("farmers" + Util.getISTLocalDate() + ".xlsx");
 
         // Write the workbook content to the specified file path
         FileOutputStream fileOut = new FileOutputStream(filePath.toString());
@@ -2526,7 +2529,6 @@ public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pa
 
         return farmerDetailsResponseList;
     }
-
 
 
 }
