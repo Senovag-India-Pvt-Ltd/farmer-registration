@@ -49,4 +49,5 @@ public class FarmerDTO {
     private Boolean isOtherStateFarmer;
     private String farmerBankAccountNumber;
     private String username;
+    private String aadhaarNumber;
 }

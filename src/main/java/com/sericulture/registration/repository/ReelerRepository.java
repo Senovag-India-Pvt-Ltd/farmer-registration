@@ -123,7 +123,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.reelerNumber," +
             " reeler.reelerTypeMasterId," +
             " reelerTypeMaster.reelerTypeMasterName," +
-            " userMaster.username" +
+            " userMaster.username," +
+            " reeler.aadhaarNumber" +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -228,7 +229,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.reelerNumber," +
             " reeler.reelerTypeMasterId," +
             " reelerTypeMaster.reelerTypeMasterName," +
-            " userMaster.username" +
+            " userMaster.username," +
+            " reeler.aadhaarNumber" +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -331,7 +333,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.reelerNumber," +
             " reeler.reelerTypeMasterId," +
             " reelerTypeMaster.reelerTypeMasterName," +
-            " userMaster.username" +
+            " userMaster.username," +
+            " reeler.aadhaarNumber" +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -433,7 +436,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.reelerNumber," +
             " reeler.reelerTypeMasterId," +
             " reelerTypeMaster.reelerTypeMasterName," +
-            " userMaster.username" +
+            " userMaster.username," +
+            " reeler.aadhaarNumber" +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -536,7 +540,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.reelerNumber," +
             " reeler.reelerTypeMasterId," +
             " reelerTypeMaster.reelerTypeMasterName," +
-            " userMaster.username" +
+            " userMaster.username," +
+            " reeler.aadhaarNumber" +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +
@@ -640,7 +645,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             " reeler.reelerNumber," +
             " reeler.reelerTypeMasterId," +
             " reelerTypeMaster.reelerTypeMasterName," +
-            " userMaster.username" +
+            " userMaster.username," +
+            " reeler.aadhaarNumber" +
             ") " +
             "from Reeler reeler " +
             "left join Caste caste " +

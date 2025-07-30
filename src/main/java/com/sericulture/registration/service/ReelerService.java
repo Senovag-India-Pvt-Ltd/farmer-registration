@@ -602,6 +602,8 @@ public class ReelerService {
             reeler.setWalletAmount(reelerRequest.getWalletAmount());
             reeler.setReelerNumber(reelerRequest.getReelerNumber());
             reeler.setReelerTypeMasterId(reelerRequest.getReelerTypeMasterId());
+            reeler.setAadhaarNumber(reelerRequest.getAadhaarNumber());
+
 
             reeler.setActive(true);
             Reeler reeler1 = reelerRepository.save(reeler);

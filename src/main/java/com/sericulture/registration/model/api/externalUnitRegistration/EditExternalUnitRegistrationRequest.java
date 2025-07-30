@@ -45,4 +45,20 @@ public class EditExternalUnitRegistrationRequest extends RequestBody {
 
     @Schema(name = "capacity", example = "Test")
     String capacity;
+
+    @Schema(name = "virtualAccountNumber", example = "3654643675")
+    String virtualAccountNumber;
+
+    @Schema(name = "branchName", example = "Bengaluru")
+    String branchName;
+
+    @Schema(name = "ifscCode", example = "SBI00457")
+    String ifscCode;
+
+    @Schema(name = "marketMasterId", example = "1")
+    Long marketMasterId;
+
+    @Schema(name = "lotNumberNomenclature", example = "Test")
+    String lotNumberNomenclature;
+
 }

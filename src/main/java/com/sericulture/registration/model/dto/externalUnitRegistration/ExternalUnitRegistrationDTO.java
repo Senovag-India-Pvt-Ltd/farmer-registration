@@ -21,5 +21,10 @@ public class ExternalUnitRegistrationDTO {
     private Long raceMasterId;
     private String capacity;
     private String externalUnitTypeName;
+    private String virtualAccountNumber;
+    private String ifscCode;
+    private String branchName;
+    private String marketMasterName;
+    private String lotNumberNomenclature;
     private String raceMasterName;
 }

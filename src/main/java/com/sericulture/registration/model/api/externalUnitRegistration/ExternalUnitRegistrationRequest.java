@@ -1,11 +1,13 @@
 package com.sericulture.registration.model.api.externalUnitRegistration;
 
 import com.sericulture.registration.model.api.RequestBody;
+import com.sericulture.registration.model.api.traderLicense.TraderLicenseDetailsRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -44,4 +46,9 @@ public class ExternalUnitRegistrationRequest extends RequestBody {
 
     @Schema(name = "capacity", example = "Test")
     String capacity;
+
+    @Schema(name = "lotNumberNomenclature", example = "Test")
+    String lotNumberNomenclature;
+
+    private List<ExternalUnitRegistrationDetailsRequest> externalUnitRegistrationDetailsRequests;
 }
