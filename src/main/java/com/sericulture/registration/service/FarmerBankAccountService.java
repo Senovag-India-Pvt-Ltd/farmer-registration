@@ -206,20 +206,84 @@ public FarmerBankAccountResponse insertFarmerBankAccountDetails(FarmerBankAccoun
 //        return farmerBankAccountResponse;
 //    }
 
+//    @Transactional
+//    public FarmerBankAccountResponse updateFarmerBankAccountDetails(EditFarmerBankAccountRequest editFarmerBankAccountRequest) {
+//        FarmerBankAccountResponse farmerBankAccountResponse = new FarmerBankAccountResponse();
+//
+//        FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerBankAccountIdAndActiveIn(editFarmerBankAccountRequest.getFarmerBankAccountId(), Set.of(true, false));
+//
+//        if (Objects.nonNull(farmerBankAccount)) {
+//            List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumberAndActiveAndFarmerBankAccountIdIsNot(editFarmerBankAccountRequest.getFarmerBankAccountNumber(), true, editFarmerBankAccountRequest.getFarmerBankAccountId());
+//
+//            if (farmerBankAccountList.size() > 0) {
+//                farmerBankAccountResponse.setError(true);
+//                farmerBankAccountResponse.setError_description("Please check, account number already exists");
+//            } else {
+//                // Update the farmer's bank account details
+//                farmerBankAccount.setFarmerBankBranchName(editFarmerBankAccountRequest.getFarmerBankBranchName());
+//                farmerBankAccount.setFarmerBankIfscCode(editFarmerBankAccountRequest.getFarmerBankIfscCode());
+//                farmerBankAccount.setFarmerBankAccountNumber(editFarmerBankAccountRequest.getFarmerBankAccountNumber());
+//                farmerBankAccount.setFarmerBankName(editFarmerBankAccountRequest.getFarmerBankName());
+//                farmerBankAccount.setFarmerId(editFarmerBankAccountRequest.getFarmerId());
+//                farmerBankAccount.setFarmerBankAccountId(editFarmerBankAccountRequest.getFarmerBankAccountId());
+//                farmerBankAccount.setAccountImagePath(editFarmerBankAccountRequest.getAccountImagePath());
+//                farmerBankAccount.setLock(editFarmerBankAccountRequest.getLock());
+//                farmerBankAccount.setReasonMasterId(editFarmerBankAccountRequest.getReasonMasterId());
+//                farmerBankAccount.setRemark(editFarmerBankAccountRequest.getRemark());
+//                farmerBankAccount.setActive(true);
+//
+//                // Save the updated farmer bank account details
+//                FarmerBankAccount updatedFarmerBankAccount = farmerBankAccountRepository.save(farmerBankAccount);
+//
+//                // Update farmer bank account audit details
+//                FarmerBankAccountAudit farmerBankAccountAudit = new FarmerBankAccountAudit();
+//                farmerBankAccountAudit.setFarmerBankAccountId(updatedFarmerBankAccount.getFarmerBankAccountId());
+//                farmerBankAccountAudit.setFarmerBankName(updatedFarmerBankAccount.getFarmerBankName());
+//                farmerBankAccountAudit.setFarmerBankAccountNumber(updatedFarmerBankAccount.getFarmerBankAccountNumber());
+//                farmerBankAccountAudit.setFarmerBankBranchName(updatedFarmerBankAccount.getFarmerBankBranchName());
+//                farmerBankAccountAudit.setFarmerBankIfscCode(updatedFarmerBankAccount.getFarmerBankIfscCode());
+//                farmerBankAccountAudit.setFarmerId(updatedFarmerBankAccount.getFarmerId());
+//                farmerBankAccountAudit.setReasonMasterId(editFarmerBankAccountRequest.getReasonMasterId()); // Reason for the update
+//                farmerBankAccountAudit.setRemark(editFarmerBankAccountRequest.getRemark()); // Additional remarks
+//
+//                // Save the audit information
+//                farmerBankAccountAuditRepository.save(farmerBankAccountAudit);
+//
+//                // Map the updated account entity to response
+//                farmerBankAccountResponse = mapper.farmerBankAccountEntityToObject(updatedFarmerBankAccount, FarmerBankAccountResponse.class);
+//                farmerBankAccountResponse.setError(false);
+//            }
+//        } else {
+//            farmerBankAccountResponse.setError(true);
+//            farmerBankAccountResponse.setError_description("Error occurred while fetching Farmer Bank Account.");
+//        }
+//
+//        return farmerBankAccountResponse;
+//    }
+
+
     @Transactional
     public FarmerBankAccountResponse updateFarmerBankAccountDetails(EditFarmerBankAccountRequest editFarmerBankAccountRequest) {
         FarmerBankAccountResponse farmerBankAccountResponse = new FarmerBankAccountResponse();
 
-        FarmerBankAccount farmerBankAccount = farmerBankAccountRepository.findByFarmerBankAccountIdAndActiveIn(editFarmerBankAccountRequest.getFarmerBankAccountId(), Set.of(true, false));
+        FarmerBankAccount farmerBankAccount =
+                farmerBankAccountRepository.findByFarmerBankAccountIdAndActiveIn(
+                        editFarmerBankAccountRequest.getFarmerBankAccountId(),
+                        Set.of(true, false)
+                );
 
         if (Objects.nonNull(farmerBankAccount)) {
-            List<FarmerBankAccount> farmerBankAccountList = farmerBankAccountRepository.findByFarmerBankAccountNumberAndActiveAndFarmerBankAccountIdIsNot(editFarmerBankAccountRequest.getFarmerBankAccountNumber(), true, editFarmerBankAccountRequest.getFarmerBankAccountId());
+            List<FarmerBankAccount> farmerBankAccountList =
+                    farmerBankAccountRepository.findByFarmerBankAccountNumberAndActiveAndFarmerBankAccountIdIsNot(
+                            editFarmerBankAccountRequest.getFarmerBankAccountNumber(),
+                            true,
+                            editFarmerBankAccountRequest.getFarmerBankAccountId()
+                    );
 
             if (farmerBankAccountList.size() > 0) {
                 farmerBankAccountResponse.setError(true);
                 farmerBankAccountResponse.setError_description("Please check, account number already exists");
             } else {
-                // Update the farmer's bank account details
                 farmerBankAccount.setFarmerBankBranchName(editFarmerBankAccountRequest.getFarmerBankBranchName());
                 farmerBankAccount.setFarmerBankIfscCode(editFarmerBankAccountRequest.getFarmerBankIfscCode());
                 farmerBankAccount.setFarmerBankAccountNumber(editFarmerBankAccountRequest.getFarmerBankAccountNumber());
@@ -232,10 +296,10 @@ public FarmerBankAccountResponse insertFarmerBankAccountDetails(FarmerBankAccoun
                 farmerBankAccount.setRemark(editFarmerBankAccountRequest.getRemark());
                 farmerBankAccount.setActive(true);
 
-                // Save the updated farmer bank account details
+                // Save updated farmer bank account
                 FarmerBankAccount updatedFarmerBankAccount = farmerBankAccountRepository.save(farmerBankAccount);
 
-                // Update farmer bank account audit details
+                // Save audit details
                 FarmerBankAccountAudit farmerBankAccountAudit = new FarmerBankAccountAudit();
                 farmerBankAccountAudit.setFarmerBankAccountId(updatedFarmerBankAccount.getFarmerBankAccountId());
                 farmerBankAccountAudit.setFarmerBankName(updatedFarmerBankAccount.getFarmerBankName());
@@ -243,24 +307,54 @@ public FarmerBankAccountResponse insertFarmerBankAccountDetails(FarmerBankAccoun
                 farmerBankAccountAudit.setFarmerBankBranchName(updatedFarmerBankAccount.getFarmerBankBranchName());
                 farmerBankAccountAudit.setFarmerBankIfscCode(updatedFarmerBankAccount.getFarmerBankIfscCode());
                 farmerBankAccountAudit.setFarmerId(updatedFarmerBankAccount.getFarmerId());
-                farmerBankAccountAudit.setReasonMasterId(editFarmerBankAccountRequest.getReasonMasterId()); // Reason for the update
-                farmerBankAccountAudit.setRemark(editFarmerBankAccountRequest.getRemark()); // Additional remarks
+                farmerBankAccountAudit.setReasonMasterId(editFarmerBankAccountRequest.getReasonMasterId());
+                farmerBankAccountAudit.setRemark(editFarmerBankAccountRequest.getRemark());
 
-                // Save the audit information
                 farmerBankAccountAuditRepository.save(farmerBankAccountAudit);
 
-                // Map the updated account entity to response
-                farmerBankAccountResponse = mapper.farmerBankAccountEntityToObject(updatedFarmerBankAccount, FarmerBankAccountResponse.class);
+                farmerBankAccountResponse = mapper.farmerBankAccountEntityToObject(
+                        updatedFarmerBankAccount,
+                        FarmerBankAccountResponse.class
+                );
                 farmerBankAccountResponse.setError(false);
             }
         } else {
-            farmerBankAccountResponse.setError(true);
-            farmerBankAccountResponse.setError_description("Error occurred while fetching Farmer Bank Account.");
+            FarmerBankAccount newFarmerBankAccount = new FarmerBankAccount();
+            newFarmerBankAccount.setFarmerBankBranchName(editFarmerBankAccountRequest.getFarmerBankBranchName());
+            newFarmerBankAccount.setFarmerBankIfscCode(editFarmerBankAccountRequest.getFarmerBankIfscCode());
+            newFarmerBankAccount.setFarmerBankAccountNumber(editFarmerBankAccountRequest.getFarmerBankAccountNumber());
+            newFarmerBankAccount.setFarmerBankName(editFarmerBankAccountRequest.getFarmerBankName());
+            newFarmerBankAccount.setFarmerId(editFarmerBankAccountRequest.getFarmerId());
+            newFarmerBankAccount.setAccountImagePath(editFarmerBankAccountRequest.getAccountImagePath());
+            newFarmerBankAccount.setLock(editFarmerBankAccountRequest.getLock());
+            newFarmerBankAccount.setReasonMasterId(editFarmerBankAccountRequest.getReasonMasterId());
+            newFarmerBankAccount.setRemark(editFarmerBankAccountRequest.getRemark());
+            newFarmerBankAccount.setActive(true);
+
+            FarmerBankAccount savedBankAccount = farmerBankAccountRepository.save(newFarmerBankAccount);
+
+            // Save audit for new insert
+            FarmerBankAccountAudit farmerBankAccountAudit = new FarmerBankAccountAudit();
+            farmerBankAccountAudit.setFarmerBankAccountId(savedBankAccount.getFarmerBankAccountId());
+            farmerBankAccountAudit.setFarmerBankName(savedBankAccount.getFarmerBankName());
+            farmerBankAccountAudit.setFarmerBankAccountNumber(savedBankAccount.getFarmerBankAccountNumber());
+            farmerBankAccountAudit.setFarmerBankBranchName(savedBankAccount.getFarmerBankBranchName());
+            farmerBankAccountAudit.setFarmerBankIfscCode(savedBankAccount.getFarmerBankIfscCode());
+            farmerBankAccountAudit.setFarmerId(savedBankAccount.getFarmerId());
+            farmerBankAccountAudit.setReasonMasterId(editFarmerBankAccountRequest.getReasonMasterId());
+            farmerBankAccountAudit.setRemark(editFarmerBankAccountRequest.getRemark());
+
+            farmerBankAccountAuditRepository.save(farmerBankAccountAudit);
+
+            farmerBankAccountResponse = mapper.farmerBankAccountEntityToObject(
+                    savedBankAccount,
+                    FarmerBankAccountResponse.class
+            );
+            farmerBankAccountResponse.setError(false);
         }
 
         return farmerBankAccountResponse;
     }
-
 
     @Transactional
     public FarmerBankAccountResponse updateBankAccountPhotoPath(MultipartFile multipartFile, String farmerBankAccountId) throws Exception {
