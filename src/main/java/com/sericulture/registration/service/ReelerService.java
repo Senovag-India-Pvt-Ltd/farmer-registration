@@ -1073,6 +1073,69 @@ public class ReelerService {
         return ResponseEntity.ok(rw);
 
     }
+    public ResponseEntity<?> primaryReelerForRenewalLicense(Long districtId,
+                                                            Long talukId,
+                                                            Long villageId,
+                                                            Long marketId,
+                                                            LocalDate  renewalDate,
+                                                            LocalDate  expiryDate,
+                                                            int pageNumber, int pageSize) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+        List<PrimaryReelerDetailsResponse> primaryReelerDetailsResponseList = new ArrayList<>();
+
+        districtId = (districtId == 0) ? null : districtId;
+        talukId = (talukId == 0) ? null : talukId;
+        villageId = (villageId == 0) ? null : villageId;
+        marketId = (marketId == 0) ? null : marketId;
+//        Page<Object[]> applicablePage;
+//        // applicableList = applicationFormRepository.getSubmittedListForDbt(statusList, financialYearId, schemeId, subSchemeId, applicationId, sanctionNo, fruitsId);
+//        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+//        applicablePage  = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
+//        List<Object[]> applicableList = applicablePage.getContent();
+//        long totalRecords = applicablePage.getTotalElements();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Object[]> applicablePage = reelerRepository.getPrimaryReelerForRenewalLicense(districtId, talukId, villageId, marketId,renewalDate, expiryDate, pageable);
+        List<Object[]> applicableList = applicablePage.getContent();
+        long totalRecords = applicablePage.getTotalElements();
+
+
+        reelerResponses(primaryReelerDetailsResponseList, applicableList, pageNumber, pageSize);
+        rw.setTotalRecords(totalRecords);
+        rw.setContent(primaryReelerDetailsResponseList);
+        return ResponseEntity.ok(rw);
+    }
+
+    private static void reelerResponses(List<PrimaryReelerDetailsResponse> primaryReelerDetailsResponseList, List<Object[]> applicableList, int pageNumber, int pageSize) {
+        int serialNumber = pageNumber * pageSize + 1;
+        for (Object[] arr : applicableList) {
+            PrimaryReelerDetailsResponse primaryReelerDetailsResponse;
+            primaryReelerDetailsResponse = PrimaryReelerDetailsResponse.builder()
+                    .serialNumber(serialNumber++)
+                    .reelerId(Util.objectToString(arr[0]))
+                    .firstName(Util.objectToString(arr[1]))
+                    .fruitsId(Util.objectToString(arr[2]))
+                    .reelerLicenseNumber(Util.objectToString(arr[3]))
+                    .fatherName(Util.objectToString(arr[4]))
+                    .passbookNumber(Util.objectToString(arr[5]))
+                    .reelerNumber(Util.objectToString(arr[6]))
+                    .rationCardNumber(Util.objectToString(arr[7]))
+                    .dob(Util.objectToString(arr[8]))
+                    .districtName(Util.objectToString(arr[9]))
+                    .talukName(Util.objectToString(arr[10]))
+                    .hobliName(Util.objectToString(arr[11]))
+                    .villageName(Util.objectToString(arr[12]))
+                    .reelerBankName(Util.objectToString(arr[13]))
+                    .reelerBankAccountNumber(Util.objectToString(arr[14]))
+                    .reelerBankBranchName(Util.objectToString(arr[15]))
+                    .reelerBankIfscCode(Util.objectToString(arr[16]))
+                    .reelerMobileNumber(Util.objectToLong(arr[17]))
+                    .renewalDate(Util.objectToLocalDate(arr[18]))
+                    .expiryDate(Util.objectToLocalDate(arr[19]))
+                    .build();
+            primaryReelerDetailsResponseList.add(primaryReelerDetailsResponse);
+        }
+    }
 
     public ResponseEntity<?> primaryReelerDetails(Long districtId,
                                                   Long talukId,
@@ -1133,6 +1196,7 @@ public class ReelerService {
             primaryReelerDetailsResponseList.add(primaryReelerDetailsResponse);
         }
     }
+
 
     public FileInputStream reelerReport(Long districtId,
                                         Long talukId,
@@ -1225,6 +1289,109 @@ public class ReelerService {
         workbook.close();
         return fileIn;
     }
+
+    public FileInputStream renewalReelerReport(Long districtId,
+                                        Long talukId,
+                                        Long villageId,
+                                        Long marketId,
+                                        LocalDate renewalDate,
+                                        LocalDate expiryDate,
+                                        int pageNumber,
+                                        int pageSize) throws Exception {
+
+        List<PrimaryReelerDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
+
+        Page<Object[]> applicablePage;
+        districtId = (districtId == 0) ? null : districtId;
+        talukId = (talukId == 0) ? null : talukId;
+        villageId = (villageId == 0) ? null : villageId;
+        marketId = (marketId == 0) ? null : marketId;
+        Pageable pageable = null;
+
+        // Pass renewalDate and expiryDate to repository
+        applicablePage = reelerRepository.getPrimaryReelerForRenewalLicense(
+                districtId, talukId, villageId, marketId, renewalDate, expiryDate, pageable);
+
+        List<Object[]> applicableList = applicablePage.getContent();
+        reelerResponses(primaryDetailsResponseList, applicableList, pageNumber, pageSize);
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Sheet 1");
+
+        // Create a header row
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("First Name");
+        headerRow.createCell(1).setCellValue("Fruits Id");
+        headerRow.createCell(2).setCellValue("Reeler License Number");
+        headerRow.createCell(3).setCellValue("Father Name");
+        headerRow.createCell(4).setCellValue("Passbook Number");
+        headerRow.createCell(5).setCellValue("Reeler Number");
+        headerRow.createCell(6).setCellValue("Ration Card Number");
+        headerRow.createCell(7).setCellValue("DOB");
+        headerRow.createCell(8).setCellValue("District Name");
+        headerRow.createCell(9).setCellValue("Taluk Name");
+        headerRow.createCell(10).setCellValue("Hobli Name");
+        headerRow.createCell(11).setCellValue("Village Name");
+        headerRow.createCell(12).setCellValue("Bank Name");
+        headerRow.createCell(13).setCellValue("Bank Account Number");
+        headerRow.createCell(14).setCellValue("Branch Name");
+        headerRow.createCell(15).setCellValue("IFSC Code");
+        headerRow.createCell(16).setCellValue("Mobile Number");
+        headerRow.createCell(17).setCellValue("License Renewal Date");
+        headerRow.createCell(18).setCellValue("License Expiry Date");
+
+        // Dynamic data
+        int dataStartsFrom = 1;
+        for (int i = 0; i < primaryDetailsResponseList.size(); i++) {
+            Row contentRow = sheet.createRow(dataStartsFrom);
+            PrimaryReelerDetailsResponse primaryDetailsResponse = primaryDetailsResponseList.get(i);
+            contentRow.createCell(0).setCellValue(primaryDetailsResponse.getFirstName());
+            contentRow.createCell(1).setCellValue(primaryDetailsResponse.getFruitsId());
+            contentRow.createCell(2).setCellValue(primaryDetailsResponse.getReelerLicenseNumber());
+            contentRow.createCell(3).setCellValue(primaryDetailsResponse.getFatherName());
+            contentRow.createCell(4).setCellValue(primaryDetailsResponse.getPassbookNumber());
+            contentRow.createCell(5).setCellValue(primaryDetailsResponse.getReelerNumber());
+            contentRow.createCell(6).setCellValue(primaryDetailsResponse.getRationCardNumber());
+            contentRow.createCell(7).setCellValue(primaryDetailsResponse.getDob());
+            contentRow.createCell(8).setCellValue(primaryDetailsResponse.getDistrictName());
+            contentRow.createCell(9).setCellValue(primaryDetailsResponse.getTalukName());
+            contentRow.createCell(10).setCellValue(primaryDetailsResponse.getHobliName());
+            contentRow.createCell(11).setCellValue(primaryDetailsResponse.getVillageName());
+            contentRow.createCell(12).setCellValue(primaryDetailsResponse.getReelerBankName());
+            contentRow.createCell(13).setCellValue(primaryDetailsResponse.getReelerBankAccountNumber());
+            contentRow.createCell(14).setCellValue(primaryDetailsResponse.getReelerBankBranchName());
+            contentRow.createCell(15).setCellValue(primaryDetailsResponse.getReelerBankIfscCode());
+            contentRow.createCell(16).setCellValue(primaryDetailsResponse.getReelerMobileNumber());
+            contentRow.createCell(17).setCellValue(
+                    primaryDetailsResponse.getRenewalDate() != null ? primaryDetailsResponse.getRenewalDate().toString() : ""
+            );
+            contentRow.createCell(18).setCellValue(
+                    primaryDetailsResponse.getExpiryDate() != null ? primaryDetailsResponse.getExpiryDate().toString() : ""
+            );
+            dataStartsFrom++;
+        }
+
+        // Auto-size all columns
+        for (int columnIndex = 0; columnIndex <= 18; columnIndex++) {
+            sheet.autoSizeColumn(columnIndex, true);
+        }
+
+        // Save file in Downloads
+        String userHome = System.getProperty("user.home");
+        String directoryPath = Paths.get(userHome, "Downloads").toString();
+        Path directory = Paths.get(directoryPath);
+        Files.createDirectories(directory);
+        Path filePath = directory.resolve("renewalReelers" + Util.getISTLocalDate() + ".xlsx");
+
+        FileOutputStream fileOut = new FileOutputStream(filePath.toString());
+        FileInputStream fileIn = new FileInputStream(filePath.toString());
+        workbook.write(fileOut);
+        fileOut.close();
+        workbook.close();
+
+        return fileIn;
+    }
+
 
     public ResponseEntity<?> primaryReelerMarketDetails(
             Long marketId,
