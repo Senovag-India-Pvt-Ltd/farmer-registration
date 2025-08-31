@@ -74,61 +74,6 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             )
     Page<TraderLicenseDTO> getByActiveOrderByTraderLicenseIdAsc(@Param("isActive") boolean isActive, final Pageable pageable);
 
-//    @Query("""
-//    select new com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO(
-//        traderLicense.traderLicenseId,
-//        traderLicense.arnNumber,
-//        traderLicense.traderTypeMasterId,
-//        traderLicense.firstName,
-//        traderLicense.middleName,
-//        traderLicense.lastName,
-//        traderLicense.fatherName,
-//        traderLicense.stateId,
-//        traderLicense.districtId,
-//        traderLicense.address,
-//        traderLicense.premisesDescription,
-//        traderLicense.applicationDate,
-//        traderLicense.applicationNumber,
-//        traderLicense.traderLicenseNumber,
-//        traderLicense.representativeDetails,
-//        traderLicense.licenseFee,
-//        traderLicense.silkType,
-//        traderLicense.licenseChallanNumber,
-//        traderLicense.godownDetails,
-//        traderLicense.silkExchangeMahajar,
-//        traderLicense.licenseNumberSequence,
-//        traderTypeMaster.traderTypeMasterName,
-//        state.stateName,
-//        marketMaster.marketMasterName,
-//        traderLicense.marketMasterId,
-//        traderLicense.walletAmount,
-//        traderLicense.mobileNumber,
-//        traderLicense.virtualAccountNumber,
-//        traderLicense.ifscCode,
-//        traderLicense.branchName,
-//        district.districtName
-//    )
-//    from TraderLicense traderLicense
-//    left join trader_type_master traderTypeMaster
-//        on traderLicense.traderTypeMasterId = traderTypeMaster.traderTypeMasterId
-//    left join market_master marketMaster
-//        on traderLicense.marketMasterId = marketMaster.marketMasterId
-//    left join State state
-//        on traderLicense.stateId = state.stateId
-//    left join District district
-//        on traderLicense.districtId = district.districtId
-//    where traderLicense.active = :isActive
-//      and (:districtId is null or traderLicense.districtId = :districtId)
-//      and (:silkType is null or traderLicense.silkType = :silkType)
-//      and (:traderTypeMasterId is null or traderLicense.traderTypeMasterId = :traderTypeMasterId)
-//    order by traderLicense.firstName asc
-//    """)
-//    Page<TraderLicenseDTO> getByActiveAndFilters(
-//            @Param("isActive") boolean isActive,
-//            @Param("districtId") Long districtId,
-//            @Param("silkType") String silkType,
-//            @Param("traderTypeMasterId") Long traderTypeMasterId,
-//            Pageable pageable);
 
     @Query("select new com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO(" +
             " traderLicense.traderLicenseId," +
@@ -184,55 +129,6 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             @Param("silkType") String silkType,
             @Param("traderTypeMasterId") Long traderTypeMasterId,
             Pageable pageable);
-
-//    @Query("select new com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO(" +
-//            " traderLicense.traderLicenseId," +
-//            " traderLicense.arnNumber," +
-//            " traderLicense.traderTypeMasterId," +
-//            " traderLicense.firstName," +
-//            " traderLicense.middleName," +
-//            " traderLicense.lastName," +
-//            " traderLicense.fatherName," +
-//            " traderLicense.stateId," +
-//            " traderLicense.districtId," +
-//            " traderLicense.address," +
-//            " traderLicense.premisesDescription," +
-//            " traderLicense.applicationDate," +
-//            " traderLicense.applicationNumber," +
-//            " traderLicense.traderLicenseNumber," +
-//            " traderLicense.representativeDetails," +
-//            " traderLicense.licenseFee," +
-//            " traderLicense.silkType," +
-//            " traderLicense.licenseChallanNumber," +
-//            " traderLicense.godownDetails," +
-//            " traderLicense.silkExchangeMahajar," +
-//            " traderLicense.licenseNumberSequence," +
-//            " traderTypeMaster.traderTypeMasterName," +
-//            " state.stateName," +
-//            " marketMaster.marketMasterName," +
-//            " traderLicense.marketMasterId," +
-//            " traderLicense.walletAmount," +
-//            " traderLicense.mobileNumber," +
-//            " traderLicense.virtualAccountNumber," +
-//            " traderLicense.ifscCode," +
-//            " traderLicense.branchName," +
-//            " district.districtName" +
-//            ") \n" +
-//            "from TraderLicense traderLicense\n" +
-//            "left join trader_type_master traderTypeMaster\n" +
-//            "on traderLicense.traderTypeMasterId = traderTypeMaster.traderTypeMasterId " +
-//            "left join market_master marketMaster\n" +
-//            "on traderLicense.marketMasterId = marketMaster.marketMasterId " +
-//            "left join State state\n" +
-//            "on traderLicense.stateId = state.stateId " +
-//            "left join District district\n" +
-//            "on traderLicense.districtId = district.districtId " +
-//            "where traderLicense.active = :isActive " +
-//            "ORDER BY traderLicense.firstName ASC"
-//    )
-//    Page<TraderLicenseDTO> getByActiveAndFilters(
-//            @Param("isActive") boolean isActive,Pageable pageable);
-
 
     @Query("select new com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO(" +
             " traderLicense.traderLicenseId," +
