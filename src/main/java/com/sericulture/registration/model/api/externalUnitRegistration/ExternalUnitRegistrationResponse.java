@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -73,6 +74,8 @@ public class ExternalUnitRegistrationResponse {
 
     @Schema(name = "error_description", example = "Username or password is incorrect")
     String error_description;
+
+    private int serialNumber;
 
     private List<Long> externalUnitRegistrationIds;
 }

@@ -1,6 +1,7 @@
 package com.sericulture.registration.service;
 
 import com.sericulture.registration.helper.Util;
+import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.externalUnitRegistration.*;
 import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationResponse;
@@ -14,15 +15,25 @@ import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.ExternalUnitRegistrationRepository;
 import com.sericulture.registration.repository.SerialCounterRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -194,6 +205,129 @@ public class ExternalUnitRegistrationService {
 
     public Map<String,Object> getPaginatedExternalUnitRegistrationDetailsWithJoin(final Pageable pageable){
         return convertDTOToMapResponse(externalUnitRegistrationRepository.getByActiveOrderByExternalUnitRegistrationIdAsc( true, pageable));
+    }
+
+    public ResponseEntity<?> externalUnitList(Long raceMasterId,
+                                              Long externalUnitTypeId,
+                                              int pageNumber,
+                                              int pageSize) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+        List<ExternalUnitRegistrationResponse> responseList = new ArrayList<>();
+
+        // Convert 0 → null
+        raceMasterId = (raceMasterId != null && raceMasterId == 0) ? null : raceMasterId;
+        externalUnitTypeId = (externalUnitTypeId != null && externalUnitTypeId == 0) ? null : externalUnitTypeId;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        Page<ExternalUnitRegistrationDTO> page = externalUnitRegistrationRepository.getByActiveAndFilters(
+                true, raceMasterId, externalUnitTypeId, pageable);
+
+        List<ExternalUnitRegistrationDTO> list = page.getContent();
+        long totalRecords = page.getTotalElements();
+
+        // Mapping
+        externalUnitResponses(responseList, list, pageNumber, pageSize);
+
+        rw.setTotalRecords(totalRecords);
+        rw.setContent(responseList);
+        return ResponseEntity.ok(rw);
+    }
+
+    private static void externalUnitResponses(List<ExternalUnitRegistrationResponse> responseList,
+                                              List<ExternalUnitRegistrationDTO> dtoList,
+                                              int pageNumber, int pageSize) {
+        int serialNumber = pageNumber * pageSize + 1;
+        for (ExternalUnitRegistrationDTO dto : dtoList) {
+            ExternalUnitRegistrationResponse response = ExternalUnitRegistrationResponse.builder()
+                    .serialNumber(serialNumber++)
+                    .externalUnitRegistrationId(dto.getExternalUnitRegistrationId())
+                    .externalUnitTypeId(dto.getExternalUnitTypeId())
+                    .externalUnitTypeName(dto.getExternalUnitTypeName())
+                    .name(dto.getName())
+                    .address(dto.getAddress())
+                    .licenseNumber(dto.getLicenseNumber())
+                    .externalUnitNumber(dto.getExternalUnitNumber())
+                    .organisationName(dto.getOrganisationName())
+                    .raceMasterId(dto.getRaceMasterId())
+                    .raceMasterName(dto.getRaceMasterName())
+                    .capacity(dto.getCapacity())
+                    .virtualAccountNumber(dto.getVirtualAccountNumber())
+                    .ifscCode(dto.getIfscCode())
+                    .branchName(dto.getBranchName())
+                    .marketMasterName(dto.getMarketMasterName())
+                    .lotNumberNomenclature(dto.getLotNumberNomenclature())
+                    .build();
+            responseList.add(response);
+        }
+    }
+
+    public FileInputStream externalUnitReport(
+            boolean isActive,
+            Long raceMasterId,
+            Long externalUnitTypeId,
+            int pageNumber,
+            int pageSize) throws Exception {
+
+        raceMasterId = (raceMasterId != null && raceMasterId == 0) ? null : raceMasterId;
+        externalUnitTypeId = (externalUnitTypeId != null && externalUnitTypeId == 0) ? null : externalUnitTypeId;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<ExternalUnitRegistrationDTO> page = externalUnitRegistrationRepository.getByActiveAndFilters(
+                isActive, raceMasterId, externalUnitTypeId, pageable);
+
+        List<ExternalUnitRegistrationDTO> units = page.getContent();
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("External Units");
+
+        // Header Row
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("S.No");
+        headerRow.createCell(1).setCellValue("Unit Name");
+        headerRow.createCell(2).setCellValue("Unit Type");
+        headerRow.createCell(3).setCellValue("Race");
+        headerRow.createCell(4).setCellValue("License Number");
+        headerRow.createCell(5).setCellValue("Organisation");
+        headerRow.createCell(6).setCellValue("Market");
+        headerRow.createCell(7).setCellValue("Lot Number Nomenclature");
+        headerRow.createCell(8).setCellValue("Virtual Account");
+        headerRow.createCell(9).setCellValue("IFSC Code");
+        headerRow.createCell(10).setCellValue("Branch Name");
+
+        // Data Rows
+        int rowIdx = 1;
+        int serialNo = 1;
+        for (ExternalUnitRegistrationDTO dto : units) {
+            Row row = sheet.createRow(rowIdx++);
+            row.createCell(0).setCellValue(serialNo++);
+            row.createCell(1).setCellValue(dto.getName());
+            row.createCell(2).setCellValue(dto.getExternalUnitTypeName());
+            row.createCell(3).setCellValue(dto.getRaceMasterName());
+            row.createCell(4).setCellValue(dto.getLicenseNumber());
+            row.createCell(5).setCellValue(dto.getOrganisationName());
+            row.createCell(6).setCellValue(dto.getMarketMasterName());
+            row.createCell(7).setCellValue(dto.getLotNumberNomenclature());
+            row.createCell(8).setCellValue(dto.getVirtualAccountNumber());
+            row.createCell(9).setCellValue(dto.getIfscCode());
+            row.createCell(10).setCellValue(dto.getBranchName());
+        }
+
+        for (int i = 0; i <= 11; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        String userHome = System.getProperty("user.home");
+        Path directory = Paths.get(userHome, "Downloads");
+        Files.createDirectories(directory);
+        Path filePath = directory.resolve("external_unit_report_" + Util.getISTLocalDate() + ".xlsx");
+
+        try (FileOutputStream fileOut = new FileOutputStream(filePath.toString())) {
+            workbook.write(fileOut);
+        }
+        workbook.close();
+
+        return new FileInputStream(filePath.toString());
     }
 
     private Map<String, Object> convertDTOToMapResponse(final Page<ExternalUnitRegistrationDTO> activeExternalUnitRegistrations) {
