@@ -1,5 +1,6 @@
 package com.sericulture.registration.controller;
 
+import com.sericulture.registration.helper.Util;
 import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountResponse;
@@ -15,13 +16,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -290,6 +296,46 @@ public class TraderLicenseController {
         rw.setContent(traderLicenseService.getByTraderLicenseNumber(traderLicenseNumber));
         return ResponseEntity.ok(rw);
     }
+
+    @PostMapping("/traderLicenseList")
+    public ResponseEntity<?> traderLicenseList(
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long traderTypeMasterId,
+            @RequestParam(required = false) String silkType,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        return traderLicenseService.traderLicenseList(districtId, traderTypeMasterId, silkType, pageNumber, pageSize);
+    }
+
+    @PostMapping("/trader-license-report")
+    public ResponseEntity<?> traderLicenseReport(
+            @RequestParam(defaultValue = "true") boolean isActive,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) String silkType,
+            @RequestParam(required = false) Long traderTypeMasterId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        try {
+            FileInputStream fileInputStream = traderLicenseService.traderLicenseReport(
+                    isActive, districtId, silkType, traderTypeMasterId, pageNumber, pageSize);
+
+            InputStreamResource resource = new InputStreamResource(fileInputStream);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=trader_license_report" + Util.getISTLocalDate() + ".xlsx");
+            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(("Error generating report: " + ex.getMessage()).getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ok Response"),

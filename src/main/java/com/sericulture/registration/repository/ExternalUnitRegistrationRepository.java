@@ -58,6 +58,44 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
     )
     Page<ExternalUnitRegistrationDTO> getByActiveOrderByExternalUnitRegistrationIdAsc(@Param("isActive") boolean isActive, final Pageable pageable);
 
+
+    @Query("select new com.sericulture.registration.model.dto.externalUnitRegistration.ExternalUnitRegistrationDTO(" +
+            " externalUnitRegistration.externalUnitRegistrationId," +
+            " externalUnitRegistration.externalUnitTypeId," +
+            " externalUnitRegistration.name," +
+            " externalUnitRegistration.address," +
+            " externalUnitRegistration.licenseNumber," +
+            " externalUnitRegistration.externalUnitNumber," +
+            " externalUnitRegistration.organisationName," +
+            " externalUnitRegistration.raceMasterId," +
+            " externalUnitRegistration.capacity,"+
+            " externalUnitType.externalUnitTypeName," +
+            " externalUnitRegistration.virtualAccountNumber,"+
+            " externalUnitRegistration.ifscCode,"+
+            " externalUnitRegistration.branchName,"+
+            " marketMaster.marketMasterName,"+
+            " externalUnitRegistration.lotNumberNomenclature,"+
+            " raceMaster.raceMasterName" +
+            ") \n" +
+            "from ExternalUnitRegistration externalUnitRegistration\n" +
+            "left join external_unit_type_master externalUnitType\n" +
+            "on externalUnitRegistration.externalUnitTypeId = externalUnitType.externalUnitTypeId " +
+            "left join RaceMaster raceMaster\n" +
+            "on externalUnitRegistration.raceMasterId = raceMaster.raceMasterId " +
+            "left join market_master marketMaster\n" +
+            "on externalUnitRegistration.marketMasterId = marketMaster.marketMasterId " +
+            "where externalUnitRegistration.active = :isActive " +
+            "  and (:raceMasterId is null or externalUnitRegistration.raceMasterId = :raceMasterId) " +
+            "  and (:externalUnitTypeId is null or externalUnitRegistration.externalUnitTypeId = :externalUnitTypeId) " +
+            "ORDER BY externalUnitRegistration.name ASC"
+    )
+    Page<ExternalUnitRegistrationDTO> getByActiveAndFilters(
+            @Param("isActive") boolean isActive,
+            @Param("raceMasterId") Long raceMasterId,
+            @Param("externalUnitTypeId") Long externalUnitTypeId,
+            Pageable pageable);
+
+
     @Query("select new com.sericulture.registration.model.dto.externalUnitRegistration.ExternalUnitRegistrationDTO(" +
             " externalUnitRegistration.externalUnitRegistrationId," +
             " externalUnitRegistration.externalUnitTypeId," +

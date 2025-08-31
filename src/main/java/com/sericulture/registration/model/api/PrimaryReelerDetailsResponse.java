@@ -3,6 +3,8 @@ package com.sericulture.registration.model.api;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @AllArgsConstructor
 @Getter
 @Setter
@@ -32,5 +34,7 @@ public class PrimaryReelerDetailsResponse extends ResponseBody{
     private String reelerBankAccountNumber;
     private String reelerBankBranchName;
     private String reelerBankIfscCode;
+    private LocalDate renewalDate;
+    private LocalDate expiryDate;
     private Long reelerMobileNumber;
 }

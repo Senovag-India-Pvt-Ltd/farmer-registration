@@ -1,10 +1,12 @@
 package com.sericulture.registration.service;
 
 import com.sericulture.registration.helper.Util;
+import com.sericulture.registration.model.ResponseWrapper;
 import com.sericulture.registration.model.api.common.SearchWithSortRequest;
 import com.sericulture.registration.model.api.reeler.ReelerResponse;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountResponse;
 import com.sericulture.registration.model.api.traderLicense.*;
+import com.sericulture.registration.model.api.village.PrimaryTraderLicenseDetailsResponse;
 import com.sericulture.registration.model.dto.reeler.ReelerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
 import com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO;
@@ -15,16 +17,26 @@ import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.SerialCounterRepository;
 import com.sericulture.registration.repository.TraderLicenseRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -188,6 +200,166 @@ public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest tra
         response.put("totalPages", activeTraderLicenses.getTotalPages());
         return response;
     }
+
+    public ResponseEntity<?> traderLicenseList(Long districtId,
+                                               Long traderTypeMasterId,
+                                               String silkType,
+                                               int pageNumber, int pageSize) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+        List<PrimaryTraderLicenseDetailsResponse> traderLicenseResponseList = new ArrayList<>();
+
+        // convert 0 → null for optional filters
+        districtId = (districtId != null && districtId == 0) ? null : districtId;
+        traderTypeMasterId = (traderTypeMasterId != null && traderTypeMasterId == 0) ? null : traderTypeMasterId;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        // ✅ Corrected repository call with isActive
+        Page<TraderLicenseDTO> applicablePage = traderLicenseRepository.getByActiveAndFilters(
+                true, districtId, silkType, traderTypeMasterId, pageable);
+
+        // ✅ Correct type
+        List<TraderLicenseDTO> applicableList = applicablePage.getContent();
+        long totalRecords = applicablePage.getTotalElements();
+
+        // mapping
+        traderLicenseResponses(traderLicenseResponseList, applicableList, pageNumber, pageSize);
+
+        rw.setTotalRecords(totalRecords);
+        rw.setContent(traderLicenseResponseList);
+        return ResponseEntity.ok(rw);
+    }
+
+
+
+    private static void traderLicenseResponses(List<PrimaryTraderLicenseDetailsResponse> traderLicenseResponseList,
+                                               List<TraderLicenseDTO> applicableList,
+                                               int pageNumber, int pageSize) {
+        int serialNumber = pageNumber * pageSize + 1;
+        for (TraderLicenseDTO dto : applicableList) {
+            PrimaryTraderLicenseDetailsResponse response = PrimaryTraderLicenseDetailsResponse.builder()
+                    .serialNumber(serialNumber++)
+                    .traderLicenseId(dto.getTraderLicenseId())
+                    .arnNumber(dto.getArnNumber())
+                    .traderTypeMasterId(dto.getTraderTypeMasterId())
+                    .firstName(dto.getFirstName())
+                    .middleName(dto.getMiddleName())
+                    .lastName(dto.getLastName())
+                    .fatherName(dto.getFatherName())
+                    .stateId(dto.getStateId())
+                    .districtId(dto.getDistrictId())
+                    .districtName(dto.getDistrictName())
+                    .address(dto.getAddress())
+                    .premisesDescription(dto.getPremisesDescription())
+                    .applicationDate(dto.getApplicationDate())
+                    .applicationNumber(dto.getApplicationNumber())
+                    .traderLicenseNumber(dto.getTraderLicenseNumber())
+                    .representativeDetails(dto.getRepresentativeDetails())
+                    .licenseFee(dto.getLicenseFee())
+                    .silkType(dto.getSilkType())
+                    .licenseChallanNumber(dto.getLicenseChallanNumber())
+                    .godownDetails(dto.getGodownDetails())
+                    .silkExchangeMahajar(dto.getSilkExchangeMahajar())
+                    .licenseNumberSequence(dto.getLicenseNumberSequence())
+                    .traderTypeMasterName(dto.getTraderTypeMasterName())
+                    .stateName(dto.getStateName())
+                    .marketMasterName(dto.getMarketMasterName())
+                    .marketMasterId(dto.getMarketMasterId())
+                    .walletAmount(dto.getWalletAmount())
+                    .mobileNumber(dto.getMobileNumber())
+                    .virtualAccountNumber(dto.getVirtualAccountNumber())
+                    .ifscCode(dto.getIfscCode())
+                    .branchName(dto.getBranchName())
+                    .build();
+            traderLicenseResponseList.add(response);
+        }
+    }
+
+
+    public FileInputStream traderLicenseReport(
+            boolean isActive,
+            Long districtId,
+            String silkType,
+            Long traderTypeMasterId,
+            int pageNumber,
+            int pageSize) throws Exception {
+
+        // Convert 0 or "" to null
+        districtId = (districtId != null && districtId == 0) ? null : districtId;
+        traderTypeMasterId = (traderTypeMasterId != null && traderTypeMasterId == 0) ? null : traderTypeMasterId;
+        silkType = (silkType != null && silkType.isEmpty()) ? null : silkType;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<TraderLicenseDTO> page = traderLicenseRepository.getByActiveAndFilters(
+                isActive, districtId, silkType, traderTypeMasterId, pageable);
+
+        List<TraderLicenseDTO> licenses = page.getContent();
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Trader Licenses");
+
+        // ===== Header Row =====
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("S.No");
+        headerRow.createCell(1).setCellValue("ARN Number");
+        headerRow.createCell(2).setCellValue("Trader Type");
+        headerRow.createCell(3).setCellValue("First Name");
+        headerRow.createCell(4).setCellValue("Middle Name");
+        headerRow.createCell(5).setCellValue("Last Name");
+        headerRow.createCell(6).setCellValue("Father Name");
+        headerRow.createCell(7).setCellValue("District");
+        headerRow.createCell(8).setCellValue("State");
+        headerRow.createCell(9).setCellValue("Market");
+        headerRow.createCell(10).setCellValue("Silk Type");
+        headerRow.createCell(11).setCellValue("Mobile Number");
+        headerRow.createCell(12).setCellValue("Wallet Amount");
+        headerRow.createCell(13).setCellValue("Virtual Account");
+        headerRow.createCell(14).setCellValue("IFSC Code");
+        headerRow.createCell(15).setCellValue("Branch Name");
+
+        // ===== Data Rows =====
+        int rowIdx = 1;
+        int serialNo = 1;
+        for (TraderLicenseDTO dto : licenses) {
+            Row row = sheet.createRow(rowIdx++);
+
+            row.createCell(0).setCellValue(serialNo++);  // S.No
+            row.createCell(1).setCellValue(dto.getArnNumber());
+            row.createCell(2).setCellValue(dto.getTraderTypeMasterName());
+            row.createCell(3).setCellValue(dto.getFirstName());
+            row.createCell(4).setCellValue(dto.getMiddleName());
+            row.createCell(5).setCellValue(dto.getLastName());
+            row.createCell(6).setCellValue(dto.getFatherName());
+            row.createCell(7).setCellValue(dto.getDistrictName());
+            row.createCell(8).setCellValue(dto.getStateName());
+            row.createCell(9).setCellValue(dto.getMarketMasterName());
+            row.createCell(10).setCellValue(dto.getSilkType());
+            row.createCell(11).setCellValue(dto.getMobileNumber());
+            row.createCell(12).setCellValue(dto.getWalletAmount() != null ? dto.getWalletAmount().doubleValue() : 0.0);
+            row.createCell(13).setCellValue(dto.getVirtualAccountNumber());
+            row.createCell(14).setCellValue(dto.getIfscCode());
+            row.createCell(15).setCellValue(dto.getBranchName());
+        }
+
+        // Auto-size columns
+        for (int i = 0; i <= 15; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        // Save to file
+        String userHome = System.getProperty("user.home");
+        Path directory = Paths.get(userHome, "Downloads");
+        Files.createDirectories(directory);
+        Path filePath = directory.resolve("trader_license_report_" + Util.getISTLocalDate() + ".xlsx");
+
+        try (FileOutputStream fileOut = new FileOutputStream(filePath.toString())) {
+            workbook.write(fileOut);
+        }
+        workbook.close();
+
+        return new FileInputStream(filePath.toString());
+    }
+
 
     @Transactional
     public TraderLicenseResponse deleteTraderLicenseDetails(long id) {

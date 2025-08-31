@@ -22,6 +22,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -699,6 +701,36 @@ public class ReelerController {
         return reelerService.primaryReelerDetails(districtId, talukId, villageId, marketId, pageNumber, pageSize);
     }
 
+//    @PostMapping("/primaryReelerForRenewalLicense")
+//    public ResponseEntity<?> primaryReelerDetailsForRenewalLicense(
+//            @RequestParam(required = false) Long districtId,
+//            @RequestParam(required = false) Long talukId,
+//            @RequestParam(required = false) Long villageId,
+//            @RequestParam(required = false) Long marketId,
+//            @RequestParam(defaultValue = "0") int pageNumber,
+//            @RequestParam(defaultValue = "50") int pageSize) {
+//        return reelerService.primaryReelerForRenewalLicense(districtId, talukId, villageId, marketId, pageNumber, pageSize);
+//    }
+
+    @PostMapping("/primaryReelerForRenewalLicense")
+    public ResponseEntity<?> primaryReelerDetailsForRenewalLicense(
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long talukId,
+            @RequestParam(required = false) Long villageId,
+            @RequestParam(required = false) Long marketId,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate renewalDate,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expiryDate,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        return reelerService.primaryReelerForRenewalLicense(
+                districtId, talukId, villageId, marketId, renewalDate, expiryDate, pageNumber, pageSize
+        );
+    }
+
+
+
     @PostMapping("/reeler-report")
     public ResponseEntity<?> reelerReport(@RequestParam(required = false) Long districtId,
                                           @RequestParam(required = false) Long talukId,
@@ -727,6 +759,42 @@ public class ReelerController {
             return new ResponseEntity<>(ex.getMessage().getBytes(StandardCharsets.UTF_8), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/renewal-reeler-report")
+    public ResponseEntity<?> renewalReelerReport(@RequestParam(required = false) Long districtId,
+                                                 @RequestParam(required = false) Long talukId,
+                                                 @RequestParam(required = false) Long villageId,
+                                                 @RequestParam(required = false) Long marketId,
+                                                 @RequestParam(required = false)
+                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate renewalDate,
+                                                 @RequestParam(required = false)
+                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expiryDate,
+                                                 @RequestParam(defaultValue = "0") int pageNumber,
+                                                 @RequestParam(defaultValue = "50") int pageSize) {
+        try {
+            System.out.println("enter to reeler report");
+
+            FileInputStream fileInputStream = reelerService.renewalReelerReport(
+                    districtId, talukId, villageId, marketId, renewalDate, expiryDate, pageNumber, pageSize);
+
+            InputStreamResource resource = new InputStreamResource(fileInputStream);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=renewal_reeler_report" + Util.getISTLocalDate() + ".csv");
+            headers.setContentType(MediaType.parseMediaType("text/csv"));
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
+            HttpHeaders headers = new HttpHeaders();
+            return new ResponseEntity<>(ex.getMessage().getBytes(StandardCharsets.UTF_8), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @PostMapping("/primaryReelerDetailsByMarket")
     public ResponseEntity<?> primaryReelerDetails(
