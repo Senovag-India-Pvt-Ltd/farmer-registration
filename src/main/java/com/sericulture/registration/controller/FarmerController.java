@@ -749,5 +749,76 @@ public ResponseEntity<?> getFarmerDetailsByFruitsIdOrMobileNumberOrCsbRegisterNu
     return ResponseEntity.ok(farmerDetailsResponseList);
 }
 
+    @PostMapping("/primaryChowkiDetails")
+    public ResponseEntity<?> primaryChowkiDetails(
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long talukId,
+            @RequestParam(required = false) Long villageId,
+            @RequestParam(required = false) Long tscMasterId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        return farmerService.primaryChowkiDetails(districtId, talukId, villageId, tscMasterId, pageNumber, pageSize);
+    }
+
+    @PostMapping("/chowki-report")
+    public ResponseEntity<?> chowkiReport(
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long talukId,
+            @RequestParam(required = false) Long villageId,
+            @RequestParam(required = false) Long tscMasterId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        try {
+            FileInputStream fileInputStream = farmerService.chowkiReport(districtId, talukId, villageId, tscMasterId, pageNumber, pageSize);
+            InputStreamResource resource = new InputStreamResource(fileInputStream);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=chowki_report" + Util.getISTLocalDate() + ".xlsx");
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+            return ResponseEntity.ok().headers(headers).body(resource);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(ex.getMessage().getBytes(StandardCharsets.UTF_8), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @PostMapping("/primaryChowkiDistributionDetails")
+    public ResponseEntity<?> primaryChowkiDistributionDetails(
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long talukId,
+            @RequestParam(required = false) Long villageId,
+            @RequestParam(required = false) Long tscMasterId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        return farmerService.primaryChowkiDistributionDetails(districtId, talukId, villageId, tscMasterId, pageNumber, pageSize);
+    }
+
+    @PostMapping("/chowki-distribution-report")
+    public ResponseEntity<?> chowkiDistributionReport(
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long talukId,
+            @RequestParam(required = false) Long villageId,
+            @RequestParam(required = false) Long tscMasterId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        try {
+            FileInputStream fileInputStream = farmerService.chowkiDistributionReport(districtId, talukId, villageId, tscMasterId, pageNumber, pageSize);
+            InputStreamResource resource = new InputStreamResource(fileInputStream);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=chowki_distribution_report" + Util.getISTLocalDate() + ".xlsx");
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+            return ResponseEntity.ok().headers(headers).body(resource);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(ex.getMessage().getBytes(StandardCharsets.UTF_8), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 }

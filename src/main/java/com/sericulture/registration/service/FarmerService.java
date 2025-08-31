@@ -34,6 +34,7 @@ import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.*;
 import com.sericulture.registration.utils.ObjectToUrlEncodedConverter;
+import io.micrometer.core.instrument.MultiGauge;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -135,6 +136,9 @@ public class FarmerService {
 
     @Autowired
     HobliRepository hobliRepository;
+
+    @Autowired
+    ChowkiManagementRepository chowkiManagementRepository;
 
     @Transactional
     public FarmerResponse insertFarmerDetails(FarmerRequest farmerRequest) {
@@ -2528,6 +2532,308 @@ public class FarmerService {
         }
 
         return farmerDetailsResponseList;
+    }
+
+    public ResponseEntity<?> primaryChowkiDetails(Long districtId,
+                                                  Long talukId,
+                                                  Long villageId,
+                                                  Long tscMasterId,
+                                                  int pageNumber, int pageSize) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+        List<ChowkiManagementResponse> chowkiResponseList = new ArrayList<>();
+
+        districtId = (districtId == 0) ? null : districtId;
+        talukId = (talukId == 0) ? null : talukId;
+        villageId = (villageId == 0) ? null : villageId;
+        tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Object[]> applicablePage = chowkiManagementRepository.getChowkiDetails(districtId, talukId, villageId, tscMasterId, pageable);
+
+        List<Object[]> applicableList = applicablePage.getContent();
+        long totalRecords = applicablePage.getTotalElements();
+
+        chowkiResponse(chowkiResponseList, applicableList, pageNumber, pageSize);
+        rw.setTotalRecords(totalRecords);
+        rw.setContent(chowkiResponseList);
+        return ResponseEntity.ok(rw);
+    }
+
+    private static void chowkiResponse(List<ChowkiManagementResponse> chowkiResponseList,
+                                       List<Object[]> applicableList,
+                                       int pageNumber, int pageSize) {
+        int serialNumber = pageNumber * pageSize + 1;
+        for (Object[] arr : applicableList) {
+            ChowkiManagementResponse response = ChowkiManagementResponse.builder()
+                    .serialNumber(serialNumber++)
+                    .chowkiId(Util.objectToInteger(arr[0]))
+                    .farmerName(Util.objectToString(arr[1]))
+                    .fatherName(Util.objectToString(arr[2]))
+                    .fruitsId(Util.objectToString(arr[3]))
+                    .dflsSource(Util.objectToString(arr[4]))
+                    .raceId(Util.objectToLong(arr[5]))
+                    .raceName(Util.objectToString(arr[6]))
+                    .numbersOfDfls(Util.objectToLong(arr[7]))
+                    .lotNumberRsp(Util.objectToString(arr[8]))
+                    .lotNumberCrc(Util.objectToString(arr[9]))
+                    .villageName(Util.objectToString(arr[10]))
+                    .districtName(Util.objectToString(arr[11]))
+                    .stateName(Util.objectToString(arr[12]))
+                    .talukName(Util.objectToString(arr[13]))
+                    .hobliName(Util.objectToString(arr[14]))
+                    .tscName(Util.objectToString(arr[15]))
+                    .soldAfter1stOr2ndMould(Util.objectToString(arr[22]))
+                    .ratePer100Dfls(Util.objectToFloat(arr[23]))
+                    .price(Util.objectToFloat(arr[24]))
+                    .hatchingDateForReport(Util.objectToString(arr[25]))
+                    .dispatchDateForReport(Util.objectToString(arr[26]))
+                    .farmerId(Util.objectToLong(arr[27]))
+                    .isVerified(Util.objectToInteger(arr[28]))
+                    .receiptNo(Util.objectToString(arr[29]))
+                    .build();
+            chowkiResponseList.add(response);
+        }
+    }
+
+    public FileInputStream chowkiReport(Long districtId,
+                                        Long talukId,
+                                        Long villageId,
+                                        Long tscMasterId,
+                                        int pageNumber,
+                                        int pageSize) throws Exception {
+        List<ChowkiManagementResponse> chowkiResponseList = new ArrayList<>();
+
+        districtId = (districtId == 0) ? null : districtId;
+        talukId = (talukId == 0) ? null : talukId;
+        villageId = (villageId == 0) ? null : villageId;
+        tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
+
+        Pageable pageable = null; // fetch all records
+        Page<Object[]> applicablePage = chowkiManagementRepository.getChowkiDetails(districtId, talukId, villageId, tscMasterId, pageable);
+
+        chowkiResponse(chowkiResponseList, applicablePage.getContent(), pageNumber, pageSize);
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Chowki Management Report");
+
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Sl.No");
+        headerRow.createCell(1).setCellValue("Farmer Name");
+        headerRow.createCell(2).setCellValue("Father Name");
+        headerRow.createCell(3).setCellValue("Fruits Id");
+        headerRow.createCell(4).setCellValue("Source Of DFLs");
+        headerRow.createCell(5).setCellValue("Race Of DFLs");
+        headerRow.createCell(6).setCellValue("Race Name");
+        headerRow.createCell(7).setCellValue("Numbers Of DFLs");
+        headerRow.createCell(8).setCellValue("Lot No RSP");
+        headerRow.createCell(9).setCellValue("Lot No CRC");
+        headerRow.createCell(10).setCellValue("Village Name");
+        headerRow.createCell(11).setCellValue("District Name");
+        headerRow.createCell(12).setCellValue("State Name");
+        headerRow.createCell(13).setCellValue("Taluk Name");
+        headerRow.createCell(14).setCellValue("Hobli Name");
+        headerRow.createCell(15).setCellValue("TSC Name");
+        headerRow.createCell(16).setCellValue("Sold After Mould");
+        headerRow.createCell(17).setCellValue("Rate Per 100 DFLs");
+        headerRow.createCell(18).setCellValue("Price");
+        headerRow.createCell(19).setCellValue("Hatching Date");
+        headerRow.createCell(20).setCellValue("Dispatch Date");
+        headerRow.createCell(21).setCellValue("Receipt No");
+
+        int dataRow = 1;
+        int serialNo = 1;
+        for (ChowkiManagementResponse c : chowkiResponseList) {
+            Row row = sheet.createRow(dataRow++);
+            row.createCell(0).setCellValue(serialNo++);
+            row.createCell(1).setCellValue(c.getFarmerName());
+            row.createCell(2).setCellValue(c.getFatherName());
+            row.createCell(3).setCellValue(c.getFruitsId());
+            row.createCell(4).setCellValue(c.getDflsSource());
+            row.createCell(5).setCellValue(c.getRaceId());
+            row.createCell(6).setCellValue(c.getRaceName());
+            row.createCell(7).setCellValue(c.getNumbersOfDfls());
+            row.createCell(8).setCellValue(c.getLotNumberRsp());
+            row.createCell(9).setCellValue(c.getLotNumberCrc());
+            row.createCell(10).setCellValue(c.getVillageName());
+            row.createCell(11).setCellValue(c.getDistrictName());
+            row.createCell(12).setCellValue(c.getStateName());
+            row.createCell(13).setCellValue(c.getTalukName());
+            row.createCell(14).setCellValue(c.getHobliName());
+            row.createCell(15).setCellValue(c.getTscName());
+            row.createCell(16).setCellValue(c.getSoldAfter1stOr2ndMould());
+            row.createCell(17).setCellValue(c.getRatePer100Dfls());
+            row.createCell(18).setCellValue(c.getPrice());
+            row.createCell(19).setCellValue(c.getHatchingDate());
+            row.createCell(20).setCellValue(c.getDispatchDate());
+            row.createCell(21).setCellValue(c.getReceiptNo());
+        }
+
+        for (int col = 0; col <= 21; col++) {
+            sheet.autoSizeColumn(col, true);
+        }
+
+        String userHome = System.getProperty("user.home");
+        String directoryPath = Paths.get(userHome, "Downloads").toString();
+        Files.createDirectories(Paths.get(directoryPath));
+        Path filePath = Paths.get(directoryPath, "chowki_report" + Util.getISTLocalDate() + ".xlsx");
+
+        FileOutputStream fileOut = new FileOutputStream(filePath.toString());
+        FileInputStream fileIn = new FileInputStream(filePath.toString());
+        workbook.write(fileOut);
+        fileOut.close();
+        workbook.close();
+        return fileIn;
+    }
+
+
+    public ResponseEntity<?> primaryChowkiDistributionDetails(Long districtId,
+                                                  Long talukId,
+                                                  Long villageId,
+                                                  Long tscMasterId,
+                                                  int pageNumber, int pageSize) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+        List<ChowkiManagementResponse> chowkiResponseList = new ArrayList<>();
+
+        districtId = (districtId == 0) ? null : districtId;
+        talukId = (talukId == 0) ? null : talukId;
+        villageId = (villageId == 0) ? null : villageId;
+        tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Object[]> applicablePage = chowkiManagementRepository.getChowkiDistributionDetails(districtId, talukId, villageId, tscMasterId, pageable);
+
+        List<Object[]> applicableList = applicablePage.getContent();
+        long totalRecords = applicablePage.getTotalElements();
+
+        chowkiDistributionResponse(chowkiResponseList, applicableList, pageNumber, pageSize);
+        rw.setTotalRecords(totalRecords);
+        rw.setContent(chowkiResponseList);
+        return ResponseEntity.ok(rw);
+    }
+
+    public FileInputStream chowkiDistributionReport(Long districtId,
+                                                    Long talukId,
+                                                    Long villageId,
+                                                    Long tscMasterId,
+                                                    int pageNumber,
+                                                    int pageSize) throws Exception {
+        List<ChowkiManagementResponse> chowkiResponseList = new ArrayList<>();
+
+        districtId = (districtId == 0) ? null : districtId;
+        talukId = (talukId == 0) ? null : talukId;
+        villageId = (villageId == 0) ? null : villageId;
+        tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
+
+        Pageable pageable = null; // fetch all records
+        Page<Object[]> applicablePage = chowkiManagementRepository.getChowkiDistributionDetails(districtId, talukId, villageId, tscMasterId, pageable);
+
+        chowkiDistributionResponse(chowkiResponseList, applicablePage.getContent(), pageNumber, pageSize);
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Chowki Distribution Report");
+
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Sl.No");
+        headerRow.createCell(1).setCellValue("Farmer Name");
+        headerRow.createCell(2).setCellValue("Father Name");
+        headerRow.createCell(3).setCellValue("Fruits Id");
+        headerRow.createCell(4).setCellValue("Source Of DFLs");
+        headerRow.createCell(5).setCellValue("Race Of DFLs");
+        headerRow.createCell(6).setCellValue("Race Name");
+        headerRow.createCell(7).setCellValue("Numbers Of DFLs");
+        headerRow.createCell(8).setCellValue("Lot No RSP");
+        headerRow.createCell(9).setCellValue("Lot No CRC");
+        headerRow.createCell(10).setCellValue("Village Name");
+        headerRow.createCell(11).setCellValue("District Name");
+        headerRow.createCell(12).setCellValue("State Name");
+        headerRow.createCell(13).setCellValue("Taluk Name");
+        headerRow.createCell(14).setCellValue("Hobli Name");
+        headerRow.createCell(15).setCellValue("TSC Name");
+        headerRow.createCell(16).setCellValue("Sold After Mould");
+        headerRow.createCell(17).setCellValue("Rate Per 100 DFLs");
+        headerRow.createCell(18).setCellValue("Price");
+        headerRow.createCell(19).setCellValue("Hatching Date");
+        headerRow.createCell(20).setCellValue("Dispatch Date");
+        headerRow.createCell(21).setCellValue("Receipt No");
+
+        int dataRow = 1;
+        int serialNo = 1;
+        for (ChowkiManagementResponse c : chowkiResponseList) {
+            Row row = sheet.createRow(dataRow++);
+            row.createCell(0).setCellValue(serialNo++);
+            row.createCell(1).setCellValue(c.getFarmerName());
+            row.createCell(2).setCellValue(c.getFatherName());
+            row.createCell(3).setCellValue(c.getFruitsId());
+            row.createCell(4).setCellValue(c.getDflsSource());
+            row.createCell(5).setCellValue(c.getRaceId());
+            row.createCell(6).setCellValue(c.getRaceName());
+            row.createCell(7).setCellValue(c.getNumbersOfDfls());
+            row.createCell(8).setCellValue(c.getLotNumberRsp());
+            row.createCell(9).setCellValue(c.getLotNumberCrc());
+            row.createCell(10).setCellValue(c.getVillageName());
+            row.createCell(11).setCellValue(c.getDistrictName());
+            row.createCell(12).setCellValue(c.getStateName());
+            row.createCell(13).setCellValue(c.getTalukName());
+            row.createCell(14).setCellValue(c.getHobliName());
+            row.createCell(15).setCellValue(c.getTscName());
+            row.createCell(16).setCellValue(c.getSoldAfter1stOr2ndMould());
+            row.createCell(17).setCellValue(c.getRatePer100Dfls());
+            row.createCell(18).setCellValue(c.getPrice());
+            row.createCell(19).setCellValue(c.getHatchingDate());
+            row.createCell(20).setCellValue(c.getDispatchDate());
+            row.createCell(21).setCellValue(c.getReceiptNo());
+        }
+
+        for (int col = 0; col <= 21; col++) {
+            sheet.autoSizeColumn(col, true);
+        }
+
+        String userHome = System.getProperty("user.home");
+        String directoryPath = Paths.get(userHome, "Downloads").toString();
+        Files.createDirectories(Paths.get(directoryPath));
+        Path filePath = Paths.get(directoryPath, "chowki_distribution_report" + Util.getISTLocalDate() + ".xlsx");
+
+        FileOutputStream fileOut = new FileOutputStream(filePath.toString());
+        FileInputStream fileIn = new FileInputStream(filePath.toString());
+        workbook.write(fileOut);
+        fileOut.close();
+        workbook.close();
+        return fileIn;
+    }
+
+
+    private static void chowkiDistributionResponse(List<ChowkiManagementResponse> chowkiResponseList,
+                                       List<Object[]> applicableList,
+                                       int pageNumber, int pageSize) {
+        int serialNumber = pageNumber * pageSize + 1;
+        for (Object[] arr : applicableList) {
+            ChowkiManagementResponse response = ChowkiManagementResponse.builder()
+                    .serialNumber(serialNumber++)
+                    .chowkiId(Util.objectToInteger(arr[0]))
+                    .farmerName(Util.objectToString(arr[1]))
+                    .fatherName(Util.objectToString(arr[2]))
+                    .fruitsId(Util.objectToString(arr[3]))
+                    .dflsSource(Util.objectToString(arr[4]))
+                    .raceId(Util.objectToLong(arr[5]))
+                    .raceName(Util.objectToString(arr[6]))
+                    .numbersOfDfls(Util.objectToLong(arr[7]))
+                    .lotNumberRsp(Util.objectToString(arr[8]))
+                    .lotNumberCrc(Util.objectToString(arr[9]))
+                    .villageName(Util.objectToString(arr[10]))
+                    .districtName(Util.objectToString(arr[11]))
+                    .stateName(Util.objectToString(arr[12]))
+                    .talukName(Util.objectToString(arr[13]))
+                    .hobliName(Util.objectToString(arr[14]))
+                    .tscName(Util.objectToString(arr[15]))
+                    .soldAfter1stOr2ndMould(Util.objectToString(arr[22]))
+                    .ratePer100Dfls(Util.objectToFloat(arr[23]))
+                    .price(Util.objectToFloat(arr[24]))
+                    .hatchingDateForReport(Util.objectToString(arr[25]))
+                    .dispatchDateForReport(Util.objectToString(arr[26]))
+                    .receiptNo(Util.objectToString(arr[27]))
+                    .build();
+            chowkiResponseList.add(response);
+        }
     }
 
 
