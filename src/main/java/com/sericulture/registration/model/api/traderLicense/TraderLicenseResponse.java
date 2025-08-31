@@ -12,6 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TraderLicenseResponse {
     @Schema(name = "traderLicenseId", example = "1")

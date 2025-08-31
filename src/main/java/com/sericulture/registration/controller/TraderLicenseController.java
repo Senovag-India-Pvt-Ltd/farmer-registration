@@ -291,6 +291,17 @@ public class TraderLicenseController {
         return ResponseEntity.ok(rw);
     }
 
+    @PostMapping("/traderLicenseList")
+    public ResponseEntity<?> traderLicenseList(
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long traderTypeMasterId,
+            @RequestParam(required = false) String silkType,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        return traderLicenseService.traderLicenseList(districtId, traderTypeMasterId, silkType, pageNumber, pageSize);
+    }
+
+
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ok Response"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Has validation errors",
