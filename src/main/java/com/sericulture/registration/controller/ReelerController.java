@@ -730,6 +730,48 @@ public class ReelerController {
     }
 
 
+    @PostMapping("/expired-reeler-list")
+    public ResponseEntity<?> getExpiredReelers(
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long talukId,
+            @RequestParam(required = false) Long villageId,
+            @RequestParam(required = false) Long marketId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate renewalDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expiryDate,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        return reelerService.primaryReelerForExpiredLicense(
+                districtId, talukId, villageId, marketId, renewalDate, expiryDate, pageNumber, pageSize
+        );
+    }
+
+    @PostMapping("/expired-reeler-report")
+    public ResponseEntity<?> downloadExpiredReelerReport(
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long talukId,
+            @RequestParam(required = false) Long villageId,
+            @RequestParam(required = false) Long marketId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate renewalDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expiryDate,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        try {
+            FileInputStream fileInputStream = reelerService.expiredReelerReport(
+                    districtId, talukId, villageId, marketId, renewalDate, expiryDate, pageNumber, pageSize);
+
+            InputStreamResource resource = new InputStreamResource(fileInputStream);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=expired_reeler_report" + Util.getISTLocalDate() + ".xlsx");
+            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+
+            return ResponseEntity.ok().headers(headers).body(resource);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+
 
     @PostMapping("/reeler-report")
     public ResponseEntity<?> reelerReport(@RequestParam(required = false) Long districtId,

@@ -1197,6 +1197,129 @@ public class ReelerService {
         }
     }
 
+    public ResponseEntity<?> primaryReelerForExpiredLicense(
+            Long districtId,
+            Long talukId,
+            Long villageId,
+            Long marketId,
+            LocalDate renewalDate,
+            LocalDate expiryDate,
+            int pageNumber, int pageSize) {
+
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+        List<PrimaryReelerDetailsResponse> responseList = new ArrayList<>();
+
+        // convert zeroes to null
+        districtId = (districtId == 0) ? null : districtId;
+        talukId = (talukId == 0) ? null : talukId;
+        villageId = (villageId == 0) ? null : villageId;
+        marketId = (marketId == 0) ? null : marketId;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Object[]> applicablePage = reelerRepository.getPrimaryReelerForRenewalLicenseList(
+                districtId, talukId, villageId, marketId, renewalDate, expiryDate, pageable);
+
+        List<Object[]> applicableList = applicablePage.getContent();
+        long totalRecords = applicablePage.getTotalElements();
+
+        reelerResponses(responseList, applicableList, pageNumber, pageSize);
+
+        rw.setTotalRecords(totalRecords);
+        rw.setContent(responseList);
+        return ResponseEntity.ok(rw);
+    }
+
+    public FileInputStream expiredReelerReport(Long districtId,
+                                               Long talukId,
+                                               Long villageId,
+                                               Long marketId,
+                                               LocalDate renewalDate,
+                                               LocalDate expiryDate,
+                                               int pageNumber,
+                                               int pageSize) throws Exception {
+
+        List<PrimaryReelerDetailsResponse> responseList = new ArrayList<>();
+
+        // convert zeroes to null
+        districtId = (districtId == 0) ? null : districtId;
+        talukId = (talukId == 0) ? null : talukId;
+        villageId = (villageId == 0) ? null : villageId;
+        marketId = (marketId == 0) ? null : marketId;
+
+        Pageable pageable = null; // fetch all records
+        Page<Object[]> applicablePage = reelerRepository.getPrimaryReelerForRenewalLicenseList(
+                districtId, talukId, villageId, marketId, renewalDate, expiryDate, pageable);
+
+        List<Object[]> applicableList = applicablePage.getContent();
+        reelerResponses(responseList, applicableList, pageNumber, pageSize);
+
+        // Create Excel
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Expired Licenses");
+
+        // Header row (same as renewal report)
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("First Name");
+        headerRow.createCell(1).setCellValue("Fruits Id");
+        headerRow.createCell(2).setCellValue("Reeler License Number");
+        headerRow.createCell(3).setCellValue("Father Name");
+        headerRow.createCell(4).setCellValue("Passbook Number");
+        headerRow.createCell(5).setCellValue("Reeler Number");
+        headerRow.createCell(6).setCellValue("Ration Card Number");
+        headerRow.createCell(7).setCellValue("DOB");
+        headerRow.createCell(8).setCellValue("District Name");
+        headerRow.createCell(9).setCellValue("Taluk Name");
+        headerRow.createCell(10).setCellValue("Hobli Name");
+        headerRow.createCell(11).setCellValue("Village Name");
+        headerRow.createCell(12).setCellValue("Bank Name");
+        headerRow.createCell(13).setCellValue("Bank Account Number");
+        headerRow.createCell(14).setCellValue("Branch Name");
+        headerRow.createCell(15).setCellValue("IFSC Code");
+        headerRow.createCell(16).setCellValue("Mobile Number");
+        headerRow.createCell(17).setCellValue("License Renewal Date");
+        headerRow.createCell(18).setCellValue("License Expiry Date");
+
+        // Write dynamic rows
+        int rowIdx = 1;
+        for (PrimaryReelerDetailsResponse reeler : responseList) {
+            Row row = sheet.createRow(rowIdx++);
+            row.createCell(0).setCellValue(reeler.getFirstName());
+            row.createCell(1).setCellValue(reeler.getFruitsId());
+            row.createCell(2).setCellValue(reeler.getReelerLicenseNumber());
+            row.createCell(3).setCellValue(reeler.getFatherName());
+            row.createCell(4).setCellValue(reeler.getPassbookNumber());
+            row.createCell(5).setCellValue(reeler.getReelerNumber());
+            row.createCell(6).setCellValue(reeler.getRationCardNumber());
+            row.createCell(7).setCellValue(reeler.getDob());
+            row.createCell(8).setCellValue(reeler.getDistrictName());
+            row.createCell(9).setCellValue(reeler.getTalukName());
+            row.createCell(10).setCellValue(reeler.getHobliName());
+            row.createCell(11).setCellValue(reeler.getVillageName());
+            row.createCell(12).setCellValue(reeler.getReelerBankName());
+            row.createCell(13).setCellValue(reeler.getReelerBankAccountNumber());
+            row.createCell(14).setCellValue(reeler.getReelerBankBranchName());
+            row.createCell(15).setCellValue(reeler.getReelerBankIfscCode());
+            row.createCell(16).setCellValue(reeler.getReelerMobileNumber());
+            row.createCell(17).setCellValue(reeler.getRenewalDate() != null ? reeler.getRenewalDate().toString() : "");
+            row.createCell(18).setCellValue(reeler.getExpiryDate() != null ? reeler.getExpiryDate().toString() : "");
+        }
+
+        for (int i = 0; i <= 18; i++) {
+            sheet.autoSizeColumn(i, true);
+        }
+
+        String userHome = System.getProperty("user.home");
+        String directoryPath = Paths.get(userHome, "Downloads").toString();
+        Files.createDirectories(Paths.get(directoryPath));
+        Path filePath = Paths.get(directoryPath, "expiredReelers" + Util.getISTLocalDate() + ".xlsx");
+
+        try (FileOutputStream fileOut = new FileOutputStream(filePath.toString())) {
+            workbook.write(fileOut);
+        }
+        workbook.close();
+
+        return new FileInputStream(filePath.toString());
+    }
 
     public FileInputStream reelerReport(Long districtId,
                                         Long talukId,
