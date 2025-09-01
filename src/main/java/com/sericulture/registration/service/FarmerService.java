@@ -1748,6 +1748,163 @@ public class FarmerService {
         return convertDTOToMapResponse(page);
     }
 
+    public ResponseEntity<?> kaFarmersWithoutFruitsIds(Long stateId, Long districtId, Long talukId, Long hobliId,
+                                                       int pageNumber, int pageSize) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+        List<FarmerResponse> responseList = new ArrayList<>();
+
+        // Convert 0 → null
+        stateId = (stateId != null && stateId == 0) ? null : stateId;
+        districtId = (districtId != null && districtId == 0) ? null : districtId;
+        talukId = (talukId != null && talukId == 0) ? null : talukId;
+        hobliId = (hobliId != null && hobliId == 0) ? null : hobliId;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<FarmerDTO> page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsIds(
+                true, stateId, districtId, talukId, hobliId, pageable);
+
+        List<FarmerDTO> list = page.getContent();
+        long totalRecords = page.getTotalElements();
+
+        mapFarmerResponses(responseList, list, pageNumber, pageSize);
+
+        rw.setTotalRecords(totalRecords);
+        rw.setContent(responseList);
+        return ResponseEntity.ok(rw);
+    }
+
+
+    public ResponseEntity<?> nonKaFarmers(Long stateId, Long districtId, Long talukId, Long hobliId,
+                                          int pageNumber, int pageSize) {
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+        List<FarmerResponse> responseList = new ArrayList<>();
+
+        // Convert 0 → null
+        stateId = (stateId != null && stateId == 0) ? null : stateId;
+        districtId = (districtId != null && districtId == 0) ? null : districtId;
+        talukId = (talukId != null && talukId == 0) ? null : talukId;
+        hobliId = (hobliId != null && hobliId == 0) ? null : hobliId;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<FarmerDTO> page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmersList(
+                true, stateId, districtId, talukId, hobliId, pageable);
+
+        List<FarmerDTO> list = page.getContent();
+        long totalRecords = page.getTotalElements();
+
+        mapFarmerResponses(responseList, list, pageNumber, pageSize);
+
+        rw.setTotalRecords(totalRecords);
+        rw.setContent(responseList);
+        return ResponseEntity.ok(rw);
+    }
+
+
+    public FileInputStream kaFarmersWithoutFruitsIdsReport(Long stateId, Long districtId, Long talukId, Long hobliId,
+                                                           boolean isActive, int pageNumber, int pageSize) throws Exception {
+        stateId = (stateId != null && stateId == 0) ? null : stateId;
+        districtId = (districtId != null && districtId == 0) ? null : districtId;
+        talukId = (talukId != null && talukId == 0) ? null : talukId;
+        hobliId = (hobliId != null && hobliId == 0) ? null : hobliId;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<FarmerDTO> page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsIds(
+                isActive, stateId, districtId, talukId, hobliId, pageable);
+
+        return exportFarmerReport(page.getContent(), "ka_farmers_report");
+    }
+
+
+    public FileInputStream nonKaFarmersReport(Long stateId, Long districtId, Long talukId, Long hobliId,
+                                              boolean isActive, int pageNumber, int pageSize) throws Exception {
+        stateId = (stateId != null && stateId == 0) ? null : stateId;
+        districtId = (districtId != null && districtId == 0) ? null : districtId;
+        talukId = (talukId != null && talukId == 0) ? null : talukId;
+        hobliId = (hobliId != null && hobliId == 0) ? null : hobliId;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<FarmerDTO> page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmersList(
+                isActive, stateId, districtId, talukId, hobliId, pageable);
+
+        return exportFarmerReport(page.getContent(), "non_ka_farmers_report");
+    }
+
+
+
+    private static void mapFarmerResponses(List<FarmerResponse> responseList, List<FarmerDTO> dtoList,
+                                           int pageNumber, int pageSize) {
+        int serialNumber = pageNumber * pageSize + 1;
+        for (FarmerDTO dto : dtoList) {
+            FarmerResponse response = FarmerResponse.builder()
+                    .serialNumber(serialNumber++)
+                    .farmerId(dto.getFarmerId())
+                    .farmerNumber(dto.getFarmerNumber())
+                    .firstName(dto.getFirstName())
+                    .lastName(dto.getLastName())
+                    .mobileNumber(dto.getMobileNumber())
+                    .aadhaarNumber(dto.getAadhaarNumber())
+                    .farmerTypeName(dto.getFarmerTypeName())
+                    .districtName(dto.getDistrictName())
+                    .talukName(dto.getTalukName())
+                    .hobliName(dto.getHobliName())
+                    .stateName(dto.getStateName())
+
+                    .build();
+            responseList.add(response);
+        }
+    }
+
+
+
+    private FileInputStream exportFarmerReport(List<FarmerDTO> farmers, String filePrefix) throws Exception {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Farmers");
+
+        // Header
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("S.No");
+        headerRow.createCell(1).setCellValue("Farmer Number");
+        headerRow.createCell(2).setCellValue("Name");
+        headerRow.createCell(3).setCellValue("Mobile");
+        headerRow.createCell(4).setCellValue("Aadhaar");
+        headerRow.createCell(5).setCellValue("Farmer Type");
+        headerRow.createCell(6).setCellValue("District");
+        headerRow.createCell(7).setCellValue("Taluk");
+        headerRow.createCell(8).setCellValue("Hobli");
+        headerRow.createCell(9).setCellValue("State");
+
+
+        // Data
+        int rowIdx = 1, serial = 1;
+        for (FarmerDTO dto : farmers) {
+            Row row = sheet.createRow(rowIdx++);
+            row.createCell(0).setCellValue(serial++);
+            row.createCell(1).setCellValue(dto.getFarmerNumber());
+            row.createCell(2).setCellValue(dto.getFirstName() + " " + dto.getLastName());
+            row.createCell(3).setCellValue(dto.getMobileNumber());
+            row.createCell(4).setCellValue(dto.getAadhaarNumber());
+            row.createCell(5).setCellValue(dto.getFarmerTypeName());
+            row.createCell(6).setCellValue(dto.getDistrictName());
+            row.createCell(7).setCellValue(dto.getTalukName());
+            row.createCell(8).setCellValue(dto.getHobliName());
+            row.createCell(9).setCellValue(dto.getStateName());     // ✅ added
+        }
+
+        for (int i = 0; i <= 9; i++) sheet.autoSizeColumn(i);
+
+        String userHome = System.getProperty("user.home");
+        Path directory = Paths.get(userHome, "Downloads");
+        Files.createDirectories(directory);
+        Path filePath = directory.resolve(filePrefix + "_" + Util.getISTLocalDate() + ".xlsx");
+
+        try (FileOutputStream fileOut = new FileOutputStream(filePath.toString())) {
+            workbook.write(fileOut);
+        }
+        workbook.close();
+
+        return new FileInputStream(filePath.toString());
+    }
+
 
     private Map<String, Object> convertDTOToMapResponse(final Page<FarmerDTO> activeFarmers) {
         Map<String, Object> response = new HashMap<>();
@@ -1760,6 +1917,8 @@ public class FarmerService {
         response.put("totalPages", activeFarmers.getTotalPages());
         return response;
     }
+
+
 
     public Map<String, Object> searchByColumnAndSort(SearchWithSortRequest searchWithSortRequest) {
         if (searchWithSortRequest.getSearchText() == null || searchWithSortRequest.getSearchText().equals("")) {

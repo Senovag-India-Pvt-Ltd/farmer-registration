@@ -447,6 +447,84 @@ public class FarmerController {
         return ResponseEntity.ok(rw);
     }
 
+    @PostMapping("/list-ka-without-fruits")
+    public ResponseEntity<?> getKAFarmersWithoutFruitsIds(
+            @RequestParam(required = false) Long stateId,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long talukId,
+            @RequestParam(required = false) Long hobliId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        return farmerService.kaFarmersWithoutFruitsIds(stateId, districtId, talukId, hobliId, pageNumber, pageSize);
+    }
+
+    @PostMapping("/list-nonka")
+    public ResponseEntity<?> getNonKAFarmers(
+            @RequestParam(required = false) Long stateId,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long talukId,
+            @RequestParam(required = false) Long hobliId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        return farmerService.nonKaFarmers(stateId, districtId, talukId, hobliId, pageNumber, pageSize);
+    }
+
+// --------------------- REPORT ENDPOINTS ---------------------
+
+    @PostMapping("/report-ka-without-fruits")
+    public ResponseEntity<?> kaFarmersWithoutFruitsIdsReport(
+            @RequestParam(defaultValue = "true") boolean isActive,
+            @RequestParam(required = false) Long stateId,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long talukId,
+            @RequestParam(required = false) Long hobliId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        try {
+            FileInputStream fileInputStream = farmerService.kaFarmersWithoutFruitsIdsReport(
+                    stateId, districtId, talukId, hobliId, isActive, pageNumber, pageSize
+            );
+            InputStreamResource resource = new InputStreamResource(fileInputStream);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ka_farmers_report_" + Util.getISTLocalDate() + ".xlsx");
+            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+
+            return ResponseEntity.ok().headers(headers).body(resource);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error generating report: " + ex.getMessage());
+        }
+    }
+
+    @PostMapping("/report-nonka")
+    public ResponseEntity<?> nonKaFarmersReport(
+            @RequestParam(defaultValue = "true") boolean isActive,
+            @RequestParam(required = false) Long stateId,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long talukId,
+            @RequestParam(required = false) Long hobliId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "50") int pageSize) {
+        try {
+            FileInputStream fileInputStream = farmerService.nonKaFarmersReport(
+                    stateId, districtId, talukId, hobliId, isActive, pageNumber, pageSize
+            );
+            InputStreamResource resource = new InputStreamResource(fileInputStream);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=non_ka_farmers_report_" + Util.getISTLocalDate() + ".xlsx");
+            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+
+            return ResponseEntity.ok().headers(headers).body(resource);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error generating report: " + ex.getMessage());
+        }
+    }
+
+
+
     @GetMapping("/list-with-join-with-filters")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "No Content - inserted successfully",content =

@@ -419,6 +419,291 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
     )
     Page<FarmerDTO> getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(@Param("isActive") boolean isActive, @Param("joinColumn") String joinColumn, @Param("searchText") String searchText, final Pageable pageable);
 
+
+//    @Query("SELECT new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
+//            " farmer.farmerId, " +
+//            " farmer.farmerNumber, " +
+//            " farmer.fruitsId, " +
+//            " farmer.firstName, " +
+//            " farmer.middleName, " +
+//            " farmer.lastName, " +
+//            " farmer.dob, " +
+//            " farmer.genderId, " +
+//            " farmer.casteId, " +
+//            " farmer.tscMasterId, " +
+//            " farmer.assignToInspectId, " +
+//            " farmer.differentlyAbled, " +
+//            " farmer.email, " +
+//            " farmer.mobileNumber, " +
+//            " farmer.epicNumber, " +
+//            " farmer.rationCardNumber, " +
+//            " farmer.totalLandHolding, " +
+//            " farmer.passbookNumber, " +
+//            " farmer.landCategoryId, " +
+//            " farmer.educationId, " +
+//            " farmer.representativeId, " +
+//            " farmer.khazaneRecipientId, " +
+//            " farmer.photoPath, " +
+//            " farmer.farmerTypeId, " +
+//            " farmer.minority, " +
+//            " farmer.rdNumber, " +
+//            " farmer.casteStatus, " +
+//            " farmer.genderStatus, " +
+//            " farmer.fatherNameKan, " +
+//            " farmer.fatherName, " +
+//            " farmer.nameKan, " +
+//            " caste.title, " +
+//            " landCategory.landCategoryName, " +
+//            " farmerType.farmerTypeName, " +
+//            " tscMaster.name, " +
+//            " education.name, " +
+//            " farmer.isOtherStateFarmer, " +
+//            " farmerBankAccount.farmerBankAccountNumber, " +
+//            " userMaster.username, " +
+//            " farmer.aadhaarNumber" +
+//            ") " +
+//            "FROM Farmer farmer " +
+//            "LEFT JOIN Caste caste ON farmer.casteId = caste.casteId " +
+//            "LEFT JOIN LandCategory landCategory ON farmer.landCategoryId = landCategory.landCategoryId " +
+//            "LEFT JOIN FarmerType farmerType ON farmer.farmerTypeId = farmerType.farmerTypeId " +
+//            "LEFT JOIN TscMaster tscMaster ON farmer.tscMasterId = tscMaster.tscMasterId " +
+//            "LEFT JOIN Education education ON farmer.educationId = education.educationId " +
+//            "LEFT JOIN FarmerBankAccount farmerBankAccount ON farmer.farmerId = farmerBankAccount.farmerId " +
+//            "LEFT JOIN UserMaster userMaster ON farmer.assignToInspectId = userMaster.userMasterId " +
+//            "LEFT JOIN FarmerAddress fa ON fa.farmerId = farmer.farmerId " +
+//            "WHERE farmer.active = :isActive " +
+//            "AND (farmer.isOtherStateFarmer = false OR farmer.isOtherStateFarmer IS NULL) " +
+//            "AND (farmer.fruitsId = '' OR farmer.fruitsId IS NULL) " +
+//            "AND (:districtId IS NULL OR fa.districtId = :districtId) " +
+//            "AND (:talukId IS NULL OR fa.talukId = :talukId) " +
+//            "AND (:hobliId IS NULL OR fa.hobliId = :hobliId) " +
+//            "ORDER BY farmer.farmerNumber ASC")
+//    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsIds(
+//            @Param("isActive") boolean isActive,
+//            @Param("districtId") Long districtId,
+//            @Param("talukId") Long talukId,
+//            @Param("hobliId") Long hobliId,
+//            Pageable pageable);
+//
+//
+//    @Query("SELECT new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
+//            " farmer.farmerId, " +
+//            " farmer.farmerNumber, " +
+//            " farmer.fruitsId, " +
+//            " farmer.firstName, " +
+//            " farmer.middleName, " +
+//            " farmer.lastName, " +
+//            " farmer.dob, " +
+//            " farmer.genderId, " +
+//            " farmer.casteId, " +
+//            " farmer.tscMasterId, " +
+//            " farmer.assignToInspectId, " +
+//            " farmer.differentlyAbled, " +
+//            " farmer.email, " +
+//            " farmer.mobileNumber, " +
+//            " farmer.epicNumber, " +
+//            " farmer.rationCardNumber, " +
+//            " farmer.totalLandHolding, " +
+//            " farmer.passbookNumber, " +
+//            " farmer.landCategoryId, " +
+//            " farmer.educationId, " +
+//            " farmer.representativeId, " +
+//            " farmer.khazaneRecipientId, " +
+//            " farmer.photoPath, " +
+//            " farmer.farmerTypeId, " +
+//            " farmer.minority, " +
+//            " farmer.rdNumber, " +
+//            " farmer.casteStatus, " +
+//            " farmer.genderStatus, " +
+//            " farmer.fatherNameKan, " +
+//            " farmer.fatherName, " +
+//            " farmer.nameKan, " +
+//            " caste.title, " +
+//            " landCategory.landCategoryName, " +
+//            " farmerType.farmerTypeName, " +
+//            " tscMaster.name, " +
+//            " education.name, " +
+//            " farmer.isOtherStateFarmer, " +
+//            " farmerBankAccount.farmerBankAccountNumber, " +
+//            " userMaster.username, " +
+//            " farmer.aadhaarNumber" +
+//            ") " +
+//            "FROM Farmer farmer " +
+//            "LEFT JOIN Caste caste ON farmer.casteId = caste.casteId " +
+//            "LEFT JOIN LandCategory landCategory ON farmer.landCategoryId = landCategory.landCategoryId " +
+//            "LEFT JOIN FarmerType farmerType ON farmer.farmerTypeId = farmerType.farmerTypeId " +
+//            "LEFT JOIN TscMaster tscMaster ON farmer.tscMasterId = tscMaster.tscMasterId " +
+//            "LEFT JOIN Education education ON farmer.educationId = education.educationId " +
+//            "LEFT JOIN FarmerBankAccount farmerBankAccount ON farmer.farmerId = farmerBankAccount.farmerId " +
+//            "LEFT JOIN UserMaster userMaster ON farmer.assignToInspectId = userMaster.userMasterId " +
+//            "LEFT JOIN FarmerAddress fa ON fa.farmerId = farmer.farmerId " +
+//            "WHERE farmer.active = :isActive " +
+//            "AND farmer.isOtherStateFarmer = true " +
+//            "AND (:districtId IS NULL OR fa.districtId = :districtId) " +
+//            "AND (:talukId IS NULL OR fa.talukId = :talukId) " +
+//            "AND (:hobliId IS NULL OR fa.hobliId = :hobliId) " +
+//            "ORDER BY farmer.farmerNumber ASC")
+//    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForNonKAFarmersList(
+//            @Param("isActive") boolean isActive,
+//            @Param("districtId") Long districtId,
+//            @Param("talukId") Long talukId,
+//            @Param("hobliId") Long hobliId,
+//            Pageable pageable);
+//
+
+    @Query("SELECT new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
+            " farmer.farmerId, " +
+            " farmer.farmerNumber, " +
+            " farmer.fruitsId, " +
+            " farmer.firstName, " +
+            " farmer.middleName, " +
+            " farmer.lastName, " +
+            " farmer.dob, " +
+            " farmer.genderId, " +
+            " farmer.casteId, " +
+            " farmer.tscMasterId, " +
+            " farmer.assignToInspectId, " +
+            " farmer.differentlyAbled, " +
+            " farmer.email, " +
+            " farmer.mobileNumber, " +
+            " farmer.epicNumber, " +
+            " farmer.rationCardNumber, " +
+            " farmer.totalLandHolding, " +
+            " farmer.passbookNumber, " +
+            " farmer.landCategoryId, " +
+            " farmer.educationId, " +
+            " farmer.representativeId, " +
+            " farmer.khazaneRecipientId, " +
+            " farmer.photoPath, " +
+            " farmer.farmerTypeId, " +
+            " farmer.minority, " +
+            " farmer.rdNumber, " +
+            " farmer.casteStatus, " +
+            " farmer.genderStatus, " +
+            " farmer.fatherNameKan, " +
+            " farmer.fatherName, " +
+            " farmer.nameKan, " +
+            " caste.title, " +
+            " landCategory.landCategoryName, " +
+            " farmerType.farmerTypeName, " +
+            " tscMaster.name, " +
+            " education.name, " +
+            " farmer.isOtherStateFarmer, " +
+            " farmerBankAccount.farmerBankAccountNumber, " +
+            " userMaster.username, " +
+            " farmer.aadhaarNumber, " +
+            " district.districtName, " +
+            " taluk.talukName, " +
+            " hobli.hobliName, " +
+            " state.stateName " +
+            ") " +
+            "FROM Farmer farmer " +
+            "LEFT JOIN Caste caste ON farmer.casteId = caste.casteId " +
+            "LEFT JOIN LandCategory landCategory ON farmer.landCategoryId = landCategory.landCategoryId " +
+            "LEFT JOIN FarmerType farmerType ON farmer.farmerTypeId = farmerType.farmerTypeId " +
+            "LEFT JOIN TscMaster tscMaster ON farmer.tscMasterId = tscMaster.tscMasterId " +
+            "LEFT JOIN Education education ON farmer.educationId = education.educationId " +
+            "LEFT JOIN FarmerBankAccount farmerBankAccount ON farmer.farmerId = farmerBankAccount.farmerId " +
+            "LEFT JOIN UserMaster userMaster ON farmer.assignToInspectId = userMaster.userMasterId " +
+            "LEFT JOIN FarmerAddress fa ON fa.farmerId = farmer.farmerId " +
+            "LEFT JOIN District district ON fa.districtId = district.districtId " +
+            "LEFT JOIN Taluk taluk ON fa.talukId = taluk.talukId " +
+            "LEFT JOIN Hobli hobli ON fa.hobliId = hobli.hobliId " +
+            "LEFT JOIN State state ON fa.stateId = state.stateId " +
+            "WHERE farmer.active = :isActive " +
+            "AND (farmer.isOtherStateFarmer = false OR farmer.isOtherStateFarmer IS NULL) " +
+            "AND (farmer.fruitsId = '' OR farmer.fruitsId IS NULL) " +
+            "AND (:stateId IS NULL OR fa.stateId = :stateId) " +   // ✅ filter only
+            "AND (:districtId IS NULL OR fa.districtId = :districtId) " +
+            "AND (:talukId IS NULL OR fa.talukId = :talukId) " +
+            "AND (:hobliId IS NULL OR fa.hobliId = :hobliId) " +
+            "ORDER BY farmer.farmerNumber ASC")
+    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsIds(
+            @Param("isActive") boolean isActive,
+            @Param("stateId") Long stateId,
+            @Param("districtId") Long districtId,
+            @Param("talukId") Long talukId,
+            @Param("hobliId") Long hobliId,
+            Pageable pageable);
+
+
+    @Query("SELECT new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
+            " farmer.farmerId, " +
+            " farmer.farmerNumber, " +
+            " farmer.fruitsId, " +
+            " farmer.firstName, " +
+            " farmer.middleName, " +
+            " farmer.lastName, " +
+            " farmer.dob, " +
+            " farmer.genderId, " +
+            " farmer.casteId, " +
+            " farmer.tscMasterId, " +
+            " farmer.assignToInspectId, " +
+            " farmer.differentlyAbled, " +
+            " farmer.email, " +
+            " farmer.mobileNumber, " +
+            " farmer.epicNumber, " +
+            " farmer.rationCardNumber, " +
+            " farmer.totalLandHolding, " +
+            " farmer.passbookNumber, " +
+            " farmer.landCategoryId, " +
+            " farmer.educationId, " +
+            " farmer.representativeId, " +
+            " farmer.khazaneRecipientId, " +
+            " farmer.photoPath, " +
+            " farmer.farmerTypeId, " +
+            " farmer.minority, " +
+            " farmer.rdNumber, " +
+            " farmer.casteStatus, " +
+            " farmer.genderStatus, " +
+            " farmer.fatherNameKan, " +
+            " farmer.fatherName, " +
+            " farmer.nameKan, " +
+            " caste.title, " +
+            " landCategory.landCategoryName, " +
+            " farmerType.farmerTypeName, " +
+            " tscMaster.name, " +
+            " education.name, " +
+            " farmer.isOtherStateFarmer, " +
+            " farmerBankAccount.farmerBankAccountNumber, " +
+            " userMaster.username, " +
+            " farmer.aadhaarNumber, " +
+            " district.districtName, " +
+            " taluk.talukName, " +
+            " hobli.hobliName, " +
+            " state.stateName " +   // ✅ only stateName included
+            ") " +
+            "FROM Farmer farmer " +
+            "LEFT JOIN Caste caste ON farmer.casteId = caste.casteId " +
+            "LEFT JOIN LandCategory landCategory ON farmer.landCategoryId = landCategory.landCategoryId " +
+            "LEFT JOIN FarmerType farmerType ON farmer.farmerTypeId = farmerType.farmerTypeId " +
+            "LEFT JOIN TscMaster tscMaster ON farmer.tscMasterId = tscMaster.tscMasterId " +
+            "LEFT JOIN Education education ON farmer.educationId = education.educationId " +
+            "LEFT JOIN FarmerBankAccount farmerBankAccount ON farmer.farmerId = farmerBankAccount.farmerId " +
+            "LEFT JOIN UserMaster userMaster ON farmer.assignToInspectId = userMaster.userMasterId " +
+            "LEFT JOIN FarmerAddress fa ON fa.farmerId = farmer.farmerId " +
+            "LEFT JOIN District district ON fa.districtId = district.districtId " +
+            "LEFT JOIN Taluk taluk ON fa.talukId = taluk.talukId " +
+            "LEFT JOIN Hobli hobli ON fa.hobliId = hobli.hobliId " +
+            "LEFT JOIN State state ON fa.stateId = state.stateId " +
+            "WHERE farmer.active = :isActive " +
+            "AND farmer.isOtherStateFarmer = true " +
+            "AND (:stateId IS NULL OR fa.stateId = :stateId) " +   // ✅ filter only
+            "AND (:districtId IS NULL OR fa.districtId = :districtId) " +
+            "AND (:talukId IS NULL OR fa.talukId = :talukId) " +
+            "AND (:hobliId IS NULL OR fa.hobliId = :hobliId) " +
+            "ORDER BY farmer.farmerNumber ASC")
+    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForNonKAFarmersList(
+            @Param("isActive") boolean isActive,
+            @Param("stateId") Long stateId,
+            @Param("districtId") Long districtId,
+            @Param("talukId") Long talukId,
+            @Param("hobliId") Long hobliId,
+            Pageable pageable);
+
+
+
+
     @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
             " farmer.farmerId, " +
             " farmer.farmerNumber, " +

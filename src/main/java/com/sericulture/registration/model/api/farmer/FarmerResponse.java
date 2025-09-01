@@ -160,6 +160,15 @@ public class FarmerResponse {
     @Schema(name = "villageName", example = "Karnataka",required=true)
     String villageName;
 
+    private int serialNumber;
+
+    private String districtName;
+    private String talukName;
+    private String hobliName;
+    private String stateName;
+
+
+
 
 
 
