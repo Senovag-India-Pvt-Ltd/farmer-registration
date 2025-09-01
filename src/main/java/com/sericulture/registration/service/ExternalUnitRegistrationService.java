@@ -281,19 +281,22 @@ public class ExternalUnitRegistrationService {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("External Units");
 
-        // Header Row
+        // Header Row (removed Unit Type Id and Race Master Id)
         Row headerRow = sheet.createRow(0);
         headerRow.createCell(0).setCellValue("S.No");
         headerRow.createCell(1).setCellValue("Unit Name");
-        headerRow.createCell(2).setCellValue("Unit Type");
-        headerRow.createCell(3).setCellValue("Race");
-        headerRow.createCell(4).setCellValue("License Number");
-        headerRow.createCell(5).setCellValue("Organisation");
-        headerRow.createCell(6).setCellValue("Market");
-        headerRow.createCell(7).setCellValue("Lot Number Nomenclature");
+        headerRow.createCell(2).setCellValue("Address");
+        headerRow.createCell(3).setCellValue("License Number");
+        headerRow.createCell(4).setCellValue("External Unit Number");
+        headerRow.createCell(5).setCellValue("Organisation Name");
+        headerRow.createCell(6).setCellValue("Capacity");
+        headerRow.createCell(7).setCellValue("Unit Type Name");
         headerRow.createCell(8).setCellValue("Virtual Account");
         headerRow.createCell(9).setCellValue("IFSC Code");
         headerRow.createCell(10).setCellValue("Branch Name");
+        headerRow.createCell(11).setCellValue("Market");
+        headerRow.createCell(12).setCellValue("Lot Number Nomenclature");
+        headerRow.createCell(13).setCellValue("Race");
 
         // Data Rows
         int rowIdx = 1;
@@ -301,19 +304,23 @@ public class ExternalUnitRegistrationService {
         for (ExternalUnitRegistrationDTO dto : units) {
             Row row = sheet.createRow(rowIdx++);
             row.createCell(0).setCellValue(serialNo++);
-            row.createCell(1).setCellValue(dto.getName());
-            row.createCell(2).setCellValue(dto.getExternalUnitTypeName());
-            row.createCell(3).setCellValue(dto.getRaceMasterName());
-            row.createCell(4).setCellValue(dto.getLicenseNumber());
-            row.createCell(5).setCellValue(dto.getOrganisationName());
-            row.createCell(6).setCellValue(dto.getMarketMasterName());
-            row.createCell(7).setCellValue(dto.getLotNumberNomenclature());
-            row.createCell(8).setCellValue(dto.getVirtualAccountNumber());
-            row.createCell(9).setCellValue(dto.getIfscCode());
-            row.createCell(10).setCellValue(dto.getBranchName());
+            row.createCell(1).setCellValue(dto.getName() != null ? dto.getName() : "");
+            row.createCell(2).setCellValue(dto.getAddress() != null ? dto.getAddress() : "");
+            row.createCell(3).setCellValue(dto.getLicenseNumber() != null ? dto.getLicenseNumber() : "");
+            row.createCell(4).setCellValue(dto.getExternalUnitNumber() != null ? dto.getExternalUnitNumber() : "");
+            row.createCell(5).setCellValue(dto.getOrganisationName() != null ? dto.getOrganisationName() : "");
+            row.createCell(6).setCellValue(dto.getCapacity() != null ? dto.getCapacity() : "");
+            row.createCell(7).setCellValue(dto.getExternalUnitTypeName() != null ? dto.getExternalUnitTypeName() : "");
+            row.createCell(8).setCellValue(dto.getVirtualAccountNumber() != null ? dto.getVirtualAccountNumber() : "");
+            row.createCell(9).setCellValue(dto.getIfscCode() != null ? dto.getIfscCode() : "");
+            row.createCell(10).setCellValue(dto.getBranchName() != null ? dto.getBranchName() : "");
+            row.createCell(11).setCellValue(dto.getMarketMasterName() != null ? dto.getMarketMasterName() : "");
+            row.createCell(12).setCellValue(dto.getLotNumberNomenclature() != null ? dto.getLotNumberNomenclature() : "");
+            row.createCell(13).setCellValue(dto.getRaceMasterName() != null ? dto.getRaceMasterName() : "");
         }
 
-        for (int i = 0; i <= 11; i++) {
+        // Auto-size all columns (now 0–13 only)
+        for (int i = 0; i <= 13; i++) {
             sheet.autoSizeColumn(i);
         }
 
