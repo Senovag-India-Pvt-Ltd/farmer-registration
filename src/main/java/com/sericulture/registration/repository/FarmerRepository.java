@@ -591,11 +591,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.isOtherStateFarmer, " +
             " farmerBankAccount.farmerBankAccountNumber, " +
             " userMaster.username, " +
-            " farmer.aadhaarNumber, " +
-            " district.districtName, " +
-            " taluk.talukName, " +
-            " hobli.hobliName, " +
-            " state.stateName " +
+            " farmer.aadhaarNumber " +
             ") " +
             "FROM Farmer farmer " +
             "LEFT JOIN Caste caste ON farmer.casteId = caste.casteId " +
@@ -667,11 +663,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             " farmer.isOtherStateFarmer, " +
             " farmerBankAccount.farmerBankAccountNumber, " +
             " userMaster.username, " +
-            " farmer.aadhaarNumber, " +
-            " district.districtName, " +
-            " taluk.talukName, " +
-            " hobli.hobliName, " +
-            " state.stateName " +   // ✅ only stateName included
+            " farmer.aadhaarNumber " +
             ") " +
             "FROM Farmer farmer " +
             "LEFT JOIN Caste caste ON farmer.casteId = caste.casteId " +

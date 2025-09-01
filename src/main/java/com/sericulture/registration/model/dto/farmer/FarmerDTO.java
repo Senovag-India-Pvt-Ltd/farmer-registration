@@ -50,8 +50,4 @@ public class FarmerDTO {
     private String farmerBankAccountNumber;
     private String username;
     private String aadhaarNumber;
-    private String districtName;
-    private String talukName;
-    private String hobliName;
-    private String stateName;
 }

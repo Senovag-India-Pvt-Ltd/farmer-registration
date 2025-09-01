@@ -1848,10 +1848,7 @@ public class FarmerService {
                     .mobileNumber(dto.getMobileNumber())
                     .aadhaarNumber(dto.getAadhaarNumber())
                     .farmerTypeName(dto.getFarmerTypeName())
-                    .districtName(dto.getDistrictName())
-                    .talukName(dto.getTalukName())
-                    .hobliName(dto.getHobliName())
-                    .stateName(dto.getStateName())
+
 
                     .build();
             responseList.add(response);
@@ -1872,10 +1869,7 @@ public class FarmerService {
         headerRow.createCell(3).setCellValue("Mobile");
         headerRow.createCell(4).setCellValue("Aadhaar");
         headerRow.createCell(5).setCellValue("Farmer Type");
-        headerRow.createCell(6).setCellValue("District");
-        headerRow.createCell(7).setCellValue("Taluk");
-        headerRow.createCell(8).setCellValue("Hobli");
-        headerRow.createCell(9).setCellValue("State");
+
 
 
         // Data
@@ -1888,13 +1882,10 @@ public class FarmerService {
             row.createCell(3).setCellValue(dto.getMobileNumber());
             row.createCell(4).setCellValue(dto.getAadhaarNumber());
             row.createCell(5).setCellValue(dto.getFarmerTypeName());
-            row.createCell(6).setCellValue(dto.getDistrictName());
-            row.createCell(7).setCellValue(dto.getTalukName());
-            row.createCell(8).setCellValue(dto.getHobliName());
-            row.createCell(9).setCellValue(dto.getStateName());     // ✅ added
+
         }
 
-        for (int i = 0; i <= 9; i++) sheet.autoSizeColumn(i);
+        for (int i = 0; i <= 5; i++) sheet.autoSizeColumn(i);
 
         String userHome = System.getProperty("user.home");
         Path directory = Paths.get(userHome, "Downloads");
