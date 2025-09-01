@@ -1246,18 +1246,18 @@ public class ReelerService {
         villageId = (villageId == 0) ? null : villageId;
         marketId = (marketId == 0) ? null : marketId;
 
-        Pageable pageable = null; // fetch all records
-        Page<Object[]> applicablePage = reelerRepository.getPrimaryReelerForRenewalLicenseList(
-                districtId, talukId, villageId, marketId, renewalDate, expiryDate, pageable);
+        // ✅ Use non-paged query here
+        List<Object[]> applicableList = reelerRepository.getAllExpiredReelersForReport(
+                districtId, talukId, villageId, marketId, renewalDate, expiryDate);
 
-        List<Object[]> applicableList = applicablePage.getContent();
+        // map results into response DTOs
         reelerResponses(responseList, applicableList, pageNumber, pageSize);
 
         // Create Excel
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Expired Licenses");
 
-        // Header row (same as renewal report)
+        // Header row
         Row headerRow = sheet.createRow(0);
         headerRow.createCell(0).setCellValue("First Name");
         headerRow.createCell(1).setCellValue("Fruits Id");
