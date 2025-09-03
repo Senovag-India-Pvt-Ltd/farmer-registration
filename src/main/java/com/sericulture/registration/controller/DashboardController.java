@@ -96,4 +96,64 @@ public class DashboardController {
         }
     }
 
+    @GetMapping("/chawkiManagementDetails")
+    public ResponseEntity<?> chawkiManagementDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getChawkiManagementDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getHelpDeskDetails")
+    public ResponseEntity<?> getHelpDeskDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getHelpDeskDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getTrainerDetails")
+    public ResponseEntity<?> getTrainerDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getTrainerDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getTraineeDetails")
+    public ResponseEntity<?> getTraineeDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getTraineeDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
 }

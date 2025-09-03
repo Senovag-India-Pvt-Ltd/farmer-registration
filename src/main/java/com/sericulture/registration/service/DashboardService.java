@@ -1,9 +1,6 @@
 package com.sericulture.registration.service;
 
-import com.sericulture.registration.repository.ExternalUnitRegistrationRepository;
-import com.sericulture.registration.repository.FarmerRepository;
-import com.sericulture.registration.repository.ReelerRepository;
-import com.sericulture.registration.repository.TraderLicenseRepository;
+import com.sericulture.registration.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +21,9 @@ public class DashboardService {
     ExternalUnitRegistrationRepository externalUnitRegistrationRepository;
 
     @Autowired
+    ChowkiManagementRepository chowkiManagementRepository;
+
+    @Autowired
     ReelerRepository reelerRepository;
 
     public List<Map<String, Object>> getFarmerDetails() {
@@ -40,6 +40,21 @@ public class DashboardService {
 
     public List<Map<String, Object>> getExternalUnitDetails() {
         return externalUnitRegistrationRepository.getFullExternalUnitDetails();
+    }
+
+    public List<Map<String, Object>> getChawkiManagementDetails() {
+        return chowkiManagementRepository.getChawkiManagementDetails();
+    }
+    public List<Map<String, Object>> getHelpDeskDetails() {
+        return chowkiManagementRepository.getHelpDeskDetails();
+    }
+
+    public List<Map<String, Object>> getTrainerDetails() {
+        return chowkiManagementRepository.getTrainerDetails();
+    }
+
+    public List<Map<String, Object>> getTraineeDetails() {
+        return chowkiManagementRepository.getTraineeDetails();
     }
 
 }
