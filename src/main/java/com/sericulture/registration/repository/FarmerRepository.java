@@ -1,4 +1,5 @@
 package com.sericulture.registration.repository;
+
 import com.sericulture.registration.model.dto.farmer.FarmerDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerLandDetailsDTO;
 import com.sericulture.registration.model.entity.Farmer;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,7 +21,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
 
     public List<Farmer> findByMobileNumber(String mobileNumber);
 
-    public Farmer findByFarmerNumberAndActive(String farmerNumber,boolean isActive);
+    public Farmer findByFarmerNumberAndActive(String farmerNumber, boolean isActive);
 
     public Page<Farmer> findByActiveOrderByFarmerIdAsc(boolean isActive, final Pageable pageable);
 
@@ -221,7 +223,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "(:joinColumn = 'farmerBankAccount.farmerBankAccountNumber' AND farmerBankAccount.farmerBankAccountNumber LIKE :searchText) " +
             "ORDER BY farmer.farmerNumber ASC"
     )
-    Page<FarmerDTO> getByActiveOrderByFarmerIdAsc(@Param("isActive") boolean isActive,@Param("joinColumn") String joinColumn, @Param("searchText") String searchText, final Pageable pageable);
+    Page<FarmerDTO> getByActiveOrderByFarmerIdAsc(@Param("isActive") boolean isActive, @Param("joinColumn") String joinColumn, @Param("searchText") String searchText, final Pageable pageable);
 
     @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
             " farmer.farmerId, " +
@@ -286,7 +288,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "(:joinColumn = 'farmerBankAccount.farmerBankAccountNumber' AND farmerBankAccount.farmerBankAccountNumber LIKE :searchText) " +
             "ORDER BY farmer.farmerNumber ASC"
     )
-    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForNonKAFarmers(@Param("isActive") boolean isActive, @Param("joinColumn") String joinColumn,@Param("searchText") String searchText, final Pageable pageable);
+    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForNonKAFarmers(@Param("isActive") boolean isActive, @Param("joinColumn") String joinColumn, @Param("searchText") String searchText, final Pageable pageable);
 
     @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
             " farmer.farmerId, " +
@@ -352,7 +354,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "(:joinColumn = 'farmerBankAccount.farmerBankAccountNumber' AND farmerBankAccount.farmerBankAccountNumber LIKE :searchText) " +
             "ORDER BY farmer.farmerNumber ASC"
     )
-    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(@Param("isActive") boolean isActive,@Param("joinColumn") String joinColumn, @Param("searchText") String searchText, final Pageable pageable);
+    Page<FarmerDTO> getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(@Param("isActive") boolean isActive, @Param("joinColumn") String joinColumn, @Param("searchText") String searchText, final Pageable pageable);
 
     @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
             " farmer.farmerId, " +
@@ -694,8 +696,6 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             Pageable pageable);
 
 
-
-
     @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +
             " farmer.farmerId, " +
             " farmer.farmerNumber, " +
@@ -761,9 +761,9 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
     )
     public Page<FarmerDTO> getSortedFarmers(@Param("joinColumn") String joinColumn, @Param("searchText") String searchText, @Param("isActive") boolean isActive, Pageable pageable);
 
-    @Query(nativeQuery = true,value = "select COUNT(farmer_id) as total_farmer_count\n" +
+    @Query(nativeQuery = true, value = "select COUNT(farmer_id) as total_farmer_count\n" +
             "from farmer;\n")
-    public List<Object[]> getFarmerCountDetails( );
+    public List<Object[]> getFarmerCountDetails();
 
 //    @Query(nativeQuery = true,value = "select d.district_name, COUNT(f.farmer_id) as farmer_count\n" +
 //            "from farmer f\n" +
@@ -780,7 +780,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
 //            "GROUP BY t.taluk_name;\n")
 //    public List<Object[]> getTalukWise(@Param("districtId") int districtId);
 
-//    @Query(nativeQuery = true, value = """
+    //    @Query(nativeQuery = true, value = """
 //    SELECT d.district_name, COUNT(f.farmer_id) AS farmer_count
 //    FROM farmer f
 //    LEFT JOIN farmer_address fa ON fa.farmer_id = f.farmer_id AND fa.active = 1
@@ -789,35 +789,35 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
 //    GROUP BY d.district_name;
 //""")
 //    public List<Object[]> getDistrictWiseCount();
-@Query(nativeQuery = true, value = """
-    WITH PrimaryAddress AS (
-        SELECT
-            fa.farmer_id,
-            fa.DISTRICT_ID,
-            ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
-        FROM
-            farmer_address fa
-        WHERE
-            fa.active = 1
-    )
-    SELECT 
-        d.district_name, 
-        COUNT(f.farmer_id) AS farmer_count
-    FROM 
-        farmer f
-    LEFT JOIN 
-        PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
-    LEFT JOIN 
-        district d ON d.DISTRICT_ID = pa.DISTRICT_ID AND d.active = 1
-    WHERE 
-        f.active = 1
-    GROUP BY 
-        d.district_name;
-""")
-public List<Object[]> getDistrictWiseCount();
+    @Query(nativeQuery = true, value = """
+                WITH PrimaryAddress AS (
+                    SELECT
+                        fa.farmer_id,
+                        fa.DISTRICT_ID,
+                        ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
+                    FROM
+                        farmer_address fa
+                    WHERE
+                        fa.active = 1
+                )
+                SELECT 
+                    d.district_name, 
+                    COUNT(f.farmer_id) AS farmer_count
+                FROM 
+                    farmer f
+                LEFT JOIN 
+                    PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
+                LEFT JOIN 
+                    district d ON d.DISTRICT_ID = pa.DISTRICT_ID AND d.active = 1
+                WHERE 
+                    f.active = 1
+                GROUP BY 
+                    d.district_name;
+            """)
+    public List<Object[]> getDistrictWiseCount();
 
 
-//    @Query(nativeQuery = true, value = """
+    //    @Query(nativeQuery = true, value = """
 //    SELECT t.taluk_name, COUNT(f.farmer_id) AS farmer_count
 //    FROM farmer f
 //    LEFT JOIN farmer_address fa ON fa.farmer_id = f.farmer_id AND fa.active = 1
@@ -827,39 +827,38 @@ public List<Object[]> getDistrictWiseCount();
 //    GROUP BY t.taluk_name;
 //""")
 //    public List<Object[]> getTalukWise(@Param("districtId") int districtId);
-@Query(nativeQuery = true, value = """
-    WITH PrimaryAddress AS (
-        SELECT
-            fa.farmer_id,
-            fa.DISTRICT_ID,
-            fa.TALUK_ID,
-            ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
-        FROM
-            farmer_address fa
-        WHERE
-            fa.active = 1
-    )
-    SELECT 
-        t.taluk_name, 
-        COUNT(f.farmer_id) AS farmer_count
-    FROM 
-        farmer f
-    LEFT JOIN 
-        PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
-    LEFT JOIN 
-        district d ON d.DISTRICT_ID = pa.DISTRICT_ID AND d.active = 1
-    LEFT JOIN 
-        taluk t ON t.TALUK_ID = pa.TALUK_ID AND t.active = 1
-    WHERE 
-        f.active = 1 AND d.DISTRICT_ID = :districtId
-    GROUP BY 
-        t.taluk_name;
-""")
-public List<Object[]> getTalukWise(@Param("districtId") int districtId);
+    @Query(nativeQuery = true, value = """
+                WITH PrimaryAddress AS (
+                    SELECT
+                        fa.farmer_id,
+                        fa.DISTRICT_ID,
+                        fa.TALUK_ID,
+                        ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
+                    FROM
+                        farmer_address fa
+                    WHERE
+                        fa.active = 1
+                )
+                SELECT 
+                    t.taluk_name, 
+                    COUNT(f.farmer_id) AS farmer_count
+                FROM 
+                    farmer f
+                LEFT JOIN 
+                    PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
+                LEFT JOIN 
+                    district d ON d.DISTRICT_ID = pa.DISTRICT_ID AND d.active = 1
+                LEFT JOIN 
+                    taluk t ON t.TALUK_ID = pa.TALUK_ID AND t.active = 1
+                WHERE 
+                    f.active = 1 AND d.DISTRICT_ID = :districtId
+                GROUP BY 
+                    t.taluk_name;
+            """)
+    public List<Object[]> getTalukWise(@Param("districtId") int districtId);
 
 
-
-//    @Query(nativeQuery = true, value = """
+    //    @Query(nativeQuery = true, value = """
 //    WITH PrimaryAddress AS (
 //        SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
 //            fa.farmer_id,
@@ -931,181 +930,249 @@ public List<Object[]> getTalukWise(@Param("districtId") int districtId);
 //            @Param("villageId") Long villageId,
 //            @Param("tscMasterId") Long tscMasterId,
 //            Pageable pageable);
-@Query(nativeQuery = true, value = """
-    WITH PrimaryAddress AS (
-        SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
-            fa.farmer_id,
-            fa.DISTRICT_ID,
-            fa.TALUK_ID,
-            fa.HOBLI_ID,
-            fa.VILLAGE_ID,
-            ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
-        FROM
-            farmer_address fa
-        WHERE fa.active = 1
-    )
-    SELECT
-        f.farmer_id,
-        f.first_name,
-        f.middle_name,
-        f.last_name,
-        f.fruits_id,
-        f.farmer_number,
-        f.father_name,
-        f.passbook_number,
-        f.epic_number,
-        f.ration_card_number,
-        f.dob,
-        d.DISTRICT_NAME,
-        t.TALUK_NAME,
-        h.hobli_name,
-        v.village_name,
-        fba.farmer_bank_name,
-        fba.farmer_bank_account_number,
-        fba.farmer_bank_branch_name,
-        fba.farmer_bank_ifsc_code
-    FROM
-        farmer f
-    LEFT JOIN
-        PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
-    LEFT JOIN
-        farmer_bank_account fba ON fba.farmer_id = f.farmer_id AND fba.active = 1
-    LEFT JOIN
-        district d ON pa.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
-    LEFT JOIN
-        taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
-    LEFT JOIN
-        hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
-    LEFT JOIN
-        village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
-    WHERE
-        f.active = 1 AND
-        (:districtId IS NULL OR pa.DISTRICT_ID = :districtId) AND
-        (:talukId IS NULL OR pa.TALUK_ID = :talukId) AND
-        (:villageId IS NULL OR pa.VILLAGE_ID = :villageId) AND
-        (:tscMasterId IS NULL OR f.tsc_master_id = :tscMasterId)
-""", countQuery = """
-    WITH PrimaryAddress AS (
-        SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
-            fa.farmer_id,
-            fa.DISTRICT_ID,
-            fa.TALUK_ID,
-            fa.HOBLI_ID,
-            fa.VILLAGE_ID,
-            ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
-        FROM
-            farmer_address fa
-        WHERE fa.active = 1
-    )
-    SELECT COUNT(*)
-    FROM
-        farmer f
-    LEFT JOIN
-        PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
-    WHERE
-        f.active = 1 AND
-        (:districtId IS NULL OR pa.DISTRICT_ID = :districtId) AND
-        (:talukId IS NULL OR pa.TALUK_ID = :talukId) AND
-        (:villageId IS NULL OR pa.VILLAGE_ID = :villageId) AND
-        (:tscMasterId IS NULL OR f.tsc_master_id = :tscMasterId)
-""")
-Page<Object[]> getPrimaryFarmerDetails(
-        @Param("districtId") Long districtId,
-        @Param("talukId") Long talukId,
-        @Param("villageId") Long villageId,
-        @Param("tscMasterId") Long tscMasterId,
-        Pageable pageable);
-
     @Query(nativeQuery = true, value = """
-    SELECT CONCAT(f.first_name, ' ', f.middle_name) AS full_name,
+                WITH PrimaryAddress AS (
+                    SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
+                        fa.farmer_id,
+                        fa.DISTRICT_ID,
+                        fa.TALUK_ID,
+                        fa.HOBLI_ID,
+                        fa.VILLAGE_ID,
+                        ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
+                    FROM
+                        farmer_address fa
+                    WHERE fa.active = 1
+                )
+                SELECT
+                    f.farmer_id,
+                    f.first_name,
+                    f.middle_name,
+                    f.last_name,
+                    f.fruits_id,
+                    f.farmer_number,
                     f.father_name,
-                   fa.address_text,
-                   f.FARMER_ID,
-                   f.fruits_id,
-                   v.VILLAGE_NAME
-            FROM FARMER f
-            Left JOIN farmer_address fa ON f.FARMER_ID = fa.FARMER_ID
-            Left JOIN VILLAGE v  ON v.VILLAGE_ID = fa.VILLAGE_ID
-        WHERE fa.default_address = 1
-        AND f.fruits_id = :fruitsId
-        AND f.active = 1;
-        """)
-        public List<Object[]> getFruitsDetails(String fruitsId);
+                    f.passbook_number,
+                    f.epic_number,
+                    f.ration_card_number,
+                    f.dob,
+                    d.DISTRICT_NAME,
+                    t.TALUK_NAME,
+                    h.hobli_name,
+                    v.village_name,
+                    fba.farmer_bank_name,
+                    fba.farmer_bank_account_number,
+                    fba.farmer_bank_branch_name,
+                    fba.farmer_bank_ifsc_code
+                FROM
+                    farmer f
+                LEFT JOIN
+                    PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
+                LEFT JOIN
+                    farmer_bank_account fba ON fba.farmer_id = f.farmer_id AND fba.active = 1
+                LEFT JOIN
+                    district d ON pa.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
+                LEFT JOIN
+                    taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
+                LEFT JOIN
+                    hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
+                LEFT JOIN
+                    village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+                WHERE
+                    f.active = 1 AND
+                    (:districtId IS NULL OR pa.DISTRICT_ID = :districtId) AND
+                    (:talukId IS NULL OR pa.TALUK_ID = :talukId) AND
+                    (:villageId IS NULL OR pa.VILLAGE_ID = :villageId) AND
+                    (:tscMasterId IS NULL OR f.tsc_master_id = :tscMasterId)
+            """, countQuery = """
+                WITH PrimaryAddress AS (
+                    SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
+                        fa.farmer_id,
+                        fa.DISTRICT_ID,
+                        fa.TALUK_ID,
+                        fa.HOBLI_ID,
+                        fa.VILLAGE_ID,
+                        ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
+                    FROM
+                        farmer_address fa
+                    WHERE fa.active = 1
+                )
+                SELECT COUNT(*)
+                FROM
+                    farmer f
+                LEFT JOIN
+                    PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
+                WHERE
+                    f.active = 1 AND
+                    (:districtId IS NULL OR pa.DISTRICT_ID = :districtId) AND
+                    (:talukId IS NULL OR pa.TALUK_ID = :talukId) AND
+                    (:villageId IS NULL OR pa.VILLAGE_ID = :villageId) AND
+                    (:tscMasterId IS NULL OR f.tsc_master_id = :tscMasterId)
+            """)
+    Page<Object[]> getPrimaryFarmerDetails(
+            @Param("districtId") Long districtId,
+            @Param("talukId") Long talukId,
+            @Param("villageId") Long villageId,
+            @Param("tscMasterId") Long tscMasterId,
+            Pageable pageable);
 
     @Query(nativeQuery = true, value = """
-    SELECT
-    fld.farmer_land_details_id,
-    f.farmer_id,
-    fld.survey_number,
-    v.VILLAGE_NAME
-            FROM
-    farmer_land_details fld
-    LEFT JOIN
-    farmer f ON fld.farmer_id = f.farmer_id
-    LEFT JOIN
-    village v ON fld.village_id = v.VILLAGE_ID
-    WHERE
-    f.fruits_id = :fruitsId
-    AND f.active = 1;
-    """)
+            SELECT CONCAT(f.first_name, ' ', f.middle_name) AS full_name,
+                            f.father_name,
+                           fa.address_text,
+                           f.FARMER_ID,
+                           f.fruits_id,
+                           v.VILLAGE_NAME
+                    FROM FARMER f
+                    Left JOIN farmer_address fa ON f.FARMER_ID = fa.FARMER_ID
+                    Left JOIN VILLAGE v  ON v.VILLAGE_ID = fa.VILLAGE_ID
+                WHERE fa.default_address = 1
+                AND f.fruits_id = :fruitsId
+                AND f.active = 1;
+            """)
+    public List<Object[]> getFruitsDetails(String fruitsId);
+
+    @Query(nativeQuery = true, value = """
+            SELECT
+            fld.farmer_land_details_id,
+            f.farmer_id,
+            fld.survey_number,
+            v.VILLAGE_NAME
+                    FROM
+            farmer_land_details fld
+            LEFT JOIN
+            farmer f ON fld.farmer_id = f.farmer_id
+            LEFT JOIN
+            village v ON fld.village_id = v.VILLAGE_ID
+            WHERE
+            f.fruits_id = :fruitsId
+            AND f.active = 1;
+            """)
 
     public List<Object[]> getFarmerLandDetails(String fruitsId);
 
     @Query(nativeQuery = true, value = """
-    WITH PrimaryAddress AS (
-        SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
-               fa.farmer_id,
-               fa.STATE_ID,
-               fa.DISTRICT_ID,
-               fa.TALUK_ID,
-               fa.HOBLI_ID,
-               fa.VILLAGE_ID,
-               ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
-        FROM farmer_address fa
-        WHERE fa.active = 1
-    )
-    SELECT
-        f.farmer_id,
-        f.first_name,
-        f.middle_name,
-        f.last_name,
-        f.fruits_id,
-        f.farmer_number,
-        f.father_name,
-        f.dob,
-        f.mobile_number,
-        d.DISTRICT_NAME,
-        t.TALUK_NAME,
-        h.hobli_name,
-        v.village_name,
-        sadod.rate_per100dfls_price,
-        sadod.number_of_dfls_disposed,
-        sadod.lot_number,
-        s.state_name,
-        sadod.race_id,
-        rm.race_name,
-        fc.fitness_certificate_path
-    FROM farmer f
-    LEFT JOIN PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
-    LEFT JOIN state s ON pa.state_id = s.state_id AND s.active = 1
-    LEFT JOIN district d ON pa.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
-    LEFT JOIN taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
-    LEFT JOIN hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
-    LEFT JOIN village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
-    Inner JOIN
-    sale_and_disposal_of_dfls sadod ON sadod.fruits_id = f.fruits_id AND (sadod.is_disposed = 0 OR sadod.is_disposed IS NULL) AND  sadod.active = 1
-    INNER JOIN fitness_certificate fc
-       ON fc.farmer_id = f.FARMER_ID
-       AND fc.active = 1
-       AND fc.is_fc_issued = 1
-    LEFT JOIN
-    race_master rm ON rm.race_id = sadod.race_id AND rm.active = 1
-    WHERE
-        (:type = 'mobileNumber' AND f.mobile_number = :text) OR
-        (:type = 'farmerNumber' AND f.farmer_number = :text) OR
-        (:type = 'fruitsId' AND f.fruits_id = :text)
-""")
+                WITH PrimaryAddress AS (
+                    SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
+                           fa.farmer_id,
+                           fa.STATE_ID,
+                           fa.DISTRICT_ID,
+                           fa.TALUK_ID,
+                           fa.HOBLI_ID,
+                           fa.VILLAGE_ID,
+                           ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
+                    FROM farmer_address fa
+                    WHERE fa.active = 1
+                )
+                SELECT
+                    f.farmer_id,
+                    f.first_name,
+                    f.middle_name,
+                    f.last_name,
+                    f.fruits_id,
+                    f.farmer_number,
+                    f.father_name,
+                    f.dob,
+                    f.mobile_number,
+                    d.DISTRICT_NAME,
+                    t.TALUK_NAME,
+                    h.hobli_name,
+                    v.village_name,
+                    sadod.rate_per100dfls_price,
+                    sadod.number_of_dfls_disposed,
+                    sadod.lot_number,
+                    s.state_name,
+                    sadod.race_id,
+                    rm.race_name,
+                    fc.fitness_certificate_path
+                FROM farmer f
+                LEFT JOIN PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
+                LEFT JOIN state s ON pa.state_id = s.state_id AND s.active = 1
+                LEFT JOIN district d ON pa.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
+                LEFT JOIN taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
+                LEFT JOIN hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
+                LEFT JOIN village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+                Inner JOIN
+                sale_and_disposal_of_dfls sadod ON sadod.fruits_id = f.fruits_id AND (sadod.is_disposed = 0 OR sadod.is_disposed IS NULL) AND  sadod.active = 1
+                INNER JOIN fitness_certificate fc
+                   ON fc.farmer_id = f.FARMER_ID
+                   AND fc.active = 1
+                   AND fc.is_fc_issued = 1
+                LEFT JOIN
+                race_master rm ON rm.race_id = sadod.race_id AND rm.active = 1
+                WHERE
+                    (:type = 'mobileNumber' AND f.mobile_number = :text) OR
+                    (:type = 'farmerNumber' AND f.farmer_number = :text) OR
+                    (:type = 'fruitsId' AND f.fruits_id = :text)
+            """)
     List<Object[]> getFarmerDetailsForSeedCocoonMarket(String text, String type);
 
-
+    @Query(value = """
+            SELECT
+                f.FARMER_ID,
+                f.farmer_number,
+                f.fruits_id,
+                f.first_name,
+                f.middle_name,
+                f.last_name,
+                f.dob,
+            
+                CASE 
+                    WHEN f.gender_id = 1 THEN 'Male'
+                    WHEN f.gender_id = 2 THEN 'Female'
+                    WHEN f.gender_id = 3 THEN 'Others'
+                    ELSE 'Unknown'
+                END AS gender,
+            
+                caste.caste_title,
+                f.differently_abled,
+                f.email,
+                f.mobile_number,
+                f.aadhaar_number,
+                f.epic_number,
+                f.ration_card_number,
+                f.total_land_holding,
+                f.passbook_number,
+                f.representative_id,
+                f.khazane_recipient_id,
+                f.photo_path,
+            
+                ft.name AS farmer_type,
+                f.minority,
+                f.father_name,
+                f.father_name_kan,
+                f.name_kan,
+            
+                tsc.name AS tsc_name,
+                tsc.name_in_kannada AS tsc_name_kan,
+            
+                edu.education_name,
+                edu.education_name_in_kannada,
+            
+                addr.address_text,
+                addr.pincode,
+                dist.district_name,
+                dist.district_name_in_kannada,
+                tal.taluk_name,
+                tal.taluk_name_in_kannada,
+                vill.village_name,
+                vill.village_name_in_kannada
+            
+            FROM farmer f
+            
+            OUTER APPLY (
+                SELECT TOP 1 *
+                FROM farmer_address
+                WHERE FARMER_ID = f.FARMER_ID
+                ORDER BY default_address DESC, created_date ASC
+            ) addr
+            
+            LEFT JOIN education edu ON f.education_id = edu.education_id
+            LEFT JOIN farmer_type ft ON f.farmer_type_id = ft.farmer_type_id
+            LEFT JOIN caste caste ON f.caste_id = caste.caste_id
+            LEFT JOIN tsc_master tsc ON f.tsc_master_id = tsc.tsc_master_id
+            LEFT JOIN village vill ON addr.village_id = vill.village_id
+            LEFT JOIN taluk tal ON addr.taluk_id = tal.taluk_id
+            LEFT JOIN district dist ON addr.district_id = dist.district_id
+            """, nativeQuery = true)
+    List<Map<String, Object>> getFullFarmerDetails();
 }

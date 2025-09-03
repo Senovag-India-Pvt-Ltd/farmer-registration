@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -1003,57 +1004,57 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
     @Query(
             nativeQuery = true,
             value = """
-      WITH PrimaryAddress AS (
-          SELECT 
-              rvba.reeler_id,
-              rvba.market_master_Id,
-              ROW_NUMBER() OVER (PARTITION BY rvba.reeler_id ORDER BY rvba.market_master_id DESC) AS rn
-          FROM reeler_virtual_bank_account rvba
-          WHERE rvba.active = 1
-      )
-      SELECT
-          r.reeler_id,
-          r.name,
-          r.fruits_id,
-          r.reeling_license_number,
-          r.father_name,
-          r.passbook_number,
-          r.reeler_number,
-          r.ration_card,
-          r.dob,
-          d.DISTRICT_NAME,
-          t.TALUK_NAME,
-          h.hobli_name,
-          v.village_name,
-          r.bank_name,
-          r.bank_account_number,
-          r.branch_name,
-          r.ifsc_code,
-          r.mobile_number,
-          r.license_renewal_date,
-          r.license_expiry_date
-      FROM reeler r
-      LEFT JOIN PrimaryAddress pa 
-             ON pa.reeler_id = r.reeler_id AND pa.rn = 1
-      LEFT JOIN district d 
-             ON r.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
-      LEFT JOIN taluk t 
-             ON r.TALUK_ID = t.TALUK_ID AND t.active = 1
-      LEFT JOIN hobli h 
-             ON r.HOBLI_ID = h.HOBLI_ID AND h.active = 1
-      LEFT JOIN village v 
-             ON r.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
-      WHERE r.active = 1
-        AND r.license_renewal_date IS NOT NULL
-        AND r.license_expiry_date <= CAST(GETDATE() AS DATE)
-        AND (:districtId IS NULL OR r.DISTRICT_ID = :districtId)
-        AND (:talukId IS NULL OR r.TALUK_ID = :talukId)
-        AND (:villageId IS NULL OR r.VILLAGE_ID = :villageId)
-        AND (:marketId IS NULL OR pa.market_master_id = :marketId)
-        AND (:renewalDate IS NULL OR r.license_renewal_date = :renewalDate)
-        AND (:expiryDate IS NULL OR r.license_expiry_date = :expiryDate)
-      ORDER BY r.license_expiry_date DESC
-      """
+                    WITH PrimaryAddress AS (
+                        SELECT 
+                            rvba.reeler_id,
+                            rvba.market_master_Id,
+                            ROW_NUMBER() OVER (PARTITION BY rvba.reeler_id ORDER BY rvba.market_master_id DESC) AS rn
+                        FROM reeler_virtual_bank_account rvba
+                        WHERE rvba.active = 1
+                    )
+                    SELECT
+                        r.reeler_id,
+                        r.name,
+                        r.fruits_id,
+                        r.reeling_license_number,
+                        r.father_name,
+                        r.passbook_number,
+                        r.reeler_number,
+                        r.ration_card,
+                        r.dob,
+                        d.DISTRICT_NAME,
+                        t.TALUK_NAME,
+                        h.hobli_name,
+                        v.village_name,
+                        r.bank_name,
+                        r.bank_account_number,
+                        r.branch_name,
+                        r.ifsc_code,
+                        r.mobile_number,
+                        r.license_renewal_date,
+                        r.license_expiry_date
+                    FROM reeler r
+                    LEFT JOIN PrimaryAddress pa 
+                           ON pa.reeler_id = r.reeler_id AND pa.rn = 1
+                    LEFT JOIN district d 
+                           ON r.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
+                    LEFT JOIN taluk t 
+                           ON r.TALUK_ID = t.TALUK_ID AND t.active = 1
+                    LEFT JOIN hobli h 
+                           ON r.HOBLI_ID = h.HOBLI_ID AND h.active = 1
+                    LEFT JOIN village v 
+                           ON r.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+                    WHERE r.active = 1
+                      AND r.license_renewal_date IS NOT NULL
+                      AND r.license_expiry_date <= CAST(GETDATE() AS DATE)
+                      AND (:districtId IS NULL OR r.DISTRICT_ID = :districtId)
+                      AND (:talukId IS NULL OR r.TALUK_ID = :talukId)
+                      AND (:villageId IS NULL OR r.VILLAGE_ID = :villageId)
+                      AND (:marketId IS NULL OR pa.market_master_id = :marketId)
+                      AND (:renewalDate IS NULL OR r.license_renewal_date = :renewalDate)
+                      AND (:expiryDate IS NULL OR r.license_expiry_date = :expiryDate)
+                    ORDER BY r.license_expiry_date DESC
+                    """
     )
     List<Object[]> getAllExpiredReelersForReport(
             @Param("districtId") Long districtId,
@@ -1067,81 +1068,81 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
     @Query(
             nativeQuery = true,
             value = """
-      WITH PrimaryAddress AS (
-          SELECT 
-              rvba.reeler_id,
-              rvba.market_master_Id,
-              ROW_NUMBER() OVER (PARTITION BY rvba.reeler_id ORDER BY rvba.market_master_id DESC) AS rn
-          FROM reeler_virtual_bank_account rvba
-          WHERE rvba.active = 1
-      )
-      SELECT
-          r.reeler_id,
-          r.name,
-          r.fruits_id,
-          r.reeling_license_number,
-          r.father_name,
-          r.passbook_number,
-          r.reeler_number,
-          r.ration_card,
-          r.dob,
-          d.DISTRICT_NAME,
-          t.TALUK_NAME,
-          h.hobli_name,
-          v.village_name,
-          r.bank_name,
-          r.bank_account_number,
-          r.branch_name,
-          r.ifsc_code,
-          r.mobile_number,
-          r.license_renewal_date,
-          r.license_expiry_date
-      FROM reeler r
-      LEFT JOIN PrimaryAddress pa 
-             ON pa.reeler_id = r.reeler_id AND pa.rn = 1
-      LEFT JOIN district d 
-             ON r.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
-      LEFT JOIN taluk t 
-             ON r.TALUK_ID = t.TALUK_ID AND t.active = 1
-      LEFT JOIN hobli h 
-             ON r.HOBLI_ID = h.HOBLI_ID AND h.active = 1
-      LEFT JOIN village v 
-             ON r.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
-      WHERE r.active = 1
-        AND r.license_renewal_date IS NOT NULL
-        AND r.license_expiry_date <= CAST(GETDATE() AS DATE)
-        AND (:districtId IS NULL OR r.DISTRICT_ID = :districtId)
-        AND (:talukId IS NULL OR r.TALUK_ID = :talukId)
-        AND (:villageId IS NULL OR r.VILLAGE_ID = :villageId)
-        AND (:marketId IS NULL OR pa.market_master_id = :marketId)
-        AND (:renewalDate IS NULL OR r.license_renewal_date = :renewalDate)
-        AND (:expiryDate IS NULL OR r.license_expiry_date = :expiryDate)
-      ORDER BY r.license_expiry_date DESC
-      OFFSET :#{#pageable.offset} ROWS FETCH NEXT :#{#pageable.pageSize} ROWS ONLY
-      """,
+                    WITH PrimaryAddress AS (
+                        SELECT 
+                            rvba.reeler_id,
+                            rvba.market_master_Id,
+                            ROW_NUMBER() OVER (PARTITION BY rvba.reeler_id ORDER BY rvba.market_master_id DESC) AS rn
+                        FROM reeler_virtual_bank_account rvba
+                        WHERE rvba.active = 1
+                    )
+                    SELECT
+                        r.reeler_id,
+                        r.name,
+                        r.fruits_id,
+                        r.reeling_license_number,
+                        r.father_name,
+                        r.passbook_number,
+                        r.reeler_number,
+                        r.ration_card,
+                        r.dob,
+                        d.DISTRICT_NAME,
+                        t.TALUK_NAME,
+                        h.hobli_name,
+                        v.village_name,
+                        r.bank_name,
+                        r.bank_account_number,
+                        r.branch_name,
+                        r.ifsc_code,
+                        r.mobile_number,
+                        r.license_renewal_date,
+                        r.license_expiry_date
+                    FROM reeler r
+                    LEFT JOIN PrimaryAddress pa 
+                           ON pa.reeler_id = r.reeler_id AND pa.rn = 1
+                    LEFT JOIN district d 
+                           ON r.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
+                    LEFT JOIN taluk t 
+                           ON r.TALUK_ID = t.TALUK_ID AND t.active = 1
+                    LEFT JOIN hobli h 
+                           ON r.HOBLI_ID = h.HOBLI_ID AND h.active = 1
+                    LEFT JOIN village v 
+                           ON r.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+                    WHERE r.active = 1
+                      AND r.license_renewal_date IS NOT NULL
+                      AND r.license_expiry_date <= CAST(GETDATE() AS DATE)
+                      AND (:districtId IS NULL OR r.DISTRICT_ID = :districtId)
+                      AND (:talukId IS NULL OR r.TALUK_ID = :talukId)
+                      AND (:villageId IS NULL OR r.VILLAGE_ID = :villageId)
+                      AND (:marketId IS NULL OR pa.market_master_id = :marketId)
+                      AND (:renewalDate IS NULL OR r.license_renewal_date = :renewalDate)
+                      AND (:expiryDate IS NULL OR r.license_expiry_date = :expiryDate)
+                    ORDER BY r.license_expiry_date DESC
+                    OFFSET :#{#pageable.offset} ROWS FETCH NEXT :#{#pageable.pageSize} ROWS ONLY
+                    """,
             countQuery = """
-      WITH PrimaryAddress AS (
-          SELECT 
-              rvba.reeler_id,
-              rvba.market_master_Id,
-              ROW_NUMBER() OVER (PARTITION BY rvba.reeler_id ORDER BY rvba.market_master_id DESC) AS rn
-          FROM reeler_virtual_bank_account rvba
-          WHERE rvba.active = 1
-      )
-      SELECT COUNT(DISTINCT r.reeler_id)
-      FROM reeler r
-      LEFT JOIN PrimaryAddress pa 
-             ON pa.reeler_id = r.reeler_id AND pa.rn = 1
-      WHERE r.active = 1
-        AND r.license_renewal_date IS NOT NULL
-        AND r.license_expiry_date <= CAST(GETDATE() AS DATE)
-        AND (:districtId IS NULL OR r.DISTRICT_ID = :districtId)
-        AND (:talukId IS NULL OR r.TALUK_ID = :talukId)
-        AND (:villageId IS NULL OR r.VILLAGE_ID = :villageId)
-        AND (:marketId IS NULL OR pa.market_master_id = :marketId)
-        AND (:renewalDate IS NULL OR r.license_renewal_date = :renewalDate)
-        AND (:expiryDate IS NULL OR r.license_expiry_date = :expiryDate)
-      """
+                    WITH PrimaryAddress AS (
+                        SELECT 
+                            rvba.reeler_id,
+                            rvba.market_master_Id,
+                            ROW_NUMBER() OVER (PARTITION BY rvba.reeler_id ORDER BY rvba.market_master_id DESC) AS rn
+                        FROM reeler_virtual_bank_account rvba
+                        WHERE rvba.active = 1
+                    )
+                    SELECT COUNT(DISTINCT r.reeler_id)
+                    FROM reeler r
+                    LEFT JOIN PrimaryAddress pa 
+                           ON pa.reeler_id = r.reeler_id AND pa.rn = 1
+                    WHERE r.active = 1
+                      AND r.license_renewal_date IS NOT NULL
+                      AND r.license_expiry_date <= CAST(GETDATE() AS DATE)
+                      AND (:districtId IS NULL OR r.DISTRICT_ID = :districtId)
+                      AND (:talukId IS NULL OR r.TALUK_ID = :talukId)
+                      AND (:villageId IS NULL OR r.VILLAGE_ID = :villageId)
+                      AND (:marketId IS NULL OR pa.market_master_id = :marketId)
+                      AND (:renewalDate IS NULL OR r.license_renewal_date = :renewalDate)
+                      AND (:expiryDate IS NULL OR r.license_expiry_date = :expiryDate)
+                    """
     )
     Page<Object[]> getPrimaryReelerForRenewalLicenseList(
             @Param("districtId") Long districtId,
@@ -1151,10 +1152,6 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             @Param("renewalDate") LocalDate renewalDate,
             @Param("expiryDate") LocalDate expiryDate,
             Pageable pageable);
-
-
-
-
 
 
     @Query(nativeQuery = true, value = """
@@ -1370,74 +1367,182 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
     List<Object[]> getReelerDetails(String text, String type);
 
     @Query(nativeQuery = true, value = """
-    SELECT
-        r.reeler_id,
-        r.name,
-        r.passbook_number,
-        r.father_name,
-        r.dob,
-        r.gender,
-        r.mobile_number,
-        r.arn_number,
-        s.STATE_NAME,
-        d.DISTRICT_NAME,
-        t.TALUK_NAME,
-        h.HOBLI_NAME,
-        v.VILLAGE_NAME,
-        r.address,
-        r.pincode,
-        rvba.virtual_account_number,
-        r.reeling_license_number,
-        r.reeler_number,
-        r.fruits_id
-    FROM reeler r
-    LEFT JOIN caste c ON c.caste_id = r.caste_id
-    LEFT JOIN STATE s ON s.STATE_ID = r.state_id
-    LEFT JOIN DISTRICT d ON d.DISTRICT_ID = r.district_id
-    LEFT JOIN TALUK t ON t.TALUK_ID = r.taluk_id
-    LEFT JOIN HOBLI h ON h.HOBLI_ID = r.hobli_id
-    LEFT JOIN VILLAGE v ON v.VILLAGE_ID = r.village_id
-    LEFT JOIN tsc_master tm ON tm.tsc_master_id = r.tsc_master_id
-    LEFT JOIN reeler_virtual_bank_account rvba ON rvba.reeler_id = r.reeler_id
-    WHERE
-        (
-            (r.reeling_license_number = :text AND :text NOT LIKE 'FID%') OR
-            (r.fruits_id LIKE 'FID%' AND r.fruits_id = :text)
-        )
-    """)
+            SELECT
+                r.reeler_id,
+                r.name,
+                r.passbook_number,
+                r.father_name,
+                r.dob,
+                r.gender,
+                r.mobile_number,
+                r.arn_number,
+                s.STATE_NAME,
+                d.DISTRICT_NAME,
+                t.TALUK_NAME,
+                h.HOBLI_NAME,
+                v.VILLAGE_NAME,
+                r.address,
+                r.pincode,
+                rvba.virtual_account_number,
+                r.reeling_license_number,
+                r.reeler_number,
+                r.fruits_id
+            FROM reeler r
+            LEFT JOIN caste c ON c.caste_id = r.caste_id
+            LEFT JOIN STATE s ON s.STATE_ID = r.state_id
+            LEFT JOIN DISTRICT d ON d.DISTRICT_ID = r.district_id
+            LEFT JOIN TALUK t ON t.TALUK_ID = r.taluk_id
+            LEFT JOIN HOBLI h ON h.HOBLI_ID = r.hobli_id
+            LEFT JOIN VILLAGE v ON v.VILLAGE_ID = r.village_id
+            LEFT JOIN tsc_master tm ON tm.tsc_master_id = r.tsc_master_id
+            LEFT JOIN reeler_virtual_bank_account rvba ON rvba.reeler_id = r.reeler_id
+            WHERE
+                (
+                    (r.reeling_license_number = :text AND :text NOT LIKE 'FID%') OR
+                    (r.fruits_id LIKE 'FID%' AND r.fruits_id = :text)
+                )
+            """)
     List<Object[]> getReelerDetailsByFruitsIdAndReelingLicenseNumber(String text);
 
     @Query(nativeQuery = true, value = """
-    SELECT
-        r.reeler_id,
-        r.name,
-        r.passbook_number,
-        r.father_name,
-        r.dob,
-        r.gender,
-        r.mobile_number,
-        r.arn_number,
-        s.STATE_NAME,
-        d.DISTRICT_NAME,
-        t.TALUK_NAME,
-        h.HOBLI_NAME,
-        v.VILLAGE_NAME,
-        r.address,
-        r.pincode,
-        r.reeling_license_number,
-        r.reeler_number,
-        r.fruits_id
-    FROM reeler r
-    LEFT JOIN caste c ON c.caste_id = r.caste_id
-    LEFT JOIN STATE s ON s.STATE_ID = r.state_id
-    LEFT JOIN DISTRICT d ON d.DISTRICT_ID = r.district_id
-    LEFT JOIN TALUK t ON t.TALUK_ID = r.taluk_id
-    LEFT JOIN HOBLI h ON h.HOBLI_ID = r.hobli_id
-    LEFT JOIN VILLAGE v ON v.VILLAGE_ID = r.village_id
-    LEFT JOIN tsc_master tm ON tm.tsc_master_id = r.tsc_master_id
-    WHERE r.is_reeler_inspected = 0
-    AND r.assign_to_inspect_id = :userMasterId
-""")
+                SELECT
+                    r.reeler_id,
+                    r.name,
+                    r.passbook_number,
+                    r.father_name,
+                    r.dob,
+                    r.gender,
+                    r.mobile_number,
+                    r.arn_number,
+                    s.STATE_NAME,
+                    d.DISTRICT_NAME,
+                    t.TALUK_NAME,
+                    h.HOBLI_NAME,
+                    v.VILLAGE_NAME,
+                    r.address,
+                    r.pincode,
+                    r.reeling_license_number,
+                    r.reeler_number,
+                    r.fruits_id
+                FROM reeler r
+                LEFT JOIN caste c ON c.caste_id = r.caste_id
+                LEFT JOIN STATE s ON s.STATE_ID = r.state_id
+                LEFT JOIN DISTRICT d ON d.DISTRICT_ID = r.district_id
+                LEFT JOIN TALUK t ON t.TALUK_ID = r.taluk_id
+                LEFT JOIN HOBLI h ON h.HOBLI_ID = r.hobli_id
+                LEFT JOIN VILLAGE v ON v.VILLAGE_ID = r.village_id
+                LEFT JOIN tsc_master tm ON tm.tsc_master_id = r.tsc_master_id
+                WHERE r.is_reeler_inspected = 0
+                AND r.assign_to_inspect_id = :userMasterId
+            """)
     List<Object[]> getReelerDetailsByUserMasterId(@Param("userMasterId") Long userMasterId);
 
+
+    @Query(value = """
+            SELECT
+                    r.reeler_id,
+                    r.name,
+                    r.reeler_name_kannada,
+                    r.father_name,
+                    r.dob,
+            
+                    -- Gender Mapping
+                    CASE
+                        WHEN r.gender = 1 THEN 'Male'
+                        WHEN r.gender = 2 THEN 'Female'
+                        WHEN r.gender = 3 THEN 'Others'
+                        ELSE 'Unknown'
+                    END AS gender,
+            
+                    r.aadhaar_number,
+                    r.mobile_number,
+                    r.email_id,
+                    r.passbook_number,
+                    r.ration_card,
+                    r.reeling_unit_boundary,
+                    r.number_of_basins,
+                    r.electricity_rr_number,
+                    r.date_of_machine_installation,
+                    r.reeling_license_number,
+                    r.function_of_unit,
+                    r.license_receipt_number,
+                    r.license_expiry_date,
+                    r.license_renewal_date,
+                    r.receipt_date,
+                    r.wallet_amount,
+                    r.reeler_number,
+                    r.reeler_type_master_id,
+                    r.transfer_reeler_id,
+                    r.is_reeler_inspected,
+                    r.status,
+                    r.active,
+                    r.created_by,
+                    r.created_date,
+                    r.modified_by,
+                    r.modified_date,
+            
+                    -- Caste
+                    c.caste_title AS caste,
+                    c.name_in_kannada AS caste_kannada,
+            
+                    -- Education
+                    e.EDUCATION_NAME AS education,
+                    e.education_name_in_kannada AS education_kannada,
+            
+                    -- Machine Type
+                    m.machine_type_name,
+                    m.machine_type_name_in_kannada,
+            
+                    -- TSC Master
+                    tsc.name AS tsc_name,
+                    tsc.name_in_kannada AS tsc_name_kannada,
+            
+                    -- Reeler Type Master
+                    rt.reeler_type_master_name,
+                    rt.reeler_type_name_in_kannada,
+                    rt.no_of_device_allowed,
+            
+                    -- Location
+                    dist.DISTRICT_NAME AS district,
+                    dist.district_name_in_kannada AS district_kannada,
+                    tal.TALUK_NAME AS taluk,
+                    tal.taluk_name_in_kannada AS taluk_kannada,
+                    hob.HOBLI_NAME AS hobli,
+                    hob.hobli_name_in_kannada AS hobli_kannada,
+                    vill.VILLAGE_NAME AS village,
+                    vill.village_name_in_kannada AS village_kannada,
+            
+                    -- GPS
+                    r.gps_lat,
+                    r.gps_lng,
+                    r.chakbandi_lat,
+                    r.chakbandi_lng,
+            
+                    -- Bank Details
+                    r.bank_name,
+                    r.bank_account_number,
+                    r.branch_name,
+                    r.ifsc_code,
+            
+                    -- Mahajar Directions
+                    r.mahajar_east,
+                    r.mahajar_west,
+                    r.mahajar_north,
+                    r.mahajar_south,
+                    r.mahajar_north_east,
+                    r.mahajar_north_west,
+                    r.mahajar_south_east,
+                    r.mahajar_south_west
+                FROM dbo.reeler r
+                LEFT JOIN dbo.caste c ON r.caste_id = c.caste_id
+                LEFT JOIN dbo.EDUCATION e ON r.education_id = e.EDUCATION_ID
+                LEFT JOIN dbo.machine_type_master m ON r.machine_type_id = m.machine_type_id
+                LEFT JOIN dbo.tsc_master tsc ON r.tsc_master_id = tsc.tsc_master_id
+                LEFT JOIN dbo.reeler_type_master rt ON r.reeler_type_master_id = rt.reeler_type_master_id
+                LEFT JOIN dbo.DISTRICT dist ON r.district_id = dist.DISTRICT_ID
+                LEFT JOIN dbo.TALUK tal ON r.taluk_id = tal.TALUK_ID
+                LEFT JOIN dbo.HOBLI hob ON r.hobli_id = hob.HOBLI_ID
+                LEFT JOIN dbo.VILLAGE vill ON r.village_id = vill.VILLAGE_ID
+            """, nativeQuery = true)
+    List<Map<String, Object>> getFullReelerDetails();
 }

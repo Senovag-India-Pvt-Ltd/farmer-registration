@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Repository
@@ -24,9 +25,10 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
 
     public TraderLicense findByTraderLicenseIdAndActive(long id, boolean isActive);
 
-    public List<TraderLicense> findByTraderTypeMasterIdAndTraderLicenseNumberAndLicenseChallanNumberAndActive(long traderTypeMasterId, String traderLicenseNumber,String licenseChallanNumber,boolean isActive);
+    public List<TraderLicense> findByTraderTypeMasterIdAndTraderLicenseNumberAndLicenseChallanNumberAndActive(long traderTypeMasterId, String traderLicenseNumber, String licenseChallanNumber, boolean isActive);
 
     public TraderLicense findByTraderLicenseIdAndActiveIn(@Param("traderLicenseId") long traderLicenseId, @Param("active") Set<Boolean> active);
+
     @Query("select new com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO(" +
             " traderLicense.traderLicenseId," +
             " traderLicense.arnNumber," +
@@ -71,7 +73,7 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             "on traderLicense.districtId = district.districtId " +
             "where traderLicense.active = :isActive " +
             "ORDER BY traderLicense.firstName ASC"
-            )
+    )
     Page<TraderLicenseDTO> getByActiveOrderByTraderLicenseIdAsc(@Param("isActive") boolean isActive, final Pageable pageable);
 
 
@@ -407,4 +409,52 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             "on traderLicense.districtId = district.districtId " +
             "where traderLicense.active = :isActive AND traderLicense.marketMasterId = :marketId order by traderLicense.firstName ASC")
     public List<TraderLicenseDTO> getByTradersByMarketId(@Param("marketId") long marketId, @Param("isActive") boolean isActive);
+
+    @Query(value = """
+            SELECT
+                tl.trader_license_id,
+                tl.arn_number,
+                tl.trader_type_id,
+                tt.trader_type_name,
+                tt.trader_type_name_in_kannada,
+                tt.no_of_device_allowed,
+                tl.first_name,
+                tl.middle_name,
+                tl.last_name,
+                tl.father_name,
+                tl.state_id,
+                tl.district_id,
+                d.district_name,
+                d.district_name_in_kannada,
+                d.region,
+                d.code,
+                tl.address,
+                tl.premises_description,
+                tl.application_date,
+                tl.application_number,
+                tl.trader_license_number,
+                tl.representative_details,
+                tl.license_fee,
+                tl.license_challan_number,
+                tl.godown_details,
+                tl.silk_exchange_mahajar,
+                tl.license_number_sequence,
+                tl.silk_type,
+                tl.market_master_id,
+                tl.wallet_amount,
+                tl.mobile_number,
+                tl.is_activated,
+                tl.virtual_account_number,
+                tl.branch_name,
+                tl.ifsc_code,
+                tl.active,
+                tl.created_by,
+                tl.created_date,
+                tl.modified_by,
+                tl.modified_date
+            FROM trader_license tl
+            LEFT JOIN trader_type_master tt ON tl.trader_type_id = tt.trader_type_id
+            LEFT JOIN district d ON tl.district_id = d.district_id
+            """, nativeQuery = true)
+    List<Map<String, Object>> getFullTraderLicenseDetails();
 }
