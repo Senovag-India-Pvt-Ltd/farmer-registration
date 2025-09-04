@@ -184,6 +184,7 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
 
     @Query(value = """
                 SELECT
+                        ht.hd_ticket_id
                         ht.ticket_arn,
                         ht.hd_users_affected,
                         ht.query,
@@ -223,6 +224,7 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
 
     @Query(value = """
                 SELECT
+                    ts.tr_schedule_id,
                     ts.tr_stakeholder_type,
                     ts.tr_duration,
                     ts.tr_period,
@@ -263,6 +265,7 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
 
     @Query(value = """
                 SELECT
+                ts.tr_schedule_id,
                 ts.tr_stakeholder_type,
                 ts.tr_duration,
                 ts.tr_period,
