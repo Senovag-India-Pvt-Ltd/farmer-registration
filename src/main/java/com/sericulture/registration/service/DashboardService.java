@@ -86,4 +86,21 @@ public class DashboardService {
         return chowkiManagementRepository.getChawkiDistributionDetails();
     }
 
+    public List<Map<String, Object>> getCropInspectionDetails() {
+        return chowkiManagementRepository.getCropInspectionDetails();
+    }
+
+    public List<Map<String, Object>> getFitnessCertificateDetails() {
+        return chowkiManagementRepository.getFitnessCertificateDetails();
+    }
+
+    public List<Map<String, Object>> getFarmerMulberryExtensionDetails() {
+        return chowkiManagementRepository.getFarmerMulberryExtensionDetails();
+    }
+
+    public List<Map<String, Object>> getSupplyOfDisinfectantDetails() {
+        return chowkiManagementRepository.getSupplyOfDisinfectantDetails();
+    }
+
+
 }

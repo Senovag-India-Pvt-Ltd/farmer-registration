@@ -261,4 +261,64 @@ public class DashboardController {
         }
     }
 
+    @GetMapping("/getCropInspectionDetails")
+    public ResponseEntity<?> getCropInspectionDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getCropInspectionDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getFitnessCertificateDetails")
+    public ResponseEntity<?> getFitnessCertificateDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getFitnessCertificateDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getFarmerMulberryExtensionDetails")
+    public ResponseEntity<?> getFarmerMulberryExtensionDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getFarmerMulberryExtensionDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getSupplyOfDisinfectantDetails")
+    public ResponseEntity<?> getSupplyOfDisinfectantDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getSupplyOfDisinfectantDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
 }

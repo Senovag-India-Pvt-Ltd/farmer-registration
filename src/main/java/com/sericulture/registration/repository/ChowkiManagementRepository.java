@@ -700,4 +700,119 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
     """, nativeQuery = true)
     List<Map<String, Object>> getChawkiDistributionDetails();
 
+
+    @Query(value = """
+    SELECT
+            ci.date,
+            ci.note,
+            cs.name AS crop_status_name,
+            m.name AS mount_name,
+            r.name As reason_name,
+            ci.sale_and_disposal_id,
+            tm.name,
+            f.first_name,
+            f.father_name,
+            f.fruits_id
+        FROM
+            crop_inspection ci
+        Left JOIN
+            crop_status cs ON ci.crop_status_id = cs.crop_status_id
+        Left JOIN
+            farmer f ON ci.farmer_id = f.farmer_id
+        Left JOIN
+            sale_and_disposal_of_dfls sd ON sd.id = ci.sale_and_disposal_id
+        Left JOIN
+            mount m ON ci.mount_id = m.mount_id
+        Left JOIN
+            reason r ON ci.reason_id = r.reason_id
+        Left JOIN
+            tsc_master tm ON tm.tsc_master_id = sd.tsc
+    """, nativeQuery = true)
+    List<Map<String, Object>> getCropInspectionDetails();
+
+
+    @Query(value = """
+    SELECT
+               f.first_name,
+               f.father_name,
+               f.fruits_id,
+               fc.fitness_certificate_id,
+               fc.fitness_certificate_path,
+               fc.farmer_id,
+               sadod.rate_per100dfls_price,
+               sadod.number_of_dfls_disposed,
+               sadod.lot_number,
+               rm.race_name,
+               tm.name
+               FROM fitness_certificate fc
+               Inner JOIN sale_and_disposal_of_dfls sadod ON sadod.id = fc.sale_and_disposal_id  AND  sadod.active = 1
+               LEFT JOIN race_master rm ON rm.race_id = sadod.race_id AND rm.active = 1
+               LEFT JOIN farmer f ON fc.farmer_id = f.farmer_id AND f.active = 1
+               LEFT JOIN tsc_master tm ON sadod.tsc = tm.tsc_master_id AND tm.active = 1
+    """, nativeQuery = true)
+    List<Map<String, Object>> getFitnessCertificateDetails();
+
+
+    @Query(value = """
+    SELECT
+                F.name_kan AS first_name,
+                F.father_name,
+                F.fruits_id,
+                fm.scheme,
+                fa.address_text,
+                tm.name AS tsc,
+                tm.name_in_kannada,
+                mv.mulberry_variety_name,
+                mv.mulberry_variety_name_in_kannada,
+                fm.extension_date AS plantation_date,
+                fm.number_of_sapplings,
+                fm.mulberry_area,
+                fm.spacing,
+                fm.application_type,
+                fm.uprooting_reason,
+                fm.uprooting_date
+            FROM FARMER F
+            INNER JOIN farmer_address fa
+                ON F.FARMER_ID = fa.FARMER_ID
+               AND fa.active = 1
+            INNER JOIN farmer_land_details fl
+                ON F.FARMER_ID = fl.farmer_id
+               AND fa.FARMER_ID = fl.farmer_id
+               AND fl.active = 1
+            INNER JOIN farmer_mulberry_extension fm
+                ON F.FARMER_ID = fm.farmer_id
+               AND fm.farmer_id = fa.FARMER_ID
+               AND fm.farmer_land_details_id = fl.farmer_land_details_id
+               AND fm.active = 1
+            INNER JOIN mulberry_variety mv
+                ON fm.mulberry_variety_id = mv.mulberry_variety_id
+               AND mv.active = 1
+            LEFT JOIN tsc_master tm
+                ON F.tsc_master_id = tm.tsc_master_id
+               AND tm.active = 1
+    """, nativeQuery = true)
+    List<Map<String, Object>> getFarmerMulberryExtensionDetails();
+
+    @Query(value = """
+    SELECT
+                f.first_name,
+                f.father_name,
+                f.fruits_id,
+                sod.invoice_no_date,
+                sod.quantity,
+                sod.disinfectant_name,
+                sod.quantity_supplied,
+                sod.supply_date,
+                sod.size_of_rearing_house,
+                sod.no_of_dfls,
+                dm.disinfectant_master_name,
+                tm.name
+            FROM
+            supply_of_disinfectants sod
+            LEFT JOIN disinfectant_master dm ON dm.disinfectant_master_id = sod.disinfectant_master_id AND dm.active =1
+            LEFT JOIN farmer f ON sod.farmer_id  = f.FARMER_ID And f.active =1
+            LEFT JOIN tsc_master tm  ON tm.tsc_master_id  = f.tsc_master_id And tm.active = 1
+    """, nativeQuery = true)
+    List<Map<String, Object>> getSupplyOfDisinfectantDetails();
+
 }
