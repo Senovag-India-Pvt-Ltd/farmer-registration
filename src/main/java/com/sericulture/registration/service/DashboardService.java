@@ -45,6 +45,7 @@ public class DashboardService {
     public List<Map<String, Object>> getChawkiManagementDetails() {
         return chowkiManagementRepository.getChawkiManagementDetails();
     }
+
     public List<Map<String, Object>> getHelpDeskDetails() {
         return chowkiManagementRepository.getHelpDeskDetails();
     }
@@ -55,6 +56,10 @@ public class DashboardService {
 
     public List<Map<String, Object>> getTraineeDetails() {
         return chowkiManagementRepository.getTraineeDetails();
+    }
+
+    public List<Map<String, Object>> getDBTDetails() {
+        return chowkiManagementRepository.getDBTDetails();
     }
 
 }
