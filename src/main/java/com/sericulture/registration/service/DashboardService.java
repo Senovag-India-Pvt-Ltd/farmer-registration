@@ -62,4 +62,28 @@ public class DashboardService {
         return chowkiManagementRepository.getDBTDetails();
     }
 
+    public List<Map<String, Object>> getSeedMarketDetails() {
+        return chowkiManagementRepository.getSeedMarketDetails();
+    }
+
+    public List<Map<String, Object>> getMaintenanceAndSaleOfNurseryDetails() {
+        return chowkiManagementRepository.getMaintenanceAndSaleOfNurseryDetails();
+    }
+
+    public List<Map<String, Object>> getMaintenanceOfMulberryGardenDetails() {
+        return chowkiManagementRepository.getMaintenanceOfMulberryGardenDetails();
+    }
+
+    public List<Map<String, Object>> getSeedCuttingBankDetails() {
+        return chowkiManagementRepository.getSeedCuttingBankDetails();
+    }
+
+    public List<Map<String, Object>> getSupplyOfCocoonsDetails() {
+        return chowkiManagementRepository.getSupplyOfCocoonsDetails();
+    }
+
+    public List<Map<String, Object>> getChawkiDistributionDetails() {
+        return chowkiManagementRepository.getChawkiDistributionDetails();
+    }
+
 }

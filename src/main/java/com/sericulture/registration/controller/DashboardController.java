@@ -171,4 +171,94 @@ public class DashboardController {
         }
     }
 
+    @GetMapping("/getSeedMarketDetails")
+    public ResponseEntity<?> getSeedMarketDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getSeedMarketDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getMaintenanceAndSaleOfNurseryDetails")
+    public ResponseEntity<?> getMaintenanceAndSaleOfNurseryDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getMaintenanceAndSaleOfNurseryDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getMaintenanceOfMulberryGardenDetails")
+    public ResponseEntity<?> getMaintenanceOfMulberryGardenDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getMaintenanceOfMulberryGardenDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getSeedCuttingBankDetails")
+    public ResponseEntity<?> getSeedCuttingBankDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getSeedCuttingBankDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getSupplyOfCocoonsDetails")
+    public ResponseEntity<?> getSupplyOfCocoonsDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getSupplyOfCocoonsDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getChawkiDistributionDetails")
+    public ResponseEntity<?> getChawkiDistributionDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getChawkiDistributionDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
 }
