@@ -184,7 +184,7 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
 
     @Query(value = """
                 SELECT
-                        ht.hd_ticket_id
+                        ht.hd_ticket_id,
                         ht.ticket_arn,
                         ht.hd_users_affected,
                         ht.query,
@@ -396,7 +396,6 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
     List<Map<String, Object>> getDBTDetails();
 
 
-
     @Query(value = """
             WITH PrimaryAddress AS (
             SELECT
@@ -482,337 +481,336 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
     List<Map<String, Object>> getSeedMarketDetails();
 
     @Query(value = """
-    WITH PrimaryAddress AS (
-        SELECT
-        ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn,
-        fa.farmer_id,
-        fa.DISTRICT_ID,
-        fa.TALUK_ID,
-        fa.HOBLI_ID,
-        fa.VILLAGE_ID
-        FROM farmer_address fa
-        WHERE fa.active = 1
-                )
-        SELECT
-        msn.id,
-        msn.farmer_name,
-        msn.fruits_id,
-        msn.area,
-        msn.date,
-        msn.date_of_planting,
-        msn.mulberry_variety_id,
-        msn.sapling_age,
-        msn.quantity,
-        msn.rate,
-        msn.receipt_number,
-        msn.remittance_details,
-        msn.nursery_sale_details,
-        v.village_name,
-        d.district_name,
-        t.taluk_name,
-        h.hobli_name,
-        tm.name AS tsc_name,
-        mv.mulberry_variety_name,
-        f.father_name
-        FROM maintenance_and_sale_of_nursery msn
-        LEFT JOIN farmer f ON f.fruits_id = msn.fruits_id
-        LEFT JOIN mulberry_variety mv  ON msn.mulberry_variety_id  = mv.mulberry_variety_id
-        LEFT JOIN PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
-        LEFT JOIN district d ON pa.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
-        LEFT JOIN taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
-        LEFT JOIN hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
-        LEFT JOIN village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
-        LEFT JOIN tsc_master tm ON f.tsc_master_id = tm.tsc_master_id AND tm.active = 1
-    """, nativeQuery = true)
-        List<Map<String, Object>> getMaintenanceAndSaleOfNurseryDetails();
+            WITH PrimaryAddress AS (
+                SELECT
+                ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn,
+                fa.farmer_id,
+                fa.DISTRICT_ID,
+                fa.TALUK_ID,
+                fa.HOBLI_ID,
+                fa.VILLAGE_ID
+                FROM farmer_address fa
+                WHERE fa.active = 1
+                        )
+                SELECT
+                msn.id,
+                msn.farmer_name,
+                msn.fruits_id,
+                msn.area,
+                msn.date,
+                msn.date_of_planting,
+                msn.mulberry_variety_id,
+                msn.sapling_age,
+                msn.quantity,
+                msn.rate,
+                msn.receipt_number,
+                msn.remittance_details,
+                msn.nursery_sale_details,
+                v.village_name,
+                d.district_name,
+                t.taluk_name,
+                h.hobli_name,
+                tm.name AS tsc_name,
+                mv.mulberry_variety_name,
+                f.father_name
+                FROM maintenance_and_sale_of_nursery msn
+                LEFT JOIN farmer f ON f.fruits_id = msn.fruits_id
+                LEFT JOIN mulberry_variety mv  ON msn.mulberry_variety_id  = mv.mulberry_variety_id
+                LEFT JOIN PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
+                LEFT JOIN district d ON pa.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
+                LEFT JOIN taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
+                LEFT JOIN hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
+                LEFT JOIN village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+                LEFT JOIN tsc_master tm ON f.tsc_master_id = tm.tsc_master_id AND tm.active = 1
+            """, nativeQuery = true)
+    List<Map<String, Object>> getMaintenanceAndSaleOfNurseryDetails();
 
     @Query(value = """
-    SELECT
-    MG.id,
-    MG.plot_number,
-    V.mulberry_variety_name AS variety,
-    MG.area_under_each_variety,
-    MG.pruning_date,
-    MG.plantation_date,
-    MG.fertilizer_application_date,
-    MG.fertilizer_application_status,
-    MG.fym_application_date,
-    MG.fym_application_status,
-    MG.irrigation_date,
-    MG.irrigation_status,
-    MG.foliar_spray_1,
-    MG.foliar_spray1_status,
-    MG.foliar_spray_2,
-    MG.foliar_spray2_status,
-    MG.brushing_date,
-    S.soil_type_name,
-    MG.mulberry_spacing
-    FROM maintenance_of_mulberry_garden MG
-    LEFT JOIN mulberry_variety V
-    ON V.mulberry_variety_id = MG.variety
-    AND V.active = 1
-    LEFT JOIN soil_type S
-    ON S.soil_type_id = MG.soil_type_id
-    AND S.active = 1
-    """, nativeQuery = true)
-            List<Map<String, Object>> getMaintenanceOfMulberryGardenDetails();
+            SELECT
+            MG.id,
+            MG.plot_number,
+            V.mulberry_variety_name AS variety,
+            MG.area_under_each_variety,
+            MG.pruning_date,
+            MG.plantation_date,
+            MG.fertilizer_application_date,
+            MG.fertilizer_application_status,
+            MG.fym_application_date,
+            MG.fym_application_status,
+            MG.irrigation_date,
+            MG.irrigation_status,
+            MG.foliar_spray_1,
+            MG.foliar_spray1_status,
+            MG.foliar_spray_2,
+            MG.foliar_spray2_status,
+            MG.brushing_date,
+            S.soil_type_name,
+            MG.mulberry_spacing
+            FROM maintenance_of_mulberry_garden MG
+            LEFT JOIN mulberry_variety V
+            ON V.mulberry_variety_id = MG.variety
+            AND V.active = 1
+            LEFT JOIN soil_type S
+            ON S.soil_type_id = MG.soil_type_id
+            AND S.active = 1
+            """, nativeQuery = true)
+    List<Map<String, Object>> getMaintenanceOfMulberryGardenDetails();
 
 
     @Query(value = """
-    WITH PrimaryAddress AS (
-        SELECT
-            ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn,
-            fa.farmer_id,
-            fa.DISTRICT_ID,
-            fa.TALUK_ID,
-            fa.HOBLI_ID,
-            fa.VILLAGE_ID
-        FROM farmer_address fa
-        WHERE fa.active = 1
-    )
-    SELECT
-        scb.id,
-        f.first_name,
-        f.father_name,
-        scb.fruits_id,
-        scb.date_of_pruning,
-        scb.quantity_of_seed_cuttings,
-        scb.rate_per_tonne,
-        scb.receipt_number,
-        scb.remittance_details,
-        v.village_name,
-        d.district_name,
-        t.taluk_name,
-        h.hobli_name,
-        tm.name
-    FROM seed_cutting_bank scb
-    LEFT JOIN farmer f ON f.fruits_id = scb.fruits_id
-    LEFT JOIN PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
-    LEFT JOIN district d ON pa.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
-    LEFT JOIN taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
-    LEFT JOIN hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
-    LEFT JOIN village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
-    LEFT JOIN tsc_master tm ON f.tsc_master_id = tm.tsc_master_id AND tm.active = 1
-    """, nativeQuery = true)
+            WITH PrimaryAddress AS (
+                SELECT
+                    ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn,
+                    fa.farmer_id,
+                    fa.DISTRICT_ID,
+                    fa.TALUK_ID,
+                    fa.HOBLI_ID,
+                    fa.VILLAGE_ID
+                FROM farmer_address fa
+                WHERE fa.active = 1
+            )
+            SELECT
+                scb.id,
+                f.first_name,
+                f.father_name,
+                scb.fruits_id,
+                scb.date_of_pruning,
+                scb.quantity_of_seed_cuttings,
+                scb.rate_per_tonne,
+                scb.receipt_number,
+                scb.remittance_details,
+                v.village_name,
+                d.district_name,
+                t.taluk_name,
+                h.hobli_name,
+                tm.name
+            FROM seed_cutting_bank scb
+            LEFT JOIN farmer f ON f.fruits_id = scb.fruits_id
+            LEFT JOIN PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
+            LEFT JOIN district d ON pa.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
+            LEFT JOIN taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
+            LEFT JOIN hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
+            LEFT JOIN village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+            LEFT JOIN tsc_master tm ON f.tsc_master_id = tm.tsc_master_id AND tm.active = 1
+            """, nativeQuery = true)
     List<Map<String, Object>> getSeedCuttingBankDetails();
 
 
     @Query(value = """
-    SELECT
-        a.id,
-        a.brushing_date,
-        a.chawki_percentage,
-        a.cocoon_assessment_details,
-        a.cold_storage_details,
-        a.crop_number,
-        a.released_on_date,
-        a.spun_on_date,
-        a.spun_on_to_date,
-        a.worm_test_details,
-        a.worm_weight,
-        dm.disinfectant_master_name,
-
-        gnm.generation_number,
-        b.hatching_date,
-        b.invoice_date,
-        b.invoice_number,
-        b.laid_on_date,
-        lnm.line_name,
-        b.lot_number,
-        b.number_of_dfls_released,
-        rm.race_name,
-        b.number_of_dfls_received,
-        a.cocoon_assessment_details / b.number_of_dfls_released AS AVG_COCOONS,
-
-        s.date_of_supply,
-        s.dispatch_date,
-        s.invoice_no,
-        s.number_of_cocoons_dispatched,
-        s.screening_batch_no,
-        s.cacoons_supplied_in_kg,
-    
-        g.grainage_master_name,
-        g.grainage_master_name_in_kannada,
-        f.farm_name,
-        f.farm_name_in_kannada
-        FROM rearing_of_dfls a
-        INNER JOIN receipt_of_dfls b
-          ON a.lot_number_id = b.id
-         AND a.user_master_id = b.user_master_id
-        LEFT JOIN supply_of_cocoons s
-          ON s.lot_number = b.lot_number
-        LEFT JOIN farm_master f
-          ON f.user_master_id = a.user_master_id
-        LEFT JOIN grainage_master g
-          ON b.grainage_id = g.grainage_master_id
-        LEFT JOIN disinfectant_master dm 
-          ON a.disinfectant_master_id  = dm.disinfectant_master_id
-        LEFT JOIN generation_number_master gnm 
-          ON b.generation_number_id   = gnm.generation_number_id
-        LEFT JOIN line_name_master lnm
-          ON b.line_name_id   = lnm.line_name_id
-        LEFT JOIN race_master rm
-          ON b.race_of_dfls    = rm.race_id
-    """, nativeQuery = true)
+            SELECT
+                a.id,
+                a.brushing_date,
+                a.chawki_percentage,
+                a.cocoon_assessment_details,
+                a.cold_storage_details,
+                a.crop_number,
+                a.released_on_date,
+                a.spun_on_date,
+                a.spun_on_to_date,
+                a.worm_test_details,
+                a.worm_weight,
+                dm.disinfectant_master_name,
+            
+                gnm.generation_number,
+                b.hatching_date,
+                b.invoice_date,
+                b.invoice_number,
+                b.laid_on_date,
+                lnm.line_name,
+                b.lot_number,
+                b.number_of_dfls_released,
+                rm.race_name,
+                b.number_of_dfls_received,
+                a.cocoon_assessment_details / b.number_of_dfls_released AS AVG_COCOONS,
+            
+                s.date_of_supply,
+                s.dispatch_date,
+                s.invoice_no,
+                s.number_of_cocoons_dispatched,
+                s.screening_batch_no,
+                s.cacoons_supplied_in_kg,
+            
+                g.grainage_master_name,
+                g.grainage_master_name_in_kannada,
+                f.farm_name,
+                f.farm_name_in_kannada
+                FROM rearing_of_dfls a
+                INNER JOIN receipt_of_dfls b
+                  ON a.lot_number_id = b.id
+                 AND a.user_master_id = b.user_master_id
+                LEFT JOIN supply_of_cocoons s
+                  ON s.lot_number = b.lot_number
+                LEFT JOIN farm_master f
+                  ON f.user_master_id = a.user_master_id
+                LEFT JOIN grainage_master g
+                  ON b.grainage_id = g.grainage_master_id
+                LEFT JOIN disinfectant_master dm 
+                  ON a.disinfectant_master_id  = dm.disinfectant_master_id
+                LEFT JOIN generation_number_master gnm 
+                  ON b.generation_number_id   = gnm.generation_number_id
+                LEFT JOIN line_name_master lnm
+                  ON b.line_name_id   = lnm.line_name_id
+                LEFT JOIN race_master rm
+                  ON b.race_of_dfls    = rm.race_id
+            """, nativeQuery = true)
     List<Map<String, Object>> getSupplyOfCocoonsDetails();
 
 
-
     @Query(value = """
-    SELECT
-        CM.chowki_id,
-        f.first_name,
-        f.father_name,
-        CM.fruits_id,
-        CM.source_of_dfls,
-        CM.race_of_dfls,
-        R.race_name,
-        CM.numbers_of_dfls,
-        CM.lot_numbers_of_the_rsp,
-        CM.lot_numbers_crc,
-        V.village_name,
-        D.district_name,
-        S.state_name,
-        T.taluk_name,
-        H.hobli_name,
-        U.name,
-        CM.village,
-        CM.district,
-        CM.state,
-        CM.taluk,
-        CM.hobli,
-        CM.tsc,
-        CM.sold_after_1st_or_2nd_mould,
-        CM.rate_per_100_dfls,
-        CM.price,
-        CM.hatching_date,
-        CM.dispatch_date,
-        CM.receipt_no
-    FROM chawki_distribution CM
-    LEFT JOIN farmer F ON F.fruits_id = CM.fruits_id
-    LEFT JOIN village V ON V.village_id = CM.village
-    LEFT JOIN district D ON D.district_id = CM.district
-    LEFT JOIN state S ON S.state_id = CM.state
-    LEFT JOIN taluk T ON T.taluk_id = CM.taluk
-    LEFT JOIN hobli H ON H.hobli_id = CM.hobli
-    LEFT JOIN race_master R ON R.race_id = CM.race_of_dfls
-    LEFT JOIN tsc_master U ON U.tsc_master_id = CM.tsc
-    """, nativeQuery = true)
+            SELECT
+                CM.chowki_id,
+                f.first_name,
+                f.father_name,
+                CM.fruits_id,
+                CM.source_of_dfls,
+                CM.race_of_dfls,
+                R.race_name,
+                CM.numbers_of_dfls,
+                CM.lot_numbers_of_the_rsp,
+                CM.lot_numbers_crc,
+                V.village_name,
+                D.district_name,
+                S.state_name,
+                T.taluk_name,
+                H.hobli_name,
+                U.name,
+                CM.village,
+                CM.district,
+                CM.state,
+                CM.taluk,
+                CM.hobli,
+                CM.tsc,
+                CM.sold_after_1st_or_2nd_mould,
+                CM.rate_per_100_dfls,
+                CM.price,
+                CM.hatching_date,
+                CM.dispatch_date,
+                CM.receipt_no
+            FROM chawki_distribution CM
+            LEFT JOIN farmer F ON F.fruits_id = CM.fruits_id
+            LEFT JOIN village V ON V.village_id = CM.village
+            LEFT JOIN district D ON D.district_id = CM.district
+            LEFT JOIN state S ON S.state_id = CM.state
+            LEFT JOIN taluk T ON T.taluk_id = CM.taluk
+            LEFT JOIN hobli H ON H.hobli_id = CM.hobli
+            LEFT JOIN race_master R ON R.race_id = CM.race_of_dfls
+            LEFT JOIN tsc_master U ON U.tsc_master_id = CM.tsc
+            """, nativeQuery = true)
     List<Map<String, Object>> getChawkiDistributionDetails();
 
 
     @Query(value = """
-    SELECT
-            ci.date,
-            ci.note,
-            cs.name AS crop_status_name,
-            m.name AS mount_name,
-            r.name As reason_name,
-            ci.sale_and_disposal_id,
-            tm.name,
-            f.first_name,
-            f.father_name,
-            f.fruits_id
-        FROM
-            crop_inspection ci
-        Left JOIN
-            crop_status cs ON ci.crop_status_id = cs.crop_status_id
-        Left JOIN
-            farmer f ON ci.farmer_id = f.farmer_id
-        Left JOIN
-            sale_and_disposal_of_dfls sd ON sd.id = ci.sale_and_disposal_id
-        Left JOIN
-            mount m ON ci.mount_id = m.mount_id
-        Left JOIN
-            reason r ON ci.reason_id = r.reason_id
-        Left JOIN
-            tsc_master tm ON tm.tsc_master_id = sd.tsc
-    """, nativeQuery = true)
+            SELECT
+                    ci.date,
+                    ci.note,
+                    cs.name AS crop_status_name,
+                    m.name AS mount_name,
+                    r.name As reason_name,
+                    ci.sale_and_disposal_id,
+                    tm.name,
+                    f.first_name,
+                    f.father_name,
+                    f.fruits_id
+                FROM
+                    crop_inspection ci
+                Left JOIN
+                    crop_status cs ON ci.crop_status_id = cs.crop_status_id
+                Left JOIN
+                    farmer f ON ci.farmer_id = f.farmer_id
+                Left JOIN
+                    sale_and_disposal_of_dfls sd ON sd.id = ci.sale_and_disposal_id
+                Left JOIN
+                    mount m ON ci.mount_id = m.mount_id
+                Left JOIN
+                    reason r ON ci.reason_id = r.reason_id
+                Left JOIN
+                    tsc_master tm ON tm.tsc_master_id = sd.tsc
+            """, nativeQuery = true)
     List<Map<String, Object>> getCropInspectionDetails();
 
 
     @Query(value = """
-    SELECT
-               f.first_name,
-               f.father_name,
-               f.fruits_id,
-               fc.fitness_certificate_id,
-               fc.fitness_certificate_path,
-               fc.farmer_id,
-               sadod.rate_per100dfls_price,
-               sadod.number_of_dfls_disposed,
-               sadod.lot_number,
-               rm.race_name,
-               tm.name
-               FROM fitness_certificate fc
-               Inner JOIN sale_and_disposal_of_dfls sadod ON sadod.id = fc.sale_and_disposal_id  AND  sadod.active = 1
-               LEFT JOIN race_master rm ON rm.race_id = sadod.race_id AND rm.active = 1
-               LEFT JOIN farmer f ON fc.farmer_id = f.farmer_id AND f.active = 1
-               LEFT JOIN tsc_master tm ON sadod.tsc = tm.tsc_master_id AND tm.active = 1
-    """, nativeQuery = true)
+            SELECT
+                       f.first_name,
+                       f.father_name,
+                       f.fruits_id,
+                       fc.fitness_certificate_id,
+                       fc.fitness_certificate_path,
+                       fc.farmer_id,
+                       sadod.rate_per100dfls_price,
+                       sadod.number_of_dfls_disposed,
+                       sadod.lot_number,
+                       rm.race_name,
+                       tm.name
+                       FROM fitness_certificate fc
+                       Inner JOIN sale_and_disposal_of_dfls sadod ON sadod.id = fc.sale_and_disposal_id  AND  sadod.active = 1
+                       LEFT JOIN race_master rm ON rm.race_id = sadod.race_id AND rm.active = 1
+                       LEFT JOIN farmer f ON fc.farmer_id = f.farmer_id AND f.active = 1
+                       LEFT JOIN tsc_master tm ON sadod.tsc = tm.tsc_master_id AND tm.active = 1
+            """, nativeQuery = true)
     List<Map<String, Object>> getFitnessCertificateDetails();
 
 
     @Query(value = """
-    SELECT
-                F.name_kan AS first_name,
-                F.father_name,
-                F.fruits_id,
-                fm.scheme,
-                fa.address_text,
-                tm.name AS tsc,
-                tm.name_in_kannada,
-                mv.mulberry_variety_name,
-                mv.mulberry_variety_name_in_kannada,
-                fm.extension_date AS plantation_date,
-                fm.number_of_sapplings,
-                fm.mulberry_area,
-                fm.spacing,
-                fm.application_type,
-                fm.uprooting_reason,
-                fm.uprooting_date
-            FROM FARMER F
-            INNER JOIN farmer_address fa
-                ON F.FARMER_ID = fa.FARMER_ID
-               AND fa.active = 1
-            INNER JOIN farmer_land_details fl
-                ON F.FARMER_ID = fl.farmer_id
-               AND fa.FARMER_ID = fl.farmer_id
-               AND fl.active = 1
-            INNER JOIN farmer_mulberry_extension fm
-                ON F.FARMER_ID = fm.farmer_id
-               AND fm.farmer_id = fa.FARMER_ID
-               AND fm.farmer_land_details_id = fl.farmer_land_details_id
-               AND fm.active = 1
-            INNER JOIN mulberry_variety mv
-                ON fm.mulberry_variety_id = mv.mulberry_variety_id
-               AND mv.active = 1
-            LEFT JOIN tsc_master tm
-                ON F.tsc_master_id = tm.tsc_master_id
-               AND tm.active = 1
-    """, nativeQuery = true)
+            SELECT
+                        F.name_kan AS first_name,
+                        F.father_name,
+                        F.fruits_id,
+                        fm.scheme,
+                        fa.address_text,
+                        tm.name AS tsc,
+                        tm.name_in_kannada,
+                        mv.mulberry_variety_name,
+                        mv.mulberry_variety_name_in_kannada,
+                        fm.extension_date AS plantation_date,
+                        fm.number_of_sapplings,
+                        fm.mulberry_area,
+                        fm.spacing,
+                        fm.application_type,
+                        fm.uprooting_reason,
+                        fm.uprooting_date
+                    FROM FARMER F
+                    INNER JOIN farmer_address fa
+                        ON F.FARMER_ID = fa.FARMER_ID
+                       AND fa.active = 1
+                    INNER JOIN farmer_land_details fl
+                        ON F.FARMER_ID = fl.farmer_id
+                       AND fa.FARMER_ID = fl.farmer_id
+                       AND fl.active = 1
+                    INNER JOIN farmer_mulberry_extension fm
+                        ON F.FARMER_ID = fm.farmer_id
+                       AND fm.farmer_id = fa.FARMER_ID
+                       AND fm.farmer_land_details_id = fl.farmer_land_details_id
+                       AND fm.active = 1
+                    INNER JOIN mulberry_variety mv
+                        ON fm.mulberry_variety_id = mv.mulberry_variety_id
+                       AND mv.active = 1
+                    LEFT JOIN tsc_master tm
+                        ON F.tsc_master_id = tm.tsc_master_id
+                       AND tm.active = 1
+            """, nativeQuery = true)
     List<Map<String, Object>> getFarmerMulberryExtensionDetails();
 
     @Query(value = """
-    SELECT
-                f.first_name,
-                f.father_name,
-                f.fruits_id,
-                sod.invoice_no_date,
-                sod.quantity,
-                sod.disinfectant_name,
-                sod.quantity_supplied,
-                sod.supply_date,
-                sod.size_of_rearing_house,
-                sod.no_of_dfls,
-                dm.disinfectant_master_name,
-                tm.name
-            FROM
-            supply_of_disinfectants sod
-            LEFT JOIN disinfectant_master dm ON dm.disinfectant_master_id = sod.disinfectant_master_id AND dm.active =1
-            LEFT JOIN farmer f ON sod.farmer_id  = f.FARMER_ID And f.active =1
-            LEFT JOIN tsc_master tm  ON tm.tsc_master_id  = f.tsc_master_id And tm.active = 1
-    """, nativeQuery = true)
+            SELECT
+                        f.first_name,
+                        f.father_name,
+                        f.fruits_id,
+                        sod.invoice_no_date,
+                        sod.quantity,
+                        sod.disinfectant_name,
+                        sod.quantity_supplied,
+                        sod.supply_date,
+                        sod.size_of_rearing_house,
+                        sod.no_of_dfls,
+                        dm.disinfectant_master_name,
+                        tm.name
+                    FROM
+                    supply_of_disinfectants sod
+                    LEFT JOIN disinfectant_master dm ON dm.disinfectant_master_id = sod.disinfectant_master_id AND dm.active =1
+                    LEFT JOIN farmer f ON sod.farmer_id  = f.FARMER_ID And f.active =1
+                    LEFT JOIN tsc_master tm  ON tm.tsc_master_id  = f.tsc_master_id And tm.active = 1
+            """, nativeQuery = true)
     List<Map<String, Object>> getSupplyOfDisinfectantDetails();
 
 }
