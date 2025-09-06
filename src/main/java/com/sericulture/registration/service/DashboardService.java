@@ -102,5 +102,21 @@ public class DashboardService {
         return chowkiManagementRepository.getSupplyOfDisinfectantDetails();
     }
 
+    public List<Map<String, Object>> getMulberryTargetDetails() {
+        return chowkiManagementRepository.getMulberryTargetDetails();
+    }
+
+    public List<Map<String, Object>> getProductionTargetDetails() {
+        return chowkiManagementRepository.getProductionTargetDetails();
+    }
+
+    public List<Map<String, Object>> getSchemeTargetDetails() {
+        return chowkiManagementRepository.getSchemeTargetDetails();
+    }
+
+    public List<Map<String, Object>> getTargetDetails() {
+        return chowkiManagementRepository.getTargetDetails();
+    }
+
 
 }

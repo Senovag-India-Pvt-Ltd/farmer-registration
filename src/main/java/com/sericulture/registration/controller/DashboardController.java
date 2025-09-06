@@ -321,4 +321,65 @@ public class DashboardController {
         }
     }
 
+    @GetMapping("/getMulberryTargetDetails")
+    public ResponseEntity<?> getMulberryTargetDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getMulberryTargetDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getProductionTargetDetails")
+    public ResponseEntity<?> getProductionTargetDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getProductionTargetDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getSchemeTargetDetails")
+    public ResponseEntity<?> getSchemeTargetDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getSchemeTargetDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+
+    @GetMapping("/getTargetDetails")
+    public ResponseEntity<?> getTargetDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getTargetDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
 }
