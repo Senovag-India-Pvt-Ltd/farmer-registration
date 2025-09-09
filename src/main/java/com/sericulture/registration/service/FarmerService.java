@@ -1701,6 +1701,10 @@ public class FarmerService {
 //        }
 //        return convertDTOToMapResponse(page);
 //    }
+
+    private Long normalizeFilter(Long value) {
+        return (value != null && value == 0) ? null : value;
+    }
     public Map<String, Object> getPaginatedFarmerDetailsWithJoinWithFilters(final Pageable pageable, int type, String searchText, int joinColumnType) {
         Page<FarmerDTO> page;
 
@@ -1754,84 +1758,79 @@ public class FarmerService {
 
     public ResponseEntity<?> kaFarmersWithoutFruitsIds(Long stateId, Long districtId, Long talukId, Long hobliId,
                                                        int pageNumber, int pageSize) {
+
+
         ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
         List<FarmerResponse> responseList = new ArrayList<>();
 
-        // Convert 0 → null
-        stateId = (stateId != null && stateId == 0) ? null : stateId;
-        districtId = (districtId != null && districtId == 0) ? null : districtId;
-        talukId = (talukId != null && talukId == 0) ? null : talukId;
-        hobliId = (hobliId != null && hobliId == 0) ? null : hobliId;
+        stateId = normalizeFilter(stateId);
+        districtId = normalizeFilter(districtId);
+        talukId = normalizeFilter(talukId);
+        hobliId = normalizeFilter(hobliId);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<FarmerDTO> page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsIds(
                 true, stateId, districtId, talukId, hobliId, pageable);
 
-        List<FarmerDTO> list = page.getContent();
-        long totalRecords = page.getTotalElements();
+        mapFarmerResponses(responseList, page.getContent(), pageNumber, pageSize);
 
-        mapFarmerResponses(responseList, list, pageNumber, pageSize);
-
-        rw.setTotalRecords(totalRecords);
+        rw.setTotalRecords(page.getTotalElements());
         rw.setContent(responseList);
         return ResponseEntity.ok(rw);
     }
-
 
     public ResponseEntity<?> nonKaFarmers(Long stateId, Long districtId, Long talukId, Long hobliId,
                                           int pageNumber, int pageSize) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
         List<FarmerResponse> responseList = new ArrayList<>();
 
-        // Convert 0 → null
-        stateId = (stateId != null && stateId == 0) ? null : stateId;
-        districtId = (districtId != null && districtId == 0) ? null : districtId;
-        talukId = (talukId != null && talukId == 0) ? null : talukId;
-        hobliId = (hobliId != null && hobliId == 0) ? null : hobliId;
+        stateId = normalizeFilter(stateId);
+        districtId = normalizeFilter(districtId);
+        talukId = normalizeFilter(talukId);
+        hobliId = normalizeFilter(hobliId);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<FarmerDTO> page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmersList(
                 true, stateId, districtId, talukId, hobliId, pageable);
 
-        List<FarmerDTO> list = page.getContent();
-        long totalRecords = page.getTotalElements();
+        mapFarmerResponses(responseList, page.getContent(), pageNumber, pageSize);
 
-        mapFarmerResponses(responseList, list, pageNumber, pageSize);
-
-        rw.setTotalRecords(totalRecords);
+        rw.setTotalRecords(page.getTotalElements());
         rw.setContent(responseList);
         return ResponseEntity.ok(rw);
     }
 
 
+
     public FileInputStream kaFarmersWithoutFruitsIdsReport(Long stateId, Long districtId, Long talukId, Long hobliId,
                                                            boolean isActive, int pageNumber, int pageSize) throws Exception {
-        stateId = (stateId != null && stateId == 0) ? null : stateId;
-        districtId = (districtId != null && districtId == 0) ? null : districtId;
-        talukId = (talukId != null && talukId == 0) ? null : talukId;
-        hobliId = (hobliId != null && hobliId == 0) ? null : hobliId;
+        stateId = normalizeFilter(stateId);
+        districtId = normalizeFilter(districtId);
+        talukId = normalizeFilter(talukId);
+        hobliId = normalizeFilter(hobliId);
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Pageable pageable = null;
         Page<FarmerDTO> page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsIds(
                 isActive, stateId, districtId, talukId, hobliId, pageable);
 
         return exportFarmerReport(page.getContent(), "ka_farmers_report");
-    }
 
+    }
 
     public FileInputStream nonKaFarmersReport(Long stateId, Long districtId, Long talukId, Long hobliId,
                                               boolean isActive, int pageNumber, int pageSize) throws Exception {
-        stateId = (stateId != null && stateId == 0) ? null : stateId;
-        districtId = (districtId != null && districtId == 0) ? null : districtId;
-        talukId = (talukId != null && talukId == 0) ? null : talukId;
-        hobliId = (hobliId != null && hobliId == 0) ? null : hobliId;
+        stateId = normalizeFilter(stateId);
+        districtId = normalizeFilter(districtId);
+        talukId = normalizeFilter(talukId);
+        hobliId = normalizeFilter(hobliId);
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Pageable pageable = null;
         Page<FarmerDTO> page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmersList(
                 isActive, stateId, districtId, talukId, hobliId, pageable);
 
         return exportFarmerReport(page.getContent(), "non_ka_farmers_report");
     }
+
 
 
 
@@ -1855,50 +1854,46 @@ public class FarmerService {
         }
     }
 
-
-
     private FileInputStream exportFarmerReport(List<FarmerDTO> farmers, String filePrefix) throws Exception {
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Farmers");
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Farmers");
 
-        // Header
-        Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("S.No");
-        headerRow.createCell(1).setCellValue("Farmer Number");
-        headerRow.createCell(2).setCellValue("Name");
-        headerRow.createCell(3).setCellValue("Mobile");
-        headerRow.createCell(4).setCellValue("Aadhaar");
-        headerRow.createCell(5).setCellValue("Farmer Type");
+            // Header
+            Row headerRow = sheet.createRow(0);
+            headerRow.createCell(0).setCellValue("S.No");
+            headerRow.createCell(1).setCellValue("Farmer Number");
+            headerRow.createCell(2).setCellValue("Name");
+            headerRow.createCell(3).setCellValue("Mobile");
+            headerRow.createCell(4).setCellValue("Aadhaar");
+            headerRow.createCell(5).setCellValue("Farmer Type");
 
+            // Data
+            int rowIdx = 1, serial = 1;
+            for (FarmerDTO dto : farmers) {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(serial++);
+                row.createCell(1).setCellValue(dto.getFarmerNumber());
+                row.createCell(2).setCellValue(dto.getFirstName() + " " + dto.getLastName());
+                row.createCell(3).setCellValue(dto.getMobileNumber());
+                row.createCell(4).setCellValue(dto.getAadhaarNumber());
+                row.createCell(5).setCellValue(dto.getFarmerTypeName());
+            }
 
+            for (int i = 0; i <= 5; i++) sheet.autoSizeColumn(i);
 
-        // Data
-        int rowIdx = 1, serial = 1;
-        for (FarmerDTO dto : farmers) {
-            Row row = sheet.createRow(rowIdx++);
-            row.createCell(0).setCellValue(serial++);
-            row.createCell(1).setCellValue(dto.getFarmerNumber());
-            row.createCell(2).setCellValue(dto.getFirstName() + " " + dto.getLastName());
-            row.createCell(3).setCellValue(dto.getMobileNumber());
-            row.createCell(4).setCellValue(dto.getAadhaarNumber());
-            row.createCell(5).setCellValue(dto.getFarmerTypeName());
+            String userHome = System.getProperty("user.home");
+            Path directory = Paths.get(userHome, "Downloads");
+            Files.createDirectories(directory);
+            Path filePath = directory.resolve(filePrefix + "_" + Util.getISTLocalDate() + ".xlsx");
 
+            try (FileOutputStream fileOut = new FileOutputStream(filePath.toFile())) {
+                workbook.write(fileOut);
+            }
+
+            return new FileInputStream(filePath.toFile());
         }
-
-        for (int i = 0; i <= 5; i++) sheet.autoSizeColumn(i);
-
-        String userHome = System.getProperty("user.home");
-        Path directory = Paths.get(userHome, "Downloads");
-        Files.createDirectories(directory);
-        Path filePath = directory.resolve(filePrefix + "_" + Util.getISTLocalDate() + ".xlsx");
-
-        try (FileOutputStream fileOut = new FileOutputStream(filePath.toString())) {
-            workbook.write(fileOut);
-        }
-        workbook.close();
-
-        return new FileInputStream(filePath.toString());
     }
+
 
 
     private Map<String, Object> convertDTOToMapResponse(final Page<FarmerDTO> activeFarmers) {
