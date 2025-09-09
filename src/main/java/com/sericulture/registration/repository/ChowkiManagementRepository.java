@@ -814,181 +814,183 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
     List<Map<String, Object>> getSupplyOfDisinfectantDetails();
 
     @Query(value = """
-    SELECT
-    mt.mulberry_targets_id,
-    mt.mulberry_target_type_id,
-    mtt.mulberry_target_type_name,
-    mt.tsc_master_id,
-    tm.name,
-    mt.district_id,
-    d.DISTRICT_NAME,
-    mt.taluk_id,
-    t.TALUK_NAME,
-    mt.financial_year_master_id,
-    fym.financial_year,
-    mt.target_type,
-    mt.user_master_id,
-    um.username,
-    mt.month,
-    mt.value,
-    mt.page_type
-    FROM mulberry_targets mt
-    LEFT JOIN mulberry_target_type mtt
-    ON mt.mulberry_target_type_id = mtt.mulberry_target_type_id
-    LEFT JOIN tsc_master tm
-    ON mt.tsc_master_id = tm.tsc_master_id
-    LEFT JOIN TALUK t
-    ON mt.taluk_id = t.TALUK_ID
-    LEFT JOIN DISTRICT d
-    ON mt.district_id = d.DISTRICT_ID
-    LEFT JOIN financial_year_master fym
-    ON mt.financial_year_master_id = fym.financial_year_master_id
-    LEFT JOIN user_master um
-    ON mt.user_master_id = um.user_master_id
-    """, nativeQuery = true)
-        List<Map<String, Object>> getMulberryTargetDetails();
-
-
-    @Query(value = """
-    SELECT
-        pt.production_targets_id,
-        pt.mulberry_target_type_id,
-        mtt.mulberry_target_type_name,
-        pt.tsc_master_id,
-        tm.name,
-        pt.district_id,
-        d.DISTRICT_NAME,
-        pt.financial_year_master_id,
-        fym.financial_year,
-        pt.race_master_id,
-        rm.race_name,
-        pt.user_master_id,
-        um.username,
-        pt.month,
-        pt.value,
-        pt.taluk_id,
-        t.TALUK_NAME
-    FROM production_targets pt
-    LEFT JOIN mulberry_target_type mtt
-           ON pt.mulberry_target_type_id = mtt.mulberry_target_type_id
-    LEFT JOIN tsc_master tm
-           ON pt.tsc_master_id = tm.tsc_master_id
-    LEFT JOIN DISTRICT d
-           ON pt.district_id = d.DISTRICT_ID
-    LEFT JOIN TALUK t
-           ON pt.taluk_id = t.TALUK_ID
-    LEFT JOIN financial_year_master fym
-           ON pt.financial_year_master_id = fym.financial_year_master_id
-    LEFT JOIN race_master rm
-           ON pt.race_master_id = rm.race_id
-    LEFT JOIN user_master um
-           ON pt.user_master_id = um.user_master_id;
-    """, nativeQuery = true)
-    List<Map<String, Object>> getProductionTargetDetails();
-
-
-    @Query(value = """
-    SELECT
-        st.scheme_targets_id,
-        st.mulberry_target_type_id,
-        mtt.mulberry_target_type_name,
-        st.tsc_master_id,
-        tm.name,
-        st.district_id,
-        d.DISTRICT_NAME,
-        st.taluk_id,
-        t.TALUK_NAME,
-        st.financial_year_master_id,
-        fym.financial_year,
-        st.race_master_id,
-        rm.race_name,
-        st.sc_head_account_id,
-        sha.sc_head_account_name,
-        st.sc_component_id,
-        scc.sc_component_name,
-        st.sc_scheme_details_id,
-        ssd.scheme_name,
-        st.sc_sub_scheme_details_id,
-        sssd.sub_scheme_name,
-        st.sc_category_id,
-        sc.category_name,
-        st.value,
-        st.target,
-        st.month,
-        st.target_type,
-        st.state_share,
-        st.central_share,
-        st.user_master_id,
-        um.username
-    FROM scheme_targets st
-    LEFT JOIN mulberry_target_type mtt
-           ON st.mulberry_target_type_id = mtt.mulberry_target_type_id
-    LEFT JOIN tsc_master tm
-           ON st.tsc_master_id = tm.tsc_master_id
-    LEFT JOIN DISTRICT d
-           ON st.district_id = d.DISTRICT_ID
-    LEFT JOIN TALUK t
-           ON st.taluk_id = t.TALUK_ID
-    LEFT JOIN financial_year_master fym
-           ON st.financial_year_master_id = fym.financial_year_master_id
-    LEFT JOIN race_master rm
-           ON st.race_master_id = rm.race_id
-    LEFT JOIN sc_head_account sha
-           ON st.sc_head_account_id = sha.sc_head_account_id
-    LEFT JOIN sc_component scc
-           ON st.sc_component_id = scc.sc_component_id
-    LEFT JOIN sc_scheme_details ssd
-           ON st.sc_scheme_details_id = ssd.sc_scheme_details_id
-    LEFT JOIN sc_sub_scheme_details sssd
-           ON st.sc_sub_scheme_details_id = sssd.sc_sub_scheme_details_id
-    LEFT JOIN sc_category sc
-           ON st.sc_category_id = sc.sc_category_id
-    LEFT JOIN user_master um
-           ON st.user_master_id = um.user_master_id;
-    """, nativeQuery = true)
-    List<Map<String, Object>> getSchemeTargetDetails();
+            SELECT
+            mt.mulberry_targets_id,
+            mt.mulberry_target_type_id,
+            mtt.mulberry_target_type_name,
+            mt.tsc_master_id,
+            tm.name,
+            mt.district_id,
+            d.DISTRICT_NAME,
+            mt.taluk_id,
+            t.TALUK_NAME,
+            mt.financial_year_master_id,
+            fym.financial_year,
+            mt.target_type,
+            mt.user_master_id,
+            um.username,
+            mt.month,
+            mt.value,
+            mt.page_type
+            FROM mulberry_targets mt
+            LEFT JOIN mulberry_target_type mtt
+            ON mt.mulberry_target_type_id = mtt.mulberry_target_type_id
+            LEFT JOIN tsc_master tm
+            ON mt.tsc_master_id = tm.tsc_master_id
+            LEFT JOIN TALUK t
+            ON mt.taluk_id = t.TALUK_ID
+            LEFT JOIN DISTRICT d
+            ON mt.district_id = d.DISTRICT_ID
+            LEFT JOIN financial_year_master fym
+            ON mt.financial_year_master_id = fym.financial_year_master_id
+            LEFT JOIN user_master um
+            ON mt.user_master_id = um.user_master_id
+            """, nativeQuery = true)
+    List<Map<String, Object>> getMulberryTargetDetails();
 
 
     @Query(value = """
             SELECT
-                t.targets_id,
-                t.mulberry_target_type_id,
+                pt.production_targets_id,
+                pt.mulberry_target_type_id,
                 mtt.mulberry_target_type_name,
-                t.financial_year_master_id,
+                pt.tsc_master_id,
+                tm.name,
+                pt.district_id,
+                d.DISTRICT_NAME,
+                pt.financial_year_master_id,
                 fym.financial_year,
-                t.race_master_id,
+                pt.race_master_id,
                 rm.race_name,
-                t.training_institution_id,
-                tim.tr_institution_master_name,
-                t.farm_id,
-                fm.farm_name,
-                t.grainage_master_id,
-                gm.grainage_master_name,
-                t.course_name,
-                tcm.tr_course_name,
-                t.user_master_id,
+                pt.user_master_id,
                 um.username,
-                t.value,
-                t.target,
-                t.month
-            FROM targets t
+                pt.month,
+                pt.value,
+                pt.taluk_id,
+                t.TALUK_NAME,
+                pt.page_type
+            FROM production_targets pt
             LEFT JOIN mulberry_target_type mtt
-                   ON t.mulberry_target_type_id = mtt.mulberry_target_type_id
+                   ON pt.mulberry_target_type_id = mtt.mulberry_target_type_id
+            LEFT JOIN tsc_master tm
+                   ON pt.tsc_master_id = tm.tsc_master_id
+            LEFT JOIN DISTRICT d
+                   ON pt.district_id = d.DISTRICT_ID
+            LEFT JOIN TALUK t
+                   ON pt.taluk_id = t.TALUK_ID
             LEFT JOIN financial_year_master fym
-                   ON t.financial_year_master_id = fym.financial_year_master_id
+                   ON pt.financial_year_master_id = fym.financial_year_master_id
             LEFT JOIN race_master rm
-                   ON t.race_master_id = rm.race_id
-            LEFT JOIN tr_institution_master tim
-                   ON t.training_institution_id = tim.tr_institution_master_id
-            LEFT JOIN farm_master fm
-                   ON t.farm_id = fm.farm_id
-            LEFT JOIN grainage_master gm
-                   ON t.grainage_master_id = gm.grainage_master_id
-            LEFT JOIN tr_course_master tcm
-                   ON t.course_name = tcm.tr_course_id
+                   ON pt.race_master_id = rm.race_id
             LEFT JOIN user_master um
-                   ON t.user_master_id = um.user_master_id;
-    """, nativeQuery = true)
+                   ON pt.user_master_id = um.user_master_id;
+            """, nativeQuery = true)
+    List<Map<String, Object>> getProductionTargetDetails();
+
+
+    @Query(value = """
+            SELECT
+                st.scheme_targets_id,
+                st.mulberry_target_type_id,
+                mtt.mulberry_target_type_name,
+                st.tsc_master_id,
+                tm.name,
+                st.district_id,
+                d.DISTRICT_NAME,
+                st.taluk_id,
+                t.TALUK_NAME,
+                st.financial_year_master_id,
+                fym.financial_year,
+                st.race_master_id,
+                rm.race_name,
+                st.sc_head_account_id,
+                sha.sc_head_account_name,
+                st.sc_component_id,
+                scc.sc_component_name,
+                st.sc_scheme_details_id,
+                ssd.scheme_name,
+                st.sc_sub_scheme_details_id,
+                sssd.sub_scheme_name,
+                st.sc_category_id,
+                sc.category_name,
+                st.value,
+                st.target,
+                st.month,
+                st.target_type,
+                st.state_share,
+                st.central_share,
+                st.user_master_id,
+                um.username
+            FROM scheme_targets st
+            LEFT JOIN mulberry_target_type mtt
+                   ON st.mulberry_target_type_id = mtt.mulberry_target_type_id
+            LEFT JOIN tsc_master tm
+                   ON st.tsc_master_id = tm.tsc_master_id
+            LEFT JOIN DISTRICT d
+                   ON st.district_id = d.DISTRICT_ID
+            LEFT JOIN TALUK t
+                   ON st.taluk_id = t.TALUK_ID
+            LEFT JOIN financial_year_master fym
+                   ON st.financial_year_master_id = fym.financial_year_master_id
+            LEFT JOIN race_master rm
+                   ON st.race_master_id = rm.race_id
+            LEFT JOIN sc_head_account sha
+                   ON st.sc_head_account_id = sha.sc_head_account_id
+            LEFT JOIN sc_component scc
+                   ON st.sc_component_id = scc.sc_component_id
+            LEFT JOIN sc_scheme_details ssd
+                   ON st.sc_scheme_details_id = ssd.sc_scheme_details_id
+            LEFT JOIN sc_sub_scheme_details sssd
+                   ON st.sc_sub_scheme_details_id = sssd.sc_sub_scheme_details_id
+            LEFT JOIN sc_category sc
+                   ON st.sc_category_id = sc.sc_category_id
+            LEFT JOIN user_master um
+                   ON st.user_master_id = um.user_master_id;
+            """, nativeQuery = true)
+    List<Map<String, Object>> getSchemeTargetDetails();
+
+
+    @Query(value = """
+                    SELECT
+                        t.targets_id,
+                        t.mulberry_target_type_id,
+                        mtt.mulberry_target_type_name,
+                        t.financial_year_master_id,
+                        fym.financial_year,
+                        t.race_master_id,
+                        rm.race_name,
+                        t.training_institution_id,
+                        tim.tr_institution_master_name,
+                        t.farm_id,
+                        fm.farm_name,
+                        t.grainage_master_id,
+                        gm.grainage_master_name,
+                        t.course_name,
+                        tcm.tr_course_name,
+                        t.user_master_id,
+                        um.username,
+                        t.value,
+                        t.target,
+                        t.month,
+                        t.page_type
+                    FROM targets t
+                    LEFT JOIN mulberry_target_type mtt
+                           ON t.mulberry_target_type_id = mtt.mulberry_target_type_id
+                    LEFT JOIN financial_year_master fym
+                           ON t.financial_year_master_id = fym.financial_year_master_id
+                    LEFT JOIN race_master rm
+                           ON t.race_master_id = rm.race_id
+                    LEFT JOIN tr_institution_master tim
+                           ON t.training_institution_id = tim.tr_institution_master_id
+                    LEFT JOIN farm_master fm
+                           ON t.farm_id = fm.farm_id
+                    LEFT JOIN grainage_master gm
+                           ON t.grainage_master_id = gm.grainage_master_id
+                    LEFT JOIN tr_course_master tcm
+                           ON t.course_name = tcm.tr_course_id
+                    LEFT JOIN user_master um
+                           ON t.user_master_id = um.user_master_id;
+            """, nativeQuery = true)
     List<Map<String, Object>> getTargetDetails();
 
 }
