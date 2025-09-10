@@ -1341,89 +1341,82 @@ public class ReelerService {
 
 
     public FileInputStream reelerReport(Long districtId,
-                                        Long talukId,
-                                        Long villageId,
-                                        Long marketId, int pageNumber, int pageSize) throws Exception {
-        List<PrimaryReelerDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
+                                           Long talukId,
+                                           Long villageId,
+                                           Long marketId,
+                                           int pageNumber,
+                                           int pageSize) throws Exception {
+        List<PrimaryReelerDetailsResponse> responseList = new ArrayList<>();
 
+        districtId = (districtId != null && districtId == 0) ? null : districtId;
+        talukId = (talukId != null && talukId == 0) ? null : talukId;
+        villageId = (villageId != null && villageId == 0) ? null : villageId;
+        marketId = (marketId != null && marketId == 0) ? null : marketId;
 
-        Page<Object[]> applicablePage;
-        districtId = (districtId == 0) ? null : districtId;
-        talukId = (talukId == 0) ? null : talukId;
-        villageId = (villageId == 0) ? null : villageId;
-        marketId = (marketId == 0) ? null : marketId;
-        Pageable pageable = null;
-        applicablePage = reelerRepository.getPrimaryReelerDetails(districtId, talukId, villageId, marketId, pageable);
-        List<Object[]> applicableList = applicablePage.getContent();
-        reelerResponse(primaryDetailsResponseList, applicableList, pageNumber, pageSize);
+        Pageable pageable = null; // fetch all records
+        Page<Object[]> applicablePage =
+                reelerRepository.getPrimaryReelerDetails(districtId, talukId, villageId, marketId, pageable);
+
+        reelerResponse(responseList, applicablePage.getContent(), pageNumber, pageSize);
 
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Sheet 1");
+        Sheet sheet = workbook.createSheet("Reeler Report");
 
-        // Create a header row
+        // Header row
         Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("First Name");
-        headerRow.createCell(1).setCellValue("Fruits Id");
-        headerRow.createCell(2).setCellValue("Reeler License Number");
-        headerRow.createCell(3).setCellValue("Father Name");
-        headerRow.createCell(4).setCellValue("Passbook Number");
-        headerRow.createCell(5).setCellValue("Reeler Number");
-        headerRow.createCell(6).setCellValue("Ration Card Number");
-        headerRow.createCell(7).setCellValue("DOB");
-        headerRow.createCell(8).setCellValue("District Name");
-        headerRow.createCell(9).setCellValue("Taluk Name");
-        headerRow.createCell(10).setCellValue("Hobli Name");
-        headerRow.createCell(11).setCellValue("Village Name");
-        headerRow.createCell(12).setCellValue("Bank Name");
-        headerRow.createCell(13).setCellValue("Bank Account Number");
-        headerRow.createCell(14).setCellValue("Branch Name");
-        headerRow.createCell(15).setCellValue("IFSC Code");
-        headerRow.createCell(16).setCellValue("Mobile Number");
+        headerRow.createCell(0).setCellValue("Sl.No");
+        headerRow.createCell(1).setCellValue("First Name");
+        headerRow.createCell(2).setCellValue("Fruits Id");
+        headerRow.createCell(3).setCellValue("Reeler License Number");
+        headerRow.createCell(4).setCellValue("Father Name");
+        headerRow.createCell(5).setCellValue("Passbook Number");
+        headerRow.createCell(6).setCellValue("Reeler Number");
+        headerRow.createCell(7).setCellValue("Ration Card Number");
+        headerRow.createCell(8).setCellValue("DOB");
+        headerRow.createCell(9).setCellValue("District Name");
+        headerRow.createCell(10).setCellValue("Taluk Name");
+        headerRow.createCell(11).setCellValue("Hobli Name");
+        headerRow.createCell(12).setCellValue("Village Name");
+        headerRow.createCell(13).setCellValue("Bank Name");
+        headerRow.createCell(14).setCellValue("Bank Account Number");
+        headerRow.createCell(15).setCellValue("Branch Name");
+        headerRow.createCell(16).setCellValue("IFSC Code");
+        headerRow.createCell(17).setCellValue("Mobile Number");
 
-        //Dynamic data binds here
-        //Starting 0th and 1st column cells are hardcoded, So dynamic data column starts from 2nd column
-        int dataStartsFrom = 1;
-        for (int i = 0; i < primaryDetailsResponseList.size(); i++) {
-            Row contentRow = sheet.createRow(dataStartsFrom);
-            PrimaryReelerDetailsResponse primaryDetailsResponse = primaryDetailsResponseList.get(i);
-            contentRow.createCell(0).setCellValue(primaryDetailsResponse.getFirstName());
-            contentRow.createCell(1).setCellValue(primaryDetailsResponse.getFruitsId());
-            contentRow.createCell(2).setCellValue(primaryDetailsResponse.getReelerLicenseNumber());
-            contentRow.createCell(3).setCellValue(primaryDetailsResponse.getFatherName());
-            contentRow.createCell(4).setCellValue(primaryDetailsResponse.getPassbookNumber());
-            contentRow.createCell(5).setCellValue(primaryDetailsResponse.getReelerNumber());
-            contentRow.createCell(6).setCellValue(primaryDetailsResponse.getRationCardNumber());
-            contentRow.createCell(7).setCellValue(primaryDetailsResponse.getDob());
-            contentRow.createCell(8).setCellValue(primaryDetailsResponse.getDistrictName());
-            contentRow.createCell(9).setCellValue(primaryDetailsResponse.getTalukName());
-            contentRow.createCell(10).setCellValue(primaryDetailsResponse.getHobliName());
-            contentRow.createCell(11).setCellValue(primaryDetailsResponse.getVillageName());
-            contentRow.createCell(12).setCellValue(primaryDetailsResponse.getReelerBankName());
-            contentRow.createCell(13).setCellValue(primaryDetailsResponse.getReelerBankAccountNumber());
-            contentRow.createCell(14).setCellValue(primaryDetailsResponse.getReelerBankBranchName());
-            contentRow.createCell(15).setCellValue(primaryDetailsResponse.getReelerBankIfscCode());
-            contentRow.createCell(16).setCellValue(primaryDetailsResponse.getReelerMobileNumber());
-            dataStartsFrom = dataStartsFrom + 1;
+        // Data rows
+        int dataRow = 1;
+        for (PrimaryReelerDetailsResponse r : responseList) {
+            Row row = sheet.createRow(dataRow++);
+            row.createCell(0).setCellValue(r.getSerialNumber());
+            row.createCell(1).setCellValue(r.getFirstName());
+            row.createCell(2).setCellValue(r.getFruitsId());
+            row.createCell(3).setCellValue(r.getReelerLicenseNumber());
+            row.createCell(4).setCellValue(r.getFatherName());
+            row.createCell(5).setCellValue(r.getPassbookNumber());
+            row.createCell(6).setCellValue(r.getReelerNumber());
+            row.createCell(7).setCellValue(r.getRationCardNumber());
+            row.createCell(8).setCellValue(r.getDob());
+            row.createCell(9).setCellValue(r.getDistrictName());
+            row.createCell(10).setCellValue(r.getTalukName());
+            row.createCell(11).setCellValue(r.getHobliName());
+            row.createCell(12).setCellValue(r.getVillageName());
+            row.createCell(13).setCellValue(r.getReelerBankName());
+            row.createCell(14).setCellValue(r.getReelerBankAccountNumber());
+            row.createCell(15).setCellValue(r.getReelerBankBranchName());
+            row.createCell(16).setCellValue(r.getReelerBankIfscCode());
+            row.createCell(17).setCellValue(r.getReelerMobileNumber());
         }
 
-        // Auto-size all columns
-        for (int columnIndex = 0; columnIndex <= 17; columnIndex++) {
-            sheet.autoSizeColumn(columnIndex, true);
+        // Auto-size
+        for (int col = 0; col <= 17; col++) {
+            sheet.autoSizeColumn(col, true);
         }
 
-        // Write the workbook content to a file
-        // Specify the directory where the file will be saved
-        //String directoryPath = "C:\\Users\\Swathi V S\\Downloads\\";
-        // Specify the directory where the file will be saved
         String userHome = System.getProperty("user.home");
-
-        // Define the directory path relative to the user's home directory
         String directoryPath = Paths.get(userHome, "Downloads").toString();
-        Path directory = Paths.get(directoryPath);
-        Files.createDirectories(directory);
-        Path filePath = directory.resolve("reelers" + Util.getISTLocalDate() + ".xlsx");
+        Files.createDirectories(Paths.get(directoryPath));
+        Path filePath = Paths.get(directoryPath, "reeler_report" + Util.getISTLocalDate() + ".xlsx");
 
-        // Write the workbook content to the specified file path
         FileOutputStream fileOut = new FileOutputStream(filePath.toString());
         FileInputStream fileIn = new FileInputStream(filePath.toString());
         workbook.write(fileOut);
@@ -1431,6 +1424,7 @@ public class ReelerService {
         workbook.close();
         return fileIn;
     }
+
 
     public FileInputStream renewalReelerReport(Long districtId,
                                                Long talukId,
