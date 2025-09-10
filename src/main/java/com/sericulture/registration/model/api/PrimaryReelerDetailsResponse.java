@@ -34,7 +34,7 @@ public class PrimaryReelerDetailsResponse extends ResponseBody{
     private String reelerBankAccountNumber;
     private String reelerBankBranchName;
     private String reelerBankIfscCode;
-    private LocalDate renewalDate;
-    private LocalDate expiryDate;
+    private String renewalDate;
+    private String expiryDate;
     private Long reelerMobileNumber;
 }

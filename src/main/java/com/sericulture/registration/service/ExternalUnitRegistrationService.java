@@ -269,19 +269,21 @@ public class ExternalUnitRegistrationService {
             int pageNumber,
             int pageSize) throws Exception {
 
+        // Convert 0 → null
         raceMasterId = (raceMasterId != null && raceMasterId == 0) ? null : raceMasterId;
         externalUnitTypeId = (externalUnitTypeId != null && externalUnitTypeId == 0) ? null : externalUnitTypeId;
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<ExternalUnitRegistrationDTO> page = externalUnitRegistrationRepository.getByActiveAndFilters(
-                isActive, raceMasterId, externalUnitTypeId, pageable);
+        // ✅ fetch ALL records (ignore pagination)
+        Pageable pageable = null;
+        Page<ExternalUnitRegistrationDTO> page =
+                externalUnitRegistrationRepository.getByActiveAndFilters(isActive, raceMasterId, externalUnitTypeId, pageable);
 
         List<ExternalUnitRegistrationDTO> units = page.getContent();
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("External Units");
 
-        // Header Row (removed Unit Type Id and Race Master Id)
+        // ===== Header Row =====
         Row headerRow = sheet.createRow(0);
         headerRow.createCell(0).setCellValue("S.No");
         headerRow.createCell(1).setCellValue("Unit Name");
@@ -298,7 +300,7 @@ public class ExternalUnitRegistrationService {
         headerRow.createCell(12).setCellValue("Lot Number Nomenclature");
         headerRow.createCell(13).setCellValue("Race");
 
-        // Data Rows
+        // ===== Data Rows =====
         int rowIdx = 1;
         int serialNo = 1;
         for (ExternalUnitRegistrationDTO dto : units) {
@@ -319,11 +321,12 @@ public class ExternalUnitRegistrationService {
             row.createCell(13).setCellValue(dto.getRaceMasterName() != null ? dto.getRaceMasterName() : "");
         }
 
-        // Auto-size all columns (now 0–13 only)
+        // Auto-size all columns
         for (int i = 0; i <= 13; i++) {
             sheet.autoSizeColumn(i);
         }
 
+        // Save to file
         String userHome = System.getProperty("user.home");
         Path directory = Paths.get(userHome, "Downloads");
         Files.createDirectories(directory);

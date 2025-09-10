@@ -289,11 +289,12 @@ public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest tra
         traderTypeMasterId = (traderTypeMasterId != null && traderTypeMasterId == 0) ? null : traderTypeMasterId;
         silkType = (silkType != null && silkType.isEmpty()) ? null : silkType;
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<TraderLicenseDTO> page = traderLicenseRepository.getByActiveAndFilters(
-                isActive, districtId, silkType, traderTypeMasterId, pageable);
+        // ✅ fetch ALL records (no paging)
+        Pageable pageable = null;
+        Page<TraderLicenseDTO> applicablePage =
+                traderLicenseRepository.getByActiveAndFilters(isActive, districtId, silkType, traderTypeMasterId, pageable);
 
-        List<TraderLicenseDTO> licenses = page.getContent();
+        List<TraderLicenseDTO> licenses = applicablePage.getContent();
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Trader Licenses");
@@ -323,7 +324,7 @@ public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest tra
         for (TraderLicenseDTO dto : licenses) {
             Row row = sheet.createRow(rowIdx++);
 
-            row.createCell(0).setCellValue(serialNo++);  // S.No
+            row.createCell(0).setCellValue(serialNo++);
             row.createCell(1).setCellValue(dto.getArnNumber());
             row.createCell(2).setCellValue(dto.getTraderTypeMasterName());
             row.createCell(3).setCellValue(dto.getFirstName());
@@ -359,6 +360,7 @@ public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest tra
 
         return new FileInputStream(filePath.toString());
     }
+
 
 
     @Transactional

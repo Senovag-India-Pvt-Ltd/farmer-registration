@@ -1056,13 +1056,14 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
                     ORDER BY r.license_expiry_date DESC
                     """
     )
-    List<Object[]> getAllExpiredReelersForReport(
+    Page<Object[]> getAllExpiredReelersForReport(
             @Param("districtId") Long districtId,
             @Param("talukId") Long talukId,
             @Param("villageId") Long villageId,
             @Param("marketId") Long marketId,
             @Param("renewalDate") LocalDate renewalDate,
-            @Param("expiryDate") LocalDate expiryDate);
+            @Param("expiryDate") LocalDate expiryDate,
+            Pageable pageable);
 
 
     @Query(
