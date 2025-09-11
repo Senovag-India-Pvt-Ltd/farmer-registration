@@ -476,7 +476,8 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
             AND lg.buyer_type IN ('RSP', 'NSSO')
             LEFT JOIN
             grainage_master gm ON lg.external_unit_id = gm.grainage_master_id AND lg.buyer_type = 'Govt Grainage'
-            )
+            )SELECT *
+             FROM MainQuery;
             """, nativeQuery = true)
     List<Map<String, Object>> getSeedMarketDetails();
 
