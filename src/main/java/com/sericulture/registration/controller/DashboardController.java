@@ -382,4 +382,49 @@ public class DashboardController {
         }
     }
 
+    @GetMapping("/getSeedAndDFLMulberryFarmDetails")
+    public ResponseEntity<?> getSeedAndDFLMulberryFarmDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getSeedAndDFLMulberryFarmDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getSeedAndDFLFarmWiseDetails")
+    public ResponseEntity<?> getSeedAndDFLFarmWiseDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getSeedAndDFLFarmWiseDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getTSCWiseSoldDFLDetails")
+    public ResponseEntity<?> getTSCWiseSoldDFLDetails() {
+        try {
+            List<Map<String, Object>> result = dashboardService.getTSCWiseSoldDFLDetails();
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
+
 }

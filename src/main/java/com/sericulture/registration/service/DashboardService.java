@@ -118,5 +118,17 @@ public class DashboardService {
         return chowkiManagementRepository.getTargetDetails();
     }
 
+    public List<Map<String, Object>> getSeedAndDFLMulberryFarmDetails() {
+        return chowkiManagementRepository.getSeedAndDFLMulberryFarmDetails();
+    }
+
+    public List<Map<String, Object>> getSeedAndDFLFarmWiseDetails() {
+        return chowkiManagementRepository.getSeedAndDFLFarmWiseDetails();
+    }
+
+    public List<Map<String, Object>> getTSCWiseSoldDFLDetails() {
+        return chowkiManagementRepository.getTSCWiseSoldDFLDetails();
+    }
+
 
 }
