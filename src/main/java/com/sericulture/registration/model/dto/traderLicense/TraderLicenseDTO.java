@@ -40,6 +40,7 @@ public class TraderLicenseDTO {
     private String virtualAccountNumber;
     private String ifscCode;
     private String branchName;
+    private String gstNumber;
     private String districtName;
 
 }

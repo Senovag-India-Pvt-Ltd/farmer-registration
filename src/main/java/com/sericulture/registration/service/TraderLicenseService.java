@@ -442,6 +442,7 @@ public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest tra
             traderLicense.setBranchName(traderLicenseRequest.getBranchName());
             traderLicense.setVirtualAccountNumber(traderLicenseRequest.getVirtualAccountNumber());
             traderLicense.setIfscCode(traderLicenseRequest.getIfscCode());
+            traderLicense.setGstNumber(traderLicenseRequest.getGstNumber());
 
             traderLicense.setActive(true);
             TraderLicense traderLicense1 = traderLicenseRepository.save(traderLicense);
