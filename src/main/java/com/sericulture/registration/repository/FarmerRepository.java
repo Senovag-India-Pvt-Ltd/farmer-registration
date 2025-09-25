@@ -615,6 +615,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "AND (:districtId IS NULL OR fa.districtId = :districtId) " +
             "AND (:talukId IS NULL OR fa.talukId = :talukId) " +
             "AND (:hobliId IS NULL OR fa.hobliId = :hobliId) " +
+            "AND (:casteId IS NULL OR farmer.casteId = :casteId) " +
             "ORDER BY farmer.farmerNumber ASC")
     Page<FarmerDTO> getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsIds(
             @Param("isActive") boolean isActive,
@@ -622,6 +623,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             @Param("districtId") Long districtId,
             @Param("talukId") Long talukId,
             @Param("hobliId") Long hobliId,
+            @Param("casteId") Long casteId,
+
             Pageable pageable);
 
 
@@ -686,6 +689,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "AND (:districtId IS NULL OR fa.districtId = :districtId) " +
             "AND (:talukId IS NULL OR fa.talukId = :talukId) " +
             "AND (:hobliId IS NULL OR fa.hobliId = :hobliId) " +
+            "AND (:casteId IS NULL OR farmer.casteId = :casteId) " +
             "ORDER BY farmer.farmerNumber ASC")
     Page<FarmerDTO> getByActiveOrderByFarmerIdAscForNonKAFarmersList(
             @Param("isActive") boolean isActive,
@@ -693,6 +697,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             @Param("districtId") Long districtId,
             @Param("talukId") Long talukId,
             @Param("hobliId") Long hobliId,
+            @Param("casteId") Long casteId,
             Pageable pageable);
 
 

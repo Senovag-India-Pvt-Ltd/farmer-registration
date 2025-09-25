@@ -461,9 +461,10 @@ public class FarmerController {
                 @RequestParam(required = false) Long districtId,
                 @RequestParam(required = false) Long talukId,
                 @RequestParam(required = false) Long hobliId,
+                @RequestParam(required = false) Long casteId,
                 @RequestParam(defaultValue = "0") int pageNumber,
                 @RequestParam(defaultValue = "50") int pageSize) {
-            return farmerService.kaFarmersWithoutFruitsIds(stateId, districtId, talukId, hobliId, pageNumber, pageSize);
+            return farmerService.kaFarmersWithoutFruitsIds(stateId, districtId, talukId, hobliId, casteId, pageNumber, pageSize);
         }
 
         @PostMapping("/list-nonka")
@@ -472,9 +473,10 @@ public class FarmerController {
                 @RequestParam(required = false) Long districtId,
                 @RequestParam(required = false) Long talukId,
                 @RequestParam(required = false) Long hobliId,
+                @RequestParam(required = false) Long casteId,
                 @RequestParam(defaultValue = "0") int pageNumber,
                 @RequestParam(defaultValue = "50") int pageSize) {
-            return farmerService.nonKaFarmers(stateId, districtId, talukId, hobliId, pageNumber, pageSize);
+            return farmerService.nonKaFarmers(stateId, districtId, talukId, hobliId, casteId, pageNumber, pageSize);
         }
 
         // --------------------- REPORT ENDPOINTS ---------------------
@@ -486,11 +488,12 @@ public class FarmerController {
                 @RequestParam(required = false) Long districtId,
                 @RequestParam(required = false) Long talukId,
                 @RequestParam(required = false) Long hobliId,
+                @RequestParam(required = false) Long casteId,
                 @RequestParam(defaultValue = "0") int pageNumber,
                 @RequestParam(defaultValue = "50") int pageSize) {
             try {
                 FileInputStream fileInputStream = farmerService.kaFarmersWithoutFruitsIdsReport(
-                        stateId, districtId, talukId, hobliId, isActive, pageNumber, pageSize
+                        stateId, districtId, talukId, hobliId, casteId, isActive, pageNumber, pageSize
                 );
                 InputStreamResource resource = new InputStreamResource(fileInputStream);
 
@@ -514,11 +517,12 @@ public class FarmerController {
                 @RequestParam(required = false) Long districtId,
                 @RequestParam(required = false) Long talukId,
                 @RequestParam(required = false) Long hobliId,
+                @RequestParam(required = false) Long casteId,
                 @RequestParam(defaultValue = "0") int pageNumber,
                 @RequestParam(defaultValue = "50") int pageSize) {
             try {
                 FileInputStream fileInputStream = farmerService.nonKaFarmersReport(
-                        stateId, districtId, talukId, hobliId, isActive, pageNumber, pageSize
+                        stateId, districtId, talukId, hobliId, casteId, isActive, pageNumber, pageSize
                 );
                 InputStreamResource resource = new InputStreamResource(fileInputStream);
 
