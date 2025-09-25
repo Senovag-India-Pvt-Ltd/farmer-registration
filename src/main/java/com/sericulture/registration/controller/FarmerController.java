@@ -762,20 +762,22 @@ public ResponseEntity<?> primaryFarmerDetails(
         @RequestParam(required = false) Long talukId,
         @RequestParam(required = false) Long villageId,
         @RequestParam(required = false) Long tscMasterId,
+        @RequestParam(required = false) Long casteId,
         @RequestParam(defaultValue = "0") int pageNumber,
         @RequestParam(defaultValue = "50") int pageSize) {
-    return farmerService.primaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageNumber, pageSize);
+    return farmerService.primaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, pageNumber, pageSize);
 }
     @PostMapping("/farmer-report")
     public ResponseEntity<?> farmerReport(@RequestParam(required = false) Long districtId,
                                           @RequestParam(required = false) Long talukId,
                                           @RequestParam(required = false) Long villageId,
                                           @RequestParam(required = false) Long tscMasterId,
+                                          @RequestParam(required = false) Long casteId,
                                           @RequestParam(defaultValue = "0") int pageNumber,
                                           @RequestParam(defaultValue = "50") int pageSize) {
         try {
             System.out.println("enter to farmer report");
-            FileInputStream fileInputStream = farmerService.farmerReport(districtId, talukId, villageId, tscMasterId ,pageNumber, pageSize);
+            FileInputStream fileInputStream = farmerService.farmerReport(districtId, talukId, villageId, tscMasterId, casteId, pageNumber, pageSize);
 
             InputStreamResource resource = new InputStreamResource(fileInputStream);
 

@@ -31,4 +31,6 @@ public class PrimaryDetailsResponse extends ResponseBody{
     private String farmerBankAccountNumber;
     private String farmerBankBranchName;
     private String farmerBankIfscCode;
+    private String caste;
+
 }

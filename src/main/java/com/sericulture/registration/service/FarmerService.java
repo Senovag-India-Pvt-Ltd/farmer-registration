@@ -2648,6 +2648,7 @@ public class FarmerService {
                                                   Long talukId,
                                                   Long villageId,
                                                   Long tscMasterId,
+                                                  Long casteId,
                                                   int pageNumber, int pageSize) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
         List<PrimaryDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
@@ -2656,15 +2657,11 @@ public class FarmerService {
         talukId = (talukId == 0) ? null : talukId;
         villageId = (villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
-//        Page<Object[]> applicablePage;
-//        // applicableList = applicationFormRepository.getSubmittedListForDbt(statusList, financialYearId, schemeId, subSchemeId, applicationId, sanctionNo, fruitsId);
-//        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-//        applicablePage  = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
-//        List<Object[]> applicableList = applicablePage.getContent();
-//        long totalRecords = applicablePage.getTotalElements();
+        casteId = (casteId == 0) ? null : casteId;
+
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Object[]> applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
+        Page<Object[]> applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, pageable);
         List<Object[]> applicableList = applicablePage.getContent();
         long totalRecords = applicablePage.getTotalElements();
 
@@ -2700,6 +2697,7 @@ public class FarmerService {
                     .farmerBankAccountNumber(Util.objectToString(arr[16]))
                     .farmerBankBranchName(Util.objectToString(arr[17]))
                     .farmerBankIfscCode(Util.objectToString(arr[18]))
+                    .caste(Util.objectToString(arr[19]))
                     .build();
             primaryDetailsResponseList.add(primaryDetailsResponse);
         }
@@ -2708,7 +2706,9 @@ public class FarmerService {
     public FileInputStream farmerReport(Long districtId,
                                         Long talukId,
                                         Long villageId,
-                                        Long tscMasterId, int pageNumber, int pageSize) throws Exception {
+                                        Long tscMasterId,
+                                        Long casteId,
+                                        int pageNumber, int pageSize) throws Exception {
         List<PrimaryDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
 
 
@@ -2717,8 +2717,9 @@ public class FarmerService {
         talukId = (talukId == 0) ? null : talukId;
         villageId = (villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
+        casteId = (casteId == 0) ? null : casteId;
         Pageable pageable = null;
-        applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, pageable);
+        applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, pageable);
         List<Object[]> applicableList = applicablePage.getContent();
         farmerResponse(primaryDetailsResponseList, applicableList, pageNumber, pageSize);
 
@@ -2745,6 +2746,8 @@ public class FarmerService {
         headerRow.createCell(15).setCellValue("Bank Account Number");
         headerRow.createCell(16).setCellValue("Branch Name");
         headerRow.createCell(17).setCellValue("IFSC Code");
+        headerRow.createCell(18).setCellValue("Caste");
+
 
         //Dynamic data binds here
         //Starting 0th and 1st column cells are hardcoded, So dynamic data column starts from 2nd column
@@ -2770,11 +2773,13 @@ public class FarmerService {
             contentRow.createCell(15).setCellValue(primaryDetailsResponse.getFarmerBankAccountNumber());
             contentRow.createCell(16).setCellValue(primaryDetailsResponse.getFarmerBankBranchName());
             contentRow.createCell(17).setCellValue(primaryDetailsResponse.getFarmerBankIfscCode());
+            contentRow.createCell(18).setCellValue(primaryDetailsResponse.getCaste());
+
             dataStartsFrom = dataStartsFrom + 1;
         }
 
         // Auto-size all columns
-        for (int columnIndex = 0; columnIndex <= 17; columnIndex++) {
+        for (int columnIndex = 0; columnIndex <= 18; columnIndex++) {
             sheet.autoSizeColumn(columnIndex, true);
         }
 
