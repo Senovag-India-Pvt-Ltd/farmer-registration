@@ -2662,6 +2662,7 @@ public class FarmerService {
                                                   Long villageId,
                                                   Long tscMasterId,
                                                   Long casteId,
+                                                  String landFilter,
                                                   int pageNumber, int pageSize) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
         List<PrimaryDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
@@ -2671,10 +2672,11 @@ public class FarmerService {
         villageId = (villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
         casteId = (casteId == 0) ? null : casteId;
+        landFilter = (landFilter != null && !landFilter.isBlank()) ? landFilter : null; // 🆕 Ensure null if empty
 
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Object[]> applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, pageable);
+        Page<Object[]> applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, landFilter, pageable);
         List<Object[]> applicableList = applicablePage.getContent();
         long totalRecords = applicablePage.getTotalElements();
 
@@ -2721,6 +2723,7 @@ public class FarmerService {
                                         Long villageId,
                                         Long tscMasterId,
                                         Long casteId,
+                                        String landFilter,   // 🆕 New Param
                                         int pageNumber, int pageSize) throws Exception {
         List<PrimaryDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
 
@@ -2731,8 +2734,10 @@ public class FarmerService {
         villageId = (villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
         casteId = (casteId == 0) ? null : casteId;
+        landFilter = (landFilter != null && !landFilter.isBlank()) ? landFilter : null; // 🆕 Ensure null if empty
+
         Pageable pageable = null;
-        applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, pageable);
+        applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, landFilter, pageable);
         List<Object[]> applicableList = applicablePage.getContent();
         farmerResponse(primaryDetailsResponseList, applicableList, pageNumber, pageSize);
 

@@ -864,6 +864,99 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
 
 
 
+//    @Query(nativeQuery = true, value = """
+//                WITH PrimaryAddress AS (
+//                    SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
+//                        fa.farmer_id,
+//                        fa.DISTRICT_ID,
+//                        fa.TALUK_ID,
+//                        fa.HOBLI_ID,
+//                        fa.VILLAGE_ID,
+//                        ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
+//                    FROM
+//                        farmer_address fa
+//                    WHERE fa.active = 1
+//                )
+//                SELECT
+//                    f.farmer_id,
+//                    f.first_name,
+//                    f.middle_name,
+//                    f.last_name,
+//                    f.fruits_id,
+//                    f.farmer_number,
+//                    f.father_name,
+//                    f.passbook_number,
+//                    f.epic_number,
+//                    f.ration_card_number,
+//                    f.dob,
+//                    d.DISTRICT_NAME,
+//                    t.TALUK_NAME,
+//                    h.hobli_name,
+//                    v.village_name,
+//                    fba.farmer_bank_name,
+//                    fba.farmer_bank_account_number,
+//                    fba.farmer_bank_branch_name,
+//                    fba.farmer_bank_ifsc_code,
+//                    c.caste_title
+//                FROM
+//                    farmer f
+//                LEFT JOIN
+//                    PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
+//                LEFT JOIN
+//                    farmer_bank_account fba ON fba.farmer_id = f.farmer_id AND fba.active = 1
+//                LEFT JOIN
+//                    caste c ON f.caste_id = c.caste_id
+//                LEFT JOIN
+//                    district d ON pa.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
+//                LEFT JOIN
+//                    taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
+//                LEFT JOIN
+//                    hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
+//                LEFT JOIN
+//                    village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+//                WHERE
+//                    f.active = 1 AND
+//                    (:districtId IS NULL OR pa.DISTRICT_ID = :districtId) AND
+//                    (:talukId IS NULL OR pa.TALUK_ID = :talukId) AND
+//                    (:villageId IS NULL OR pa.VILLAGE_ID = :villageId) AND
+//                    (:tscMasterId IS NULL OR f.tsc_master_id = :tscMasterId) AND
+//                    (:casteId IS NULL OR f.caste_id = :casteId)
+//            """, countQuery = """
+//                WITH PrimaryAddress AS (
+//                    SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
+//                        fa.farmer_id,
+//                        fa.DISTRICT_ID,
+//                        fa.TALUK_ID,
+//                        fa.HOBLI_ID,
+//                        fa.VILLAGE_ID,
+//                        ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
+//                    FROM
+//                        farmer_address fa
+//                    WHERE fa.active = 1
+//                )
+//                SELECT COUNT(*)
+//                FROM
+//                    farmer f
+//                LEFT JOIN
+//                    PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
+//                WHERE
+//                    f.active = 1 AND
+//                    (:districtId IS NULL OR pa.DISTRICT_ID = :districtId) AND
+//                    (:talukId IS NULL OR pa.TALUK_ID = :talukId) AND
+//                    (:villageId IS NULL OR pa.VILLAGE_ID = :villageId) AND
+//                    (:tscMasterId IS NULL OR f.tsc_master_id = :tscMasterId) AND
+//                    (:casteId IS NULL OR f.caste_id = :casteId)
+//            """)
+//    Page<Object[]> getPrimaryFarmerDetails(
+//            @Param("districtId") Long districtId,
+//            @Param("talukId") Long talukId,
+//            @Param("villageId") Long villageId,
+//            @Param("tscMasterId") Long tscMasterId,
+//            @Param("casteId") Long casteId,
+//            Pageable pageable);
+
+
+
     @Query(nativeQuery = true, value = """
                 WITH PrimaryAddress AS (
                     SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
@@ -914,13 +1007,20 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
                     hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
                 LEFT JOIN
                     village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+                LEFT JOIN
+                    farmer_land_details fld ON fld.farmer_id = f.farmer_id -- 🆕 Added for Land check
                 WHERE
                     f.active = 1 AND
                     (:districtId IS NULL OR pa.DISTRICT_ID = :districtId) AND
                     (:talukId IS NULL OR pa.TALUK_ID = :talukId) AND
                     (:villageId IS NULL OR pa.VILLAGE_ID = :villageId) AND
                     (:tscMasterId IS NULL OR f.tsc_master_id = :tscMasterId) AND
-                    (:casteId IS NULL OR f.caste_id = :casteId)
+                    (:casteId IS NULL OR f.caste_id = :casteId) AND
+                    (
+                      :landFilter IS NULL  -- 🆕 New param, no filter if null
+                      OR (:landFilter = 'WITH' AND fld.farmer_id IS NOT NULL)  -- 🆕 Farmers having land
+                      OR (:landFilter = 'WITHOUT' AND fld.farmer_id IS NULL)   -- 🆕 Farmers without land
+                    )
             """, countQuery = """
                 WITH PrimaryAddress AS (
                     SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
@@ -939,13 +1039,20 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
                     farmer f
                 LEFT JOIN
                     PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
+                LEFT JOIN
+                    farmer_land_details fld ON fld.farmer_id = f.farmer_id -- 🆕 Same join here
                 WHERE
                     f.active = 1 AND
                     (:districtId IS NULL OR pa.DISTRICT_ID = :districtId) AND
                     (:talukId IS NULL OR pa.TALUK_ID = :talukId) AND
                     (:villageId IS NULL OR pa.VILLAGE_ID = :villageId) AND
                     (:tscMasterId IS NULL OR f.tsc_master_id = :tscMasterId) AND
-                    (:casteId IS NULL OR f.caste_id = :casteId)
+                    (:casteId IS NULL OR f.caste_id = :casteId) AND
+                    (
+                      :landFilter IS NULL
+                      OR (:landFilter = 'WITH' AND fld.farmer_id IS NOT NULL)
+                      OR (:landFilter = 'WITHOUT' AND fld.farmer_id IS NULL)
+                    )
             """)
     Page<Object[]> getPrimaryFarmerDetails(
             @Param("districtId") Long districtId,
@@ -953,7 +1060,9 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             @Param("villageId") Long villageId,
             @Param("tscMasterId") Long tscMasterId,
             @Param("casteId") Long casteId,
+            @Param("landFilter") String landFilter,  // 🆕 New Param (values: "WITH" or "WITHOUT")
             Pageable pageable);
+
 
 
     @Query(nativeQuery = true, value = """
