@@ -37,4 +37,6 @@ public class PrimaryReelerDetailsResponse extends ResponseBody{
     private String renewalDate;
     private String expiryDate;
     private Long reelerMobileNumber;
+    private String caste;
+
 }
