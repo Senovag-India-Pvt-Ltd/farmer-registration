@@ -100,4 +100,7 @@ public class TraderLicense extends BaseEntity implements Serializable {
     @Column(name = "ifsc_code")
     private String ifscCode;
 
+    @Column(name = "gst_number")
+    private String gstNumber;
+
 }

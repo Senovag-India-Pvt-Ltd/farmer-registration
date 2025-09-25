@@ -108,6 +108,9 @@ public class TraderLicenseResponse {
     @Schema(name = "ifscCode", example = "SBI00457")
     String ifscCode;
 
+    @Schema(name = "gstNumber", example = "SBI00457")
+    String gstNumber;
+
     @Schema(name = "error", example = "true")
     Boolean error;
 

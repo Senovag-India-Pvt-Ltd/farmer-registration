@@ -60,6 +60,7 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.virtualAccountNumber," +
             " traderLicense.ifscCode," +
             " traderLicense.branchName," +
+            " traderLicense.gstNumber," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
@@ -108,6 +109,7 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.virtualAccountNumber," +
             " traderLicense.ifscCode," +
             " traderLicense.branchName," +
+            " traderLicense.gstNumber," +
             " district.districtName" +
             ") " +
             "from TraderLicense traderLicense\n" +
@@ -163,6 +165,7 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.virtualAccountNumber," +
             " traderLicense.ifscCode," +
             " traderLicense.branchName," +
+            " traderLicense.gstNumber," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
@@ -209,6 +212,7 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.virtualAccountNumber," +
             " traderLicense.ifscCode," +
             " traderLicense.branchName," +
+            " traderLicense.gstNumber," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
@@ -256,6 +260,7 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.virtualAccountNumber," +
             " traderLicense.ifscCode," +
             " traderLicense.branchName," +
+            " traderLicense.gstNumber," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
@@ -305,6 +310,7 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.virtualAccountNumber," +
             " traderLicense.ifscCode," +
             " traderLicense.branchName," +
+            " traderLicense.gstNumber," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
@@ -350,6 +356,7 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.virtualAccountNumber," +
             " traderLicense.ifscCode," +
             " traderLicense.branchName," +
+            " traderLicense.gstNumber," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +
@@ -396,6 +403,7 @@ public interface TraderLicenseRepository extends PagingAndSortingRepository<Trad
             " traderLicense.virtualAccountNumber," +
             " traderLicense.ifscCode," +
             " traderLicense.branchName," +
+            " traderLicense.gstNumber," +
             " district.districtName" +
             ") \n" +
             "from TraderLicense traderLicense\n" +

@@ -81,5 +81,8 @@ public class TraderLicenseRequest extends RequestBody {
     @Schema(name = "mobileNumber",  example = "1")
     String mobileNumber;
 
+    @Schema(name = "gstNumber", example = "SBI00457")
+    String gstNumber;
+
     private List<TraderLicenseDetailsRequest> traderLicenseDetailsRequests;
 }
