@@ -2713,6 +2713,15 @@ public class FarmerService {
                     .farmerBankBranchName(Util.objectToString(arr[17]))
                     .farmerBankIfscCode(Util.objectToString(arr[18]))
                     .caste(Util.objectToString(arr[19]))
+
+                    .mulberryArea(Util.objectToString(arr[20]))
+                    .ownerName(Util.objectToString(arr[21]))
+                    .surveyNumber(Util.objectToString(arr[22]))
+                    .spacing(Util.objectToString(arr[23]))
+                    .hissa(Util.objectToString(arr[24]))
+                    .rearingHouseDetails(Util.objectToString(arr[25]))
+                    .landAddress(Util.objectToString(arr[26]))
+                    .mulberryVarietyName(Util.objectToString(arr[27]))
                     .build();
             primaryDetailsResponseList.add(primaryDetailsResponse);
         }
@@ -2765,6 +2774,15 @@ public class FarmerService {
         headerRow.createCell(16).setCellValue("Branch Name");
         headerRow.createCell(17).setCellValue("IFSC Code");
         headerRow.createCell(18).setCellValue("Caste");
+        // 🆕 New Land + Mulberry Variety Columns
+        headerRow.createCell(19).setCellValue("Mulberry Area");
+        headerRow.createCell(20).setCellValue("Owner Name");
+        headerRow.createCell(21).setCellValue("Survey Number");
+        headerRow.createCell(22).setCellValue("Spacing");
+        headerRow.createCell(23).setCellValue("Hissa");
+        headerRow.createCell(24).setCellValue("Rearing House Details");
+        headerRow.createCell(25).setCellValue("Land Address");
+        headerRow.createCell(26).setCellValue("Mulberry Variety Name");
 
 
         //Dynamic data binds here
@@ -2793,11 +2811,21 @@ public class FarmerService {
             contentRow.createCell(17).setCellValue(primaryDetailsResponse.getFarmerBankIfscCode());
             contentRow.createCell(18).setCellValue(primaryDetailsResponse.getCaste());
 
+            // 🆕 Add new fields
+            contentRow.createCell(19).setCellValue(primaryDetailsResponse.getMulberryArea());
+            contentRow.createCell(20).setCellValue(primaryDetailsResponse.getOwnerName());
+            contentRow.createCell(21).setCellValue(primaryDetailsResponse.getSurveyNumber());
+            contentRow.createCell(22).setCellValue(primaryDetailsResponse.getSpacing());
+            contentRow.createCell(23).setCellValue(primaryDetailsResponse.getHissa());
+            contentRow.createCell(24).setCellValue(primaryDetailsResponse.getRearingHouseDetails());
+            contentRow.createCell(25).setCellValue(primaryDetailsResponse.getLandAddress());
+            contentRow.createCell(26).setCellValue(primaryDetailsResponse.getMulberryVarietyName());
+
             dataStartsFrom = dataStartsFrom + 1;
         }
 
         // Auto-size all columns
-        for (int columnIndex = 0; columnIndex <= 18; columnIndex++) {
+        for (int columnIndex = 0; columnIndex <= 26; columnIndex++) {
             sheet.autoSizeColumn(columnIndex, true);
         }
 

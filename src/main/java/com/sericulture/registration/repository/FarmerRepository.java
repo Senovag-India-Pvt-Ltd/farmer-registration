@@ -990,7 +990,15 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
                     fba.farmer_bank_account_number,
                     fba.farmer_bank_branch_name,
                     fba.farmer_bank_ifsc_code,
-                    c.caste_title
+                    c.caste_title,
+                    fld.mulberry_area,
+                    fld.owner_name,
+                    fld.survey_number,
+                    fld.spacing,
+                    fld.hissa,
+                    fld.rearing_house_details,
+                    fld.address,
+                    mv.mulberry_variety_name
                 FROM
                     farmer f
                 LEFT JOIN
@@ -1009,6 +1017,9 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
                     village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
                 LEFT JOIN
                     farmer_land_details fld ON fld.farmer_id = f.farmer_id -- 🆕 Added for Land check
+                LEFT JOIN 
+                    mulberry_variety mv ON mv.mulberry_variety_id = fld.mulberry_variety_id
+            
                 WHERE
                     f.active = 1 AND
                     (:districtId IS NULL OR pa.DISTRICT_ID = :districtId) AND
