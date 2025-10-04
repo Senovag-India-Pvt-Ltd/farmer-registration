@@ -696,9 +696,10 @@ public class ReelerController {
             @RequestParam(required = false) Long talukId,
             @RequestParam(required = false) Long villageId,
             @RequestParam(required = false) Long marketId,
+            @RequestParam(required = false) Long casteId,
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "50") int pageSize) {
-        return reelerService.primaryReelerDetails(districtId, talukId, villageId, marketId, pageNumber, pageSize);
+        return reelerService.primaryReelerDetails(districtId, talukId, villageId, marketId, casteId, pageNumber, pageSize);
     }
 
 //    @PostMapping("/primaryReelerForRenewalLicense")
@@ -778,11 +779,12 @@ public class ReelerController {
                                           @RequestParam(required = false) Long talukId,
                                           @RequestParam(required = false) Long villageId,
                                           @RequestParam(required = false) Long marketId,
+                                          @RequestParam(required = false) Long casteId,
                                           @RequestParam(defaultValue = "0") int pageNumber,
                                           @RequestParam(defaultValue = "50") int pageSize) {
         try {
             System.out.println("enter to reeler report");
-            FileInputStream fileInputStream = reelerService.reelerReport(districtId, talukId, villageId, marketId, pageNumber, pageSize);
+            FileInputStream fileInputStream = reelerService.reelerReport(districtId, talukId, villageId, marketId, casteId, pageNumber, pageSize);
 
             InputStreamResource resource = new InputStreamResource(fileInputStream);
 

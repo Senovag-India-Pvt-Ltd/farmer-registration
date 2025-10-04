@@ -821,9 +821,11 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
                     r.bank_account_number,
                     r.branch_name,
                     r.ifsc_code,
-                    r.mobile_number
+                    r.mobile_number,
+                    c.caste_title
                 FROM reeler r
                 LEFT JOIN PrimaryAddress pa ON pa.reeler_id = r.reeler_id AND pa.rn = 1
+                LEFT JOIN caste c ON r.caste_id = c.caste_id
                 LEFT JOIN district d ON r.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
                 LEFT JOIN taluk t ON r.TALUK_ID = t.TALUK_ID AND t.active = 1
                 LEFT JOIN hobli h ON r.HOBLI_ID = h.HOBLI_ID AND h.active = 1
@@ -832,7 +834,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
                       (:districtId IS NULL OR r.DISTRICT_ID = :districtId) AND
                       (:talukId IS NULL OR r.TALUK_ID = :talukId) AND
                       (:villageId IS NULL OR r.VILLAGE_ID = :villageId) AND
-                      (:marketId IS NULL OR pa.market_master_id = :marketId)
+                      (:marketId IS NULL OR pa.market_master_id = :marketId) AND
+                      (:casteId IS NULL OR r.caste_id = :casteId)
             """, countQuery = """
                 WITH PrimaryAddress AS (
                     SELECT 
@@ -849,13 +852,15 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
                       (:districtId IS NULL OR r.DISTRICT_ID = :districtId) AND
                       (:talukId IS NULL OR r.TALUK_ID = :talukId) AND
                       (:villageId IS NULL OR r.VILLAGE_ID = :villageId) AND
-                      (:marketId IS NULL OR pa.market_master_id = :marketId)
+                      (:marketId IS NULL OR pa.market_master_id = :marketId) AND
+                      (:casteId IS NULL OR r.caste_id = :casteId)
             """)
     Page<Object[]> getPrimaryReelerDetails(
             @Param("districtId") Long districtId,
             @Param("talukId") Long talukId,
             @Param("villageId") Long villageId,
             @Param("marketId") Long marketId,
+            @Param("casteId") Long casteId,
             Pageable pageable);
 
 

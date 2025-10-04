@@ -32,5 +32,13 @@ public class PrimaryDetailsResponse extends ResponseBody{
     private String farmerBankBranchName;
     private String farmerBankIfscCode;
     private String caste;
+    private String mulberryArea;
+    private String ownerName;
+    private String surveyNumber;
+    private String spacing;
+    private String hissa;
+    private String rearingHouseDetails;
+    private String landAddress;
+    private String mulberryVarietyName;
 
 }

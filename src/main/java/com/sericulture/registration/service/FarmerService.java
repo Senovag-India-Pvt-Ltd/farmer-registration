@@ -1756,7 +1756,7 @@ public class FarmerService {
         return convertDTOToMapResponse(page);
     }
 
-    public ResponseEntity<?> kaFarmersWithoutFruitsIds(Long stateId, Long districtId, Long talukId, Long hobliId,
+    public ResponseEntity<?> kaFarmersWithoutFruitsIds(Long stateId, Long districtId, Long talukId, Long hobliId, Long casteId,
                                                        int pageNumber, int pageSize) {
 
 
@@ -1767,10 +1767,12 @@ public class FarmerService {
         districtId = normalizeFilter(districtId);
         talukId = normalizeFilter(talukId);
         hobliId = normalizeFilter(hobliId);
+        casteId = normalizeFilter(casteId);
+
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<FarmerDTO> page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsIds(
-                true, stateId, districtId, talukId, hobliId, pageable);
+                true, stateId, districtId, talukId, hobliId, casteId, pageable);
 
         mapFarmerResponses(responseList, page.getContent(), pageNumber, pageSize);
 
@@ -1779,7 +1781,7 @@ public class FarmerService {
         return ResponseEntity.ok(rw);
     }
 
-    public ResponseEntity<?> nonKaFarmers(Long stateId, Long districtId, Long talukId, Long hobliId,
+    public ResponseEntity<?> nonKaFarmers(Long stateId, Long districtId, Long talukId, Long hobliId, Long casteId,
                                           int pageNumber, int pageSize) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
         List<FarmerResponse> responseList = new ArrayList<>();
@@ -1788,10 +1790,12 @@ public class FarmerService {
         districtId = normalizeFilter(districtId);
         talukId = normalizeFilter(talukId);
         hobliId = normalizeFilter(hobliId);
+        casteId = normalizeFilter(casteId);
+
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<FarmerDTO> page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmersList(
-                true, stateId, districtId, talukId, hobliId, pageable);
+                true, stateId, districtId, talukId, hobliId, casteId, pageable);
 
         mapFarmerResponses(responseList, page.getContent(), pageNumber, pageSize);
 
@@ -1802,31 +1806,34 @@ public class FarmerService {
 
 
 
-    public FileInputStream kaFarmersWithoutFruitsIdsReport(Long stateId, Long districtId, Long talukId, Long hobliId,
+    public FileInputStream kaFarmersWithoutFruitsIdsReport(Long stateId, Long districtId, Long talukId, Long hobliId, Long casteId,
                                                            boolean isActive, int pageNumber, int pageSize) throws Exception {
         stateId = normalizeFilter(stateId);
         districtId = normalizeFilter(districtId);
         talukId = normalizeFilter(talukId);
         hobliId = normalizeFilter(hobliId);
+        casteId = normalizeFilter(casteId);
 
         Pageable pageable = null;
         Page<FarmerDTO> page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsIds(
-                isActive, stateId, districtId, talukId, hobliId, pageable);
+                isActive, stateId, districtId, talukId, hobliId, casteId, pageable);
 
         return exportFarmerReport(page.getContent(), "ka_farmers_report");
 
     }
 
-    public FileInputStream nonKaFarmersReport(Long stateId, Long districtId, Long talukId, Long hobliId,
+    public FileInputStream nonKaFarmersReport(Long stateId, Long districtId, Long talukId, Long hobliId, Long casteId,
                                               boolean isActive, int pageNumber, int pageSize) throws Exception {
         stateId = normalizeFilter(stateId);
         districtId = normalizeFilter(districtId);
         talukId = normalizeFilter(talukId);
         hobliId = normalizeFilter(hobliId);
+        casteId = normalizeFilter(casteId);
+
 
         Pageable pageable = null;
         Page<FarmerDTO> page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmersList(
-                isActive, stateId, districtId, talukId, hobliId, pageable);
+                isActive, stateId, districtId, talukId, hobliId, casteId,  pageable);
 
         return exportFarmerReport(page.getContent(), "non_ka_farmers_report");
     }
@@ -1847,6 +1854,8 @@ public class FarmerService {
                     .mobileNumber(dto.getMobileNumber())
                     .aadhaarNumber(dto.getAadhaarNumber())
                     .farmerTypeName(dto.getFarmerTypeName())
+                    .title(dto.getTitle())
+
 
 
                     .build();
@@ -1866,6 +1875,8 @@ public class FarmerService {
             headerRow.createCell(3).setCellValue("Mobile");
             headerRow.createCell(4).setCellValue("Aadhaar");
             headerRow.createCell(5).setCellValue("Farmer Type");
+            headerRow.createCell(6).setCellValue("Caste");
+
 
             // Data
             int rowIdx = 1, serial = 1;
@@ -1877,6 +1888,8 @@ public class FarmerService {
                 row.createCell(3).setCellValue(dto.getMobileNumber());
                 row.createCell(4).setCellValue(dto.getAadhaarNumber());
                 row.createCell(5).setCellValue(dto.getFarmerTypeName());
+                row.createCell(6).setCellValue(dto.getTitle());
+
             }
 
             for (int i = 0; i <= 5; i++) sheet.autoSizeColumn(i);
@@ -2649,6 +2662,7 @@ public class FarmerService {
                                                   Long villageId,
                                                   Long tscMasterId,
                                                   Long casteId,
+                                                  String landFilter,
                                                   int pageNumber, int pageSize) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
         List<PrimaryDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
@@ -2658,10 +2672,11 @@ public class FarmerService {
         villageId = (villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
         casteId = (casteId == 0) ? null : casteId;
+        landFilter = (landFilter != null && !landFilter.isBlank()) ? landFilter : null; // 🆕 Ensure null if empty
 
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Object[]> applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, pageable);
+        Page<Object[]> applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, landFilter, pageable);
         List<Object[]> applicableList = applicablePage.getContent();
         long totalRecords = applicablePage.getTotalElements();
 
@@ -2698,6 +2713,15 @@ public class FarmerService {
                     .farmerBankBranchName(Util.objectToString(arr[17]))
                     .farmerBankIfscCode(Util.objectToString(arr[18]))
                     .caste(Util.objectToString(arr[19]))
+
+                    .mulberryArea(Util.objectToString(arr[20]))
+                    .ownerName(Util.objectToString(arr[21]))
+                    .surveyNumber(Util.objectToString(arr[22]))
+                    .spacing(Util.objectToString(arr[23]))
+                    .hissa(Util.objectToString(arr[24]))
+                    .rearingHouseDetails(Util.objectToString(arr[25]))
+                    .landAddress(Util.objectToString(arr[26]))
+                    .mulberryVarietyName(Util.objectToString(arr[27]))
                     .build();
             primaryDetailsResponseList.add(primaryDetailsResponse);
         }
@@ -2708,6 +2732,7 @@ public class FarmerService {
                                         Long villageId,
                                         Long tscMasterId,
                                         Long casteId,
+                                        String landFilter,   // 🆕 New Param
                                         int pageNumber, int pageSize) throws Exception {
         List<PrimaryDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
 
@@ -2718,8 +2743,10 @@ public class FarmerService {
         villageId = (villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
         casteId = (casteId == 0) ? null : casteId;
+        landFilter = (landFilter != null && !landFilter.isBlank()) ? landFilter : null; // 🆕 Ensure null if empty
+
         Pageable pageable = null;
-        applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, pageable);
+        applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, landFilter, pageable);
         List<Object[]> applicableList = applicablePage.getContent();
         farmerResponse(primaryDetailsResponseList, applicableList, pageNumber, pageSize);
 
@@ -2747,6 +2774,15 @@ public class FarmerService {
         headerRow.createCell(16).setCellValue("Branch Name");
         headerRow.createCell(17).setCellValue("IFSC Code");
         headerRow.createCell(18).setCellValue("Caste");
+        // 🆕 New Land + Mulberry Variety Columns
+        headerRow.createCell(19).setCellValue("Mulberry Area");
+        headerRow.createCell(20).setCellValue("Owner Name");
+        headerRow.createCell(21).setCellValue("Survey Number");
+        headerRow.createCell(22).setCellValue("Spacing");
+        headerRow.createCell(23).setCellValue("Hissa");
+        headerRow.createCell(24).setCellValue("Rearing House Details");
+        headerRow.createCell(25).setCellValue("Land Address");
+        headerRow.createCell(26).setCellValue("Mulberry Variety Name");
 
 
         //Dynamic data binds here
@@ -2775,11 +2811,21 @@ public class FarmerService {
             contentRow.createCell(17).setCellValue(primaryDetailsResponse.getFarmerBankIfscCode());
             contentRow.createCell(18).setCellValue(primaryDetailsResponse.getCaste());
 
+            // 🆕 Add new fields
+            contentRow.createCell(19).setCellValue(primaryDetailsResponse.getMulberryArea());
+            contentRow.createCell(20).setCellValue(primaryDetailsResponse.getOwnerName());
+            contentRow.createCell(21).setCellValue(primaryDetailsResponse.getSurveyNumber());
+            contentRow.createCell(22).setCellValue(primaryDetailsResponse.getSpacing());
+            contentRow.createCell(23).setCellValue(primaryDetailsResponse.getHissa());
+            contentRow.createCell(24).setCellValue(primaryDetailsResponse.getRearingHouseDetails());
+            contentRow.createCell(25).setCellValue(primaryDetailsResponse.getLandAddress());
+            contentRow.createCell(26).setCellValue(primaryDetailsResponse.getMulberryVarietyName());
+
             dataStartsFrom = dataStartsFrom + 1;
         }
 
         // Auto-size all columns
-        for (int columnIndex = 0; columnIndex <= 18; columnIndex++) {
+        for (int columnIndex = 0; columnIndex <= 26; columnIndex++) {
             sheet.autoSizeColumn(columnIndex, true);
         }
 

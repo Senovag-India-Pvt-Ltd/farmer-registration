@@ -1159,6 +1159,7 @@ public class ReelerService {
                                                   Long talukId,
                                                   Long villageId,
                                                   Long marketId,
+                                                  Long casteId,
                                                   int pageNumber, int pageSize) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
         List<PrimaryReelerDetailsResponse> primaryReelerDetailsResponseList = new ArrayList<>();
@@ -1167,6 +1168,8 @@ public class ReelerService {
         talukId = (talukId == 0) ? null : talukId;
         villageId = (villageId == 0) ? null : villageId;
         marketId = (marketId == 0) ? null : marketId;
+        casteId = (casteId == 0) ? null : casteId;
+
 //        Page<Object[]> applicablePage;
 //        // applicableList = applicationFormRepository.getSubmittedListForDbt(statusList, financialYearId, schemeId, subSchemeId, applicationId, sanctionNo, fruitsId);
 //        Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -1175,7 +1178,7 @@ public class ReelerService {
 //        long totalRecords = applicablePage.getTotalElements();
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Object[]> applicablePage = reelerRepository.getPrimaryReelerDetails(districtId, talukId, villageId, marketId, pageable);
+        Page<Object[]> applicablePage = reelerRepository.getPrimaryReelerDetails(districtId, talukId, villageId, marketId, casteId, pageable);
         List<Object[]> applicableList = applicablePage.getContent();
         long totalRecords = applicablePage.getTotalElements();
 
@@ -1210,6 +1213,8 @@ public class ReelerService {
                     .reelerBankBranchName(Util.objectToString(arr[15]))
                     .reelerBankIfscCode(Util.objectToString(arr[16]))
                     .reelerMobileNumber(Util.objectToLong(arr[17]))
+                    .caste(Util.objectToString(arr[18]))
+
                     .build();
             primaryReelerDetailsResponseList.add(primaryReelerDetailsResponse);
         }
@@ -1345,7 +1350,8 @@ public class ReelerService {
                                            Long talukId,
                                            Long villageId,
                                            Long marketId,
-                                           int pageNumber,
+                                           Long casteId,
+                                        int pageNumber,
                                            int pageSize) throws Exception {
         List<PrimaryReelerDetailsResponse> responseList = new ArrayList<>();
 
@@ -1353,10 +1359,12 @@ public class ReelerService {
         talukId = (talukId != null && talukId == 0) ? null : talukId;
         villageId = (villageId != null && villageId == 0) ? null : villageId;
         marketId = (marketId != null && marketId == 0) ? null : marketId;
+        casteId = (casteId != null && casteId == 0) ? null : casteId;
+
 
         Pageable pageable = null; // fetch all records
         Page<Object[]> applicablePage =
-                reelerRepository.getPrimaryReelerDetails(districtId, talukId, villageId, marketId, pageable);
+                reelerRepository.getPrimaryReelerDetails(districtId, talukId, villageId, marketId, casteId, pageable);
 
         reelerResponse(responseList, applicablePage.getContent(), pageNumber, pageSize);
 
@@ -1383,6 +1391,8 @@ public class ReelerService {
         headerRow.createCell(15).setCellValue("Branch Name");
         headerRow.createCell(16).setCellValue("IFSC Code");
         headerRow.createCell(17).setCellValue("Mobile Number");
+        headerRow.createCell(18).setCellValue("Caste");
+
 
         // Data rows
         int dataRow = 1;
@@ -1406,10 +1416,12 @@ public class ReelerService {
             row.createCell(15).setCellValue(r.getReelerBankBranchName());
             row.createCell(16).setCellValue(r.getReelerBankIfscCode());
             row.createCell(17).setCellValue(r.getReelerMobileNumber());
+            row.createCell(18).setCellValue(r.getCaste());
+
         }
 
         // Auto-size
-        for (int col = 0; col <= 17; col++) {
+        for (int col = 0; col <= 18; col++) {
             sheet.autoSizeColumn(col, true);
         }
 
