@@ -24,6 +24,9 @@ public class UpdateReelerLicenseRequest extends RequestBody {
     @Schema(name = "licenseRenewalDate", example = "2023-11-03 16:27:35.907")
     Date licenseRenewalDate;
 
+    @Schema(name = "mahajarDetails", example = "2023-11-03 16:27:35.907")
+    String mahajarDetails;
+
     @Schema(name = "licenseExpiryDate", example = "2023-11-03 16:27:35.907")
     Date licenseExpiryDate;
 

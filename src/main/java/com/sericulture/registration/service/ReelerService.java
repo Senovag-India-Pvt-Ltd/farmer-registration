@@ -488,6 +488,7 @@ public class ReelerService {
             reeler.setFeeAmount(updateReelerLicenseRequest.getFeeAmount());
             reeler.setLicenseRenewalDate(updateReelerLicenseRequest.getLicenseRenewalDate());
             reeler.setLicenseExpiryDate(updateReelerLicenseRequest.getLicenseExpiryDate());
+            reeler.setMahajarDetails(updateReelerLicenseRequest.getMahajarDetails());
 
             LocalDate today = Util.getISTLocalDate();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
