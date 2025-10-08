@@ -730,6 +730,12 @@ public class ReelerController {
         );
     }
 
+    @PostMapping("/getPendingLicenseDetailsOfReeler")
+    public ResponseEntity<?> getPendingLicenseDetailsOfReeler() {
+        return reelerService.getPendingLicenseDetailsOfReeler();
+    }
+
+
 
     @PostMapping("/expired-reeler-list")
     public ResponseEntity<?> getExpiredReelers(

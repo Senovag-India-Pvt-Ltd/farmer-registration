@@ -1159,6 +1159,44 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             @Param("expiryDate") LocalDate expiryDate,
             Pageable pageable);
 
+    @Query(
+            nativeQuery = true,
+            value = """
+                SELECT
+                   r.reeler_id,
+                   r.name,
+                   r.fruits_id,
+                   r.reeling_license_number,
+                   r.father_name,
+                   r.passbook_number,
+                   r.reeler_number,
+                   r.ration_card,
+                   r.dob,
+                   d.DISTRICT_NAME,
+                   t.TALUK_NAME,
+                   h.hobli_name,
+                   v.village_name,
+                   r.bank_name,
+                   r.bank_account_number,
+                   r.branch_name,
+                   r.ifsc_code,
+                   r.mobile_number,
+                   r.license_renewal_date,
+                   r.license_expiry_date
+               FROM reeler r
+               LEFT JOIN district d ON r.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
+               LEFT JOIN taluk t ON r.TALUK_ID = t.TALUK_ID AND t.active = 1
+               LEFT JOIN hobli h ON r.HOBLI_ID = h.HOBLI_ID AND h.active = 1
+               LEFT JOIN village v ON r.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+               WHERE r.active = 1
+                 AND r.tsc_master_id = :tscMasterId
+                 AND r.license_expiry_date BETWEEN CAST(GETDATE() AS DATE) AND DATEADD(MONTH, 2, CAST(GETDATE() AS DATE))
+               ORDER BY r.license_expiry_date ASC
+               """
+    )
+    List<Object[]> getPendingLicenseDetailsOfReeler(@Param("tscMasterId") Long tscMasterId);
+
+
 
     @Query(nativeQuery = true, value = """
                 WITH PrimaryAddress AS (
@@ -1551,4 +1589,6 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
                 LEFT JOIN dbo.VILLAGE vill ON r.village_id = vill.VILLAGE_ID
             """, nativeQuery = true)
     List<Map<String, Object>> getFullReelerDetails();
+
+
 }

@@ -32,6 +32,7 @@ import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.*;
+import io.jsonwebtoken.Jwt;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -69,6 +70,9 @@ public class ReelerService {
 
     @Autowired
     ReelerRepository reelerRepository;
+
+    @Autowired
+    UserMasterRepository userMasterRepository;
 
     @Autowired
     ReelerLicenseTransactionRepository reelerLicenseTransactionRepository;
@@ -1251,6 +1255,29 @@ public class ReelerService {
         rw.setContent(responseList);
         return ResponseEntity.ok(rw);
     }
+
+    public ResponseEntity<?> getPendingLicenseDetailsOfReeler() {
+
+        ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
+        List<PrimaryReelerDetailsResponse> responseList = new ArrayList<>();
+
+        // ✅ Step 1: Get logged-in user's ID from JWT
+        Long userMasterId = Util.getUserId(Util.getTokenValues());
+
+        // ✅ Step 2: Get tscMasterId for that user
+        Long tscMasterId = userMasterRepository.findTscMasterIdByUserMasterIdAndActive(userMasterId, true);
+
+        // ✅ Step 3: Fetch all expiring reeler licenses for that TSC
+        List<Object[]> applicableList = reelerRepository.getPendingLicenseDetailsOfReeler(tscMasterId);
+
+        // ✅ Step 4: Convert to response
+        reelerResponses(responseList, applicableList, 0, applicableList.size());
+
+        rw.setTotalRecords((long) applicableList.size());
+        rw.setContent(responseList);
+        return ResponseEntity.ok(rw);
+    }
+
 
     public FileInputStream expiredReelerReport(Long districtId,
                                                Long talukId,
