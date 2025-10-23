@@ -1193,10 +1193,47 @@ public class ReelerService {
         return ResponseEntity.ok(rw);
     }
 
-    private static void reelerResponse(List<PrimaryReelerDetailsResponse> primaryReelerDetailsResponseList, List<Object[]> applicableList, int pageNumber, int pageSize) {
+//    private static void reelerResponse(List<PrimaryReelerDetailsResponse> primaryReelerDetailsResponseList, List<Object[]> applicableList, int pageNumber, int pageSize) {
+//        int serialNumber = pageNumber * pageSize + 1;
+//        for (Object[] arr : applicableList) {
+//            PrimaryReelerDetailsResponse primaryReelerDetailsResponse;
+//            primaryReelerDetailsResponse = PrimaryReelerDetailsResponse.builder()
+//                    .serialNumber(serialNumber++)
+//                    .reelerId(Util.objectToString(arr[0]))
+//                    .firstName(Util.objectToString(arr[1]))
+//                    .fruitsId(Util.objectToString(arr[2]))
+//                    .reelerLicenseNumber(Util.objectToString(arr[3]))
+//                    .fatherName(Util.objectToString(arr[4]))
+//                    .passbookNumber(Util.objectToString(arr[5]))
+//                    .reelerNumber(Util.objectToString(arr[6]))
+//                    .rationCardNumber(Util.objectToString(arr[7]))
+//                    .dob(Util.objectToString(arr[8]))
+//                    .districtName(Util.objectToString(arr[9]))
+//                    .talukName(Util.objectToString(arr[10]))
+//                    .hobliName(Util.objectToString(arr[11]))
+//                    .villageName(Util.objectToString(arr[12]))
+//                    .reelerBankName(Util.objectToString(arr[13]))
+//                    .reelerBankAccountNumber(Util.objectToString(arr[14]))
+//                    .reelerBankBranchName(Util.objectToString(arr[15]))
+//                    .reelerBankIfscCode(Util.objectToString(arr[16]))
+//                    .reelerMobileNumber(Util.objectToLong(arr[17]))
+//                    .caste(Util.objectToString(arr[18]))
+//
+//                    .build();
+//            primaryReelerDetailsResponseList.add(primaryReelerDetailsResponse);
+//        }
+//    }
+
+    private static void reelerResponse(List<PrimaryReelerDetailsResponse> primaryReelerDetailsResponseList,
+                                       List<Object[]> applicableList,
+                                       int pageNumber,
+                                       int pageSize) {
+
         int serialNumber = pageNumber * pageSize + 1;
+
         for (Object[] arr : applicableList) {
             PrimaryReelerDetailsResponse primaryReelerDetailsResponse;
+
             primaryReelerDetailsResponse = PrimaryReelerDetailsResponse.builder()
                     .serialNumber(serialNumber++)
                     .reelerId(Util.objectToString(arr[0]))
@@ -1216,13 +1253,37 @@ public class ReelerService {
                     .reelerBankAccountNumber(Util.objectToString(arr[14]))
                     .reelerBankBranchName(Util.objectToString(arr[15]))
                     .reelerBankIfscCode(Util.objectToString(arr[16]))
-                    .reelerMobileNumber(Util.objectToLong(arr[17]))
+                    // ✅ Use safeLong() instead of Util.objectToLong()
+                    .reelerMobileNumber(safeLong(arr[17]))
                     .caste(Util.objectToString(arr[18]))
-
                     .build();
+
             primaryReelerDetailsResponseList.add(primaryReelerDetailsResponse);
         }
     }
+
+    /**
+     * ✅ Safe Long parser that ignores non-numeric characters.
+     * Prevents NumberFormatException for inputs like "5931011 99"
+     */
+    private static Long safeLong(Object obj) {
+        if (obj == null) return null;
+
+        String value = obj.toString().trim();
+
+        // Remove all characters except digits
+        value = value.replaceAll("[^0-9]", "");
+
+        if (value.isEmpty()) return null;
+
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            System.err.println("⚠️ Invalid number found: '" + obj + "' — returning null instead.");
+            return null;
+        }
+    }
+
 
     public ResponseEntity<?> primaryReelerForExpiredLicense(
             Long districtId,
@@ -1373,97 +1434,219 @@ public class ReelerService {
     }
 
 
+//    public FileInputStream reelerReport(Long districtId,
+//                                           Long talukId,
+//                                           Long villageId,
+//                                           Long marketId,
+//                                           Long casteId,
+//                                        int pageNumber,
+//                                           int pageSize) throws Exception {
+//        List<PrimaryReelerDetailsResponse> responseList = new ArrayList<>();
+//
+//        districtId = (districtId != null && districtId == 0) ? null : districtId;
+//        talukId = (talukId != null && talukId == 0) ? null : talukId;
+//        villageId = (villageId != null && villageId == 0) ? null : villageId;
+//        marketId = (marketId != null && marketId == 0) ? null : marketId;
+//        casteId = (casteId != null && casteId == 0) ? null : casteId;
+//
+//
+//        Pageable pageable = null; // fetch all records
+//        Page<Object[]> applicablePage =
+//                reelerRepository.getPrimaryReelerDetails(districtId, talukId, villageId, marketId, casteId, pageable);
+//
+//        reelerResponse(responseList, applicablePage.getContent(), pageNumber, pageSize);
+//
+//        Workbook workbook = new XSSFWorkbook();
+//        Sheet sheet = workbook.createSheet("Reeler Report");
+//
+//        // Header row
+//        Row headerRow = sheet.createRow(0);
+//        headerRow.createCell(0).setCellValue("Sl.No");
+//        headerRow.createCell(1).setCellValue("First Name");
+//        headerRow.createCell(2).setCellValue("Fruits Id");
+//        headerRow.createCell(3).setCellValue("Reeler License Number");
+//        headerRow.createCell(4).setCellValue("Father Name");
+//        headerRow.createCell(5).setCellValue("Passbook Number");
+//        headerRow.createCell(6).setCellValue("Reeler Number");
+//        headerRow.createCell(7).setCellValue("Ration Card Number");
+//        headerRow.createCell(8).setCellValue("DOB");
+//        headerRow.createCell(9).setCellValue("District Name");
+//        headerRow.createCell(10).setCellValue("Taluk Name");
+//        headerRow.createCell(11).setCellValue("Hobli Name");
+//        headerRow.createCell(12).setCellValue("Village Name");
+//        headerRow.createCell(13).setCellValue("Bank Name");
+//        headerRow.createCell(14).setCellValue("Bank Account Number");
+//        headerRow.createCell(15).setCellValue("Branch Name");
+//        headerRow.createCell(16).setCellValue("IFSC Code");
+//        headerRow.createCell(17).setCellValue("Mobile Number");
+//        headerRow.createCell(18).setCellValue("Caste");
+//
+//
+//        // Data rows
+//        int dataRow = 1;
+//        for (PrimaryReelerDetailsResponse r : responseList) {
+//            Row row = sheet.createRow(dataRow++);
+//            row.createCell(0).setCellValue(r.getSerialNumber());
+//            row.createCell(1).setCellValue(r.getFirstName());
+//            row.createCell(2).setCellValue(r.getFruitsId());
+//            row.createCell(3).setCellValue(r.getReelerLicenseNumber());
+//            row.createCell(4).setCellValue(r.getFatherName());
+//            row.createCell(5).setCellValue(r.getPassbookNumber());
+//            row.createCell(6).setCellValue(r.getReelerNumber());
+//            row.createCell(7).setCellValue(r.getRationCardNumber());
+//            row.createCell(8).setCellValue(r.getDob());
+//            row.createCell(9).setCellValue(r.getDistrictName());
+//            row.createCell(10).setCellValue(r.getTalukName());
+//            row.createCell(11).setCellValue(r.getHobliName());
+//            row.createCell(12).setCellValue(r.getVillageName());
+//            row.createCell(13).setCellValue(r.getReelerBankName());
+//            row.createCell(14).setCellValue(r.getReelerBankAccountNumber());
+//            row.createCell(15).setCellValue(r.getReelerBankBranchName());
+//            row.createCell(16).setCellValue(r.getReelerBankIfscCode());
+//            row.createCell(17).setCellValue(r.getReelerMobileNumber());
+//            row.createCell(18).setCellValue(r.getCaste());
+//
+//        }
+//
+//        // Auto-size
+//        for (int col = 0; col <= 18; col++) {
+//            sheet.autoSizeColumn(col, true);
+//        }
+//
+//        String userHome = System.getProperty("user.home");
+//        String directoryPath = Paths.get(userHome, "Downloads").toString();
+//        Files.createDirectories(Paths.get(directoryPath));
+//        Path filePath = Paths.get(directoryPath, "reeler_report" + Util.getISTLocalDate() + ".xlsx");
+//
+//        FileOutputStream fileOut = new FileOutputStream(filePath.toString());
+//        FileInputStream fileIn = new FileInputStream(filePath.toString());
+//        workbook.write(fileOut);
+//        fileOut.close();
+//        workbook.close();
+//        return fileIn;
+//    }
+
+    public static Long objectToLong(Object obj) {
+        if (obj == null) return null;
+
+        String value = obj.toString().trim();
+
+        // Remove everything except digits and optional minus sign
+        value = value.replaceAll("[^0-9-]", "");
+
+        if (value.isEmpty()) return null;
+
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            System.err.println("⚠️ Invalid numeric value for Long: " + obj);
+            return null;
+        }
+    }
+
+
     public FileInputStream reelerReport(Long districtId,
-                                           Long talukId,
-                                           Long villageId,
-                                           Long marketId,
-                                           Long casteId,
+                                        Long talukId,
+                                        Long villageId,
+                                        Long marketId,
+                                        Long casteId,
                                         int pageNumber,
-                                           int pageSize) throws Exception {
+                                        int pageSize) throws Exception {
+
         List<PrimaryReelerDetailsResponse> responseList = new ArrayList<>();
 
-        districtId = (districtId != null && districtId == 0) ? null : districtId;
-        talukId = (talukId != null && talukId == 0) ? null : talukId;
-        villageId = (villageId != null && villageId == 0) ? null : villageId;
-        marketId = (marketId != null && marketId == 0) ? null : marketId;
-        casteId = (casteId != null && casteId == 0) ? null : casteId;
+        // ✅ Handle zero and null safely
+        districtId = (districtId == null || districtId == 0) ? null : districtId;
+        talukId = (talukId == null || talukId == 0) ? null : talukId;
+        villageId = (villageId == null || villageId == 0) ? null : villageId;
+        marketId = (marketId == null || marketId == 0) ? null : marketId;
+        casteId = (casteId == null || casteId == 0) ? null : casteId;
 
+        // ✅ Pageable set to unpaged to fetch all records when filters are empty
+        Pageable pageable = Pageable.unpaged();
 
-        Pageable pageable = null; // fetch all records
         Page<Object[]> applicablePage =
                 reelerRepository.getPrimaryReelerDetails(districtId, talukId, villageId, marketId, casteId, pageable);
 
-        reelerResponse(responseList, applicablePage.getContent(), pageNumber, pageSize);
+        // ✅ Avoid NPE and NumberFormatException
+        try {
+            reelerResponse(responseList, applicablePage.getContent(), pageNumber, pageSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error while parsing reeler data: " + e.getMessage());
+            throw new RuntimeException("Data parsing error. Please check FRUITS ID or numeric fields.");
+        }
 
+        // ✅ Create Excel workbook
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Reeler Report");
 
-        // Header row
+        // ✅ Header Row
+        String[] headers = {
+                "Sl.No", "First Name", "Fruits Id", "Reeler License Number", "Father Name",
+                "Passbook Number", "Reeler Number", "Ration Card Number", "DOB",
+                "District Name", "Taluk Name", "Hobli Name", "Village Name",
+                "Bank Name", "Bank Account Number", "Branch Name", "IFSC Code",
+                "Mobile Number", "Caste"
+        };
+
         Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("Sl.No");
-        headerRow.createCell(1).setCellValue("First Name");
-        headerRow.createCell(2).setCellValue("Fruits Id");
-        headerRow.createCell(3).setCellValue("Reeler License Number");
-        headerRow.createCell(4).setCellValue("Father Name");
-        headerRow.createCell(5).setCellValue("Passbook Number");
-        headerRow.createCell(6).setCellValue("Reeler Number");
-        headerRow.createCell(7).setCellValue("Ration Card Number");
-        headerRow.createCell(8).setCellValue("DOB");
-        headerRow.createCell(9).setCellValue("District Name");
-        headerRow.createCell(10).setCellValue("Taluk Name");
-        headerRow.createCell(11).setCellValue("Hobli Name");
-        headerRow.createCell(12).setCellValue("Village Name");
-        headerRow.createCell(13).setCellValue("Bank Name");
-        headerRow.createCell(14).setCellValue("Bank Account Number");
-        headerRow.createCell(15).setCellValue("Branch Name");
-        headerRow.createCell(16).setCellValue("IFSC Code");
-        headerRow.createCell(17).setCellValue("Mobile Number");
-        headerRow.createCell(18).setCellValue("Caste");
+        for (int i = 0; i < headers.length; i++) {
+            headerRow.createCell(i).setCellValue(headers[i]);
+        }
 
-
-        // Data rows
+        // ✅ Data Rows
         int dataRow = 1;
         for (PrimaryReelerDetailsResponse r : responseList) {
             Row row = sheet.createRow(dataRow++);
-            row.createCell(0).setCellValue(r.getSerialNumber());
-            row.createCell(1).setCellValue(r.getFirstName());
-            row.createCell(2).setCellValue(r.getFruitsId());
-            row.createCell(3).setCellValue(r.getReelerLicenseNumber());
-            row.createCell(4).setCellValue(r.getFatherName());
-            row.createCell(5).setCellValue(r.getPassbookNumber());
-            row.createCell(6).setCellValue(r.getReelerNumber());
-            row.createCell(7).setCellValue(r.getRationCardNumber());
-            row.createCell(8).setCellValue(r.getDob());
-            row.createCell(9).setCellValue(r.getDistrictName());
-            row.createCell(10).setCellValue(r.getTalukName());
-            row.createCell(11).setCellValue(r.getHobliName());
-            row.createCell(12).setCellValue(r.getVillageName());
-            row.createCell(13).setCellValue(r.getReelerBankName());
-            row.createCell(14).setCellValue(r.getReelerBankAccountNumber());
-            row.createCell(15).setCellValue(r.getReelerBankBranchName());
-            row.createCell(16).setCellValue(r.getReelerBankIfscCode());
-            row.createCell(17).setCellValue(r.getReelerMobileNumber());
-            row.createCell(18).setCellValue(r.getCaste());
-
+            row.createCell(0).setCellValue(Optional.ofNullable(r.getSerialNumber()).orElse(0));
+            row.createCell(1).setCellValue(safeString(r.getFirstName()));
+            row.createCell(2).setCellValue(safeString(r.getFruitsId())); // Keep as string!
+            row.createCell(3).setCellValue(safeString(r.getReelerLicenseNumber()));
+            row.createCell(4).setCellValue(safeString(r.getFatherName()));
+            row.createCell(5).setCellValue(safeString(r.getPassbookNumber()));
+            row.createCell(6).setCellValue(safeString(r.getReelerNumber()));
+            row.createCell(7).setCellValue(safeString(r.getRationCardNumber()));
+            row.createCell(8).setCellValue(safeString(r.getDob()));
+            row.createCell(9).setCellValue(safeString(r.getDistrictName()));
+            row.createCell(10).setCellValue(safeString(r.getTalukName()));
+            row.createCell(11).setCellValue(safeString(r.getHobliName()));
+            row.createCell(12).setCellValue(safeString(r.getVillageName()));
+            row.createCell(13).setCellValue(safeString(r.getReelerBankName()));
+            row.createCell(14).setCellValue(safeString(r.getReelerBankAccountNumber()));
+            row.createCell(15).setCellValue(safeString(r.getReelerBankBranchName()));
+            row.createCell(16).setCellValue(safeString(r.getReelerBankIfscCode()));
+            row.createCell(17).setCellValue(safeString(r.getReelerMobileNumber()));
+            row.createCell(18).setCellValue(safeString(r.getCaste()));
         }
 
-        // Auto-size
-        for (int col = 0; col <= 18; col++) {
+        // ✅ Auto-size columns
+        for (int col = 0; col < headers.length; col++) {
             sheet.autoSizeColumn(col, true);
         }
 
+        // ✅ Write file safely
         String userHome = System.getProperty("user.home");
         String directoryPath = Paths.get(userHome, "Downloads").toString();
         Files.createDirectories(Paths.get(directoryPath));
-        Path filePath = Paths.get(directoryPath, "reeler_report" + Util.getISTLocalDate() + ".xlsx");
 
-        FileOutputStream fileOut = new FileOutputStream(filePath.toString());
-        FileInputStream fileIn = new FileInputStream(filePath.toString());
-        workbook.write(fileOut);
-        fileOut.close();
+        Path filePath = Paths.get(directoryPath, "reeler_report_" + Util.getISTLocalDate() + ".xlsx");
+
+        try (FileOutputStream fileOut = new FileOutputStream(filePath.toString())) {
+            workbook.write(fileOut);
+        }
         workbook.close();
-        return fileIn;
+
+        return new FileInputStream(filePath.toString());
     }
+
+    /**
+     * Utility method to avoid null pointer & trim string values.
+     */
+    private String safeString(Object value) {
+        return value == null ? "" : value.toString().trim();
+    }
+
 
 
     public FileInputStream renewalReelerReport(Long districtId,

@@ -55,6 +55,25 @@ public final class Util {
         return object == null ? 0 : Long.parseLong(String.valueOf(object));
     }
 
+    private Long safeLong(Object obj) {
+        if (obj == null) return null;
+
+        String value = obj.toString().trim();
+
+        // ✅ Only keep digits (removes spaces or accidental text)
+        value = value.replaceAll("[^0-9]", "");
+
+        if (value.isEmpty()) return null;
+
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            System.err.println("⚠️ Invalid number found: '" + obj + "' — returning null instead.");
+            return null;
+        }
+    }
+
+
     public static LocalDate objectToLocalDate(Object object) {
         if (object == null) {
             return null;
