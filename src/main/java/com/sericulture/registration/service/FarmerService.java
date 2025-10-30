@@ -407,7 +407,7 @@ public class FarmerService {
         return response;
     }
 
-    @Transactional
+
     public FarmerResponse deleteFarmerDetails(long id) {
         FarmerResponse farmerResponse = new FarmerResponse();
         Farmer farmer = farmerRepository.findByFarmerIdAndActive(id, true);
