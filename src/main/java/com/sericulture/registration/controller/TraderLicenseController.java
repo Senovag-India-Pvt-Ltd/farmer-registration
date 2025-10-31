@@ -262,7 +262,7 @@ public class TraderLicenseController {
     })
     public ResponseEntity<?> getPaginatedListWithJoin(
             @RequestParam(defaultValue = "0") final Integer pageNumber,
-            @RequestParam(defaultValue = "5") final Integer size
+            @RequestParam(defaultValue = "50") final Integer size
     ) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(Map.class);
         rw.setContent(traderLicenseService.getPaginatedTraderLicenseDetailsWithJoin(PageRequest.of(pageNumber, size)));
