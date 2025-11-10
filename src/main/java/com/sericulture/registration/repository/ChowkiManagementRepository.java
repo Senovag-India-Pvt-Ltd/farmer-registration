@@ -184,41 +184,42 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
 
     @Query(value = """
                 SELECT
-                        ht.hd_ticket_id,
-                        ht.ticket_arn,
-                        ht.hd_users_affected,
-                        ht.query,
-                        ht.query_details,
-                        ht.on_behalf_of,
-                        ht.ticket_number,
-                        hm.hd_module_name,
-                        hf.hd_feature_name,
-                        hb.hd_board_category_name,
-                        hc.hd_category_name,
-                        hsc.hd_sub_category_name,
-                        ht.assigned_to,
-                        ht.solution,
-                        hsev.hd_severity_name,
-                        um.username AS on_behalf_username,
-                        hs.hd_status_name,
-                         ht.created_by
-                    FROM hd_ticket ht
-                    LEFT JOIN hd_module_master hm
-                           ON ht.hd_module_id = hm.hd_module_id
-                    LEFT JOIN hd_feature_master hf
-                           ON ht.hd_feature_id = hf.hd_feature_id
-                    LEFT JOIN hd_board_category_master hb
-                           ON ht.hd_board_category_id = hb.hd_board_category_id
-                    LEFT JOIN hd_category_master hc
-                           ON ht.hd_category_id = hc.hd_category_id
-                    LEFT JOIN hd_sub_category_master hsc
-                           ON ht.hd_sub_category_id = hsc.hd_sub_category_id
-                    LEFT JOIN hd_status_master hs
-                           ON ht.hd_status_id = hs.hd_status_id
-                    LEFT JOIN user_master um
-                           ON ht.on_behalf_of = um.user_master_id
-                    LEFT JOIN hd_severity_master hsev
-                           ON ht.hd_severity_id = hsev.hd_severity_id
+                    ht.hd_ticket_id,
+                    ht.ticket_arn,
+                    ht.hd_users_affected,
+                    ht.query,
+                    ht.query_details,
+                    ht.on_behalf_of,
+                    ht.ticket_number,
+                    hm.hd_module_name,
+                    hf.hd_feature_name,
+                    hb.hd_board_category_name,
+                    hc.hd_category_name,
+                    hsc.hd_sub_category_name,
+                    ht.assigned_to,
+                    ht.solution,
+                    hsev.hd_severity_name,
+                    um.username AS on_behalf_username,
+                    hs.hd_status_name,
+                    ht.created_by
+                FROM hd_ticket ht
+                LEFT JOIN hd_module_master hm
+                       ON ht.hd_module_id = hm.hd_module_id AND hm.active = 1
+                LEFT JOIN hd_feature_master hf
+                       ON ht.hd_feature_id = hf.hd_feature_id AND hf.active = 1
+                LEFT JOIN hd_board_category_master hb
+                       ON ht.hd_board_category_id = hb.hd_board_category_id AND hb.active = 1
+                LEFT JOIN hd_category_master hc
+                       ON ht.hd_category_id = hc.hd_category_id AND hc.active = 1
+                LEFT JOIN hd_sub_category_master hsc
+                       ON ht.hd_sub_category_id = hsc.hd_sub_category_id AND hsc.active = 1
+                LEFT JOIN hd_status_master hs
+                       ON ht.hd_status_id = hs.hd_status_id AND hs.active = 1
+                LEFT JOIN user_master um
+                       ON ht.on_behalf_of = um.user_master_id AND um.active = 1
+                LEFT JOIN hd_severity_master hsev
+                       ON ht.hd_severity_id = hsev.hd_severity_id AND hsev.active = 1
+                WHERE ht.active = 1;
             """, nativeQuery = true)
     List<Map<String, Object>> getHelpDeskDetails();
 
@@ -260,6 +261,7 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
                 LEFT JOIN tr_institution_master tim
                     ON tsu.tr_institution_master_id = tim.tr_institution_master_id
                    AND tim.active = 1
+                WHERE ts.active = 1
             """, nativeQuery = true)
     List<Map<String, Object>> getTrainerDetails();
 
@@ -327,6 +329,7 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
                 ON tt.hobli_id = h.hobli_id AND h.active = 1
                 LEFT JOIN village v
                 ON tt.village_id = v.village_id AND v.active = 1
+                WHERE ts.active = 1
             """, nativeQuery = true)
     List<Map<String, Object>> getTraineeDetails();
 
@@ -635,24 +638,34 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
                 g.grainage_master_name_in_kannada,
                 f.farm_name,
                 f.farm_name_in_kannada
-                FROM rearing_of_dfls a
-                INNER JOIN receipt_of_dfls b
-                  ON a.lot_number_id = b.id
-                 AND a.user_master_id = b.user_master_id
-                LEFT JOIN supply_of_cocoons s
-                  ON s.lot_number = b.lot_number
-                LEFT JOIN farm_master f
-                  ON f.user_master_id = a.user_master_id
-                LEFT JOIN grainage_master g
-                  ON b.grainage_id = g.grainage_master_id
-                LEFT JOIN disinfectant_master dm 
-                  ON a.disinfectant_master_id  = dm.disinfectant_master_id
-                LEFT JOIN generation_number_master gnm 
-                  ON b.generation_number_id   = gnm.generation_number_id
-                LEFT JOIN line_name_master lnm
-                  ON b.line_name_id   = lnm.line_name_id
-                LEFT JOIN race_master rm
-                  ON b.race_of_dfls    = rm.race_id
+            
+            FROM rearing_of_dfls a
+            INNER JOIN receipt_of_dfls b
+                ON a.lot_number_id = b.id
+               AND a.user_master_id = b.user_master_id
+               AND b.active = 1
+            LEFT JOIN supply_of_cocoons s
+                ON s.lot_number = b.lot_number
+               AND s.active = 1
+            LEFT JOIN farm_master f
+                ON f.user_master_id = a.user_master_id
+               AND f.active = 1
+            LEFT JOIN grainage_master g
+                ON b.grainage_id = g.grainage_master_id
+               AND g.active = 1
+            LEFT JOIN disinfectant_master dm
+                ON a.disinfectant_master_id = dm.disinfectant_master_id
+               AND dm.active = 1
+            LEFT JOIN generation_number_master gnm
+                ON b.generation_number_id = gnm.generation_number_id
+               AND gnm.active = 1
+            LEFT JOIN line_name_master lnm
+                ON b.line_name_id = lnm.line_name_id
+               AND lnm.active = 1
+            LEFT JOIN race_master rm
+                ON b.race_of_dfls = rm.race_id
+               AND rm.active = 1
+            WHERE a.active = 1;
             """, nativeQuery = true)
     List<Map<String, Object>> getSupplyOfCocoonsDetails();
 
@@ -688,44 +701,67 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
                 CM.dispatch_date,
                 CM.receipt_no
             FROM chawki_distribution CM
-            LEFT JOIN farmer F ON F.fruits_id = CM.fruits_id
-            LEFT JOIN village V ON V.village_id = CM.village
-            LEFT JOIN district D ON D.district_id = CM.district
-            LEFT JOIN state S ON S.state_id = CM.state
-            LEFT JOIN taluk T ON T.taluk_id = CM.taluk
-            LEFT JOIN hobli H ON H.hobli_id = CM.hobli
-            LEFT JOIN race_master R ON R.race_id = CM.race_of_dfls
-            LEFT JOIN tsc_master U ON U.tsc_master_id = CM.tsc
+            LEFT JOIN farmer F
+                   ON F.fruits_id = CM.fruits_id
+                   AND F.active = 1
+            LEFT JOIN village V
+                   ON V.village_id = CM.village
+                   AND V.active = 1
+            LEFT JOIN district D
+                   ON D.district_id = CM.district
+                   AND D.active = 1
+            LEFT JOIN state S
+                   ON S.state_id = CM.state
+                   AND S.active = 1
+            LEFT JOIN taluk T
+                   ON T.taluk_id = CM.taluk
+                   AND T.active = 1
+            LEFT JOIN hobli H
+                   ON H.hobli_id = CM.hobli
+                   AND H.active = 1
+            LEFT JOIN race_master R
+                   ON R.race_id = CM.race_of_dfls
+                   AND R.active = 1
+            LEFT JOIN tsc_master U
+                   ON U.tsc_master_id = CM.tsc
+                   AND U.active = 1
+            WHERE CM.active = 1;
             """, nativeQuery = true)
     List<Map<String, Object>> getChawkiDistributionDetails();
 
 
     @Query(value = """
             SELECT
-                    ci.date,
-                    ci.note,
-                    cs.name AS crop_status_name,
-                    m.name AS mount_name,
-                    r.name As reason_name,
-                    ci.sale_and_disposal_id,
-                    tm.name,
-                    f.first_name,
-                    f.father_name,
-                    f.fruits_id
-                FROM
-                    crop_inspection ci
-                Left JOIN
-                    crop_status cs ON ci.crop_status_id = cs.crop_status_id
-                Left JOIN
-                    farmer f ON ci.farmer_id = f.farmer_id
-                Left JOIN
-                    sale_and_disposal_of_dfls sd ON sd.id = ci.sale_and_disposal_id
-                Left JOIN
-                    mount m ON ci.mount_id = m.mount_id
-                Left JOIN
-                    reason r ON ci.reason_id = r.reason_id
-                Left JOIN
-                    tsc_master tm ON tm.tsc_master_id = sd.tsc
+                ci.date,
+                ci.note,
+                cs.name AS crop_status_name,
+                m.name AS mount_name,
+                r.name AS reason_name,
+                ci.sale_and_disposal_id,
+                tm.name,
+                f.first_name,
+                f.father_name,
+                f.fruits_id
+            FROM crop_inspection ci
+            LEFT JOIN crop_status cs
+                   ON ci.crop_status_id = cs.crop_status_id
+                   AND cs.active = 1
+            LEFT JOIN farmer f
+                   ON ci.farmer_id = f.farmer_id
+                   AND f.active = 1
+            LEFT JOIN sale_and_disposal_of_dfls sd
+                   ON sd.id = ci.sale_and_disposal_id
+                   AND sd.active = 1
+            LEFT JOIN mount m
+                   ON ci.mount_id = m.mount_id
+                   AND m.active = 1
+            LEFT JOIN reason r
+                   ON ci.reason_id = r.reason_id
+                   AND r.active = 1
+            LEFT JOIN tsc_master tm
+                   ON tm.tsc_master_id = sd.tsc
+                   AND tm.active = 1
+            WHERE ci.active = 1;
             """, nativeQuery = true)
     List<Map<String, Object>> getCropInspectionDetails();
 
@@ -816,36 +852,43 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
 
     @Query(value = """
             SELECT
-            mt.mulberry_targets_id,
-            mt.mulberry_target_type_id,
-            mtt.mulberry_target_type_name,
-            mt.tsc_master_id,
-            tm.name,
-            mt.district_id,
-            d.DISTRICT_NAME,
-            mt.taluk_id,
-            t.TALUK_NAME,
-            mt.financial_year_master_id,
-            fym.financial_year,
-            mt.target_type,
-            mt.user_master_id,
-            um.username,
-            mt.month,
-            mt.value,
-            mt.page_type
+                mt.mulberry_targets_id,
+                mt.mulberry_target_type_id,
+                mtt.mulberry_target_type_name,
+                mt.tsc_master_id,
+                tm.name,
+                mt.district_id,
+                d.DISTRICT_NAME,
+                mt.taluk_id,
+                t.TALUK_NAME,
+                mt.financial_year_master_id,
+                fym.financial_year,
+                mt.target_type,
+                mt.user_master_id,
+                um.username,
+                mt.month,
+                mt.value,
+                mt.page_type
             FROM mulberry_targets mt
             LEFT JOIN mulberry_target_type mtt
-            ON mt.mulberry_target_type_id = mtt.mulberry_target_type_id
+                   ON mt.mulberry_target_type_id = mtt.mulberry_target_type_id
+                   AND mtt.active = 1
             LEFT JOIN tsc_master tm
-            ON mt.tsc_master_id = tm.tsc_master_id
+                   ON mt.tsc_master_id = tm.tsc_master_id
+                   AND tm.active = 1
             LEFT JOIN TALUK t
-            ON mt.taluk_id = t.TALUK_ID
+                   ON mt.taluk_id = t.TALUK_ID
+                   AND t.active = 1
             LEFT JOIN DISTRICT d
-            ON mt.district_id = d.DISTRICT_ID
+                   ON mt.district_id = d.DISTRICT_ID
+                   AND d.active = 1
             LEFT JOIN financial_year_master fym
-            ON mt.financial_year_master_id = fym.financial_year_master_id
+                   ON mt.financial_year_master_id = fym.financial_year_master_id
+                   AND fym.active = 1
             LEFT JOIN user_master um
-            ON mt.user_master_id = um.user_master_id
+                   ON mt.user_master_id = um.user_master_id
+                   AND um.active = 1
+            WHERE mt.active = 1;
             """, nativeQuery = true)
     List<Map<String, Object>> getMulberryTargetDetails();
 
@@ -873,18 +916,26 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
             FROM production_targets pt
             LEFT JOIN mulberry_target_type mtt
                    ON pt.mulberry_target_type_id = mtt.mulberry_target_type_id
+                   AND mtt.active = 1
             LEFT JOIN tsc_master tm
                    ON pt.tsc_master_id = tm.tsc_master_id
+                   AND tm.active = 1
             LEFT JOIN DISTRICT d
                    ON pt.district_id = d.DISTRICT_ID
+                   AND d.active = 1
             LEFT JOIN TALUK t
                    ON pt.taluk_id = t.TALUK_ID
+                   AND t.active = 1
             LEFT JOIN financial_year_master fym
                    ON pt.financial_year_master_id = fym.financial_year_master_id
+                   AND fym.active = 1
             LEFT JOIN race_master rm
                    ON pt.race_master_id = rm.race_id
+                   AND rm.active = 1
             LEFT JOIN user_master um
-                   ON pt.user_master_id = um.user_master_id;
+                   ON pt.user_master_id = um.user_master_id
+                   AND um.active = 1
+            WHERE pt.active = 1;
             """, nativeQuery = true)
     List<Map<String, Object>> getProductionTargetDetails();
 
@@ -925,28 +976,41 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
             FROM scheme_targets st
             LEFT JOIN mulberry_target_type mtt
                    ON st.mulberry_target_type_id = mtt.mulberry_target_type_id
+                   AND mtt.active = 1
             LEFT JOIN tsc_master tm
                    ON st.tsc_master_id = tm.tsc_master_id
+                   AND tm.active = 1
             LEFT JOIN DISTRICT d
                    ON st.district_id = d.DISTRICT_ID
+                   AND d.active = 1
             LEFT JOIN TALUK t
                    ON st.taluk_id = t.TALUK_ID
+                   AND t.active = 1
             LEFT JOIN financial_year_master fym
                    ON st.financial_year_master_id = fym.financial_year_master_id
+                   AND fym.active = 1
             LEFT JOIN race_master rm
                    ON st.race_master_id = rm.race_id
+                   AND rm.active = 1
             LEFT JOIN sc_head_account sha
                    ON st.sc_head_account_id = sha.sc_head_account_id
+                   AND sha.active = 1
             LEFT JOIN sc_component scc
                    ON st.sc_component_id = scc.sc_component_id
+                   AND scc.active = 1
             LEFT JOIN sc_scheme_details ssd
                    ON st.sc_scheme_details_id = ssd.sc_scheme_details_id
+                   AND ssd.active = 1
             LEFT JOIN sc_sub_scheme_details sssd
                    ON st.sc_sub_scheme_details_id = sssd.sc_sub_scheme_details_id
+                   AND sssd.active = 1
             LEFT JOIN sc_category sc
                    ON st.sc_category_id = sc.sc_category_id
+                   AND sc.active = 1
             LEFT JOIN user_master um
-                   ON st.user_master_id = um.user_master_id;
+                   ON st.user_master_id = um.user_master_id
+                   AND um.active = 1
+            WHERE st.active = 1;
             """, nativeQuery = true)
     List<Map<String, Object>> getSchemeTargetDetails();
 
@@ -977,20 +1041,29 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
                     FROM targets t
                     LEFT JOIN mulberry_target_type mtt
                            ON t.mulberry_target_type_id = mtt.mulberry_target_type_id
+                           AND mtt.active = 1
                     LEFT JOIN financial_year_master fym
                            ON t.financial_year_master_id = fym.financial_year_master_id
+                           AND fym.active = 1
                     LEFT JOIN race_master rm
                            ON t.race_master_id = rm.race_id
+                           AND rm.active = 1
                     LEFT JOIN tr_institution_master tim
                            ON t.training_institution_id = tim.tr_institution_master_id
+                           AND tim.active = 1
                     LEFT JOIN farm_master fm
                            ON t.farm_id = fm.farm_id
+                           AND fm.active = 1
                     LEFT JOIN grainage_master gm
                            ON t.grainage_master_id = gm.grainage_master_id
+                           AND gm.active = 1
                     LEFT JOIN tr_course_master tcm
                            ON t.course_name = tcm.tr_course_id
+                           AND tcm.active = 1
                     LEFT JOIN user_master um
-                           ON t.user_master_id = um.user_master_id;
+                           ON t.user_master_id = um.user_master_id
+                           AND um.active = 1
+                    WHERE t.active = 1;
             """, nativeQuery = true)
     List<Map<String, Object>> getTargetDetails();
 
@@ -1028,210 +1101,298 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
 
     @Query(value = """
             SELECT
-            a.chawki_percentage,
-            a.cold_storage_details,
-            a.crop_detail,
-            a.crop_failure_details,
-            a.crop_number,
-            a.laid_on_date,
-            a.number_ofdfls as line_number_of_dfls,
-            a.released_on_date,
-            a.spun_on_date,
-            a.spun_on_to_date,
-            a.worm_test_dates_and_results,
-            a.worm_weight_in_grams,
-            a.hatching_date,
-            dm.disinfectant_master_name,
-            gnm.generation_number,
-            b.hatching_date AS receipt_hatching_date,
-            b.invoice_date,
-            b.invoice_number,
-            b.laid_on_date AS receipt_laid_on_date,
-            lnm.line_name,
-            b.lot_number,
-            b.number_of_dfls_released,
-            rm.race_name,
-            
-            g.grainage_master_name,
-            g.grainage_master_name_in_kannada,
-            f.farm_name,
-            f.farm_name_in_kannada,
-            
-            molrfer.average_weight,
-            molrfer.average_weight_male,
-            molrfer.date_of_selection_cocoon,
-            molrfer.farmer_name,
-            molrfer.farmer_name_male,
-            molrfer.fruits_id,
-            molrfer.lot_number,
-            molrfer.lot_number_male,
-            molrfer.market_master_id,
-            molrfer.market_master_id_male,
-            molrfer.no_of_cocoons_selected,
-            molrfer.no_of_cocoons_selected_male,
-            molrfer.number_of_dfls,
-            molrfer.number_of_dfls_male,
-            molrfer.pupa_test_details,
-            
-            mosbr.black_boxing_date,
-            mosbr.brushed_on_date,
-            mosbr.chawki_percentage AS screening_chawki_percentage,
-            mosbr.cocoons_produced_at_each_generation,
-            mosbr.cocoons_produced_at_each_screening,
-            mosbr.crop_failure_details AS screening_crop_failure_details,
-            mosbr.incubation_date,
-            mosbr.lot_number AS screening_lot_number,
-            mosbr.screening_batch_no,
-            mosbr.screening_batch_results,
-            mosbr.selected_bed_as_per_the_mean_performance,
-            mosbr.spun_on_date AS screening_spun_on_date,
-            mosbr.spun_on_to_date AS screening_spun_on_to_date,
-            
-            roeooff.bank_challan_number,
-            roeooff.bank_challan_upload,
-            roeooff.bill_number,
-            roeooff.date AS remittance_date,
-            roeooff.lot_number AS remittance_lot_number,
-            roeooff.number_ofdfls,
-            roeooff.rtc25,
-            roeooff.total_amount
-            
-            FROM rearing_ofdfls_for_the8lines a
-            INNER JOIN receipt_of_dfls_from_p4_grainage b
-            ON a.lot_number = b.lot_number
-            AND a.user_master_id = b.user_master_id
-            
-            LEFT JOIN maintenance_of_line_records_for_each_race molrfer
-            ON molrfer.lot_number = a.lot_number
-            LEFT JOIN maintenance_of_screening_batch_records mosbr
-            ON mosbr.lot_number = a.lot_number
-            LEFT JOIN remittance_of_eggs_orpcor_others_for_farm roeooff
-            ON roeooff.lot_number = a.lot_number
-            LEFT JOIN farm_master f
-            ON f.user_master_id = a.user_master_id
-            LEFT JOIN grainage_master g
-            ON b.grainage_id = g.grainage_master_id
-            LEFT JOIN disinfectant_master dm
-            ON a.disinfectant_master_id = dm.disinfectant_master_id
-            LEFT JOIN generation_number_master gnm
-            ON b.generation_number_id = gnm.generation_number_id
-            LEFT JOIN line_name_master lnm
-            ON b.line_name_id = lnm.line_name_id
-            LEFT JOIN race_master rm
-            ON roeooff.race_id = rm.race_id
+               a.chawki_percentage,
+               a.cold_storage_details,
+               a.crop_detail,
+               a.crop_failure_details,
+               a.crop_number,
+               a.laid_on_date,
+               a.number_ofdfls AS line_number_of_dfls,
+               a.released_on_date,
+               a.spun_on_date,
+               a.spun_on_to_date,
+               a.worm_test_dates_and_results,
+               a.worm_weight_in_grams,
+               a.hatching_date,
+    
+               dm.disinfectant_master_name,
+               gnm.generation_number,
+    
+               b.hatching_date AS receipt_hatching_date,
+               b.invoice_date,
+               b.invoice_number,
+               b.laid_on_date AS receipt_laid_on_date,
+               lnm.line_name,
+               b.lot_number,
+               b.number_of_dfls_released,
+               rm.race_name,
+    
+               g.grainage_master_name,
+               g.grainage_master_name_in_kannada,
+    
+               f.farm_name,
+               f.farm_name_in_kannada,
+    
+               molrfer.average_weight,
+               molrfer.average_weight_male,
+               molrfer.date_of_selection_cocoon,
+               molrfer.farmer_name,
+               molrfer.farmer_name_male,
+               molrfer.fruits_id,
+               molrfer.lot_number,
+               molrfer.lot_number_male,
+               molrfer.market_master_id,
+               molrfer.market_master_id_male,
+               molrfer.no_of_cocoons_selected,
+               molrfer.no_of_cocoons_selected_male,
+               molrfer.number_of_dfls,
+               molrfer.number_of_dfls_male,
+               molrfer.pupa_test_details,
+    
+               mosbr.black_boxing_date,
+               mosbr.brushed_on_date,
+               mosbr.chawki_percentage AS screening_chawki_percentage,
+               mosbr.cocoons_produced_at_each_generation,
+               mosbr.cocoons_produced_at_each_screening,
+               mosbr.crop_failure_details AS screening_crop_failure_details,
+               mosbr.incubation_date,
+               mosbr.lot_number AS screening_lot_number,
+               mosbr.screening_batch_no,
+               mosbr.screening_batch_results,
+               mosbr.selected_bed_as_per_the_mean_performance,
+               mosbr.spun_on_date AS screening_spun_on_date,
+               mosbr.spun_on_to_date AS screening_spun_on_to_date,
+    
+               roeooff.bank_challan_number,
+               roeooff.bank_challan_upload,
+               roeooff.bill_number,
+               roeooff.date AS remittance_date,
+               roeooff.lot_number AS remittance_lot_number,
+               roeooff.number_ofdfls,
+               roeooff.rtc25,
+               roeooff.total_amount
+    
+           FROM rearing_ofdfls_for_the8lines a
+           INNER JOIN receipt_of_dfls_from_p4_grainage b
+               ON a.lot_number = b.lot_number
+               AND a.user_master_id = b.user_master_id
+               AND b.active = 1
+           LEFT JOIN maintenance_of_line_records_for_each_race molrfer
+               ON molrfer.lot_number = a.lot_number
+               AND molrfer.active = 1
+           LEFT JOIN maintenance_of_screening_batch_records mosbr
+               ON mosbr.lot_number = a.lot_number
+               AND mosbr.active = 1
+           LEFT JOIN remittance_of_eggs_orpcor_others_for_farm roeooff
+               ON roeooff.lot_number = a.lot_number
+               AND roeooff.active = 1
+           LEFT JOIN farm_master f
+               ON f.user_master_id = a.user_master_id
+               AND f.active = 1
+           LEFT JOIN grainage_master g
+               ON b.grainage_id = g.grainage_master_id
+               AND g.active = 1
+           LEFT JOIN disinfectant_master dm
+               ON a.disinfectant_master_id = dm.disinfectant_master_id
+               AND dm.active = 1
+           LEFT JOIN generation_number_master gnm
+               ON b.generation_number_id = gnm.generation_number_id
+               AND gnm.active = 1
+           LEFT JOIN line_name_master lnm
+               ON b.line_name_id = lnm.line_name_id
+               AND lnm.active = 1
+           LEFT JOIN race_master rm
+               ON roeooff.race_id = rm.race_id
+               AND rm.active = 1
+    
+           WHERE a.active = 1;
             """, nativeQuery = true)
     List<Map<String, Object>> getSeedAndDFLFarmWiseDetails();
 
+//    @Query(value = """
+//            SELECT
+//            p.bed_number_or_kgs_of_cocoons_supplied,
+//            p.cocoon_rejection_details,
+//            p.crop_number,
+//            p.date_of_seed_cocoon_supply,
+//            p.invoice_date,
+//            p.name_of_the_government_seed_farm_or_farmer,
+//            p.number_of_pupa_examined,
+//            p.rate_per_kg,
+//            p.spun_on_date,
+//            l.line_name,
+//            l.line_name_in_kannada,
+//            l.line_code,
+//            rm.race_name,
+//            rm.race_name_in_kannada,
+//            e.number_of_cocoonscb,
+//            e.date_of_moth_emergence,
+//            e.number_of_pairs,
+//            e.number_of_cocoonscb AS TestedCocoons,
+//            e.created_date,
+//            e.number_of_rejection,
+//            e.lot_number,
+//            e.laid_on_date,
+//            e.dfls_obtained,
+//            g.grainage_master_name,
+//            e.egg_recovery_percentage,
+//            CASE WHEN e.test_results = 'Disease-Free' THEN ISNULL(SUM(e.dfls_obtained),0) END AS test_results_disease_free,
+//            CASE WHEN e.test_results = 'Diseased' THEN ISNULL(SUM(e.dfls_obtained),0) END AS test_results_disease,
+//            a.lot_number AS disposal_lot_number,
+//            a.date_of_disposal,
+//            a.egg_sheet_numbers,
+//            a.expected_date_of_hatching,
+//            a.invoice_number,
+//            a.name_and_address_of_the_farm,
+//            a.number_of_dfls_disposed,
+//            a.rate_per100dfls_price,
+//            a.release_date,
+//            moe.date_of_cold_store,
+//            moe.date_of_release,
+//            moe.grainage_details,
+//            moe.incubation_details,
+//            moe.laid_on_date AS moe_laid_on_date,
+//            moe.lot_number AS moe_lot_number,
+//            tomp.pebrine_free_status_of_pupa_and_moth,
+//            tomp.source_details,
+//            tm.name
+//            FROM preservation_of_seed_cocoon_for_processing p
+//            LEFT JOIN preparation_of_eggs e
+//            ON e.lot_number = p.lot_number
+//            LEFT JOIN sale_and_disposal_of_dfls a
+//            ON a.lot_number = p.lot_number
+//            LEFT JOIN maintenance_of_eggs_at_cold_storage moe
+//            ON moe.lot_number = p.lot_number
+//            LEFT JOIN testing_of_moth_pupa tomp
+//            ON tomp.lot_number = p.lot_number
+//            LEFT JOIN line_name_master l
+//            ON l.line_name_id = p.line_name_id
+//            LEFT JOIN grainage_master g
+//            ON p.user_master_id = g.user_master_id
+//            LEFT JOIN race_master rm
+//            ON p.race_id = rm.race_id
+//            LEFT JOIN tsc_master tm
+//            ON tm.tsc_master_id = a.tsc
+//            GROUP BY
+//            p.bed_number_or_kgs_of_cocoons_supplied,
+//            p.cocoon_rejection_details,
+//            p.crop_number,
+//            p.date_of_seed_cocoon_supply,
+//            p.invoice_date,
+//            p.name_of_the_government_seed_farm_or_farmer,
+//            p.number_of_pupa_examined,
+//            p.rate_per_kg,
+//            p.spun_on_date,
+//            l.line_name,
+//            l.line_name_in_kannada,
+//            l.line_code,
+//            rm.race_name,
+//            rm.race_name_in_kannada,
+//            e.number_of_cocoonscb,
+//            e.date_of_moth_emergence,
+//            e.number_of_pairs,
+//            e.number_of_cocoonscb,
+//            e.created_date,
+//            e.number_of_rejection,
+//            e.lot_number,
+//            e.laid_on_date,
+//            e.dfls_obtained,
+//            g.grainage_master_name,
+//            e.egg_recovery_percentage,
+//            e.test_results,
+//            a.lot_number,
+//            a.date_of_disposal,
+//            a.egg_sheet_numbers,
+//            a.expected_date_of_hatching,
+//            a.invoice_number,
+//            a.name_and_address_of_the_farm,
+//            a.number_of_dfls_disposed,
+//            a.rate_per100dfls_price,
+//            a.release_date,
+//            moe.date_of_cold_store,
+//            moe.date_of_release,
+//            moe.grainage_details,
+//            moe.incubation_details,
+//            moe.laid_on_date,
+//            moe.lot_number,
+//            tomp.pebrine_free_status_of_pupa_and_moth,
+//            tomp.source_details,
+//            tm.name;
+//            """, nativeQuery = true)
+//    List<Map<String, Object>> getTSCWiseSoldDFLDetails();
+
     @Query(value = """
             SELECT
-            p.bed_number_or_kgs_of_cocoons_supplied,
-            p.cocoon_rejection_details,
-            p.crop_number,
-            p.date_of_seed_cocoon_supply,
-            p.invoice_date,
-            p.name_of_the_government_seed_farm_or_farmer,
-            p.number_of_pupa_examined,
-            p.rate_per_kg,
-            p.spun_on_date,
-            l.line_name,
-            l.line_name_in_kannada,
-            l.line_code,
-            rm.race_name,
-            rm.race_name_in_kannada,
-            e.number_of_cocoonscb,
-            e.date_of_moth_emergence,
-            e.number_of_pairs,
-            e.number_of_cocoonscb AS TestedCocoons,
-            e.created_date,
-            e.number_of_rejection,
-            e.lot_number,
-            e.laid_on_date,
-            e.dfls_obtained,
-            g.grainage_master_name,
-            e.egg_recovery_percentage,
-            CASE WHEN e.test_results = 'Disease-Free' THEN ISNULL(SUM(e.dfls_obtained),0) END AS test_results_disease_free,
-            CASE WHEN e.test_results = 'Diseased' THEN ISNULL(SUM(e.dfls_obtained),0) END AS test_results_disease,
-            a.lot_number AS disposal_lot_number,
-            a.date_of_disposal,
-            a.egg_sheet_numbers,
-            a.expected_date_of_hatching,
-            a.invoice_number,
-            a.name_and_address_of_the_farm,
-            a.number_of_dfls_disposed,
-            a.rate_per100dfls_price,
-            a.release_date,
-            moe.date_of_cold_store,
-            moe.date_of_release,
-            moe.grainage_details,
-            moe.incubation_details,
-            moe.laid_on_date AS moe_laid_on_date,
-            moe.lot_number AS moe_lot_number,
-            tomp.pebrine_free_status_of_pupa_and_moth,
-            tomp.source_details,
-            tm.name
+                p.lot_number,
+                MAX(p.bed_number_or_kgs_of_cocoons_supplied) AS bed_number_or_kgs_of_cocoons_supplied,
+                MAX(p.cocoon_rejection_details) AS cocoon_rejection_details,
+                MAX(p.crop_number) AS crop_number,
+                MAX(p.date_of_seed_cocoon_supply) AS date_of_seed_cocoon_supply,
+                MAX(p.invoice_date) AS invoice_date,
+                MAX(p.name_of_the_government_seed_farm_or_farmer) AS name_of_the_government_seed_farm_or_farmer,
+                MAX(p.number_of_pupa_examined) AS number_of_pupa_examined,
+                MAX(p.rate_per_kg) AS rate_per_kg,
+                MAX(p.spun_on_date) AS spun_on_date,
+            
+                MAX(l.line_name) AS line_name,
+                MAX(l.line_name_in_kannada) AS line_name_in_kannada,
+                MAX(l.line_code) AS line_code,
+            
+                MAX(rm.race_name) AS race_name,
+                MAX(rm.race_name_in_kannada) AS race_name_in_kannada,
+            
+                SUM(e.number_of_cocoonscb) AS number_of_cocoonscb,
+                MAX(e.date_of_moth_emergence) AS date_of_moth_emergence,
+                SUM(e.number_of_pairs) AS number_of_pairs,
+                SUM(e.number_of_cocoonscb) AS TestedCocoons,
+                SUM(e.dfls_obtained) AS total_dfls_obtained,
+                MAX(e.egg_recovery_percentage) AS egg_recovery_percentage,
+            
+                SUM(CASE WHEN e.test_results = 'Disease-Free' THEN e.dfls_obtained ELSE 0 END) AS total_dfls_disease_free,
+                SUM(CASE WHEN e.test_results = 'Diseased' THEN e.dfls_obtained ELSE 0 END) AS total_dfls_diseased,
+            
+                MAX(a.lot_number) AS disposal_lot_number,
+                MAX(a.date_of_disposal) AS date_of_disposal,
+                MAX(a.egg_sheet_numbers) AS egg_sheet_numbers,
+                MAX(a.expected_date_of_hatching) AS expected_date_of_hatching,
+                MAX(a.invoice_number) AS invoice_number,
+                MAX(a.name_and_address_of_the_farm) AS name_and_address_of_the_farm,
+                SUM(a.number_of_dfls_disposed) AS number_of_dfls_disposed,
+                MAX(a.rate_per100dfls_price) AS rate_per100dfls_price,
+                MAX(a.release_date) AS release_date,
+            
+                MAX(moe.date_of_cold_store) AS date_of_cold_store,
+                MAX(moe.date_of_release) AS date_of_release,
+                MAX(moe.grainage_details) AS grainage_details,
+                MAX(moe.incubation_details) AS incubation_details,
+            
+                MAX(tomp.pebrine_free_status_of_pupa_and_moth) AS pebrine_free_status_of_pupa_and_moth,
+                MAX(tomp.source_details) AS source_details,
+            
+                MAX(tm.name) AS tsc_name,
+                MAX(g.grainage_master_name) AS grainage_master_name
+            
             FROM preservation_of_seed_cocoon_for_processing p
             LEFT JOIN preparation_of_eggs e
-            ON e.lot_number = p.lot_number
+                   ON e.lot_number = p.lot_number AND e.active = 1
             LEFT JOIN sale_and_disposal_of_dfls a
-            ON a.lot_number = p.lot_number
+                   ON a.lot_number = p.lot_number AND a.active = 1
             LEFT JOIN maintenance_of_eggs_at_cold_storage moe
-            ON moe.lot_number = p.lot_number
+                   ON moe.lot_number = p.lot_number AND moe.active = 1
             LEFT JOIN testing_of_moth_pupa tomp
-            ON tomp.lot_number = p.lot_number
+                   ON tomp.lot_number = p.lot_number AND tomp.active = 1
             LEFT JOIN line_name_master l
-            ON l.line_name_id = p.line_name_id
+                   ON l.line_name_id = p.line_name_id AND l.active = 1
             LEFT JOIN grainage_master g
-            ON p.user_master_id = g.user_master_id
+                   ON p.user_master_id = g.user_master_id AND g.active = 1
             LEFT JOIN race_master rm
-            ON p.race_id = rm.race_id
+                   ON p.race_id = rm.race_id AND rm.active = 1
             LEFT JOIN tsc_master tm
-            ON tm.tsc_master_id = a.tsc
-            GROUP BY
-            p.bed_number_or_kgs_of_cocoons_supplied,
-            p.cocoon_rejection_details,
-            p.crop_number,
-            p.date_of_seed_cocoon_supply,
-            p.invoice_date,
-            p.name_of_the_government_seed_farm_or_farmer,
-            p.number_of_pupa_examined,
-            p.rate_per_kg,
-            p.spun_on_date,
-            l.line_name,
-            l.line_name_in_kannada,
-            l.line_code,
-            rm.race_name,
-            rm.race_name_in_kannada,
-            e.number_of_cocoonscb,
-            e.date_of_moth_emergence,
-            e.number_of_pairs,
-            e.number_of_cocoonscb,
-            e.created_date,
-            e.number_of_rejection,
-            e.lot_number,
-            e.laid_on_date,
-            e.dfls_obtained,
-            g.grainage_master_name,
-            e.egg_recovery_percentage,
-            e.test_results,
-            a.lot_number,
-            a.date_of_disposal,
-            a.egg_sheet_numbers,
-            a.expected_date_of_hatching,
-            a.invoice_number,
-            a.name_and_address_of_the_farm,
-            a.number_of_dfls_disposed,
-            a.rate_per100dfls_price,
-            a.release_date,
-            moe.date_of_cold_store,
-            moe.date_of_release,
-            moe.grainage_details,
-            moe.incubation_details,
-            moe.laid_on_date,
-            moe.lot_number,
-            tomp.pebrine_free_status_of_pupa_and_moth,
-            tomp.source_details,
-            tm.name;
-            """, nativeQuery = true)
-    List<Map<String, Object>> getTSCWiseSoldDFLDetails();
+                   ON tm.tsc_master_id = a.tsc AND tm.active = 1
+            WHERE p.active = 1
+    GROUP BY p.lot_number;
+    """, nativeQuery = true)
+      List<Map<String, Object>> getTSCWiseSoldDFLDetails();
+
 
 }

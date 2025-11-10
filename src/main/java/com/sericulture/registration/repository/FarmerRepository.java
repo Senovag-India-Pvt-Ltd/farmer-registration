@@ -1164,6 +1164,17 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
     List<Object[]> getFarmerDetailsForSeedCocoonMarket(String text, String type);
 
     @Query(value = """
+            WITH PrimaryAddress AS (
+                SELECT
+                    fa.farmer_id,
+                    fa.district_id,
+                    fa.taluk_id,
+                    fa.hobli_id,
+                    fa.village_id,
+                    ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
+                FROM farmer_address fa
+                WHERE fa.active = 1
+            )
             SELECT
                 f.FARMER_ID,
                 f.farmer_number,
@@ -1173,7 +1184,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
                 f.last_name,
                 f.dob,
             
-                CASE 
+                CASE
                     WHEN f.gender_id = 1 THEN 'Male'
                     WHEN f.gender_id = 2 THEN 'Female'
                     WHEN f.gender_id = 3 THEN 'Others'
@@ -1216,20 +1227,37 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             
             FROM farmer f
             
+            LEFT JOIN PrimaryAddress pa
+                ON pa.farmer_id = f.farmer_id AND pa.rn = 1
+            
             OUTER APPLY (
                 SELECT TOP 1 *
                 FROM farmer_address
-                WHERE FARMER_ID = f.FARMER_ID
+                WHERE FARMER_ID = f.FARMER_ID AND active = 1
                 ORDER BY default_address DESC, created_date ASC
             ) addr
             
-            LEFT JOIN education edu ON f.education_id = edu.education_id
-            LEFT JOIN farmer_type ft ON f.farmer_type_id = ft.farmer_type_id
-            LEFT JOIN caste caste ON f.caste_id = caste.caste_id
-            LEFT JOIN tsc_master tsc ON f.tsc_master_id = tsc.tsc_master_id
-            LEFT JOIN village vill ON addr.village_id = vill.village_id
-            LEFT JOIN taluk tal ON addr.taluk_id = tal.taluk_id
-            LEFT JOIN district dist ON addr.district_id = dist.district_id
+            LEFT JOIN education edu
+                ON f.education_id = edu.education_id AND edu.active = 1
+            
+            LEFT JOIN farmer_type ft
+                ON f.farmer_type_id = ft.farmer_type_id AND ft.active = 1
+            
+            LEFT JOIN caste caste
+                ON f.caste_id = caste.caste_id AND caste.active = 1
+            
+            LEFT JOIN tsc_master tsc
+                ON f.tsc_master_id = tsc.tsc_master_id AND tsc.active = 1
+            
+            LEFT JOIN village vill
+                ON pa.village_id = vill.village_id AND vill.active = 1
+            
+            LEFT JOIN taluk tal
+                ON pa.taluk_id = tal.taluk_id AND tal.active = 1
+            
+            LEFT JOIN district dist
+                ON pa.district_id = dist.district_id AND dist.active = 1
+            WHERE f.active = 1;
             """, nativeQuery = true)
     List<Map<String, Object>> getFullFarmerDetails();
 }
