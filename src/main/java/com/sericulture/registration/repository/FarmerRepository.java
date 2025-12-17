@@ -1120,7 +1120,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
                     FROM farmer_address fa
                     WHERE fa.active = 1
                 )
-                SELECT
+                SELECT Distinct
                     f.farmer_id,
                     f.first_name,
                     f.middle_name,
