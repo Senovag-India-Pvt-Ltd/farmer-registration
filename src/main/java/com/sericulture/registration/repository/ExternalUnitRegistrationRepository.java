@@ -19,7 +19,7 @@ import java.util.Set;
 public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepository<ExternalUnitRegistration, Long> {
     public Page<ExternalUnitRegistration> findByActiveOrderByExternalUnitRegistrationIdAsc(boolean isActive, final Pageable pageable);
 
-    public List<ExternalUnitRegistration> findByActiveOrderByExternalUnitRegistrationIdAsc(boolean isActive);
+    public List<ExternalUnitRegistration> findByActiveOrderByNameAsc(boolean isActive);
 
     public ExternalUnitRegistration save(ExternalUnitRegistration farmerAddress);
 

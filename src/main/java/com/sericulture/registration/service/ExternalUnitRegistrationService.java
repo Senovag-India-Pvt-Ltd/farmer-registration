@@ -183,7 +183,7 @@ public class ExternalUnitRegistrationService {
     }
 
     public Map<String, Object> getAllByActive(boolean isActive) {
-        return convertListToMapResponse(externalUnitRegistrationRepository.findByActiveOrderByExternalUnitRegistrationIdAsc(isActive));
+        return convertListToMapResponse(externalUnitRegistrationRepository.findByActiveOrderByNameAsc(isActive));
 
 
     }
