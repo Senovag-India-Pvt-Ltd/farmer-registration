@@ -2722,6 +2722,8 @@ public class FarmerService {
                     .rearingHouseDetails(Util.objectToString(arr[25]))
                     .landAddress(Util.objectToString(arr[26]))
                     .mulberryVarietyName(Util.objectToString(arr[27]))
+                    .mobileNumber(Util.objectToString(arr[28]))
+                    .tscName(Util.objectToString(arr[29]))
                     .build();
             primaryDetailsResponseList.add(primaryDetailsResponse);
         }
@@ -2783,6 +2785,8 @@ public class FarmerService {
         headerRow.createCell(24).setCellValue("Rearing House Details");
         headerRow.createCell(25).setCellValue("Land Address");
         headerRow.createCell(26).setCellValue("Mulberry Variety Name");
+        headerRow.createCell(27).setCellValue("Mobile Number");
+        headerRow.createCell(28).setCellValue("TSC Name");
 
 
         //Dynamic data binds here
@@ -2820,12 +2824,14 @@ public class FarmerService {
             contentRow.createCell(24).setCellValue(primaryDetailsResponse.getRearingHouseDetails());
             contentRow.createCell(25).setCellValue(primaryDetailsResponse.getLandAddress());
             contentRow.createCell(26).setCellValue(primaryDetailsResponse.getMulberryVarietyName());
+            contentRow.createCell(27).setCellValue(primaryDetailsResponse.getMobileNumber());
+            contentRow.createCell(28).setCellValue(primaryDetailsResponse.getTscName());
 
             dataStartsFrom = dataStartsFrom + 1;
         }
 
         // Auto-size all columns
-        for (int columnIndex = 0; columnIndex <= 26; columnIndex++) {
+        for (int columnIndex = 0; columnIndex <= 28; columnIndex++) {
             sheet.autoSizeColumn(columnIndex, true);
         }
 

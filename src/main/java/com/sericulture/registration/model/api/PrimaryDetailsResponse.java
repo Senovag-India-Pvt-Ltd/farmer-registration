@@ -40,5 +40,8 @@ public class PrimaryDetailsResponse extends ResponseBody{
     private String rearingHouseDetails;
     private String landAddress;
     private String mulberryVarietyName;
+    private String mobileNumber;
+    private String tscName;
+
 
 }
