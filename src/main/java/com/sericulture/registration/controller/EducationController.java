@@ -29,18 +29,18 @@ public class EducationController {
     @Autowired
     EducationService educationService;
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, Object> response = new HashMap<>();
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        response.put("validationErrors", errors);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+//        Map<String, Object> response = new HashMap<>();
+//        Map<String, String> errors = new HashMap<>();
+//        ex.getBindingResult().getAllErrors().forEach((error) -> {
+//            String fieldName = ((FieldError) error).getField();
+//            String errorMessage = error.getDefaultMessage();
+//            errors.put(fieldName, errorMessage);
+//        });
+//        response.put("validationErrors", errors);
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+//    }
 
     @Operation(summary = "Insert Education Details", description = "Creates Education Details in to DB")
     @ApiResponses(value = {
@@ -54,7 +54,7 @@ public class EducationController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error - Error occurred while processing the request.")
     })
     @PostMapping("/add")
-    public ResponseEntity<?> getEducationDetails(@Valid @RequestBody EducationRequest educationRequest) {
+    public ResponseEntity<?> getEducationDetails(@RequestBody EducationRequest educationRequest) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(EducationResponse.class);
 
         rw.setContent(educationService.insertEducationDetails(educationRequest));
@@ -116,7 +116,7 @@ public class EducationController {
     })
     @PostMapping("/edit")
     public ResponseEntity<?> editEducationDetails(
-            @Valid @RequestBody final EditEducationRequest educationRequest
+             @RequestBody final EditEducationRequest educationRequest
     ) {
         ResponseWrapper<EducationResponse> rw = ResponseWrapper.createWrapper(EducationResponse.class);
         rw.setContent(educationService.updateEducationDetails(educationRequest));
