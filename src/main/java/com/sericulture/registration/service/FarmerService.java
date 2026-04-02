@@ -613,7 +613,7 @@ public class FarmerService {
 //        return farmerResponse;
 //    }
 
-    @Transactional
+        @Transactional
     public FarmerResponse editCompleteFarmerDetails(EditCompleteFarmerRequest editCompleteFarmerRequest) {
         EditFarmerRequest farmerRequest = editCompleteFarmerRequest.getEditFarmerRequest();
         if (farmerRequest.getIsOtherStateFarmer() == null) {
@@ -1527,13 +1527,15 @@ public class FarmerService {
 
             log.info("Caste REQUEST BODY :" + body.toString());
 
-            // FIX: Use injected RestTemplate bean, not new instance per call
+            RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             ObjectMapper mapper1 = new ObjectMapper();
 
             HttpEntity<String> request = new HttpEntity<>(mapper1.writeValueAsString(body), headers);
+
+            restTemplate.getMessageConverters().add(new ObjectToUrlEncodedConverter(mapper1));
 
             ResponseEntity<ResponseWrapper> result = restTemplate.postForEntity(uri, request, ResponseWrapper.class);
 
@@ -1553,13 +1555,15 @@ public class FarmerService {
             //String uri = "http://13.200.62.144:8001/master-data/v1/" + "village/get-details-by-village-name";
             log.info("Caste REQUEST BODY :" + body.toString());
 
-            // FIX: Use injected RestTemplate bean, not new instance per call
+            RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             ObjectMapper mapper1 = new ObjectMapper();
 
             HttpEntity<String> request = new HttpEntity<>(mapper1.writeValueAsString(body), headers);
+
+            restTemplate.getMessageConverters().add(new ObjectToUrlEncodedConverter(mapper1));
 
             ResponseEntity<ResponseWrapper> result = restTemplate.postForEntity(uri, request, ResponseWrapper.class);
 
@@ -1814,18 +1818,12 @@ public class FarmerService {
         hobliId = normalizeFilter(hobliId);
         casteId = normalizeFilter(casteId);
 
-        // FIX: Load in chunks to avoid loading all 1.5L records into memory at once
-        List<FarmerDTO> allFarmers = new ArrayList<>();
-        int chunkPage = 0, chunkSize = 500;
-        Page<FarmerDTO> page;
-        do {
-            Pageable chunkPageable = PageRequest.of(chunkPage++, chunkSize);
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsIds(
-                    isActive, stateId, districtId, talukId, hobliId, casteId, chunkPageable);
-            allFarmers.addAll(page.getContent());
-        } while (page.hasNext());
+        Pageable pageable = null;
+        Page<FarmerDTO> page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsIds(
+                isActive, stateId, districtId, talukId, hobliId, casteId, pageable);
 
-        return exportFarmerReport(allFarmers, "ka_farmers_report");
+        return exportFarmerReport(page.getContent(), "ka_farmers_report");
+
     }
 
     public FileInputStream nonKaFarmersReport(Long stateId, Long districtId, Long talukId, Long hobliId, Long casteId,
@@ -1836,18 +1834,12 @@ public class FarmerService {
         hobliId = normalizeFilter(hobliId);
         casteId = normalizeFilter(casteId);
 
-        // FIX: Load in chunks to avoid loading all 1.5L records into memory at once
-        List<FarmerDTO> allFarmers = new ArrayList<>();
-        int chunkPage = 0, chunkSize = 500;
-        Page<FarmerDTO> page;
-        do {
-            Pageable chunkPageable = PageRequest.of(chunkPage++, chunkSize);
-            page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmersList(
-                    isActive, stateId, districtId, talukId, hobliId, casteId, chunkPageable);
-            allFarmers.addAll(page.getContent());
-        } while (page.hasNext());
 
-        return exportFarmerReport(allFarmers, "non_ka_farmers_report");
+        Pageable pageable = null;
+        Page<FarmerDTO> page = farmerRepository.getByActiveOrderByFarmerIdAscForNonKAFarmersList(
+                isActive, stateId, districtId, talukId, hobliId, casteId,  pageable);
+
+        return exportFarmerReport(page.getContent(), "non_ka_farmers_report");
     }
 
 
@@ -1876,18 +1868,10 @@ public class FarmerService {
     }
 
     private FileInputStream exportFarmerReport(List<FarmerDTO> farmers, String filePrefix) throws Exception {
-        String userHome = System.getProperty("user.home");
-        Path directory = Paths.get(userHome, "Downloads");
-        Files.createDirectories(directory);
-        Path filePath = directory.resolve(filePrefix + "_" + Util.getISTLocalDate() + ".xlsx");
-
-        // FIX: Workbook and FileOutputStream both in try-with-resources so they close even on exception.
-        // FileInputStream opened AFTER the try block (after write completes) — not before.
-        try (Workbook workbook = new XSSFWorkbook();
-             FileOutputStream fileOut = new FileOutputStream(filePath.toFile())) {
-
+        try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Farmers");
 
+            // Header
             Row headerRow = sheet.createRow(0);
             headerRow.createCell(0).setCellValue("S.No");
             headerRow.createCell(1).setCellValue("Farmer Number");
@@ -1897,6 +1881,8 @@ public class FarmerService {
             headerRow.createCell(5).setCellValue("Farmer Type");
             headerRow.createCell(6).setCellValue("Caste");
 
+
+            // Data
             int rowIdx = 1, serial = 1;
             for (FarmerDTO dto : farmers) {
                 Row row = sheet.createRow(rowIdx++);
@@ -1907,14 +1893,22 @@ public class FarmerService {
                 row.createCell(4).setCellValue(dto.getAadhaarNumber());
                 row.createCell(5).setCellValue(dto.getFarmerTypeName());
                 row.createCell(6).setCellValue(dto.getTitle());
+
             }
 
-            for (int i = 0; i <= 6; i++) sheet.autoSizeColumn(i);
-            workbook.write(fileOut);
-        } // workbook and fileOut auto-closed here, file is fully written
+            for (int i = 0; i <= 5; i++) sheet.autoSizeColumn(i);
 
-        // FIX: Open FileInputStream only after file is fully written and closed
-        return new FileInputStream(filePath.toFile());
+            String userHome = System.getProperty("user.home");
+            Path directory = Paths.get(userHome, "Downloads");
+            Files.createDirectories(directory);
+            Path filePath = directory.resolve(filePrefix + "_" + Util.getISTLocalDate() + ".xlsx");
+
+            try (FileOutputStream fileOut = new FileOutputStream(filePath.toFile())) {
+                workbook.write(fileOut);
+            }
+
+            return new FileInputStream(filePath.toFile());
+        }
     }
 
 
@@ -2804,6 +2798,38 @@ public class FarmerService {
             headerRow.createCell(24).setCellValue("Rearing House Details");
             headerRow.createCell(25).setCellValue("Land Address");
             headerRow.createCell(26).setCellValue("Mulberry Variety Name");
+        // Create a header row
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("First Name");
+        headerRow.createCell(1).setCellValue("Middle Name");
+        headerRow.createCell(2).setCellValue("Last Name");
+        headerRow.createCell(3).setCellValue("Fruits Id");
+        headerRow.createCell(4).setCellValue("Farmer Number");
+        headerRow.createCell(5).setCellValue("Father Name");
+        headerRow.createCell(6).setCellValue("Passbook Number");
+        headerRow.createCell(7).setCellValue("Epic Number");
+        headerRow.createCell(8).setCellValue("Ration Card Number");
+        headerRow.createCell(9).setCellValue("DOB");
+        headerRow.createCell(10).setCellValue("District Name");
+        headerRow.createCell(11).setCellValue("Taluk Name");
+        headerRow.createCell(12).setCellValue("Hobli Name");
+        headerRow.createCell(13).setCellValue("Village Name");
+        headerRow.createCell(14).setCellValue("Bank Name");
+        headerRow.createCell(15).setCellValue("Bank Account Number");
+        headerRow.createCell(16).setCellValue("Branch Name");
+        headerRow.createCell(17).setCellValue("IFSC Code");
+        headerRow.createCell(18).setCellValue("Caste");
+        // 🆕 New Land + Mulberry Variety Columns
+        headerRow.createCell(19).setCellValue("Mulberry Area");
+        headerRow.createCell(20).setCellValue("Owner Name");
+        headerRow.createCell(21).setCellValue("Survey Number");
+        headerRow.createCell(22).setCellValue("Spacing");
+        headerRow.createCell(23).setCellValue("Hissa");
+        headerRow.createCell(24).setCellValue("Rearing House Details");
+        headerRow.createCell(25).setCellValue("Land Address");
+        headerRow.createCell(26).setCellValue("Mulberry Variety Name");
+        headerRow.createCell(27).setCellValue("Mobile Number");
+        headerRow.createCell(28).setCellValue("TSC Name");
 
 
             //Dynamic data binds here
@@ -2832,6 +2858,17 @@ public class FarmerService {
                 contentRow.createCell(17).setCellValue(primaryDetailsResponse.getFarmerBankIfscCode());
                 contentRow.createCell(18).setCellValue(primaryDetailsResponse.getCaste());
 
+            // 🆕 Add new fields
+            contentRow.createCell(19).setCellValue(primaryDetailsResponse.getMulberryArea());
+            contentRow.createCell(20).setCellValue(primaryDetailsResponse.getOwnerName());
+            contentRow.createCell(21).setCellValue(primaryDetailsResponse.getSurveyNumber());
+            contentRow.createCell(22).setCellValue(primaryDetailsResponse.getSpacing());
+            contentRow.createCell(23).setCellValue(primaryDetailsResponse.getHissa());
+            contentRow.createCell(24).setCellValue(primaryDetailsResponse.getRearingHouseDetails());
+            contentRow.createCell(25).setCellValue(primaryDetailsResponse.getLandAddress());
+            contentRow.createCell(26).setCellValue(primaryDetailsResponse.getMulberryVarietyName());
+            contentRow.createCell(27).setCellValue(primaryDetailsResponse.getMobileNumber());
+            contentRow.createCell(28).setCellValue(primaryDetailsResponse.getTscName());
                 // 🆕 Add new fields
                 contentRow.createCell(19).setCellValue(primaryDetailsResponse.getMulberryArea());
                 contentRow.createCell(20).setCellValue(primaryDetailsResponse.getOwnerName());
@@ -2849,6 +2886,10 @@ public class FarmerService {
             for (int columnIndex = 0; columnIndex <= 26; columnIndex++) {
                 sheet.autoSizeColumn(columnIndex, true);
             }
+        // Auto-size all columns
+        for (int columnIndex = 0; columnIndex <= 28; columnIndex++) {
+            sheet.autoSizeColumn(columnIndex, true);
+        }
 
             // FIX: Write completes inside try-with-resources block above
         } // workbook and fileOut auto-closed here
@@ -2993,91 +3034,89 @@ public class FarmerService {
         villageId = (villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
 
-        // FIX: Load in chunks instead of pageable=null to avoid OOM on large datasets
-        int chunkPage = 0, chunkSize = 500;
-        Page<Object[]> applicablePage;
-        do {
-            Pageable chunkPageable = PageRequest.of(chunkPage++, chunkSize);
-            applicablePage = chowkiManagementRepository.getChowkiDetails(districtId, talukId, villageId, tscMasterId, chunkPageable);
-            chowkiResponse(chowkiResponseList, applicablePage.getContent(), pageNumber, pageSize);
-        } while (applicablePage.hasNext());
+        Pageable pageable = null; // fetch all records
+        Page<Object[]> applicablePage = chowkiManagementRepository.getChowkiDetails(districtId, talukId, villageId, tscMasterId, pageable);
+
+        chowkiResponse(chowkiResponseList, applicablePage.getContent(), pageNumber, pageSize);
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Chowki Management Report");
+
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Sl.No");
+        headerRow.createCell(1).setCellValue("Farmer Name");
+        headerRow.createCell(2).setCellValue("Father Name");
+        headerRow.createCell(3).setCellValue("Fruits Id");
+        headerRow.createCell(4).setCellValue("Source Of DFLs");
+        headerRow.createCell(5).setCellValue("Race Of DFLs");
+        headerRow.createCell(6).setCellValue("Race Name");
+        headerRow.createCell(7).setCellValue("Numbers Of DFLs");
+        headerRow.createCell(8).setCellValue("Lot No RSP");
+        headerRow.createCell(9).setCellValue("Lot No CRC");
+        headerRow.createCell(10).setCellValue("Village Name");
+        headerRow.createCell(11).setCellValue("District Name");
+        headerRow.createCell(12).setCellValue("State Name");
+        headerRow.createCell(13).setCellValue("Taluk Name");
+        headerRow.createCell(14).setCellValue("Hobli Name");
+        headerRow.createCell(15).setCellValue("TSC Name");
+        headerRow.createCell(16).setCellValue("Sold After Mould");
+        headerRow.createCell(17).setCellValue("Rate Per 100 DFLs");
+        headerRow.createCell(18).setCellValue("Price");
+        headerRow.createCell(19).setCellValue("Hatching Date");
+        headerRow.createCell(20).setCellValue("Dispatch Date");
+        headerRow.createCell(21).setCellValue("Receipt No");
+
+        int dataRow = 1;
+        int serialNo = 1;
+        for (ChowkiManagementResponse c : chowkiResponseList) {
+            Row row = sheet.createRow(dataRow++);
+            row.createCell(0).setCellValue(serialNo++);
+            row.createCell(1).setCellValue(c.getFarmerName());
+            row.createCell(2).setCellValue(c.getFatherName());
+            row.createCell(3).setCellValue(c.getFruitsId());
+            row.createCell(4).setCellValue(c.getDflsSource());
+            row.createCell(5).setCellValue(c.getRaceId());
+            row.createCell(6).setCellValue(c.getRaceName());
+            row.createCell(7).setCellValue(c.getNumbersOfDfls());
+            row.createCell(8).setCellValue(c.getLotNumberRsp());
+            row.createCell(9).setCellValue(c.getLotNumberCrc());
+            row.createCell(10).setCellValue(c.getVillageName());
+            row.createCell(11).setCellValue(c.getDistrictName());
+            row.createCell(12).setCellValue(c.getStateName());
+            row.createCell(13).setCellValue(c.getTalukName());
+            row.createCell(14).setCellValue(c.getHobliName());
+            row.createCell(15).setCellValue(c.getTscName());
+            row.createCell(16).setCellValue(c.getSoldAfter1stOr2ndMould());
+            row.createCell(17).setCellValue(c.getRatePer100Dfls());
+            row.createCell(18).setCellValue(c.getPrice());
+            row.createCell(19).setCellValue(c.getHatchingDate());
+            row.createCell(20).setCellValue(c.getDispatchDate());
+            row.createCell(21).setCellValue(c.getReceiptNo());
+        }
+
+        for (int col = 0; col <= 21; col++) {
+            sheet.autoSizeColumn(col, true);
+        }
 
         String userHome = System.getProperty("user.home");
         String directoryPath = Paths.get(userHome, "Downloads").toString();
         Files.createDirectories(Paths.get(directoryPath));
         Path filePath = Paths.get(directoryPath, "chowki_report" + Util.getISTLocalDate() + ".xlsx");
 
-        // FIX: try-with-resources ensures workbook and stream close even on exception
-        try (Workbook workbook = new XSSFWorkbook();
-             FileOutputStream fileOut = new FileOutputStream(filePath.toFile())) {
-
-            Sheet sheet = workbook.createSheet("Chowki Management Report");
-
-            Row headerRow = sheet.createRow(0);
-            headerRow.createCell(0).setCellValue("Sl.No");
-            headerRow.createCell(1).setCellValue("Farmer Name");
-            headerRow.createCell(2).setCellValue("Father Name");
-            headerRow.createCell(3).setCellValue("Fruits Id");
-            headerRow.createCell(4).setCellValue("Source Of DFLs");
-            headerRow.createCell(5).setCellValue("Race Of DFLs");
-            headerRow.createCell(6).setCellValue("Race Name");
-            headerRow.createCell(7).setCellValue("Numbers Of DFLs");
-            headerRow.createCell(8).setCellValue("Lot No RSP");
-            headerRow.createCell(9).setCellValue("Lot No CRC");
-            headerRow.createCell(10).setCellValue("Village Name");
-            headerRow.createCell(11).setCellValue("District Name");
-            headerRow.createCell(12).setCellValue("State Name");
-            headerRow.createCell(13).setCellValue("Taluk Name");
-            headerRow.createCell(14).setCellValue("Hobli Name");
-            headerRow.createCell(15).setCellValue("TSC Name");
-            headerRow.createCell(16).setCellValue("Sold After Mould");
-            headerRow.createCell(17).setCellValue("Rate Per 100 DFLs");
-            headerRow.createCell(18).setCellValue("Price");
-            headerRow.createCell(19).setCellValue("Hatching Date");
-            headerRow.createCell(20).setCellValue("Dispatch Date");
-            headerRow.createCell(21).setCellValue("Receipt No");
-
-            int dataRow = 1, serialNo = 1;
-            for (ChowkiManagementResponse c : chowkiResponseList) {
-                Row row = sheet.createRow(dataRow++);
-                row.createCell(0).setCellValue(serialNo++);
-                row.createCell(1).setCellValue(c.getFarmerName());
-                row.createCell(2).setCellValue(c.getFatherName());
-                row.createCell(3).setCellValue(c.getFruitsId());
-                row.createCell(4).setCellValue(c.getDflsSource());
-                row.createCell(5).setCellValue(c.getRaceId());
-                row.createCell(6).setCellValue(c.getRaceName());
-                row.createCell(7).setCellValue(c.getNumbersOfDfls());
-                row.createCell(8).setCellValue(c.getLotNumberRsp());
-                row.createCell(9).setCellValue(c.getLotNumberCrc());
-                row.createCell(10).setCellValue(c.getVillageName());
-                row.createCell(11).setCellValue(c.getDistrictName());
-                row.createCell(12).setCellValue(c.getStateName());
-                row.createCell(13).setCellValue(c.getTalukName());
-                row.createCell(14).setCellValue(c.getHobliName());
-                row.createCell(15).setCellValue(c.getTscName());
-                row.createCell(16).setCellValue(c.getSoldAfter1stOr2ndMould());
-                row.createCell(17).setCellValue(c.getRatePer100Dfls());
-                row.createCell(18).setCellValue(c.getPrice());
-                row.createCell(19).setCellValue(c.getHatchingDate());
-                row.createCell(20).setCellValue(c.getDispatchDate());
-                row.createCell(21).setCellValue(c.getReceiptNo());
-            }
-
-            for (int col = 0; col <= 21; col++) sheet.autoSizeColumn(col, true);
-            workbook.write(fileOut);
-        } // workbook and fileOut auto-closed, file is fully written
-
-        // FIX: Open FileInputStream only after file is fully written and closed
-        return new FileInputStream(filePath.toFile());
+        FileOutputStream fileOut = new FileOutputStream(filePath.toString());
+        FileInputStream fileIn = new FileInputStream(filePath.toString());
+        workbook.write(fileOut);
+        fileOut.close();
+        workbook.close();
+        return fileIn;
     }
 
 
     public ResponseEntity<?> primaryChowkiDistributionDetails(Long districtId,
-                                                              Long talukId,
-                                                              Long villageId,
-                                                              Long tscMasterId,
-                                                              int pageNumber, int pageSize) {
+                                                  Long talukId,
+                                                  Long villageId,
+                                                  Long tscMasterId,
+                                                  int pageNumber, int pageSize) {
         ResponseWrapper rw = ResponseWrapper.createWrapper(List.class);
         List<ChowkiManagementResponse> chowkiResponseList = new ArrayList<>();
 
@@ -3111,89 +3150,87 @@ public class FarmerService {
         villageId = (villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
 
-        // FIX: Load in chunks instead of pageable=null to avoid OOM on large datasets
-        int chunkPage = 0, chunkSize = 500;
-        Page<Object[]> applicablePage;
-        do {
-            Pageable chunkPageable = PageRequest.of(chunkPage++, chunkSize);
-            applicablePage = chowkiManagementRepository.getChowkiDistributionDetails(districtId, talukId, villageId, tscMasterId, chunkPageable);
-            chowkiDistributionResponse(chowkiResponseList, applicablePage.getContent(), pageNumber, pageSize);
-        } while (applicablePage.hasNext());
+        Pageable pageable = null; // fetch all records
+        Page<Object[]> applicablePage = chowkiManagementRepository.getChowkiDistributionDetails(districtId, talukId, villageId, tscMasterId, pageable);
+
+        chowkiDistributionResponse(chowkiResponseList, applicablePage.getContent(), pageNumber, pageSize);
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Chowki Distribution Report");
+
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Sl.No");
+        headerRow.createCell(1).setCellValue("Farmer Name");
+        headerRow.createCell(2).setCellValue("Father Name");
+        headerRow.createCell(3).setCellValue("Fruits Id");
+        headerRow.createCell(4).setCellValue("Source Of DFLs");
+        headerRow.createCell(5).setCellValue("Race Of DFLs");
+        headerRow.createCell(6).setCellValue("Race Name");
+        headerRow.createCell(7).setCellValue("Numbers Of DFLs");
+        headerRow.createCell(8).setCellValue("Lot No RSP");
+        headerRow.createCell(9).setCellValue("Lot No CRC");
+        headerRow.createCell(10).setCellValue("Village Name");
+        headerRow.createCell(11).setCellValue("District Name");
+        headerRow.createCell(12).setCellValue("State Name");
+        headerRow.createCell(13).setCellValue("Taluk Name");
+        headerRow.createCell(14).setCellValue("Hobli Name");
+        headerRow.createCell(15).setCellValue("TSC Name");
+        headerRow.createCell(16).setCellValue("Sold After Mould");
+        headerRow.createCell(17).setCellValue("Rate Per 100 DFLs");
+        headerRow.createCell(18).setCellValue("Price");
+        headerRow.createCell(19).setCellValue("Hatching Date");
+        headerRow.createCell(20).setCellValue("Dispatch Date");
+        headerRow.createCell(21).setCellValue("Receipt No");
+
+        int dataRow = 1;
+        int serialNo = 1;
+        for (ChowkiManagementResponse c : chowkiResponseList) {
+            Row row = sheet.createRow(dataRow++);
+            row.createCell(0).setCellValue(serialNo++);
+            row.createCell(1).setCellValue(c.getFarmerName());
+            row.createCell(2).setCellValue(c.getFatherName());
+            row.createCell(3).setCellValue(c.getFruitsId());
+            row.createCell(4).setCellValue(c.getDflsSource());
+            row.createCell(5).setCellValue(c.getRaceId());
+            row.createCell(6).setCellValue(c.getRaceName());
+            row.createCell(7).setCellValue(c.getNumbersOfDfls());
+            row.createCell(8).setCellValue(c.getLotNumberRsp());
+            row.createCell(9).setCellValue(c.getLotNumberCrc());
+            row.createCell(10).setCellValue(c.getVillageName());
+            row.createCell(11).setCellValue(c.getDistrictName());
+            row.createCell(12).setCellValue(c.getStateName());
+            row.createCell(13).setCellValue(c.getTalukName());
+            row.createCell(14).setCellValue(c.getHobliName());
+            row.createCell(15).setCellValue(c.getTscName());
+            row.createCell(16).setCellValue(c.getSoldAfter1stOr2ndMould());
+            row.createCell(17).setCellValue(c.getRatePer100Dfls());
+            row.createCell(18).setCellValue(c.getPrice());
+            row.createCell(19).setCellValue(c.getHatchingDate());
+            row.createCell(20).setCellValue(c.getDispatchDate());
+            row.createCell(21).setCellValue(c.getReceiptNo());
+        }
+
+        for (int col = 0; col <= 21; col++) {
+            sheet.autoSizeColumn(col, true);
+        }
 
         String userHome = System.getProperty("user.home");
         String directoryPath = Paths.get(userHome, "Downloads").toString();
         Files.createDirectories(Paths.get(directoryPath));
         Path filePath = Paths.get(directoryPath, "chowki_distribution_report" + Util.getISTLocalDate() + ".xlsx");
 
-        // FIX: try-with-resources ensures workbook and stream close even on exception
-        try (Workbook workbook = new XSSFWorkbook();
-             FileOutputStream fileOut = new FileOutputStream(filePath.toFile())) {
-
-            Sheet sheet = workbook.createSheet("Chowki Distribution Report");
-
-            Row headerRow = sheet.createRow(0);
-            headerRow.createCell(0).setCellValue("Sl.No");
-            headerRow.createCell(1).setCellValue("Farmer Name");
-            headerRow.createCell(2).setCellValue("Father Name");
-            headerRow.createCell(3).setCellValue("Fruits Id");
-            headerRow.createCell(4).setCellValue("Source Of DFLs");
-            headerRow.createCell(5).setCellValue("Race Of DFLs");
-            headerRow.createCell(6).setCellValue("Race Name");
-            headerRow.createCell(7).setCellValue("Numbers Of DFLs");
-            headerRow.createCell(8).setCellValue("Lot No RSP");
-            headerRow.createCell(9).setCellValue("Lot No CRC");
-            headerRow.createCell(10).setCellValue("Village Name");
-            headerRow.createCell(11).setCellValue("District Name");
-            headerRow.createCell(12).setCellValue("State Name");
-            headerRow.createCell(13).setCellValue("Taluk Name");
-            headerRow.createCell(14).setCellValue("Hobli Name");
-            headerRow.createCell(15).setCellValue("TSC Name");
-            headerRow.createCell(16).setCellValue("Sold After Mould");
-            headerRow.createCell(17).setCellValue("Rate Per 100 DFLs");
-            headerRow.createCell(18).setCellValue("Price");
-            headerRow.createCell(19).setCellValue("Hatching Date");
-            headerRow.createCell(20).setCellValue("Dispatch Date");
-            headerRow.createCell(21).setCellValue("Receipt No");
-
-            int dataRow = 1, serialNo = 1;
-            for (ChowkiManagementResponse c : chowkiResponseList) {
-                Row row = sheet.createRow(dataRow++);
-                row.createCell(0).setCellValue(serialNo++);
-                row.createCell(1).setCellValue(c.getFarmerName());
-                row.createCell(2).setCellValue(c.getFatherName());
-                row.createCell(3).setCellValue(c.getFruitsId());
-                row.createCell(4).setCellValue(c.getDflsSource());
-                row.createCell(5).setCellValue(c.getRaceId());
-                row.createCell(6).setCellValue(c.getRaceName());
-                row.createCell(7).setCellValue(c.getNumbersOfDfls());
-                row.createCell(8).setCellValue(c.getLotNumberRsp());
-                row.createCell(9).setCellValue(c.getLotNumberCrc());
-                row.createCell(10).setCellValue(c.getVillageName());
-                row.createCell(11).setCellValue(c.getDistrictName());
-                row.createCell(12).setCellValue(c.getStateName());
-                row.createCell(13).setCellValue(c.getTalukName());
-                row.createCell(14).setCellValue(c.getHobliName());
-                row.createCell(15).setCellValue(c.getTscName());
-                row.createCell(16).setCellValue(c.getSoldAfter1stOr2ndMould());
-                row.createCell(17).setCellValue(c.getRatePer100Dfls());
-                row.createCell(18).setCellValue(c.getPrice());
-                row.createCell(19).setCellValue(c.getHatchingDate());
-                row.createCell(20).setCellValue(c.getDispatchDate());
-                row.createCell(21).setCellValue(c.getReceiptNo());
-            }
-
-            for (int col = 0; col <= 21; col++) sheet.autoSizeColumn(col, true);
-            workbook.write(fileOut);
-        } // workbook and fileOut auto-closed, file is fully written
-
-        // FIX: Open FileInputStream only after file is fully written and closed
-        return new FileInputStream(filePath.toFile());
+        FileOutputStream fileOut = new FileOutputStream(filePath.toString());
+        FileInputStream fileIn = new FileInputStream(filePath.toString());
+        workbook.write(fileOut);
+        fileOut.close();
+        workbook.close();
+        return fileIn;
     }
 
 
     private static void chowkiDistributionResponse(List<ChowkiManagementResponse> chowkiResponseList,
-                                                   List<Object[]> applicableList,
-                                                   int pageNumber, int pageSize) {
+                                       List<Object[]> applicableList,
+                                       int pageNumber, int pageSize) {
         int serialNumber = pageNumber * pageSize + 1;
         for (Object[] arr : applicableList) {
             ChowkiManagementResponse response = ChowkiManagementResponse.builder()
