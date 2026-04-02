@@ -22,9 +22,6 @@ public class BankTransactionService {
     @Autowired
     Mapper mapper;
 
-    @Autowired
-    EntityManager entityManager;
-
     @Transactional
     public long saveAudit(String header, String body) {
         AuditTransaction at = new AuditTransaction();
