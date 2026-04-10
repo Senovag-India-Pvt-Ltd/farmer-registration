@@ -1375,15 +1375,24 @@ public class FarmerService {
 //                villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
 //                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
 
-                District district = districtRepository.findByDistrictCodeAndActive(String.valueOf(farmerLandDetails.getDistrictCode()), true);
+//                District district = districtRepository.findByDistrictCodeAndActive(String.valueOf(farmerLandDetails.getDistrictCode()), true);
+//                if (district != null) {
+//
+//                    Taluk taluk = talukRepository.findByDistrictIdAndTalukCodeAndActive(district.getDistrictId(), String.valueOf(farmerLandDetails.getTalukCode()), true);
+//                    if (taluk != null) {
+//                        Hobli hobli = hobliRepository.findByTalukIdAndHobliCodeAndActive(taluk.getTalukId(), String.valueOf(farmerLandDetails.getHobliCode()), true);
+//                        if (hobli != null) {
+//
+//                            Village village = villageRepository.findByHobliIdAndVillageCodeAndActive(hobli.getHobliId(), String.valueOf(farmerLandDetails.getVillageCode()), true);
+                District district = districtRepository.findByDistrictCodeAndActive(String.valueOf(getLandDetailsResponse.getDistrictCode()), true);
                 if (district != null) {
 
-                    Taluk taluk = talukRepository.findByDistrictIdAndTalukCodeAndActive(district.getDistrictId(), String.valueOf(farmerLandDetails.getTalukCode()), true);
+                    Taluk taluk = talukRepository.findByDistrictIdAndTalukCodeAndActive(district.getDistrictId(), String.valueOf(getLandDetailsResponse.getTalukCode()), true);
                     if (taluk != null) {
-                        Hobli hobli = hobliRepository.findByTalukIdAndHobliCodeAndActive(taluk.getTalukId(), String.valueOf(farmerLandDetails.getHobliCode()), true);
+                        Hobli hobli = hobliRepository.findByTalukIdAndHobliCodeAndActive(taluk.getTalukId(), String.valueOf(getLandDetailsResponse.getHobliCode()), true);
                         if (hobli != null) {
 
-                            Village village = villageRepository.findByHobliIdAndVillageCodeAndActive(hobli.getHobliId(), String.valueOf(farmerLandDetails.getVillageCode()), true);
+                            Village village = villageRepository.findByHobliIdAndVillageCodeAndActive(hobli.getHobliId(), String.valueOf(getLandDetailsResponse.getVillageCode()), true);
                             if (village == null) {
                                 farmerLandDetails.setVillageId(null);
                                 farmerLandDetails.setHobliId(null);
@@ -1411,9 +1420,8 @@ public class FarmerService {
                                 if (villageDTO1.getHobliName().equals("") || villageDTO1.getHobliName() == null) {
                                     farmerLandDetails.setHobliName("");
                                 } else {
-                                    farmerLandDetails.setHobliId(villageDTO1.getHobliId());
+                                    farmerLandDetails.setHobliName(villageDTO1.getHobliName());
                                 }
-                                farmerLandDetails.setHobliName(villageDTO1.getHobliName());
                                 farmerLandDetails.setVillageName(villageDTO1.getVillageName());
                             }
                         } else {
@@ -1484,6 +1492,8 @@ public class FarmerService {
                 farmerLandDetails.setTalukCode(Long.valueOf(getLandDetailsResponse.getTalukCode()));
                 farmerLandDetails.setHobliCode(Long.valueOf(String.valueOf(getLandDetailsResponse.getHobliCode())));
                 farmerLandDetails.setVillageCode(Long.valueOf(getLandDetailsResponse.getVillageCode()));
+
+                farmerLandDetails.setDistrictName(getLandDetailsResponse.getDistrictName());
 
                 farmerLandDetailsList.add(farmerLandDetails);
             }
