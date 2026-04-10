@@ -140,6 +140,10 @@ public class FarmerService {
     @Autowired
     ChowkiManagementRepository chowkiManagementRepository;
 
+    // FIX: Injected shared RestTemplate bean - avoids new instance per request (connection leak)
+    @Autowired
+    RestTemplate restTemplate;
+
     @Transactional
     public FarmerResponse insertFarmerDetails(FarmerRequest farmerRequest) {
         if (farmerRequest.getIsOtherStateFarmer() == null) {
@@ -2732,8 +2736,6 @@ public class FarmerService {
                     .rearingHouseDetails(Util.objectToString(arr[25]))
                     .landAddress(Util.objectToString(arr[26]))
                     .mulberryVarietyName(Util.objectToString(arr[27]))
-                    .mobileNumber(Util.objectToString(arr[28]))
-                    .tscName(Util.objectToString(arr[29]))
                     .build();
             primaryDetailsResponseList.add(primaryDetailsResponse);
         }
@@ -2744,27 +2746,68 @@ public class FarmerService {
                                         Long villageId,
                                         Long tscMasterId,
                                         Long casteId,
-                                        String landFilter,   // 🆕 New Param
+                                        String landFilter,
                                         int pageNumber, int pageSize) throws Exception {
         List<PrimaryDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
 
-
-        Page<Object[]> applicablePage;
         districtId = (districtId == 0) ? null : districtId;
         talukId = (talukId == 0) ? null : talukId;
         villageId = (villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
         casteId = (casteId == 0) ? null : casteId;
-        landFilter = (landFilter != null && !landFilter.isBlank()) ? landFilter : null; // 🆕 Ensure null if empty
+        landFilter = (landFilter != null && !landFilter.isBlank()) ? landFilter : null;
 
-        Pageable pageable = null;
-        applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, landFilter, pageable);
-        List<Object[]> applicableList = applicablePage.getContent();
-        farmerResponse(primaryDetailsResponseList, applicableList, pageNumber, pageSize);
+        // FIX: Load data in chunks of 500 rows instead of pageable=null (which loads ALL 1.5L records at once -> OOM)
+        int chunkPage = 0;
+        int chunkSize = 500;
+        Page<Object[]> applicablePage;
+        do {
+            Pageable chunkPageable = PageRequest.of(chunkPage++, chunkSize);
+            applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, landFilter, chunkPageable);
+            farmerResponse(primaryDetailsResponseList, applicablePage.getContent(), pageNumber, pageSize);
+        } while (applicablePage.hasNext());
 
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Sheet 1");
+        // FIX: Use try-with-resources to guarantee workbook is closed even on exception (prevents ~50-100MB memory leak per failed report)
+        String userHome = System.getProperty("user.home");
+        Path directory = Paths.get(userHome, "Downloads");
+        Files.createDirectories(directory);
+        Path filePath = directory.resolve("farmers" + Util.getISTLocalDate() + ".xlsx");
 
+        try (Workbook workbook = new XSSFWorkbook();
+             FileOutputStream fileOut = new FileOutputStream(filePath.toFile())) {
+
+            Sheet sheet = workbook.createSheet("Sheet 1");
+
+            // Create a header row
+            Row headerRow = sheet.createRow(0);
+            headerRow.createCell(0).setCellValue("First Name");
+            headerRow.createCell(1).setCellValue("Middle Name");
+            headerRow.createCell(2).setCellValue("Last Name");
+            headerRow.createCell(3).setCellValue("Fruits Id");
+            headerRow.createCell(4).setCellValue("Farmer Number");
+            headerRow.createCell(5).setCellValue("Father Name");
+            headerRow.createCell(6).setCellValue("Passbook Number");
+            headerRow.createCell(7).setCellValue("Epic Number");
+            headerRow.createCell(8).setCellValue("Ration Card Number");
+            headerRow.createCell(9).setCellValue("DOB");
+            headerRow.createCell(10).setCellValue("District Name");
+            headerRow.createCell(11).setCellValue("Taluk Name");
+            headerRow.createCell(12).setCellValue("Hobli Name");
+            headerRow.createCell(13).setCellValue("Village Name");
+            headerRow.createCell(14).setCellValue("Bank Name");
+            headerRow.createCell(15).setCellValue("Bank Account Number");
+            headerRow.createCell(16).setCellValue("Branch Name");
+            headerRow.createCell(17).setCellValue("IFSC Code");
+            headerRow.createCell(18).setCellValue("Caste");
+            // 🆕 New Land + Mulberry Variety Columns
+            headerRow.createCell(19).setCellValue("Mulberry Area");
+            headerRow.createCell(20).setCellValue("Owner Name");
+            headerRow.createCell(21).setCellValue("Survey Number");
+            headerRow.createCell(22).setCellValue("Spacing");
+            headerRow.createCell(23).setCellValue("Hissa");
+            headerRow.createCell(24).setCellValue("Rearing House Details");
+            headerRow.createCell(25).setCellValue("Land Address");
+            headerRow.createCell(26).setCellValue("Mulberry Variety Name");
         // Create a header row
         Row headerRow = sheet.createRow(0);
         headerRow.createCell(0).setCellValue("First Name");
@@ -2799,31 +2842,31 @@ public class FarmerService {
         headerRow.createCell(28).setCellValue("TSC Name");
 
 
-        //Dynamic data binds here
-        //Starting 0th and 1st column cells are hardcoded, So dynamic data column starts from 2nd column
-        int dataStartsFrom = 1;
-        for (int i = 0; i < primaryDetailsResponseList.size(); i++) {
-            Row contentRow = sheet.createRow(dataStartsFrom);
-            PrimaryDetailsResponse primaryDetailsResponse = primaryDetailsResponseList.get(i);
-            contentRow.createCell(0).setCellValue(primaryDetailsResponse.getFirstName());
-            contentRow.createCell(1).setCellValue(primaryDetailsResponse.getMiddleName());
-            contentRow.createCell(2).setCellValue(primaryDetailsResponse.getLastName());
-            contentRow.createCell(3).setCellValue(primaryDetailsResponse.getFruitsId());
-            contentRow.createCell(4).setCellValue(primaryDetailsResponse.getFarmerNumber());
-            contentRow.createCell(5).setCellValue(primaryDetailsResponse.getFatherName());
-            contentRow.createCell(6).setCellValue(primaryDetailsResponse.getPassbookNumber());
-            contentRow.createCell(7).setCellValue(primaryDetailsResponse.getEpicNumber());
-            contentRow.createCell(8).setCellValue(primaryDetailsResponse.getRationCardNumber());
-            contentRow.createCell(9).setCellValue(primaryDetailsResponse.getDob());
-            contentRow.createCell(10).setCellValue(primaryDetailsResponse.getDistrictName());
-            contentRow.createCell(11).setCellValue(primaryDetailsResponse.getTalukName());
-            contentRow.createCell(12).setCellValue(primaryDetailsResponse.getHobliName());
-            contentRow.createCell(13).setCellValue(primaryDetailsResponse.getVillageName());
-            contentRow.createCell(14).setCellValue(primaryDetailsResponse.getFarmerBankName());
-            contentRow.createCell(15).setCellValue(primaryDetailsResponse.getFarmerBankAccountNumber());
-            contentRow.createCell(16).setCellValue(primaryDetailsResponse.getFarmerBankBranchName());
-            contentRow.createCell(17).setCellValue(primaryDetailsResponse.getFarmerBankIfscCode());
-            contentRow.createCell(18).setCellValue(primaryDetailsResponse.getCaste());
+            //Dynamic data binds here
+            //Starting 0th and 1st column cells are hardcoded, So dynamic data column starts from 2nd column
+            int dataStartsFrom = 1;
+            for (int i = 0; i < primaryDetailsResponseList.size(); i++) {
+                Row contentRow = sheet.createRow(dataStartsFrom);
+                PrimaryDetailsResponse primaryDetailsResponse = primaryDetailsResponseList.get(i);
+                contentRow.createCell(0).setCellValue(primaryDetailsResponse.getFirstName());
+                contentRow.createCell(1).setCellValue(primaryDetailsResponse.getMiddleName());
+                contentRow.createCell(2).setCellValue(primaryDetailsResponse.getLastName());
+                contentRow.createCell(3).setCellValue(primaryDetailsResponse.getFruitsId());
+                contentRow.createCell(4).setCellValue(primaryDetailsResponse.getFarmerNumber());
+                contentRow.createCell(5).setCellValue(primaryDetailsResponse.getFatherName());
+                contentRow.createCell(6).setCellValue(primaryDetailsResponse.getPassbookNumber());
+                contentRow.createCell(7).setCellValue(primaryDetailsResponse.getEpicNumber());
+                contentRow.createCell(8).setCellValue(primaryDetailsResponse.getRationCardNumber());
+                contentRow.createCell(9).setCellValue(primaryDetailsResponse.getDob());
+                contentRow.createCell(10).setCellValue(primaryDetailsResponse.getDistrictName());
+                contentRow.createCell(11).setCellValue(primaryDetailsResponse.getTalukName());
+                contentRow.createCell(12).setCellValue(primaryDetailsResponse.getHobliName());
+                contentRow.createCell(13).setCellValue(primaryDetailsResponse.getVillageName());
+                contentRow.createCell(14).setCellValue(primaryDetailsResponse.getFarmerBankName());
+                contentRow.createCell(15).setCellValue(primaryDetailsResponse.getFarmerBankAccountNumber());
+                contentRow.createCell(16).setCellValue(primaryDetailsResponse.getFarmerBankBranchName());
+                contentRow.createCell(17).setCellValue(primaryDetailsResponse.getFarmerBankIfscCode());
+                contentRow.createCell(18).setCellValue(primaryDetailsResponse.getCaste());
 
             // 🆕 Add new fields
             contentRow.createCell(19).setCellValue(primaryDetailsResponse.getMulberryArea());
@@ -2836,34 +2879,33 @@ public class FarmerService {
             contentRow.createCell(26).setCellValue(primaryDetailsResponse.getMulberryVarietyName());
             contentRow.createCell(27).setCellValue(primaryDetailsResponse.getMobileNumber());
             contentRow.createCell(28).setCellValue(primaryDetailsResponse.getTscName());
+                // 🆕 Add new fields
+                contentRow.createCell(19).setCellValue(primaryDetailsResponse.getMulberryArea());
+                contentRow.createCell(20).setCellValue(primaryDetailsResponse.getOwnerName());
+                contentRow.createCell(21).setCellValue(primaryDetailsResponse.getSurveyNumber());
+                contentRow.createCell(22).setCellValue(primaryDetailsResponse.getSpacing());
+                contentRow.createCell(23).setCellValue(primaryDetailsResponse.getHissa());
+                contentRow.createCell(24).setCellValue(primaryDetailsResponse.getRearingHouseDetails());
+                contentRow.createCell(25).setCellValue(primaryDetailsResponse.getLandAddress());
+                contentRow.createCell(26).setCellValue(primaryDetailsResponse.getMulberryVarietyName());
 
-            dataStartsFrom = dataStartsFrom + 1;
-        }
+                dataStartsFrom = dataStartsFrom + 1;
+            }
 
+            // Auto-size all columns
+            for (int columnIndex = 0; columnIndex <= 26; columnIndex++) {
+                sheet.autoSizeColumn(columnIndex, true);
+            }
         // Auto-size all columns
         for (int columnIndex = 0; columnIndex <= 28; columnIndex++) {
             sheet.autoSizeColumn(columnIndex, true);
         }
 
-        // Write the workbook content to a file
-        // Specify the directory where the file will be saved
-        //String directoryPath = "C:\\Users\\Swathi V S\\Downloads\\";
-        // Specify the directory where the file will be saved
-        String userHome = System.getProperty("user.home");
+            // FIX: Write completes inside try-with-resources block above
+        } // workbook and fileOut auto-closed here
 
-        // Define the directory path relative to the user's home directory
-        String directoryPath = Paths.get(userHome, "Downloads").toString();
-        Path directory = Paths.get(directoryPath);
-        Files.createDirectories(directory);
-        Path filePath = directory.resolve("farmers" + Util.getISTLocalDate() + ".xlsx");
-
-        // Write the workbook content to the specified file path
-        FileOutputStream fileOut = new FileOutputStream(filePath.toString());
-        FileInputStream fileIn = new FileInputStream(filePath.toString());
-        workbook.write(fileOut);
-        fileOut.close();
-        workbook.close();
-        return fileIn;
+        // FIX: Open FileInputStream AFTER workbook is fully written and closed
+        return new FileInputStream(filePath.toFile());
     }
 
     public List<FarmerDetailsResponse> getFarmerDetailsByFruitsIdOrMobileNumberOrCsbRegisterNumber(SearchRequest searchRequest) throws Exception {

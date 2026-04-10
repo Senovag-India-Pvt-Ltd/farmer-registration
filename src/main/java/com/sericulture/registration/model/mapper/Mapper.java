@@ -67,7 +67,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T educationEntityToObject(Education educationEntity, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, educationEntity);
+        log.debug("Value of mapper is:",mapper, educationEntity);
         return (T) mapper.map(educationEntity, claaz);
     }
 
@@ -77,7 +77,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T educationObjectToEntity(EducationRequest educationRequest, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, educationRequest);
+        log.debug("Value of mapper is:",mapper, educationRequest);
         return (T) mapper.map(educationRequest, claaz);
     }
 
@@ -87,7 +87,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerEntityToObject(Farmer farmerEntity, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerEntity);
+        log.debug("Value of mapper is:",mapper, farmerEntity);
         return (T) mapper.map(farmerEntity, claaz);
     }
 
@@ -97,7 +97,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerDTOToObject(FarmerDTO farmerDTO, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerDTO);
+        log.debug("Value of mapper is:",mapper, farmerDTO);
         return (T) mapper.map(farmerDTO, claaz);
     }
 
@@ -107,7 +107,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerObjectToEntity(FarmerRequest farmerRequest, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerRequest);
+        log.debug("Value of mapper is:",mapper, farmerRequest);
         return (T) mapper.map(farmerRequest, claaz);
     }
 
@@ -117,7 +117,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerFamilyEntityToObject(FarmerFamily farmerFamilyEntity, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerFamilyEntity);
+        log.debug("Value of mapper is:",mapper, farmerFamilyEntity);
         return (T) mapper.map(farmerFamilyEntity, claaz);
     }
 
@@ -127,7 +127,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerFamilyDTOToObject(FarmerFamilyDTO farmerFamilyDTO, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerFamilyDTO);
+//        log.debug("Value of mapper is:",mapper, farmerFamilyDTO);
         return (T) mapper.map(farmerFamilyDTO, claaz);
     }
 
@@ -137,7 +137,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerFamilyObjectToEntity(FarmerFamilyRequest farmerFamilyRequest, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerFamilyRequest);
+        log.debug("Value of mapper is:",mapper, farmerFamilyRequest);
         return (T) mapper.map(farmerFamilyRequest, claaz);
     }
 
@@ -147,7 +147,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerBankAccountEntityToObject(FarmerBankAccount farmerBankAccountEntity, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerBankAccountEntity);
+        log.debug("Value of mapper is:",mapper, farmerBankAccountEntity);
         return (T) mapper.map(farmerBankAccountEntity, claaz);
     }
 
@@ -157,12 +157,12 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerBankAccountObjectToEntity(FarmerBankAccountRequest farmerBankAccountRequest, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerBankAccountRequest);
+        log.debug("Value of mapper is:",mapper, farmerBankAccountRequest);
         return (T) mapper.map(farmerBankAccountRequest, claaz);
     }
 
     public <T> T editFarmerBankAccountObjectToEntity(EditFarmerBankAccountRequest editFarmerBankAccountRequest, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, editFarmerBankAccountRequest);
+        log.debug("Value of mapper is:",mapper, editFarmerBankAccountRequest);
         return (T) mapper.map(editFarmerBankAccountRequest, claaz);
     }
 
@@ -172,7 +172,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerAddressEntityToObject(FarmerAddress farmerAddressEntity, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerAddressEntity);
+        log.debug("Value of mapper is:",mapper, farmerAddressEntity);
         return (T) mapper.map(farmerAddressEntity, claaz);
     }
 
@@ -182,12 +182,12 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerAddressObjectToEntity(FarmerAddressRequest farmerAddressRequest, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerAddressRequest);
+        log.debug("Value of mapper is:",mapper, farmerAddressRequest);
         return (T) mapper.map(farmerAddressRequest, claaz);
     }
 
     public <T> T editFarmerAddressObjectToEntity(EditFarmerAddressRequest editFarmerAddressRequest, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, editFarmerAddressRequest);
+        log.debug("Value of mapper is:",mapper, editFarmerAddressRequest);
         return (T) mapper.map(editFarmerAddressRequest, claaz);
     }
 
@@ -197,7 +197,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerAddressDTOToObject(FarmerAddressDTO farmerAddressDTO, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerAddressDTO);
+        log.debug("Value of mapper is:",mapper, farmerAddressDTO);
         return (T) mapper.map(farmerAddressDTO, claaz);
     }
 
@@ -207,7 +207,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerLandDetailsEntityToObject(FarmerLandDetails farmerLandDetailsEntity, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerLandDetailsEntity);
+        log.debug("Value of mapper is:",mapper, farmerLandDetailsEntity);
         return (T) mapper.map(farmerLandDetailsEntity, claaz);
     }
 
@@ -217,7 +217,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerLandDetailsDTOToObject(FarmerLandDetailsDTO farmerLandDetailsDTO, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerLandDetailsDTO);
+        log.debug("Value of mapper is:",mapper, farmerLandDetailsDTO);
         return (T) mapper.map(farmerLandDetailsDTO, claaz);
     }
 
@@ -227,7 +227,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerLandDetailsObjectToEntity(FarmerLandDetailsRequest farmerLandDetailsRequest, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerLandDetailsRequest);
+        log.debug("Value of mapper is:",mapper, farmerLandDetailsRequest);
         return (T) mapper.map(farmerLandDetailsRequest, claaz);
     }
 
@@ -237,7 +237,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T reelerEntityToObject(Reeler reelerEntity, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, reelerEntity);
+        log.debug("Value of mapper is:",mapper, reelerEntity);
         return (T) mapper.map(reelerEntity, claaz);
     }
 
@@ -247,7 +247,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T reelerDTOToObject(ReelerDTO reelerDTO, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, reelerDTO);
+        log.debug("Value of mapper is:",mapper, reelerDTO);
         return (T) mapper.map(reelerDTO, claaz);
     }
 
@@ -257,7 +257,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T reelerObjectToEntity(ReelerRequest reelerRequest, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, reelerRequest);
+        log.debug("Value of mapper is:",mapper, reelerRequest);
         return (T) mapper.map(reelerRequest, claaz);
     }
 
@@ -267,7 +267,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T reelerVirtualBankAccountEntityToObject(ReelerVirtualBankAccount reelerVirtualBankAccountEntity, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, reelerVirtualBankAccountEntity);
+        log.debug("Value of mapper is:",mapper, reelerVirtualBankAccountEntity);
         return (T) mapper.map(reelerVirtualBankAccountEntity, claaz);
     }
 
@@ -277,7 +277,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T reelerVirtualBankAccountDTOToObject(ReelerVirtualBankAccountDTO reelerVirtualBankAccountDTO, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, reelerVirtualBankAccountDTO);
+        log.debug("Value of mapper is:",mapper, reelerVirtualBankAccountDTO);
         return (T) mapper.map(reelerVirtualBankAccountDTO, claaz);
     }
 
@@ -287,7 +287,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T reelerVirtualBankAccountObjectToEntity(ReelerVirtualBankAccountRequest reelerVirtualBankAccountRequest, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, reelerVirtualBankAccountRequest);
+        log.debug("Value of mapper is:",mapper, reelerVirtualBankAccountRequest);
         return (T) mapper.map(reelerVirtualBankAccountRequest, claaz);
     }
 
@@ -297,7 +297,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T reelerLicenseTransactionEntityToObject(ReelerLicenseTransaction reelerLicenseTransactionEntity, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, reelerLicenseTransactionEntity);
+        log.debug("Value of mapper is:",mapper, reelerLicenseTransactionEntity);
         return (T) mapper.map(reelerLicenseTransactionEntity, claaz);
     }
 
@@ -307,7 +307,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T reelerLicenseTransactionObjectToEntity(ReelerLicenseTransactionRequest reelerLicenseTransactionEntityRequest, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, reelerLicenseTransactionEntityRequest);
+        log.debug("Value of mapper is:",mapper, reelerLicenseTransactionEntityRequest);
         return (T) mapper.map(reelerLicenseTransactionEntityRequest, claaz);
     }
 
@@ -317,7 +317,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T traderLicenseEntityToObject(TraderLicense traderLicenseTransactionEntity, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, traderLicenseTransactionEntity);
+        log.debug("Value of mapper is:",mapper, traderLicenseTransactionEntity);
         return (T) mapper.map(traderLicenseTransactionEntity, claaz);
     }
     /**
@@ -326,7 +326,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T traderLicenseDTOToObject(TraderLicenseDTO traderLicenseDTO, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, traderLicenseDTO);
+        log.debug("Value of mapper is:",mapper, traderLicenseDTO);
         return (T) mapper.map(traderLicenseDTO, claaz);
     }
 
@@ -336,7 +336,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T traderLicenseObjectToEntity(TraderLicenseRequest traderLicenseRequest, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, traderLicenseRequest);
+        log.debug("Value of mapper is:",mapper, traderLicenseRequest);
         return (T) mapper.map(traderLicenseRequest, claaz);
     }
 
@@ -346,7 +346,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T externalUnitRegistrationEntityToObject(ExternalUnitRegistration externalUnitRegistrationEntity, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, externalUnitRegistrationEntity);
+        log.debug("Value of mapper is:",mapper, externalUnitRegistrationEntity);
         return (T) mapper.map(externalUnitRegistrationEntity, claaz);
     }
 
@@ -356,7 +356,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T externalUnitRegistrationDTOToObject(ExternalUnitRegistrationDTO externalUnitRegistrationDTO, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, externalUnitRegistrationDTO);
+        log.debug("Value of mapper is:",mapper, externalUnitRegistrationDTO);
         return (T) mapper.map(externalUnitRegistrationDTO, claaz);
     }
 
@@ -366,7 +366,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T externalUnitRegistrationObjectToEntity(ExternalUnitRegistrationRequest externalUnitRegistrationEntityRequest, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, externalUnitRegistrationEntityRequest);
+        log.debug("Value of mapper is:",mapper, externalUnitRegistrationEntityRequest);
         return (T) mapper.map(externalUnitRegistrationEntityRequest, claaz);
     }
 
@@ -376,7 +376,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T getFruitsTokenEntityToObject(GetFruitsTokenDTO getFruitsTokenDTO, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, getFruitsTokenDTO);
+        log.debug("Value of mapper is:",mapper, getFruitsTokenDTO);
         return (T) mapper.map(getFruitsTokenDTO, claaz);
     }
 
@@ -386,7 +386,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerTypeEntityToObject(FarmerType farmerTypeEntity, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerTypeEntity);
+        log.debug("Value of mapper is:",mapper, farmerTypeEntity);
         return (T) mapper.map(farmerTypeEntity, claaz);
     }
 
@@ -396,7 +396,7 @@ public class Mapper {
      * @param <T>
      */
     public <T> T farmerTypeObjectToEntity(FarmerTypeRequest farmerTypeRequest, Class<T> claaz) {
-        log.info("Value of mapper is:",mapper, farmerTypeRequest);
+        log.debug("Value of mapper is:",mapper, farmerTypeRequest);
         return (T) mapper.map(farmerTypeRequest, claaz);
     }
 }
