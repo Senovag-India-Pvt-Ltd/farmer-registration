@@ -1143,7 +1143,8 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
                     s.state_name,
                     sadod.race_id,
                     rm.race_name,
-                    fc.fitness_certificate_path
+                    fc.fitness_certificate_path,
+                 fba.lock
                 FROM farmer f
                 LEFT JOIN PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
                 LEFT JOIN state s ON pa.state_id = s.state_id AND s.active = 1
@@ -1151,6 +1152,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
                 LEFT JOIN taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
                 LEFT JOIN hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
                 LEFT JOIN village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+             LEFT JOIN farmer_bank_account fba ON f.farmer_id = fba.farmer_id AND fba.active=1
                 Inner JOIN
                 sale_and_disposal_of_dfls sadod ON sadod.fruits_id = f.fruits_id AND (sadod.is_disposed = 0 OR sadod.is_disposed IS NULL) AND  sadod.active = 1
                 INNER JOIN fitness_certificate fc

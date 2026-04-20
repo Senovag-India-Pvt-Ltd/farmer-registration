@@ -2898,7 +2898,21 @@ public class FarmerService {
 
         // Map the result to FarmerDetailsResponse
         if (!objects.isEmpty()) {
-            for (Object[] arr : objects) {
+            for (int i = 0; i < objects.size(); i++) {
+
+                Object[] arr = objects.get(i);
+
+                Boolean lock = false;
+                if (arr.length > 20 && arr[20] != null) {
+                    String val = arr[20].toString().trim();
+
+                    if (val.equalsIgnoreCase("true") || val.equals("1")) {
+                        lock = true;
+                    }
+                }
+                if (!lock) {
+                    throw new ValidationException("Bank Lock is not enabled.....");
+                }
                 FarmerDetailsResponse farmerDetailsResponse = FarmerDetailsResponse.builder()
                         .farmerId(Util.objectToLong(arr[0]))
                         .firstName(Util.objectToString(arr[1]))
@@ -2927,6 +2941,7 @@ public class FarmerService {
 
         return farmerDetailsResponseList;
     }
+
 
     public ResponseEntity<?> primaryChowkiDetails(Long districtId,
                                                   Long talukId,

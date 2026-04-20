@@ -38,5 +38,6 @@ public class FarmerDetailsResponse {
     private Long raceOfDfls;
     private String raceName;
     private String fitnessCertificatePath;
+   private Boolean Lock;
 
 }
