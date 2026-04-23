@@ -47,6 +47,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
+import com.sericulture.authentication.model.JwtPayloadData;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -139,6 +140,9 @@ public class FarmerService {
 
     @Autowired
     ChowkiManagementRepository chowkiManagementRepository;
+
+    @Autowired
+    MarketMasterRepository marketMasterRepository;
 
     // FIX: Injected shared RestTemplate bean - avoids new instance per request (connection leak)
     @Autowired
@@ -2897,22 +2901,33 @@ public class FarmerService {
         }
 
         // Map the result to FarmerDetailsResponse
+        JwtPayloadData jwtPayloadData = Util.getTokenValues();
+        Integer marketId = Util.getMarketId(jwtPayloadData);
+        boolean isOnlinePayment = false;
+        if (marketId != null) {
+            MarketMaster market = marketMasterRepository.findByMarketMasterIdAndActive(marketId, true);
+            isOnlinePayment = market != null && "online".equalsIgnoreCase(market.getPaymentMode());
+        }
+
         if (!objects.isEmpty()) {
             for (int i = 0; i < objects.size(); i++) {
 
                 Object[] arr = objects.get(i);
 
-                Boolean lock = false;
-                if (arr.length > 20 && arr[20] != null) {
-                    String val = arr[20].toString().trim();
+                if (isOnlinePayment) {
+                    Boolean lock = false;
+                    if (arr.length > 20 && arr[20] != null) {
+                        String val = arr[20].toString().trim();
 
-                    if (val.equalsIgnoreCase("true") || val.equals("1")) {
-                        lock = true;
+                        if (val.equalsIgnoreCase("true") || val.equals("1")) {
+                            lock = true;
+                        }
+                    }
+                    if (!lock) {
+                        throw new ValidationException("Bank Lock is not enabled.....");
                     }
                 }
-                if (!lock) {
-                    throw new ValidationException("Bank Lock is not enabled.....");
-                }
+
                 FarmerDetailsResponse farmerDetailsResponse = FarmerDetailsResponse.builder()
                         .farmerId(Util.objectToLong(arr[0]))
                         .firstName(Util.objectToString(arr[1]))
