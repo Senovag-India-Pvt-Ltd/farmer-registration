@@ -47,18 +47,30 @@ public class ExternalUnitRegistration extends BaseEntity implements Serializable
     @Column(name = "capacity")
     private String capacity;
 
-    @Column(name = "market_master_id")
-    private Long marketMasterId;
+   @Column(name = "market_master_id")
+   private Long marketMasterId;
 
-    @Column(name = "virtual_account_number")
-    private String virtualAccountNumber;
+//  @Column(name = "virtual_account_number")
+//    private String virtualAccountNumber;
 
-    @Column(name = "branch_name")
-    private String branchName;
-
-    @Column(name = "ifsc_code")
-    private String ifscCode;
+//    @Column(name = "branch_name")
+//    private String branchName;
+//
+//    @Column(name = "ifsc_code")
+//    private String ifscCode;
 
     @Column(name = "lot_number_nomenclature")
     private String lotNumberNomenclature;
+
+    @Column(name = "lock", columnDefinition = "TINYINT")
+    private Boolean lock;
+    @Column(name = "tsc_master_id")
+    private Long tscMasterId;
+    @Column(name = "DISTRICT_ID")
+    private Long districtId;
+
+    @Column(name = "TALUK_ID")
+    private Long talukId;
+    @Column(name = "name_kan")
+    private String nameKan;
 }

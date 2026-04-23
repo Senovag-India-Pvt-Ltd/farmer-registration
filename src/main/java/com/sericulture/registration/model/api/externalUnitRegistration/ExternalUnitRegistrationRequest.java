@@ -3,6 +3,7 @@ package com.sericulture.registration.model.api.externalUnitRegistration;
 import com.sericulture.registration.model.api.RequestBody;
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseDetailsRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
@@ -51,4 +52,13 @@ public class ExternalUnitRegistrationRequest extends RequestBody {
     String lotNumberNomenclature;
 
     private List<ExternalUnitRegistrationDetailsRequest> externalUnitRegistrationDetailsRequests;
+    @Column(name = "tsc_master_id")
+    private Long tscMasterId;
+    @Column(name = "DISTRICT_ID")
+    private Long districtId;
+
+    @Column(name = "TALUK_ID")
+    private Long talukId;
+    @Column(name = "name_kan")
+    private String nameKan;
 }

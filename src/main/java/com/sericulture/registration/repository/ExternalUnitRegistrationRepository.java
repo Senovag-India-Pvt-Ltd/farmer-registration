@@ -40,12 +40,16 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             " externalUnitRegistration.raceMasterId," +
             " externalUnitRegistration.capacity," +
             " externalUnitType.externalUnitTypeName," +
-            " externalUnitRegistration.virtualAccountNumber," +
-            " externalUnitRegistration.ifscCode," +
-            " externalUnitRegistration.branchName," +
+//            " externalUnitRegistration.virtualAccountNumber," +
+//            " externalUnitRegistration.ifscCode," +
+//            " externalUnitRegistration.branchName," +
             " marketMaster.marketMasterName," +
             " externalUnitRegistration.lotNumberNomenclature," +
-            " raceMaster.raceMasterName" +
+            " raceMaster.raceMasterName," +
+            " tscMaster.tscMasterId," +
+            " district.districtId," +
+            " taluk.talukId," +
+            " externalUnitRegistration.nameKan" +
             ") \n" +
             "from ExternalUnitRegistration externalUnitRegistration\n" +
             "left join external_unit_type_master externalUnitType\n" +
@@ -54,6 +58,12 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             "on externalUnitRegistration.raceMasterId = raceMaster.raceMasterId " +
             "left join market_master marketMaster\n" +
             "on externalUnitRegistration.marketMasterId = marketMaster.marketMasterId " +
+            "left join TscMaster tscMaster\n" +
+            "on externalUnitRegistration.tscMasterId = tscMaster.tscMasterId " +
+            "left join District district\n" +
+            "on externalUnitRegistration.districtId = district.districtId " +
+            "left join Taluk taluk\n" +
+            "on externalUnitRegistration.talukId = taluk.talukId " +
             "where externalUnitRegistration.active = :isActive " +
             "ORDER BY externalUnitRegistration.name ASC"
     )
@@ -71,12 +81,16 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             " externalUnitRegistration.raceMasterId," +
             " externalUnitRegistration.capacity," +
             " externalUnitType.externalUnitTypeName," +
-            " externalUnitRegistration.virtualAccountNumber," +
-            " externalUnitRegistration.ifscCode," +
-            " externalUnitRegistration.branchName," +
+//            " externalUnitRegistration.virtualAccountNumber," +
+//            " externalUnitRegistration.ifscCode," +
+//            " externalUnitRegistration.branchName," +
             " marketMaster.marketMasterName," +
             " externalUnitRegistration.lotNumberNomenclature," +
-            " raceMaster.raceMasterName" +
+            " raceMaster.raceMasterName," +
+            " tscMaster.tscMasterId," +
+            " district.districtId," +
+            " taluk.talukId," +
+            " externalUnitRegistration.nameKan" +
             ") \n" +
             "from ExternalUnitRegistration externalUnitRegistration\n" +
             "left join external_unit_type_master externalUnitType\n" +
@@ -85,6 +99,12 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             "on externalUnitRegistration.raceMasterId = raceMaster.raceMasterId " +
             "left join market_master marketMaster\n" +
             "on externalUnitRegistration.marketMasterId = marketMaster.marketMasterId " +
+            "left join TscMaster tscMaster\n" +
+            "on externalUnitRegistration.tscMasterId = tscMaster.tscMasterId " +
+            "left join District district\n" +
+            "on externalUnitRegistration.districtId = district.districtId " +
+            "left join Taluk taluk\n" +
+            "on externalUnitRegistration.talukId = taluk.talukId " +
             "where externalUnitRegistration.active = :isActive " +
             "  and (:raceMasterId is null or externalUnitRegistration.raceMasterId = :raceMasterId) " +
             "  and (:externalUnitTypeId is null or externalUnitRegistration.externalUnitTypeId = :externalUnitTypeId) " +
@@ -108,12 +128,16 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             " externalUnitRegistration.raceMasterId," +
             " externalUnitRegistration.capacity," +
             " externalUnitType.externalUnitTypeName," +
-            " externalUnitRegistration.virtualAccountNumber," +
-            " externalUnitRegistration.ifscCode," +
-            " externalUnitRegistration.branchName," +
+//            " externalUnitRegistration.virtualAccountNumber," +
+//            " externalUnitRegistration.ifscCode," +
+//            " externalUnitRegistration.branchName," +
             " marketMaster.marketMasterName," +
             " externalUnitRegistration.lotNumberNomenclature," +
-            " raceMaster.raceMasterName" +
+            " raceMaster.raceMasterName," +
+            " tscMaster.tscMasterId," +
+            " district.districtId," +
+            " taluk.talukId," +
+            " externalUnitRegistration.nameKan" +
             ") \n" +
             "from ExternalUnitRegistration externalUnitRegistration\n" +
             "left join external_unit_type_master externalUnitType\n" +
@@ -122,6 +146,12 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             "on externalUnitRegistration.raceMasterId = raceMaster.raceMasterId " +
             "left join market_master marketMaster\n" +
             "on externalUnitRegistration.marketMasterId = marketMaster.marketMasterId " +
+            "left join TscMaster tscMaster\n" +
+            "on externalUnitRegistration.tscMasterId = tscMaster.tscMasterId " +
+            "left join District district\n" +
+            "on externalUnitRegistration.districtId = district.districtId " +
+            "left join Taluk taluk\n" +
+            "on externalUnitRegistration.talukId = taluk.talukId " +
             "where externalUnitRegistration.active = :isActive AND externalUnitRegistration.externalUnitRegistrationId = :id "
     )
     public ExternalUnitRegistrationDTO getByExternalUnitRegistrationIdAndActive(long id, boolean isActive);
@@ -137,12 +167,16 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             " externalUnitRegistration.raceMasterId," +
             " externalUnitRegistration.capacity," +
             " externalUnitType.externalUnitTypeName," +
-            " externalUnitRegistration.virtualAccountNumber," +
-            " externalUnitRegistration.ifscCode," +
-            " externalUnitRegistration.branchName," +
+//            " externalUnitRegistration.virtualAccountNumber," +
+//            " externalUnitRegistration.ifscCode," +
+//            " externalUnitRegistration.branchName," +
             " marketMaster.marketMasterName," +
             " externalUnitRegistration.lotNumberNomenclature," +
-            " raceMaster.raceMasterName" +
+            " raceMaster.raceMasterName," +
+            " tscMaster.tscMasterId," +
+            " district.districtId," +
+            " taluk.talukId," +
+            " externalUnitRegistration.nameKan" +
             ") \n" +
             "from ExternalUnitRegistration externalUnitRegistration\n" +
             "left join external_unit_type_master externalUnitType\n" +
@@ -151,6 +185,12 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             "on externalUnitRegistration.raceMasterId = raceMaster.raceMasterId " +
             "left join market_master marketMaster\n" +
             "on externalUnitRegistration.marketMasterId = marketMaster.marketMasterId " +
+            "left join TscMaster tscMaster\n" +
+            "on externalUnitRegistration.tscMasterId = tscMaster.tscMasterId " +
+            "left join District district\n" +
+            "on externalUnitRegistration.districtId = district.districtId " +
+            "left join Taluk taluk\n" +
+            "on externalUnitRegistration.talukId = taluk.talukId " +
             "where externalUnitRegistration.active = :isActive AND " +
             "(:joinColumn = 'externalUnitType.externalUnitTypeName' AND externalUnitType.externalUnitTypeName LIKE :searchText) OR " +
             "(:joinColumn = 'externalUnitRegistration.licenseNumber' AND externalUnitRegistration.licenseNumber LIKE :searchText) OR " +
@@ -173,10 +213,7 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
                     rm.race_name,
                     rm.race_name_in_kannada,
                     eur.capacity,
-                    eur.user_master_id,
-                    eur.virtual_account_number,
-                    eur.branch_name,
-                    eur.ifsc_code,
+                    eur.user_master_id, 
                     eur.lot_number_nomenclature,
                     eur.market_master_id,
             		mm.market_name,

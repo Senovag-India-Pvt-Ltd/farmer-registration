@@ -2,8 +2,10 @@ package com.sericulture.registration.model.api.externalUnitRegistration;
 
 import com.sericulture.registration.model.api.RequestBody;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -45,15 +47,15 @@ public class EditExternalUnitRegistrationRequest extends RequestBody {
 
     @Schema(name = "capacity", example = "Test")
     String capacity;
-
-    @Schema(name = "virtualAccountNumber", example = "3654643675")
-    String virtualAccountNumber;
-
-    @Schema(name = "branchName", example = "Bengaluru")
-    String branchName;
-
-    @Schema(name = "ifscCode", example = "SBI00457")
-    String ifscCode;
+//
+//    @Schema(name = "virtualAccountNumber", example = "3654643675")
+//    String virtualAccountNumber;
+//
+//    @Schema(name = "branchName", example = "Bengaluru")
+//    String branchName;
+//
+//    @Schema(name = "ifscCode", example = "SBI00457")
+//    String ifscCode;
 
     @Schema(name = "marketMasterId", example = "1")
     Long marketMasterId;
@@ -61,4 +63,19 @@ public class EditExternalUnitRegistrationRequest extends RequestBody {
     @Schema(name = "lotNumberNomenclature", example = "Test")
     String lotNumberNomenclature;
 
+    @Schema(name = "lock", example = "1")
+    Boolean lock;
+
+    @Schema(name = "externalUnitRegistrationDetailsRequests")
+    private List<ExternalUnitRegistrationDetailsRequest> externalUnitRegistrationDetailsRequests;
+
+    @Schema(name = "tsc_master_id", example = "1")
+    Long tscMasterId;
+    @Schema(name = "DISTRICT_ID", example = "1")
+    Long districtId;
+
+    @Schema(name = "TALUK_ID", example = "1")
+    Long talukId;
+    @Schema(name = "name_kan", example = "Test")
+    String nameKan;
 }

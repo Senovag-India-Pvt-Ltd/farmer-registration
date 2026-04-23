@@ -1,10 +1,13 @@
 package com.sericulture.registration.model.dto.externalUnitRegistration;
 
+import com.sericulture.registration.model.api.externalUnitRegistration.ExternalUnitRegistrationDetailsRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,10 +24,15 @@ public class ExternalUnitRegistrationDTO {
     private Long raceMasterId;
     private String capacity;
     private String externalUnitTypeName;
-    private String virtualAccountNumber;
-    private String ifscCode;
-    private String branchName;
+//    private String virtualAccountNumber;
+//    private String ifscCode;
+//    private String branchName;
     private String marketMasterName;
     private String lotNumberNomenclature;
     private String raceMasterName;
+    private Long tscMasterId;
+    private Long districtId;
+    private Long talukId;
+    private String nameKan;
+
 }

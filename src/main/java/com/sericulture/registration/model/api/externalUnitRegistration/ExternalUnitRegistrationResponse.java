@@ -2,6 +2,7 @@ package com.sericulture.registration.model.api.externalUnitRegistration;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import lombok.*;
 
 import java.util.Date;
@@ -72,10 +73,25 @@ public class ExternalUnitRegistrationResponse {
     @Schema(name = "error", example = "true")
     Boolean error;
 
+    @Schema(name = "lock", example = "1")
+    Boolean lock;
+
     @Schema(name = "error_description", example = "Username or password is incorrect")
     String error_description;
+
+
 
     private int serialNumber;
 
     private List<Long> externalUnitRegistrationIds;
+    @Schema(name = "tsc_master_id", example = "1")
+    Long tscMasterId;
+    @Schema(name = "DISTRICT_ID",  example = "1")
+    Long districtId;
+
+    @Schema(name = "TALUK_ID", example = "1")
+    Long talukId;
+    @Schema(name = "name_kan", example = "Test")
+    String nameKan;
+    private List<ExternalUnitRegistrationDetailsRequest> externalUnitRegistrationDetailsRequests;
 }

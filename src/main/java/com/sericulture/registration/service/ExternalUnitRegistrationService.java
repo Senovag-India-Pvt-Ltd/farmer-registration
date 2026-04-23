@@ -8,11 +8,15 @@ import com.sericulture.registration.model.api.externalUnitRegistration.ExternalU
 import com.sericulture.registration.model.api.traderLicense.TraderLicenseResponse;
 import com.sericulture.registration.model.dto.externalUnitRegistration.ExternalUnitRegistrationDTO;
 import com.sericulture.registration.model.dto.traderLicense.TraderLicenseDTO;
+import com.sericulture.registration.model.entity.EuVirtualBankAccount;
 import com.sericulture.registration.model.entity.ExternalUnitRegistration;
+import com.sericulture.registration.model.entity.MarketMaster;
 import com.sericulture.registration.model.entity.SerialCounter;
 import com.sericulture.registration.model.exceptions.ValidationException;
 import com.sericulture.registration.model.mapper.Mapper;
+import com.sericulture.registration.repository.EuVirtualBankAccountRepository;
 import com.sericulture.registration.repository.ExternalUnitRegistrationRepository;
+import com.sericulture.registration.repository.MarketMasterRepository;
 import com.sericulture.registration.repository.SerialCounterRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
@@ -55,6 +59,12 @@ public class ExternalUnitRegistrationService {
 
     @Autowired
     SerialCounterRepository serialCounterRepository;
+
+    @Autowired
+    EuVirtualBankAccountRepository euVirtualBankAccountRepository;
+
+    @Autowired
+    MarketMasterRepository marketMasterRepository;
 
 //    @Transactional
 //    public ExternalUnitRegistrationResponse insertExternalUnitRegistrationDetails(ExternalUnitRegistrationRequest externalUnitRegistrationRequest) {
@@ -122,14 +132,14 @@ public class ExternalUnitRegistrationService {
     public ExternalUnitRegistrationResponse insertExternalUnitRegistrationDetails(ExternalUnitRegistrationRequest externalUnitRegistrationRequest) {
         ExternalUnitRegistrationResponse response = new ExternalUnitRegistrationResponse();
         List<Long> externalUnitRegistrationIds = new ArrayList<>();
-
-        // Validate if ExternalUnitRegistrationDetailsRequest is empty
-        if (externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests() == null
-                || externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests().isEmpty()) {
-            response.setError(true);
-            response.setError_description("Fill the Virtual Bank details");
-            return response;
-        }
+//
+//        // Validate if ExternalUnitRegistrationDetailsRequest is empty
+//        if (externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests() == null
+//                || externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests().isEmpty()) {
+//            response.setError(true);
+//            response.setError_description("Fill the Virtual Bank details");
+//            return response;
+//        }
 
         // Generate a single External Unit Number
         LocalDate today = Util.getISTLocalDate();
@@ -147,17 +157,33 @@ public class ExternalUnitRegistrationService {
         String externalUnitNumber = "EUN/" + formattedDate + "/" + formattedNumber;
 
         // Loop through details and save each entry with the same External Unit Number
-        for (ExternalUnitRegistrationDetailsRequest details : externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests()) {
-            ExternalUnitRegistration externalUnitRegistration = mapper.externalUnitRegistrationObjectToEntity(externalUnitRegistrationRequest, ExternalUnitRegistration.class);
+//        for (ExternalUnitRegistrationDetailsRequest details : externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests()) {
+//            long count = externalUnitRegistrationRepository
+//                    .existsByVirtualAccountNumberAndDifferentMarket(
+//                            details.getVirtualAccountNumber(),
+//                            details.getMarketMasterId()
+//                    );
+//
+//            if (count > 0) {
+//                response.setError(true);
+//                response.setError_description("Virtual Account Number already exists in another market");
+//                return response;
+//            }
+          ExternalUnitRegistration externalUnitRegistration = mapper.externalUnitRegistrationObjectToEntity(externalUnitRegistrationRequest, ExternalUnitRegistration.class);
 
             // Set userMasterId from JWT token
             externalUnitRegistration.setUserMasterId(Util.getUserId(Util.getTokenValues()));
 
-            // Set additional fields
-            externalUnitRegistration.setVirtualAccountNumber(details.getVirtualAccountNumber());
-            externalUnitRegistration.setBranchName(details.getBranchName());
-            externalUnitRegistration.setIfscCode(details.getIfscCode());
-            externalUnitRegistration.setMarketMasterId(details.getMarketMasterId());
+        externalUnitRegistration.setDistrictId(externalUnitRegistrationRequest.getDistrictId());
+        externalUnitRegistration.setTalukId(externalUnitRegistrationRequest.getTalukId());
+        externalUnitRegistration.setTscMasterId(externalUnitRegistrationRequest.getTscMasterId());
+        externalUnitRegistration.setNameKan(externalUnitRegistrationRequest.getNameKan());
+
+//            // Set additional fields
+//            externalUnitRegistration.setVirtualAccountNumber(details.getVirtualAccountNumber());
+//            externalUnitRegistration.setBranchName(details.getBranchName());
+//            externalUnitRegistration.setIfscCode(details.getIfscCode());
+//            externalUnitRegistration.setMarketMasterId(details.getMarketMasterId());
 
             // Assign the same External Unit Number
             externalUnitRegistration.setExternalUnitNumber(externalUnitNumber);
@@ -168,7 +194,51 @@ public class ExternalUnitRegistrationService {
             // Save entity and store its ID
             externalUnitRegistration = externalUnitRegistrationRepository.save(externalUnitRegistration);
             externalUnitRegistrationIds.add(externalUnitRegistration.getExternalUnitRegistrationId());
+// ================== ADD FROM HERE ==================
+        if (externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests() != null
+                && !externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests().isEmpty()) {
+
+            for (ExternalUnitRegistrationDetailsRequest details :
+                    externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests()) {
+                if (Boolean.TRUE.equals(details.getDeleted())) {
+                    continue;
+                }
+// Skip if virtual account is empty
+                if (details.getVirtualAccountNumber() == null ||
+                        details.getVirtualAccountNumber().trim().isEmpty()) {
+                    continue;
+                }
+
+                // Duplicate check
+                List<EuVirtualBankAccount> existing =
+                        euVirtualBankAccountRepository
+                                .findByVirtualAccountNumber(details.getVirtualAccountNumber());
+
+                if (!existing.isEmpty()) {
+                    log.warn("Virtual Account already exists: {}", details.getVirtualAccountNumber());
+                    continue; // don't fail
+                }
+
+                // Create object
+                EuVirtualBankAccount euVirtualBankAccount = new EuVirtualBankAccount();
+
+                // Set values
+                euVirtualBankAccount.setEuId(externalUnitRegistration.getExternalUnitRegistrationId());
+                euVirtualBankAccount.setVirtualAccountNumber(details.getVirtualAccountNumber());
+                euVirtualBankAccount.setBranchName(details.getBranchName());
+                euVirtualBankAccount.setIfscCode(details.getIfscCode());
+                euVirtualBankAccount.setMarketMasterId(details.getMarketMasterId());
+                euVirtualBankAccount.setLock(
+                        details.getLock() != null ? details.getLock() : false
+                );
+                euVirtualBankAccount.setActive(true);
+
+                // Save
+                euVirtualBankAccountRepository.save(euVirtualBankAccount);
+            }
         }
+
+// ================== ADD TILL HERE ==================
 
         // Set response data
         response.setExternalUnitRegistrationIds(externalUnitRegistrationIds);
@@ -252,9 +322,9 @@ public class ExternalUnitRegistrationService {
                     .raceMasterId(dto.getRaceMasterId())
                     .raceMasterName(dto.getRaceMasterName())
                     .capacity(dto.getCapacity())
-                    .virtualAccountNumber(dto.getVirtualAccountNumber())
-                    .ifscCode(dto.getIfscCode())
-                    .branchName(dto.getBranchName())
+//                    .virtualAccountNumber(dto.getVirtualAccountNumber())
+//                    .ifscCode(dto.getIfscCode())
+//                    .branchName(dto.getBranchName())
                     .marketMasterName(dto.getMarketMasterName())
                     .lotNumberNomenclature(dto.getLotNumberNomenclature())
                     .build();
@@ -293,9 +363,9 @@ public class ExternalUnitRegistrationService {
         headerRow.createCell(5).setCellValue("Organisation Name");
         headerRow.createCell(6).setCellValue("Capacity");
         headerRow.createCell(7).setCellValue("Unit Type Name");
-        headerRow.createCell(8).setCellValue("Virtual Account");
-        headerRow.createCell(9).setCellValue("IFSC Code");
-        headerRow.createCell(10).setCellValue("Branch Name");
+//        headerRow.createCell(8).setCellValue("Virtual Account");
+//        headerRow.createCell(9).setCellValue("IFSC Code");
+//        headerRow.createCell(10).setCellValue("Branch Name");
         headerRow.createCell(11).setCellValue("Market");
         headerRow.createCell(12).setCellValue("Lot Number Nomenclature");
         headerRow.createCell(13).setCellValue("Race");
@@ -313,9 +383,9 @@ public class ExternalUnitRegistrationService {
             row.createCell(5).setCellValue(dto.getOrganisationName() != null ? dto.getOrganisationName() : "");
             row.createCell(6).setCellValue(dto.getCapacity() != null ? dto.getCapacity() : "");
             row.createCell(7).setCellValue(dto.getExternalUnitTypeName() != null ? dto.getExternalUnitTypeName() : "");
-            row.createCell(8).setCellValue(dto.getVirtualAccountNumber() != null ? dto.getVirtualAccountNumber() : "");
-            row.createCell(9).setCellValue(dto.getIfscCode() != null ? dto.getIfscCode() : "");
-            row.createCell(10).setCellValue(dto.getBranchName() != null ? dto.getBranchName() : "");
+//            row.createCell(8).setCellValue(dto.getVirtualAccountNumber() != null ? dto.getVirtualAccountNumber() : "");
+//            row.createCell(9).setCellValue(dto.getIfscCode() != null ? dto.getIfscCode() : "");
+//            row.createCell(10).setCellValue(dto.getBranchName() != null ? dto.getBranchName() : "");
             row.createCell(11).setCellValue(dto.getMarketMasterName() != null ? dto.getMarketMasterName() : "");
             row.createCell(12).setCellValue(dto.getLotNumberNomenclature() != null ? dto.getLotNumberNomenclature() : "");
             row.createCell(13).setCellValue(dto.getRaceMasterName() != null ? dto.getRaceMasterName() : "");
@@ -371,6 +441,11 @@ public class ExternalUnitRegistrationService {
         ExternalUnitRegistrationResponse externalUnitRegistrationResponse = new ExternalUnitRegistrationResponse();
         ExternalUnitRegistration externalUnitRegistration = externalUnitRegistrationRepository.findByExternalUnitRegistrationIdAndActive(id, true);
         if (Objects.nonNull(externalUnitRegistration)) {
+            if (Boolean.TRUE.equals(externalUnitRegistration.getLock())) {
+                externalUnitRegistrationResponse.setError(true);
+                externalUnitRegistrationResponse.setError_description("Account is locked. Delete not allowed.");
+                return externalUnitRegistrationResponse;
+            }
             externalUnitRegistration.setActive(false);
             externalUnitRegistrationResponse = mapper.externalUnitRegistrationEntityToObject(externalUnitRegistrationRepository.save(externalUnitRegistration), ExternalUnitRegistrationResponse.class);
             externalUnitRegistrationResponse.setError(false);
@@ -390,6 +465,39 @@ public class ExternalUnitRegistrationService {
             externalUnitRegistrationResponse.setError_description("Invalid id");
         } else {
             externalUnitRegistrationResponse = mapper.externalUnitRegistrationEntityToObject(externalUnitRegistration, ExternalUnitRegistrationResponse.class);
+            // ===== ADD THIS =====
+
+            List<EuVirtualBankAccount> vbList =
+                    euVirtualBankAccountRepository.findByEuIdAndActiveTrue(
+                            externalUnitRegistration.getExternalUnitRegistrationId()
+                    );
+
+            List<ExternalUnitRegistrationDetailsRequest> vbResponse = new ArrayList<>();
+
+            for (EuVirtualBankAccount vb : vbList) {
+
+                ExternalUnitRegistrationDetailsRequest item =
+                        new ExternalUnitRegistrationDetailsRequest();
+                item.setId(vb.getId());   // ✅ VERY IMPORTANT
+                item.setVirtualAccountNumber(vb.getVirtualAccountNumber());
+                item.setBranchName(vb.getBranchName());
+                item.setIfscCode(vb.getIfscCode());
+                item.setMarketMasterId(vb.getMarketMasterId());
+                item.setLock(vb.getLock());
+                MarketMaster market =
+                        marketMasterRepository.findByMarketMasterIdAndActive(
+                                vb.getMarketMasterId(), true
+                        );
+
+                if (market != null) {
+                    item.setMarketMasterName(market.getMarketMasterName());
+                }
+
+                vbResponse.add(item);
+            }
+
+            externalUnitRegistrationResponse.setExternalUnitRegistrationDetailsRequests(vbResponse);
+
             externalUnitRegistrationResponse.setError(false);
         }
         log.info("Entity is ", externalUnitRegistration);
@@ -399,12 +507,41 @@ public class ExternalUnitRegistrationService {
     public ExternalUnitRegistrationResponse getByIdJoin(int id){
         ExternalUnitRegistrationResponse externalUnitRegistrationResponse = new ExternalUnitRegistrationResponse();
         ExternalUnitRegistrationDTO externalUnitRegistrationDTO = externalUnitRegistrationRepository.getByExternalUnitRegistrationIdAndActive(id,true);
-        if(externalUnitRegistrationDTO == null){
+                if(externalUnitRegistrationDTO == null){
             externalUnitRegistrationResponse.setError(true);
             externalUnitRegistrationResponse.setError_description("Invalid id");
         } else {
             externalUnitRegistrationResponse = mapper.externalUnitRegistrationDTOToObject(externalUnitRegistrationDTO, ExternalUnitRegistrationResponse.class);
-            externalUnitRegistrationResponse.setError(false);
+                    // ✅ MAP FIRST
+                    externalUnitRegistrationResponse =
+                            mapper.externalUnitRegistrationDTOToObject(
+                                    externalUnitRegistrationDTO,
+                                    ExternalUnitRegistrationResponse.class
+                            );
+
+                    // ✅ FETCH VB ONLY IF NOT NULL
+                    List<EuVirtualBankAccount> vbList =
+                            euVirtualBankAccountRepository.findByEuId(
+                                    externalUnitRegistrationDTO.getExternalUnitRegistrationId()
+                            );
+
+                    List<ExternalUnitRegistrationDetailsRequest> vbResponse = new ArrayList<>();
+
+                    for (EuVirtualBankAccount vb : vbList) {
+                        ExternalUnitRegistrationDetailsRequest item = new ExternalUnitRegistrationDetailsRequest();
+
+                        item.setVirtualAccountNumber(vb.getVirtualAccountNumber());
+                        item.setBranchName(vb.getBranchName());
+                        item.setIfscCode(vb.getIfscCode());
+                        item.setMarketMasterId(vb.getMarketMasterId());
+                        item.setLock(vb.getLock());
+
+                        vbResponse.add(item);
+                    }
+
+                    externalUnitRegistrationResponse.setExternalUnitRegistrationDetailsRequests(vbResponse);
+
+                    externalUnitRegistrationResponse.setError(false);
         }
         log.info("Entity is ", externalUnitRegistrationDTO);
         return externalUnitRegistrationResponse;
@@ -420,31 +557,170 @@ public class ExternalUnitRegistrationService {
 
         ExternalUnitRegistration externalUnitRegistration = externalUnitRegistrationRepository.findByExternalUnitRegistrationIdAndActiveIn(externalUnitRegistrationRequest.getExternalUnitRegistrationId(), Set.of(true, false));
         if (Objects.nonNull(externalUnitRegistration)) {
+            if (Boolean.TRUE.equals(externalUnitRegistration.getLock())) {
+                externalUnitRegistrationResponse.setError(true);
+                externalUnitRegistrationResponse.setError_description("Account is locked , Editing not allowed.");
+                return externalUnitRegistrationResponse;
+            }
             externalUnitRegistration.setAddress(externalUnitRegistrationRequest.getAddress());
             externalUnitRegistration.setName(externalUnitRegistrationRequest.getName());
             externalUnitRegistration.setLicenseNumber(externalUnitRegistrationRequest.getLicenseNumber());
             externalUnitRegistration.setExternalUnitNumber(externalUnitRegistrationRequest.getExternalUnitNumber());
-            externalUnitRegistration.setExternalUnitTypeId(externalUnitRegistrationRequest.getExternalUnitTypeId());
+//            externalUnitRegistration.setExternalUnitTypeId(externalUnitRegistrationRequest.getExternalUnitTypeId());
+            if (externalUnitRegistrationRequest.getExternalUnitTypeId() != null) {
+                externalUnitRegistration.setExternalUnitTypeId(
+                        externalUnitRegistrationRequest.getExternalUnitTypeId()
+                );
+            }
             externalUnitRegistration.setOrganisationName(externalUnitRegistrationRequest.getOrganisationName());
             externalUnitRegistration.setRaceMasterId(externalUnitRegistrationRequest.getRaceMasterId());
             externalUnitRegistration.setUserMasterId(Util.getUserId(Util.getTokenValues()));
             externalUnitRegistration.setCapacity(externalUnitRegistrationRequest.getCapacity());
-            externalUnitRegistration.setVirtualAccountNumber(externalUnitRegistrationRequest.getVirtualAccountNumber());
-            externalUnitRegistration.setBranchName(externalUnitRegistrationRequest.getBranchName());
-            externalUnitRegistration.setIfscCode(externalUnitRegistrationRequest.getIfscCode());
+//            externalUnitRegistration.setVirtualAccountNumber(externalUnitRegistrationRequest.getVirtualAccountNumber());
+//            externalUnitRegistration.setBranchName(externalUnitRegistrationRequest.getBranchName());
+//            externalUnitRegistration.setIfscCode(externalUnitRegistrationRequest.getIfscCode());
             externalUnitRegistration.setMarketMasterId(externalUnitRegistrationRequest.getMarketMasterId());
             externalUnitRegistration.setLotNumberNomenclature(externalUnitRegistrationRequest.getLotNumberNomenclature());
+            externalUnitRegistration.setDistrictId(externalUnitRegistrationRequest.getDistrictId());
+            externalUnitRegistration.setTalukId(externalUnitRegistrationRequest.getTalukId());
+            externalUnitRegistration.setTscMasterId(externalUnitRegistrationRequest.getTscMasterId());
+            externalUnitRegistration.setNameKan(externalUnitRegistrationRequest.getNameKan());
             externalUnitRegistration.setActive(true);
             ExternalUnitRegistration externalUnitRegistration1 = externalUnitRegistrationRepository.save(externalUnitRegistration);
-            externalUnitRegistrationResponse = mapper.externalUnitRegistrationEntityToObject(externalUnitRegistration1, ExternalUnitRegistrationResponse.class);
-            externalUnitRegistrationResponse.setError(false);
-        } else {
-            externalUnitRegistrationResponse.setError(true);
-            externalUnitRegistrationResponse.setError_description("Error occurred while fetching externalUnitRegistration");
-            // throw new ValidationException("Error occurred while fetching village");
+
+            if (externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests() != null
+                    && !externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests().isEmpty()) {
+
+                // STEP 1: VALIDATE FIRST
+                for (ExternalUnitRegistrationDetailsRequest details :
+                        externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests()) {
+                    if (details.getVirtualAccountNumber() == null ||
+                            details.getVirtualAccountNumber().trim().isEmpty()) {
+                        continue;
+                    }
+                    List<EuVirtualBankAccount> existing =
+                            euVirtualBankAccountRepository
+                                    .findByVirtualAccountNumberAndEuIdNot(
+                                            details.getVirtualAccountNumber(),
+                                            externalUnitRegistration.getExternalUnitRegistrationId()
+                                    );
+//                    if (!existing.isEmpty()) {
+//                        log.warn("Virtual Account already exists: {}", details.getVirtualAccountNumber());
+//                        continue; // don't fail
+//                    }
+
+                }
+            }
+
+// STEP 2: DELETE
+            List<EuVirtualBankAccount> existingList =
+                    euVirtualBankAccountRepository.findByEuIdAndActiveTrue(
+                            externalUnitRegistration.getExternalUnitRegistrationId()
+                    );
+
+            for (EuVirtualBankAccount existing : existingList) {
+
+                Optional<ExternalUnitRegistrationDetailsRequest> match =
+                        externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests()
+                                .stream()
+                                .filter(req ->
+                                                req.getId() != null &&
+                                                        req.getId().equals(existing.getId())
+                                        )
+                                .findFirst();
+
+                if (match.isPresent() && Boolean.TRUE.equals(match.get().getDeleted())) {
+
+                    if (Boolean.TRUE.equals(existing.getLock())) {
+                        throw new RuntimeException("Locked account cannot be deleted");
+                    }
+
+                    existing.setActive(false); // ✅ SOFT DELETE
+                    euVirtualBankAccountRepository.save(existing);
+                }
+
+            }
+
+// STEP 3: INSERT
+            if (externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests() != null
+                    && !externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests().isEmpty()) {
+                for (ExternalUnitRegistrationDetailsRequest details :
+                        externalUnitRegistrationRequest.getExternalUnitRegistrationDetailsRequests()) {
+                    if (details.getVirtualAccountNumber() == null ||
+                            details.getVirtualAccountNumber().trim().isEmpty()) {
+                        continue;
+                    }
+                    if (Boolean.TRUE.equals(details.getDeleted())) {
+                        continue;
+                    }
+                    Optional<EuVirtualBankAccount> existing =
+                            existingList.stream()
+                                    .filter(e -> details.getId() != null &&
+                                            e.getId().equals(details.getId()))
+                                    .findFirst();
+
+// 🔥 FIX: COMMON DUPLICATE CHECK (MUST BE HERE)
+                    List<EuVirtualBankAccount> duplicate =
+                            euVirtualBankAccountRepository
+                                    .findByVirtualAccountNumber(details.getVirtualAccountNumber());
+
+                    boolean existsDuplicate = duplicate.stream()
+                            .anyMatch(e ->
+                                    details.getId() == null ||   // NEW record
+                                            !e.getId().equals(details.getId()) // DIFFERENT record
+                            );
+
+                    if (existsDuplicate) {
+                        externalUnitRegistrationResponse.setError(true);
+                        externalUnitRegistrationResponse.setError_description("Virtual Account Number already exists");
+                        return externalUnitRegistrationResponse;
+                    }
+
+                    if (existing.isPresent()) {
+
+                        // ✅ UPDATE
+                        EuVirtualBankAccount e = existing.get();
+
+                        if (Boolean.TRUE.equals(e.getLock())) {
+                            continue;
+                        }
+
+                        e.setVirtualAccountNumber(details.getVirtualAccountNumber());
+                        e.setBranchName(details.getBranchName());
+                        e.setIfscCode(details.getIfscCode());
+                        e.setMarketMasterId(details.getMarketMasterId());
+
+                        euVirtualBankAccountRepository.save(e);
+
+                    } else {
+
+                        // ✅ INSERT
+                        EuVirtualBankAccount e = new EuVirtualBankAccount();
+
+                        e.setEuId(externalUnitRegistration.getExternalUnitRegistrationId());
+                        e.setVirtualAccountNumber(details.getVirtualAccountNumber());
+                        e.setBranchName(details.getBranchName());
+                        e.setIfscCode(details.getIfscCode());
+                        e.setMarketMasterId(details.getMarketMasterId());
+                        e.setLock(details.getLock() != null ? details.getLock() : false);
+                        e.setActive(true);
+
+                        euVirtualBankAccountRepository.save(e);
+                    }
+                    }
+
+
+            }
+                externalUnitRegistrationResponse = mapper.externalUnitRegistrationEntityToObject(externalUnitRegistration1, ExternalUnitRegistrationResponse.class);
+                externalUnitRegistrationResponse.setError(false);
+            } else {
+                externalUnitRegistrationResponse.setError(true);
+                externalUnitRegistrationResponse.setError_description("Error occurred while fetching externalUnitRegistration");
+                // throw new ValidationException("Error occurred while fetching village");
+            }
+            return externalUnitRegistrationResponse;
         }
-        return externalUnitRegistrationResponse;
-    }
+
 
     public Map<String,Object> searchByColumnAndSort(SearchWithSortRequest searchWithSortRequest){
         if(searchWithSortRequest.getSearchText() == null || searchWithSortRequest.getSearchText().equals("")){
