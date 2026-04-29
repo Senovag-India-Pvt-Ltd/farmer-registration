@@ -2740,6 +2740,8 @@ public class FarmerService {
                     .rearingHouseDetails(Util.objectToString(arr[25]))
                     .landAddress(Util.objectToString(arr[26]))
                     .mulberryVarietyName(Util.objectToString(arr[27]))
+                    .mobileNumber(Util.objectToString(arr[28]))
+                    .tscName(Util.objectToString(arr[29]))
                     .build();
             primaryDetailsResponseList.add(primaryDetailsResponse);
         }
