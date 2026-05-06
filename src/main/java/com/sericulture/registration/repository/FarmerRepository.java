@@ -1137,6 +1137,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
                     t.TALUK_NAME,
                     h.hobli_name,
                     v.village_name,
+                    tm.name,
                     sadod.rate_per100dfls_price,
                     sadod.number_of_dfls_disposed,
                     sadod.lot_number,
@@ -1152,6 +1153,7 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
                 LEFT JOIN taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
                 LEFT JOIN hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
                 LEFT JOIN village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
+             LEFT JOIN tsc_master tm ON f.tsc_master_id = tm.tsc_master_id AND tm.active = 1                
              LEFT JOIN farmer_bank_account fba ON f.farmer_id = fba.farmer_id AND fba.active=1
                 Inner JOIN
                 sale_and_disposal_of_dfls sadod ON sadod.fruits_id = f.fruits_id AND (sadod.is_disposed = 0 OR sadod.is_disposed IS NULL) AND  sadod.active = 1

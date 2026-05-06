@@ -2916,8 +2916,8 @@ public class FarmerService {
 
                 if (isOnlinePayment) {
                     Boolean lock = false;
-                    if (arr.length > 20 && arr[20] != null) {
-                        String val = arr[20].toString().trim();
+                    if (arr.length > 21 && arr[21] != null) {
+                        String val = arr[21].toString().trim();
 
                         if (val.equalsIgnoreCase("true") || val.equals("1")) {
                             lock = true;
@@ -2942,13 +2942,14 @@ public class FarmerService {
                         .talukName(Util.objectToString(arr[10]))
                         .hobliName(Util.objectToString(arr[11]))
                         .villageName(Util.objectToString(arr[12]))
-                        .dflsSource(Util.objectToString(arr[13]))
-                        .numbersOfDfls(Util.objectToString(arr[14]))
-                        .lotNumberRsp(Util.objectToString(arr[15]))
-                        .stateName(Util.objectToString(arr[16]))
-                        .raceOfDfls(Util.objectToLong(arr[17]))
-                        .raceName(Util.objectToString(arr[18]))
-                        .fitnessCertificatePath(Util.objectToString(arr[19]))
+                        .tscName(Util.objectToString(arr[13]))
+                        .dflsSource(Util.objectToString(arr[14]))
+                        .numbersOfDfls(Util.objectToString(arr[15]))
+                        .lotNumberRsp(Util.objectToString(arr[16]))
+                        .stateName(Util.objectToString(arr[17]))
+                        .raceOfDfls(Util.objectToLong(arr[18]))
+                        .raceName(Util.objectToString(arr[19]))
+                        .fitnessCertificatePath(Util.objectToString(arr[20]))
                         .build();
                 farmerDetailsResponseList.add(farmerDetailsResponse);
             }
