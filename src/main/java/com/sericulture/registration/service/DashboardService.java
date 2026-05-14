@@ -130,5 +130,7 @@ public class DashboardService {
         return chowkiManagementRepository.getTSCWiseSoldDFLDetails();
     }
 
-
+    public List<Map<String, Object>> getMarketDetails() {
+        return chowkiManagementRepository.getMarketDetails();
+    }
 }

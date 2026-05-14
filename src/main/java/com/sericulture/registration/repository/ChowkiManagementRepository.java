@@ -1394,5 +1394,83 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
     """, nativeQuery = true)
       List<Map<String, Object>> getTSCWiseSoldDFLDetails();
 
+    @Query(value = """
+        SELECT
+            mm.market_master_id,
+            mm.market_name,
+            mm.market_name_in_kannada,
+            mm.market_address,
+            mm.payment_mode,
+            mm.box_weight,
+            mm.lot_weight,
+            mm.state_id,
+            mm.district_id,
+            mm.taluk_id,
+
+            mm.ISSUE_BID_SLIP_START_TIME,
+            mm.ISSUE_BID_SLIP_END_TIME,
+
+            mm.AUCTION_1_START_TIME,
+            mm.AUCTION_2_START_TIME,
+            mm.AUCTION_3_START_TIME,
+
+            mm.AUCTION_1_END_TIME,
+            mm.AUCTION_2_END_TIME,
+            mm.AUCTION_3_END_TIME,
+
+            mm.AUCTION1_ACCEPT_START_TIME,
+            mm.AUCTION2_ACCEPT_START_TIME,
+            mm.AUCTION3_ACCEPT_START_TIME,
+
+            mm.AUCTION1_ACCEPT_END_TIME,
+            mm.AUCTION2_ACCEPT_END_TIME,
+            mm.AUCTION3_ACCEPT_END_TIME,
+
+            mm.SERIAL_NUMBER_PREFIX,
+            mm.client_id,
+            mm.market_type_master_id,
+            mm.market_lat,
+            mm.market_longitude,
+            mm.radius,
+
+            mm.snorkel_request_path,
+            mm.snorkel_response_path,
+
+            mm.client_code,
+            mm.cocoon_age,
+
+            s.state_name,
+            d.district_name,
+            t.taluk_name,
+
+            mtm.market_type_master_name,
+
+            mm.releer_minimum_balance,
+            mm.division_master_id,
+            mm.required_base_price,
+
+            dm.name AS division_name
+
+        FROM market_master mm
+
+        LEFT JOIN state s
+               ON mm.state_id = s.state_id
+
+        LEFT JOIN district d
+               ON mm.district_id = d.district_id
+
+        LEFT JOIN taluk t
+               ON mm.taluk_id = t.taluk_id
+
+        LEFT JOIN market_type_master mtm
+               ON mm.market_type_master_id = mtm.market_type_master_id
+
+        LEFT JOIN division_master dm
+               ON mm.division_master_id = dm.division_master_id
+
+        WHERE mm.active = 1
+
+        """, nativeQuery = true)
+    List<Map<String, Object>> getMarketDetails();
 
 }
