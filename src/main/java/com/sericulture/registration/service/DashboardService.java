@@ -133,4 +133,8 @@ public class DashboardService {
     public List<Map<String, Object>> getMarketDetails() {
         return chowkiManagementRepository.getMarketDetails();
     }
+
+    public List<Map<String, Object>> getSeedMarketDashboardDetails() {
+        return chowkiManagementRepository.getSeedMarketDashboardDetails();
+    }
 }

@@ -449,5 +449,26 @@ public class DashboardController {
         }
     }
 
+    @GetMapping("/getSeedMarketDashboardDetails")
+    public ResponseEntity<?> getSeedMarketDashboardDetails() {
+
+        try {
+
+            List<Map<String, Object>> result =
+                    dashboardService.getSeedMarketDashboardDetails();
+
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("status", "2", "message", "No records found"));
+            }
+
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "500", "error", e.getMessage()));
+        }
+    }
 
 }
