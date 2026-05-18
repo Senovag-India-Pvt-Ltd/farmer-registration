@@ -134,10 +134,6 @@ public class DashboardService {
         return chowkiManagementRepository.getMarketDetails();
     }
 
-    public List<Map<String, Object>> getSeedMarketDashboardDetails() {
-        return chowkiManagementRepository.getSeedMarketDashboardDetails();
-    }
-
     public List<Map<String, Object>> getSeedDashboardDetails() {
         return chowkiManagementRepository.getSeedDashboardDetails();
     }
