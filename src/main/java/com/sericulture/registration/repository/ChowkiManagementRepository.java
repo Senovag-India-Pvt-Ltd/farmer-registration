@@ -1486,16 +1486,6 @@ WITH LotWeights AS (
         ma.market_id,
         CAST(ma.market_auction_date AS DATE)
 )
-,FarmerCounts AS (
-            
-                 SELECT
-                     ma.market_id,
-                     COUNT(DISTINCT ma.farmer_id) AS total_no_of_farmers
-                 FROM market_auction ma
-                 GROUP BY ma.market_id
-            
-             )
-
 SELECT
     ROW_NUMBER() OVER(ORDER BY mm.market_master_id) AS sl_no,
 
@@ -1509,7 +1499,10 @@ SELECT
 
     COUNT(DISTINCT l.lot_id) AS no_of_lots,
 
-    MAX(ISNULL(fc.total_no_of_farmers,0)) AS total_no_of_farmers,
+    COUNT(DISTINCT CASE
+        WHEN ma.farmer_id IS NOT NULL
+        THEN CONCAT(ma.market_id, '_', ma.farmer_id)
+        END) AS total_no_of_farmers,
 
     ROUND(ISNULL(MAX(lw.total_weight), 0), 2) AS total_inward_quantity,
 
@@ -1614,9 +1607,6 @@ LEFT JOIN LotWeights lw
     ON lw.market_id = mm.market_master_id
     AND lw.auction_date = CAST(ma.market_auction_date AS DATE)
     
-LEFT JOIN FarmerCounts fc
-    ON fc.market_id = mm.market_master_id
-
 LEFT JOIN lot l
     ON l.market_auction_id = ma.market_auction_id
 
@@ -1632,7 +1622,9 @@ GROUP BY
     mm.seed_area_type,
     CAST(ma.market_auction_date AS DATE)
 
-ORDER BY mm.market_master_id
+    ORDER BY
+       CAST(ma.market_auction_date AS DATE),
+       mm.market_master_id
 """, nativeQuery = true)
     List<Map<String, Object>> getSeedDashboardDetails();
     
