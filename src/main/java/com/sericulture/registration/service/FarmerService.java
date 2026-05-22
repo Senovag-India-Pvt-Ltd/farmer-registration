@@ -2842,12 +2842,14 @@ public class FarmerService {
             contentRow.createCell(24).setCellValue(primaryDetailsResponse.getRearingHouseDetails());
             contentRow.createCell(25).setCellValue(primaryDetailsResponse.getLandAddress());
             contentRow.createCell(26).setCellValue(primaryDetailsResponse.getMulberryVarietyName());
+            contentRow.createCell(27).setCellValue(primaryDetailsResponse.getMobileNumber());
+            contentRow.createCell(28).setCellValue(primaryDetailsResponse.getTscName());
 
             dataStartsFrom = dataStartsFrom + 1;
         }
 
         // Auto-size all columns
-        for (int columnIndex = 0; columnIndex <= 26; columnIndex++) {
+        for (int columnIndex = 0; columnIndex <= 28; columnIndex++) {
             sheet.autoSizeColumn(columnIndex, true);
         }
 

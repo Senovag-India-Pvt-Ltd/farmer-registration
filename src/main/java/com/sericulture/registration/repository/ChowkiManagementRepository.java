@@ -1490,6 +1490,16 @@ SELECT
     ROW_NUMBER() OVER(ORDER BY mm.market_master_id) AS sl_no,
 
     CAST(ma.market_auction_date AS DATE) AS auction_date,
+    
+    ma.market_id,
+    ma.farmer_id,
+   CASE
+        WHEN ma.farmer_id IS NOT NULL
+        AND CAST(ma.farmer_id AS VARCHAR) <> ''
+        THEN CONCAT(ma.market_id, '_', ma.farmer_id)
+   END AS market_farmer_key,
+            
+            
 
     mm.MARKET_NAME AS seed_market_name,
 
@@ -1499,10 +1509,7 @@ SELECT
 
     COUNT(DISTINCT l.lot_id) AS no_of_lots,
 
-    COUNT(DISTINCT CASE
-        WHEN ma.farmer_id IS NOT NULL
-        THEN CONCAT(ma.market_id, '_', ma.farmer_id)
-        END) AS total_no_of_farmers,
+    COUNT(DISTINCT ma.farmer_id) AS total_no_of_farmers,
 
     ROUND(ISNULL(MAX(lw.total_weight), 0), 2) AS total_inward_quantity,
 
@@ -1614,13 +1621,16 @@ LEFT JOIN lot_groupage lg
     ON lg.lot_id = l.lot_id
 
 WHERE mm.market_type_master_id = 1
+AND ma.farmer_id IS NOT NULL
 
 GROUP BY
     mm.market_master_id,
     mm.MARKET_NAME,
     mm.PAYMENT_MODE,
     mm.seed_area_type,
-    CAST(ma.market_auction_date AS DATE)
+    CAST(ma.market_auction_date AS DATE),
+    ma.market_id,
+    ma.farmer_id
 
     ORDER BY
        CAST(ma.market_auction_date AS DATE),
