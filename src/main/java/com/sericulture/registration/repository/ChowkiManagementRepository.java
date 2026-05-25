@@ -344,16 +344,8 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
                           fa.VILLAGE_ID,
                           ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.farmer_address_id) AS rn
                   FROM farmer_address fa
-                ),
-                LatestTransaction AS (
-                  SELECT
-                      sat.*,
-                      ROW_NUMBER() OVER (
-                          PARTITION BY sat.application_form_id, sat.scheme_id
-                          ORDER BY sat.sc_application_transaction_id DESC
-                      ) AS rn
-                  FROM sc_application_transaction sat
                 )
+
                   SELECT
                   af.sanction_no,
                   af.scheme_amount,
@@ -372,14 +364,12 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
                   sc.sc_component_name,
                   fym.financial_year,
                   af.fruits_status,
-                  sat.application_status as dbt_status,
+
                   af.category_id,
                   af.component_id,
                   sq.scheme_quota_name,
-                  sq.scheme_quota_payment_type,
-                  sat.file_name,
-                  sat.fruits_id,
-                  sat.application_status
+                  sq.scheme_quota_payment_type
+
                   FROM sc_application_form af
                   LEFT JOIN FARMER f ON f.farmer_id = af.farmer_id
                   LEFT JOIN FirstAddress fa ON fa.farmer_id = f.farmer_id AND fa.rn = 1
@@ -391,10 +381,7 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
                   LEFT JOIN sc_sub_scheme_details  ssd ON ssd.sc_sub_scheme_details_id = af.sub_scheme_id
                   LEFT JOIN sc_component sc ON sc.sc_component_id = af.component_id
                   LEFT JOIN scheme_quota sq ON sq.scheme_quota_id = af.component_type
-                  LEFT JOIN LatestTransaction sat
-                     ON sat.application_form_id = af.sc_application_form_id
-                    AND sat.scheme_id = af.component_type
-                    AND sat.rn = 1
+          
             """, nativeQuery = true)
     List<Map<String, Object>> getDBTDetails();
 
