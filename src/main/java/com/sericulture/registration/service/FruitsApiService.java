@@ -64,7 +64,7 @@ public class FruitsApiService {
 
     public ResponseEntity<?> getFarmerByFruitsId(FruitsFarmerDTO body) {
         try{
-            String uri = "https://fruits-services.karnataka.gov.in/FRUITS_Sericulture/FRUITSData/GetFarmerByFID";
+            String uri = "https://fruits-services.karnataka.gov.in/FRUITS_Sericulture/GetFRUITSData/GetFarmerByFID";
 
             FruitsTokenDTO fruitsTokenDTO = new FruitsTokenDTO("Sericulture", "ZIy5S72oUvn4a1Tice9vSA==", "password");
             log.info("Entering getToken");
@@ -99,7 +99,7 @@ public class FruitsApiService {
     public GetFruitsResponse getFarmerByFruitsIdWithResponse(FruitsFarmerDTO body) {
         GetFruitsResponse getFruitsResponse = new GetFruitsResponse();
         try{
-            String uri = "https://fruits-services.karnataka.gov.in/FRUITS_Sericulture/FRUITSData/GetFarmerByFID";
+            String uri = "https://fruits-services.karnataka.gov.in/FRUITS_Sericulture/GetFRUITSData/GetFarmerByFID";
 
             FruitsTokenDTO fruitsTokenDTO = new FruitsTokenDTO("Sericulture", "ZIy5S72oUvn4a1Tice9vSA==", "password");
             GetFruitsTokenResponse getFruitsTokenResponse = this.getToken(fruitsTokenDTO);

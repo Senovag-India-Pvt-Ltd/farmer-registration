@@ -279,6 +279,7 @@ public class FarmerLandDetailsService {
             farmerLandDetails.setRoofTypeId(farmerLandDetailsRequest.getRoofTypeId());
             farmerLandDetails.setSilkWormVarietyId(farmerLandDetailsRequest.getSilkWormVarietyId());
             farmerLandDetails.setRearingCapacityCrops(farmerLandDetailsRequest.getRearingCapacityCrops());
+            farmerLandDetails.setRearingHouseDetails(farmerLandDetailsRequest.getRearingHouseDetails());
 
             farmerLandDetails.setActive(true);
             FarmerLandDetails farmerLandDetails1 = farmerLandDetailsRepository.save(farmerLandDetails);
