@@ -1462,15 +1462,17 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
 
     @Query(value = """
 WITH LotWeights AS (
-    SELECT\s
+    SELECT
         ma.market_id,
+         ma.farmer_id,
         CAST(ma.market_auction_date AS DATE) AS auction_date,
         SUM(l.LOT_WEIGHT_AFTER_WEIGHMENT) AS total_weight
     FROM lot l
-    INNER JOIN market_auction ma\s
+    INNER JOIN market_auction ma
         ON l.market_auction_id = ma.market_auction_id
-    GROUP BY\s
+    GROUP BY
         ma.market_id,
+         ma.farmer_id,
         CAST(ma.market_auction_date AS DATE)
 )
 SELECT
@@ -1596,16 +1598,19 @@ FROM market_master mm
 
 LEFT JOIN market_auction ma
     ON ma.market_id = mm.market_master_id
-
-LEFT JOIN LotWeights lw
-    ON lw.market_id = mm.market_master_id
-    AND lw.auction_date = CAST(ma.market_auction_date AS DATE)
     
 LEFT JOIN lot l
     ON l.market_auction_id = ma.market_auction_id
 
 LEFT JOIN lot_groupage lg
     ON lg.lot_id = l.lot_id
+    
+            
+LEFT JOIN LotWeights lw
+   ON lw.market_id = ma.market_id
+   AND lw.farmer_id = ma.farmer_id
+   AND lw.auction_date = CAST(ma.market_auction_date AS DATE)
+            
 
 WHERE mm.market_type_master_id = 1
 AND ma.farmer_id IS NOT NULL
