@@ -273,17 +273,26 @@ public FarmerBankAccountResponse insertFarmerBankAccountDetails(FarmerBankAccoun
                 );
 
         if (Objects.nonNull(farmerBankAccount)) {
-            List<FarmerBankAccount> farmerBankAccountList =
-                    farmerBankAccountRepository.findByFarmerBankAccountNumberAndActiveAndFarmerBankAccountIdIsNot(
-                            editFarmerBankAccountRequest.getFarmerBankAccountNumber(),
-                            true,
-                            editFarmerBankAccountRequest.getFarmerBankAccountId()
-                    );
+            String newAccountNumber = editFarmerBankAccountRequest.getFarmerBankAccountNumber();
+            boolean isAccountNumberChanging = newAccountNumber != null
+                    && !newAccountNumber.equals(farmerBankAccount.getFarmerBankAccountNumber());
 
-            if (farmerBankAccountList.size() > 0) {
-                farmerBankAccountResponse.setError(true);
-                farmerBankAccountResponse.setError_description("Please check, account number already exists");
-            } else {
+            if (isAccountNumberChanging) {
+                List<FarmerBankAccount> farmerBankAccountList =
+                        farmerBankAccountRepository.findByFarmerBankAccountNumberAndActiveAndFarmerBankAccountIdIsNot(
+                                newAccountNumber,
+                                true,
+                                editFarmerBankAccountRequest.getFarmerBankAccountId()
+                        );
+
+                if (farmerBankAccountList.size() > 0) {
+                    farmerBankAccountResponse.setError(true);
+                    farmerBankAccountResponse.setError_description("Please check, account number already exists");
+                    return farmerBankAccountResponse;
+                }
+            }
+
+            {
                 farmerBankAccount.setFarmerBankBranchName(editFarmerBankAccountRequest.getFarmerBankBranchName());
                 farmerBankAccount.setFarmerBankIfscCode(editFarmerBankAccountRequest.getFarmerBankIfscCode());
                 farmerBankAccount.setFarmerBankAccountNumber(editFarmerBankAccountRequest.getFarmerBankAccountNumber());
