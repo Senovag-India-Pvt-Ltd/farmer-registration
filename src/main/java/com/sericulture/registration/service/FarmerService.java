@@ -667,6 +667,11 @@ public class FarmerService {
                 editCompleteFarmerRequest.getEditFarmerBankAccountRequest().setFarmerId(farmerResponse.getFarmerId());
                 FarmerBankAccountResponse farmerBankAccountResponse =
                         farmerBankAccountService.updateFarmerBankAccountDetails(editCompleteFarmerRequest.getEditFarmerBankAccountRequest());
+                if (Boolean.TRUE.equals(farmerBankAccountResponse.getError())) {
+                    farmerResponse.setError(true);
+                    farmerResponse.setError_description(farmerBankAccountResponse.getError_description());
+                    return farmerResponse;
+                }
                 if (farmerBankAccountResponse.getFarmerBankAccountId() > 0) {
                     farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
                 }
