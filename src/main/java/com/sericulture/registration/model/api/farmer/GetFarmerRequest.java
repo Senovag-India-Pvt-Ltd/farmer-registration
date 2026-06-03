@@ -26,4 +26,7 @@ public class GetFarmerRequest extends RequestBody {
     @Pattern(regexp = "^[+0-9\\s]*$", message = "Farmer Account number must contain only numbers")
     @Schema(name = "farmerBankAccountNumber", example = "123")
     String farmerBankAccountNumber;
+
+    @Schema(name = "marketId", example = "1")
+    Long marketId;
 }

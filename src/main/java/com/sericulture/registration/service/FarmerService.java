@@ -130,6 +130,9 @@ public class FarmerService {
     FarmerLandDetailsService farmerLandDetailsService;
 
     @Autowired
+    FarmerVirtualBankAccountService farmerVirtualBankAccountService;
+
+    @Autowired
     DistrictRepository districtRepository;
 
     @Autowired
@@ -388,6 +391,12 @@ public class FarmerService {
             for (var landRequest : farmerSaveRequest.getFarmerLandDetailsRequests()) {
                 landRequest.setFarmerId(savedResponse.getFarmerId());
                 farmerLandDetailsService.insertFarmerLandDetailsDetails(landRequest);
+            }
+
+            // Save virtual bank account
+            if (farmerSaveRequest.getFarmerVirtualBankAccountRequest() != null) {
+                farmerSaveRequest.getFarmerVirtualBankAccountRequest().setFarmerId(savedResponse.getFarmerId());
+                farmerVirtualBankAccountService.insertFarmerVirtualBankAccountDetails(farmerSaveRequest.getFarmerVirtualBankAccountRequest());
             }
 
         } else {

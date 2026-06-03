@@ -5,6 +5,7 @@ import com.sericulture.registration.model.api.farmerAddress.FarmerAddressRequest
 import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccountRequest;
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyRequest;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsRequest;
+import com.sericulture.registration.model.api.farmerVirtualBankAccount.FarmerVirtualBankAccountRequest;
 import com.sericulture.registration.model.entity.FarmerBankAccount;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
@@ -29,4 +30,6 @@ public class FarmerSaveRequest extends RequestBody {
     List<FarmerFamilyRequest> farmerFamilyRequestList;
 
     List<FarmerLandDetailsRequest> farmerLandDetailsRequests;
+
+    FarmerVirtualBankAccountRequest farmerVirtualBankAccountRequest;
 }

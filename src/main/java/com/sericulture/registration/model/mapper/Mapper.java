@@ -13,6 +13,7 @@ import com.sericulture.registration.model.api.farmerBankAccount.FarmerBankAccoun
 import com.sericulture.registration.model.api.farmerFamily.FarmerFamilyRequest;
 import com.sericulture.registration.model.api.farmerLandDetails.FarmerLandDetailsRequest;
 import com.sericulture.registration.model.api.farmerType.FarmerTypeRequest;
+import com.sericulture.registration.model.api.farmerVirtualBankAccount.FarmerVirtualBankAccountRequest;
 import com.sericulture.registration.model.api.reeler.ReelerRequest;
 import com.sericulture.registration.model.api.reelerLicenseTransaction.ReelerLicenseTransactionRequest;
 import com.sericulture.registration.model.api.reelerVirtualBankAccount.ReelerVirtualBankAccountRequest;
@@ -22,6 +23,7 @@ import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerFamilyDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerLandDetailsDTO;
+import com.sericulture.registration.model.dto.farmer.FarmerVirtualBankAccountView;
 import com.sericulture.registration.model.dto.fruitsApi.GetFruitsTokenDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerDTO;
 import com.sericulture.registration.model.dto.reeler.ReelerVirtualBankAccountDTO;
@@ -289,6 +291,21 @@ public class Mapper {
     public <T> T reelerVirtualBankAccountObjectToEntity(ReelerVirtualBankAccountRequest reelerVirtualBankAccountRequest, Class<T> claaz) {
         log.debug("Value of mapper is:",mapper, reelerVirtualBankAccountRequest);
         return (T) mapper.map(reelerVirtualBankAccountRequest, claaz);
+    }
+
+    public <T> T farmerVirtualBankAccountEntityToObject(FarmerVirtualBankAccount farmerVirtualBankAccountEntity, Class<T> claaz) {
+        log.debug("Value of mapper is:",mapper, farmerVirtualBankAccountEntity);
+        return (T) mapper.map(farmerVirtualBankAccountEntity, claaz);
+    }
+
+    public <T> T farmerVirtualBankAccountObjectToEntity(FarmerVirtualBankAccountRequest farmerVirtualBankAccountRequest, Class<T> claaz) {
+        log.debug("Value of mapper is:",mapper, farmerVirtualBankAccountRequest);
+        return (T) mapper.map(farmerVirtualBankAccountRequest, claaz);
+    }
+
+    public <T> T farmerVirtualBankAccountViewToObject(FarmerVirtualBankAccountView farmerVirtualBankAccountView, Class<T> claaz) {
+        log.debug("Value of mapper is:",mapper, farmerVirtualBankAccountView);
+        return (T) mapper.map(farmerVirtualBankAccountView, claaz);
     }
 
     /**
