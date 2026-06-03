@@ -31,6 +31,7 @@ import com.sericulture.registration.model.api.farmerAddress.FarmerAddressRespons
 import com.sericulture.registration.model.dto.farmer.FarmerAddressDTO;
 import com.sericulture.registration.model.entity.*;
 import com.sericulture.registration.model.exceptions.ValidationException;
+import com.sericulture.registration.model.projection.FarmerPrimaryDetailsProjection;
 import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.*;
 import com.sericulture.registration.utils.ObjectToUrlEncodedConverter;
@@ -676,6 +677,11 @@ public class FarmerService {
                 editCompleteFarmerRequest.getEditFarmerBankAccountRequest().setFarmerId(farmerResponse.getFarmerId());
                 FarmerBankAccountResponse farmerBankAccountResponse =
                         farmerBankAccountService.updateFarmerBankAccountDetails(editCompleteFarmerRequest.getEditFarmerBankAccountRequest());
+                if (Boolean.TRUE.equals(farmerBankAccountResponse.getError())) {
+                    farmerResponse.setError(true);
+                    farmerResponse.setError_description(farmerBankAccountResponse.getError_description());
+                    return farmerResponse;
+                }
                 if (farmerBankAccountResponse.getFarmerBankAccountId() > 0) {
                     farmerResponse.setFarmerBankAccountId(Long.valueOf(farmerBankAccountResponse.getFarmerBankAccountId()));
                 }
@@ -2699,12 +2705,11 @@ public class FarmerService {
         villageId = (villageId != null && villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId != null && tscMasterId == 0) ? null : tscMasterId;
         casteId = (casteId != null && casteId == 0) ? null : casteId;
-        landFilter = (landFilter != null && !landFilter.isBlank()) ? landFilter : null;
 
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Object[]> applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, landFilter, pageable);
-        List<Object[]> applicableList = applicablePage.getContent();
+        Page<FarmerPrimaryDetailsProjection> applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, pageable);
+        List<FarmerPrimaryDetailsProjection> applicableList = applicablePage.getContent();
         long totalRecords = applicablePage.getTotalElements();
 
 
@@ -2714,43 +2719,42 @@ public class FarmerService {
         return ResponseEntity.ok(rw);
     }
 
-    private static void farmerResponse(List<PrimaryDetailsResponse> primaryDetailsResponseList, List<Object[]> applicableList, int pageNumber, int pageSize) {
+    private static void farmerResponse(List<PrimaryDetailsResponse> primaryDetailsResponseList, List<FarmerPrimaryDetailsProjection> applicableList, int pageNumber, int pageSize) {
         int serialNumber = pageNumber * pageSize + 1;
-        for (Object[] arr : applicableList) {
-            PrimaryDetailsResponse primaryDetailsResponse;
-            primaryDetailsResponse = PrimaryDetailsResponse.builder()
+        for (FarmerPrimaryDetailsProjection p : applicableList) {
+            PrimaryDetailsResponse primaryDetailsResponse = PrimaryDetailsResponse.builder()
                     .serialNumber(serialNumber++)
-                    .farmerId(Util.objectToString(arr[0]))
-                    .firstName(Util.objectToString(arr[1]))
-                    .middleName(Util.objectToString(arr[2]))
-                    .lastName(Util.objectToString(arr[3]))
-                    .fruitsId(Util.objectToString(arr[4]))
-                    .farmerNumber(Util.objectToString(arr[5]))
-                    .fatherName(Util.objectToString(arr[6]))
-                    .passbookNumber(Util.objectToString(arr[7]))
-                    .epicNumber(Util.objectToString(arr[8]))
-                    .rationCardNumber(Util.objectToString(arr[9]))
-                    .dob(Util.objectToString(arr[10]))
-                    .districtName(Util.objectToString(arr[11]))
-                    .talukName(Util.objectToString(arr[12]))
-                    .hobliName(Util.objectToString(arr[13]))
-                    .villageName(Util.objectToString(arr[14]))
-                    .farmerBankName(Util.objectToString(arr[15]))
-                    .farmerBankAccountNumber(Util.objectToString(arr[16]))
-                    .farmerBankBranchName(Util.objectToString(arr[17]))
-                    .farmerBankIfscCode(Util.objectToString(arr[18]))
-                    .caste(Util.objectToString(arr[19]))
+                    .farmerId(Util.objectToString(p.getFarmerId()))
+                    .firstName(p.getFirstName())
+                    .middleName(p.getMiddleName())
+                    .lastName(p.getLastName())
+                    .fruitsId(p.getFruitsId())
+                    .farmerNumber(p.getFarmerNumber())
+                    .fatherName(p.getFatherName())
+                    .passbookNumber(p.getPassbookNumber())
+                    .epicNumber(p.getEpicNumber())
+                    .rationCardNumber(p.getRationCardNumber())
+                    .dob(Util.objectToString(p.getDob()))
+                    .districtName(p.getDistrictName())
+                    .talukName(p.getTalukName())
+                    .hobliName(p.getHobliName())
+                    .villageName(p.getVillageName())
+                    .farmerBankName(p.getFarmerBankName())
+                    .farmerBankAccountNumber(p.getFarmerBankAccountNumber())
+                    .farmerBankBranchName(p.getFarmerBankBranchName())
+                    .farmerBankIfscCode(p.getFarmerBankIfscCode())
+                    .caste(p.getCasteTitle())
 
-                    .mulberryArea(Util.objectToString(arr[20]))
-                    .ownerName(Util.objectToString(arr[21]))
-                    .surveyNumber(Util.objectToString(arr[22]))
-                    .spacing(Util.objectToString(arr[23]))
-                    .hissa(Util.objectToString(arr[24]))
-                    .rearingHouseDetails(Util.objectToString(arr[25]))
-                    .landAddress(Util.objectToString(arr[26]))
-                    .mulberryVarietyName(Util.objectToString(arr[27]))
-                    .mobileNumber(Util.objectToString(arr[28]))
-                    .tscName(Util.objectToString(arr[29]))
+                    .mulberryArea(Util.objectToString(p.getMulberryArea()))
+                    .ownerName(p.getOwnerName())
+                    .surveyNumber(p.getSurveyNumber())
+                    .spacing(p.getSpacing())
+                    .hissa(p.getHissa())
+                    .rearingHouseDetails(p.getRearingHouseDetails())
+                    .landAddress(p.getAddress())
+                    .mulberryVarietyName(p.getMulberryVarietyName())
+                    .mobileNumber(p.getMobileNumber())
+                    .tscName(p.getTscName())
                     .build();
             primaryDetailsResponseList.add(primaryDetailsResponse);
         }
@@ -2761,22 +2765,21 @@ public class FarmerService {
                                         Long villageId,
                                         Long tscMasterId,
                                         Long casteId,
-                                        String landFilter,   // 🆕 New Param
+                                        String landFilter,
                                         int pageNumber, int pageSize) throws Exception {
         List<PrimaryDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
 
 
-        Page<Object[]> applicablePage;
+        Page<FarmerPrimaryDetailsProjection> applicablePage;
         districtId = (districtId == 0) ? null : districtId;
         talukId = (talukId == 0) ? null : talukId;
         villageId = (villageId == 0) ? null : villageId;
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
         casteId = (casteId == 0) ? null : casteId;
-        landFilter = (landFilter != null && !landFilter.isBlank()) ? landFilter : null; // 🆕 Ensure null if empty
 
         Pageable pageable = null;
-        applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, landFilter, pageable);
-        List<Object[]> applicableList = applicablePage.getContent();
+        applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, pageable);
+        List<FarmerPrimaryDetailsProjection> applicableList = applicablePage.getContent();
         farmerResponse(primaryDetailsResponseList, applicableList, pageNumber, pageSize);
 
         Workbook workbook = new XSSFWorkbook();
@@ -2851,12 +2854,14 @@ public class FarmerService {
             contentRow.createCell(24).setCellValue(primaryDetailsResponse.getRearingHouseDetails());
             contentRow.createCell(25).setCellValue(primaryDetailsResponse.getLandAddress());
             contentRow.createCell(26).setCellValue(primaryDetailsResponse.getMulberryVarietyName());
+            contentRow.createCell(27).setCellValue(primaryDetailsResponse.getMobileNumber());
+            contentRow.createCell(28).setCellValue(primaryDetailsResponse.getTscName());
 
             dataStartsFrom = dataStartsFrom + 1;
         }
 
         // Auto-size all columns
-        for (int columnIndex = 0; columnIndex <= 26; columnIndex++) {
+        for (int columnIndex = 0; columnIndex <= 28; columnIndex++) {
             sheet.autoSizeColumn(columnIndex, true);
         }
 

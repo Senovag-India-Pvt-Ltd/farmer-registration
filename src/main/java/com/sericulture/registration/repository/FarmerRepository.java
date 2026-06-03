@@ -3,6 +3,7 @@ package com.sericulture.registration.repository;
 import com.sericulture.registration.model.dto.farmer.FarmerDTO;
 import com.sericulture.registration.model.dto.farmer.FarmerLandDetailsDTO;
 import com.sericulture.registration.model.entity.Farmer;
+import com.sericulture.registration.model.projection.FarmerPrimaryDetailsProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -958,44 +959,61 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
 
 
     @Query(nativeQuery = true, value = """
-    WITH PrimaryAddress AS (
-        SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
-               fa.farmer_id,
-               fa.DISTRICT_ID,
-               fa.TALUK_ID,
-               fa.HOBLI_ID,
-               fa.VILLAGE_ID,
-               ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
-        FROM farmer_address fa
-        WHERE fa.active = 1
-    ),
-    LatestLand AS (
-        SELECT fld.*,
-               ROW_NUMBER() OVER (PARTITION BY fld.farmer_id ORDER BY fld.created_date DESC) AS rn
-        FROM farmer_land_details fld
-        WHERE fld.active = 1
-    )
-    SELECT
-        f.farmer_id,
-        f.first_name,
-        f.middle_name,
-        f.last_name,
-        f.fruits_id,
-        f.farmer_number,
-        f.father_name,
-        f.passbook_number,
-        f.epic_number,
-        f.ration_card_number,
-        f.dob,
-        d.DISTRICT_NAME,
-        t.TALUK_NAME,
-        h.hobli_name,
-        v.village_name,
-        fba.farmer_bank_name,
-        fba.farmer_bank_account_number,
-        fba.farmer_bank_branch_name,
-        fba.farmer_bank_ifsc_code,
-        c.caste_title,
+
+SELECT
+    f.farmer_id AS farmerId,
+    f.first_name AS firstName,
+    f.middle_name AS middleName,
+    f.last_name AS lastName,
+    f.fruits_id AS fruitsId,
+    f.farmer_number AS farmerNumber,
+    f.father_name AS fatherName,
+    f.passbook_number AS passbookNumber,
+    f.epic_number AS epicNumber,
+    f.ration_card_number AS rationCardNumber,
+    f.dob AS dob,
+
+    d.DISTRICT_NAME AS districtName,
+    t.TALUK_NAME AS talukName,
+    h.hobli_name AS hobliName,
+    v.village_name AS villageName,
+
+    fba.farmer_bank_name AS farmerBankName,
+    fba.farmer_bank_account_number AS farmerBankAccountNumber,
+    fba.farmer_bank_branch_name AS farmerBankBranchName,
+    fba.farmer_bank_ifsc_code AS farmerBankIfscCode,
+
+    c.caste_title AS casteTitle,
+
+    fld.mulberry_area AS mulberryArea,
+    fld.owner_name AS ownerName,
+    fld.survey_number AS surveyNumber,
+    fld.spacing AS spacing,
+    fld.hissa AS hissa,
+    fld.rearing_house_details AS rearingHouseDetails,
+    fld.address AS address,
+
+    mv.mulberry_variety_name AS mulberryVarietyName,
+
+    f.mobile_number AS mobileNumber,
+    tm.name AS tscName
+
+FROM farmer f
+
+OUTER APPLY (
+    SELECT TOP 1
+        fa.DISTRICT_ID,
+        fa.TALUK_ID,
+        fa.HOBLI_ID,
+        fa.VILLAGE_ID
+    FROM farmer_address fa
+    WHERE fa.farmer_id = f.farmer_id
+      AND fa.active = 1
+    ORDER BY fa.district_id DESC
+) pa
+
+OUTER APPLY (
+    SELECT TOP 1
         fld.mulberry_area,
         fld.owner_name,
         fld.survey_number,
@@ -1003,74 +1021,89 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
         fld.hissa,
         fld.rearing_house_details,
         fld.address,
-        mv.mulberry_variety_name,
-        f.mobile_number,
-        tm.name 
-    FROM farmer f
-    LEFT JOIN PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
-    LEFT JOIN farmer_bank_account fba ON fba.farmer_id = f.farmer_id AND fba.active = 1
-    LEFT JOIN caste c ON f.caste_id = c.caste_id
-    LEFT JOIN district d ON pa.DISTRICT_ID = d.DISTRICT_ID AND d.active = 1
-    LEFT JOIN taluk t ON pa.TALUK_ID = t.TALUK_ID AND t.active = 1
-    LEFT JOIN hobli h ON pa.HOBLI_ID = h.HOBLI_ID AND h.active = 1
-    LEFT JOIN village v ON pa.VILLAGE_ID = v.VILLAGE_ID AND v.active = 1
-    LEFT JOIN LatestLand fld ON fld.farmer_id = f.farmer_id AND fld.rn = 1 -- ✅ only 1 land row per farmer
-    LEFT JOIN mulberry_variety mv ON mv.mulberry_variety_id = fld.mulberry_variety_id
-    LEFT JOIN tsc_master tm ON tm.tsc_master_id = f.tsc_master_id
-    WHERE f.active = 1
-      AND (:districtId IS NULL OR pa.DISTRICT_ID = :districtId)
-      AND (:talukId IS NULL OR pa.TALUK_ID = :talukId)
-      AND (:villageId IS NULL OR pa.VILLAGE_ID = :villageId)
-      AND (:tscMasterId IS NULL OR f.tsc_master_id = :tscMasterId)
-      AND (:casteId IS NULL OR f.caste_id = :casteId)
-      AND (
-             :landFilter IS NULL
-          OR (:landFilter = 'WITH' AND EXISTS (
-                 SELECT 1 FROM farmer_land_details fld2 WHERE fld2.farmer_id = f.farmer_id
-             ))
-          OR (:landFilter = 'WITHOUT' AND NOT EXISTS (
-                 SELECT 1 FROM farmer_land_details fld3 WHERE fld3.farmer_id = f.farmer_id
-             ))
-         )
-    """,
+        fld.mulberry_variety_id
+    FROM farmer_land_details fld
+    WHERE fld.farmer_id = f.farmer_id
+      AND fld.active = 1
+    ORDER BY fld.created_date DESC
+) fld
+
+OUTER APPLY (
+    SELECT TOP 1
+        fba.farmer_bank_name,
+        fba.farmer_bank_account_number,
+        fba.farmer_bank_branch_name,
+        fba.farmer_bank_ifsc_code
+    FROM farmer_bank_account fba
+    WHERE fba.farmer_id = f.farmer_id
+      AND fba.active = 1
+) fba
+
+LEFT JOIN caste c
+       ON f.caste_id = c.caste_id
+
+LEFT JOIN district d
+       ON pa.DISTRICT_ID = d.DISTRICT_ID
+      AND d.active = 1
+
+LEFT JOIN taluk t
+       ON pa.TALUK_ID = t.TALUK_ID
+      AND t.active = 1
+
+LEFT JOIN hobli h
+       ON pa.HOBLI_ID = h.HOBLI_ID
+      AND h.active = 1
+
+LEFT JOIN village v
+       ON pa.VILLAGE_ID = v.VILLAGE_ID
+      AND v.active = 1
+
+LEFT JOIN mulberry_variety mv
+       ON mv.mulberry_variety_id = fld.mulberry_variety_id
+
+LEFT JOIN tsc_master tm
+       ON tm.tsc_master_id = f.tsc_master_id
+
+WHERE f.active = 1
+
+AND (:districtId IS NULL OR pa.DISTRICT_ID = :districtId)
+AND (:talukId IS NULL OR pa.TALUK_ID = :talukId)
+AND (:villageId IS NULL OR pa.VILLAGE_ID = :villageId)
+AND (:tscMasterId IS NULL OR f.tsc_master_id = :tscMasterId)
+AND (:casteId IS NULL OR f.caste_id = :casteId)
+
+""",
             countQuery = """
-    WITH PrimaryAddress AS (
-        SELECT ROW_NUMBER() OVER (ORDER BY fa.farmer_id ASC) AS row_id,
-               fa.farmer_id,
-               fa.DISTRICT_ID,
-               fa.TALUK_ID,
-               fa.HOBLI_ID,
-               fa.VILLAGE_ID,
-               ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.district_id DESC) AS rn
-        FROM farmer_address fa
-        WHERE fa.active = 1
-    )
-    SELECT COUNT(DISTINCT f.farmer_id)
-    FROM farmer f
-    LEFT JOIN PrimaryAddress pa ON pa.farmer_id = f.farmer_id AND pa.rn = 1
-    WHERE f.active = 1
-      AND (:districtId IS NULL OR pa.DISTRICT_ID = :districtId)
-      AND (:talukId IS NULL OR pa.TALUK_ID = :talukId)
-      AND (:villageId IS NULL OR pa.VILLAGE_ID = :villageId)
-      AND (:tscMasterId IS NULL OR f.tsc_master_id = :tscMasterId)
-      AND (:casteId IS NULL OR f.caste_id = :casteId)
-      AND (
-             :landFilter IS NULL
-          OR (:landFilter = 'WITH' AND EXISTS (
-                 SELECT 1 FROM farmer_land_details fld WHERE fld.farmer_id = f.farmer_id
-             ))
-          OR (:landFilter = 'WITHOUT' AND NOT EXISTS (
-                 SELECT 1 FROM farmer_land_details fld WHERE fld.farmer_id = f.farmer_id
-             ))
-         )
-    """)
-    Page<Object[]> getPrimaryFarmerDetails(
+
+SELECT COUNT(1)
+FROM farmer f
+
+OUTER APPLY (
+    SELECT TOP 1
+        fa.DISTRICT_ID,
+        fa.TALUK_ID,
+        fa.VILLAGE_ID
+    FROM farmer_address fa
+    WHERE fa.farmer_id = f.farmer_id
+      AND fa.active = 1
+    ORDER BY fa.district_id DESC
+) pa
+
+WHERE f.active = 1
+
+AND (:districtId IS NULL OR pa.DISTRICT_ID = :districtId)
+AND (:talukId IS NULL OR pa.TALUK_ID = :talukId)
+AND (:villageId IS NULL OR pa.VILLAGE_ID = :villageId)
+AND (:tscMasterId IS NULL OR f.tsc_master_id = :tscMasterId)
+AND (:casteId IS NULL OR f.caste_id = :casteId)
+
+""")
+    Page<FarmerPrimaryDetailsProjection> getPrimaryFarmerDetails(
             @Param("districtId") Long districtId,
             @Param("talukId") Long talukId,
             @Param("villageId") Long villageId,
             @Param("tscMasterId") Long tscMasterId,
             @Param("casteId") Long casteId,
-            @Param("landFilter") String landFilter,
             Pageable pageable);
 
 

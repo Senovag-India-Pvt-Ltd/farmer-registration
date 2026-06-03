@@ -344,16 +344,8 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
                           fa.VILLAGE_ID,
                           ROW_NUMBER() OVER (PARTITION BY fa.farmer_id ORDER BY fa.farmer_address_id) AS rn
                   FROM farmer_address fa
-                ),
-                LatestTransaction AS (
-                  SELECT
-                      sat.*,
-                      ROW_NUMBER() OVER (
-                          PARTITION BY sat.application_form_id, sat.scheme_id
-                          ORDER BY sat.sc_application_transaction_id DESC
-                      ) AS rn
-                  FROM sc_application_transaction sat
                 )
+
                   SELECT
                   af.sanction_no,
                   af.scheme_amount,
@@ -372,14 +364,12 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
                   sc.sc_component_name,
                   fym.financial_year,
                   af.fruits_status,
-                  sat.application_status as dbt_status,
+
                   af.category_id,
                   af.component_id,
                   sq.scheme_quota_name,
-                  sq.scheme_quota_payment_type,
-                  sat.file_name,
-                  sat.fruits_id,
-                  sat.application_status
+                  sq.scheme_quota_payment_type
+
                   FROM sc_application_form af
                   LEFT JOIN FARMER f ON f.farmer_id = af.farmer_id
                   LEFT JOIN FirstAddress fa ON fa.farmer_id = f.farmer_id AND fa.rn = 1
@@ -391,10 +381,7 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
                   LEFT JOIN sc_sub_scheme_details  ssd ON ssd.sc_sub_scheme_details_id = af.sub_scheme_id
                   LEFT JOIN sc_component sc ON sc.sc_component_id = af.component_id
                   LEFT JOIN scheme_quota sq ON sq.scheme_quota_id = af.component_type
-                  LEFT JOIN LatestTransaction sat
-                     ON sat.application_form_id = af.sc_application_form_id
-                    AND sat.scheme_id = af.component_type
-                    AND sat.rn = 1
+          
             """, nativeQuery = true)
     List<Map<String, Object>> getDBTDetails();
 
@@ -1394,5 +1381,256 @@ public interface ChowkiManagementRepository extends JpaRepository<ChowkiManageme
     """, nativeQuery = true)
       List<Map<String, Object>> getTSCWiseSoldDFLDetails();
 
+    @Query(value = """
+        SELECT
+            mm.market_master_id,
+            mm.market_name,
+            mm.market_name_in_kannada,
+            mm.market_address,
+            mm.payment_mode,
+            mm.box_weight,
+            mm.lot_weight,
+            mm.state_id,
+            mm.district_id,
+            mm.taluk_id,
 
+            mm.ISSUE_BID_SLIP_START_TIME,
+            mm.ISSUE_BID_SLIP_END_TIME,
+
+            mm.AUCTION_1_START_TIME,
+            mm.AUCTION_2_START_TIME,
+            mm.AUCTION_3_START_TIME,
+
+            mm.AUCTION_1_END_TIME,
+            mm.AUCTION_2_END_TIME,
+            mm.AUCTION_3_END_TIME,
+
+            mm.AUCTION1_ACCEPT_START_TIME,
+            mm.AUCTION2_ACCEPT_START_TIME,
+            mm.AUCTION3_ACCEPT_START_TIME,
+
+            mm.AUCTION1_ACCEPT_END_TIME,
+            mm.AUCTION2_ACCEPT_END_TIME,
+            mm.AUCTION3_ACCEPT_END_TIME,
+
+            mm.SERIAL_NUMBER_PREFIX,
+            mm.client_id,
+            mm.market_type_master_id,
+            mm.market_lat,
+            mm.market_longitude,
+            mm.radius,
+
+            mm.snorkel_request_path,
+            mm.snorkel_response_path,
+
+            mm.client_code,
+            mm.cocoon_age,
+
+            s.state_name,
+            d.district_name,
+            t.taluk_name,
+
+            mtm.market_type_master_name,
+
+            mm.releer_minimum_balance,
+            mm.division_master_id,
+            mm.required_base_price,
+
+            dm.name AS division_name
+
+        FROM market_master mm
+
+        LEFT JOIN state s
+               ON mm.state_id = s.state_id
+
+        LEFT JOIN district d
+               ON mm.district_id = d.district_id
+
+        LEFT JOIN taluk t
+               ON mm.taluk_id = t.taluk_id
+
+        LEFT JOIN market_type_master mtm
+               ON mm.market_type_master_id = mtm.market_type_master_id
+
+        LEFT JOIN division_master dm
+               ON mm.division_master_id = dm.division_master_id
+
+        WHERE mm.active = 1
+
+        """, nativeQuery = true)
+    List<Map<String, Object>> getMarketDetails();
+
+    @Query(value = """
+WITH LotWeights AS (
+    SELECT
+        ma.market_id,
+         ma.farmer_id,
+        CAST(ma.market_auction_date AS DATE) AS auction_date,
+        SUM(l.LOT_WEIGHT_AFTER_WEIGHMENT) AS total_weight
+    FROM lot l
+    INNER JOIN market_auction ma
+        ON l.market_auction_id = ma.market_auction_id
+    GROUP BY
+        ma.market_id,
+         ma.farmer_id,
+        CAST(ma.market_auction_date AS DATE)
+)
+SELECT
+    ROW_NUMBER() OVER(ORDER BY mm.market_master_id) AS sl_no,
+
+    CAST(ma.market_auction_date AS DATE) AS auction_date,
+    
+    ma.market_id,
+    ma.farmer_id,
+   CASE
+        WHEN ma.farmer_id IS NOT NULL
+        AND CAST(ma.farmer_id AS VARCHAR) <> ''
+        THEN CONCAT(ma.market_id, '_', ma.farmer_id)
+   END AS market_farmer_key,
+            
+            
+
+    mm.MARKET_NAME AS seed_market_name,
+
+    ISNULL(mm.seed_area_type, 'N/A') AS seed_area_type,
+
+    ISNULL(mm.PAYMENT_MODE, 'N/A') AS payment_mode,
+
+    COUNT(DISTINCT l.lot_id) AS no_of_lots,
+
+    COUNT(DISTINCT ma.farmer_id) AS total_no_of_farmers,
+
+    ROUND(ISNULL(MAX(lw.total_weight), 0), 2) AS total_inward_quantity,
+
+    COUNT(DISTINCT CASE\s
+        WHEN lg.buyer_type = 'RSP'
+        THEN lg.external_unit_id
+    END) AS total_no_of_rsp,
+
+    ISNULL(SUM(CASE\s
+        WHEN lg.buyer_type = 'RSP'
+        THEN lg.lot_weight
+    END), 0) AS total_rsp_kg,
+
+    ISNULL(SUM(CASE\s
+        WHEN lg.buyer_type = 'RSP'
+        THEN lg.sold_amount
+    END), 0) AS total_rsp_amount,
+
+    COUNT(DISTINCT CASE\s
+        WHEN lg.buyer_type = 'NSSO'
+        THEN lg.external_unit_id
+    END) AS total_no_of_nsso,
+
+    ISNULL(SUM(CASE\s
+        WHEN lg.buyer_type = 'NSSO'
+        THEN lg.lot_weight
+    END), 0) AS total_nsso_kg,
+
+    ISNULL(SUM(CASE\s
+        WHEN lg.buyer_type = 'NSSO'
+        THEN lg.sold_amount
+    END), 0) AS total_nsso_amount,
+
+    COUNT(DISTINCT CASE\s
+        WHEN lg.buyer_type = 'Govt Grainage'
+        THEN lg.external_unit_id
+    END) AS total_no_of_govt_grainage,
+
+    ISNULL(SUM(CASE\s
+        WHEN lg.buyer_type = 'Govt Grainage'
+        THEN lg.lot_weight
+    END), 0) AS total_govt_grainage_kg,
+
+    ISNULL(SUM(CASE\s
+        WHEN lg.buyer_type = 'Govt Grainage'
+        THEN lg.sold_amount
+    END), 0) AS total_govt_grainage_amount,
+
+    COUNT(DISTINCT CASE\s
+        WHEN lg.buyer_type = 'Reeling'
+        THEN lg.buyer_id
+    END) AS total_no_of_reelers,
+
+    ISNULL(SUM(CASE\s
+        WHEN lg.buyer_type = 'Reeling'
+        THEN lg.lot_weight
+    END), 0) AS total_reeler_kg,
+
+    ISNULL(SUM(CASE\s
+        WHEN lg.buyer_type = 'Reeling'
+        THEN lg.sold_amount
+    END), 0) AS total_reeler_amount,
+
+    ISNULL(SUM(CASE\s
+        WHEN lg.buyer_type IN ('RSP', 'NSSO', 'Govt Grainage')
+        THEN lg.lot_weight
+    END), 0) AS total_seed_kg,
+
+    ISNULL(SUM(CASE\s
+        WHEN lg.buyer_type IN ('RSP', 'NSSO', 'Govt Grainage')
+        THEN lg.sold_amount
+    END), 0) AS total_seed_amount,
+
+    ISNULL(SUM(lg.lot_weight), 0) AS total_qty,
+
+    ISNULL(SUM(lg.sold_amount), 0) AS total_amount,
+
+    CASE
+        WHEN UPPER(mm.PAYMENT_MODE) = 'CASH'
+            THEN ''
+        WHEN COUNT(lg.lot_groupage_id) = 0
+            THEN 'Pending'
+        WHEN COUNT(CASE\s
+            WHEN lg.status = 'paymentfailed'
+            THEN 1
+        END) > 0
+            THEN 'Failed'
+        WHEN COUNT(CASE\s
+            WHEN lg.status = 'paymentprocessing'
+            THEN 1
+        END) = COUNT(lg.lot_groupage_id)
+            THEN 'Success'
+        ELSE 'Pending'
+    END AS payment_status
+
+FROM market_master mm
+
+LEFT JOIN market_auction ma
+    ON ma.market_id = mm.market_master_id
+    
+LEFT JOIN lot l
+    ON l.market_auction_id = ma.market_auction_id
+
+LEFT JOIN lot_groupage lg
+    ON lg.lot_id = l.lot_id
+    
+            
+LEFT JOIN LotWeights lw
+   ON lw.market_id = ma.market_id
+   AND lw.farmer_id = ma.farmer_id
+   AND lw.auction_date = CAST(ma.market_auction_date AS DATE)
+            
+
+WHERE mm.market_type_master_id = 1
+AND ma.farmer_id IS NOT NULL
+
+GROUP BY
+    mm.market_master_id,
+    mm.MARKET_NAME,
+    mm.PAYMENT_MODE,
+    mm.seed_area_type,
+    CAST(ma.market_auction_date AS DATE),
+    ma.market_id,
+    ma.farmer_id
+
+    ORDER BY
+       CAST(ma.market_auction_date AS DATE),
+       mm.market_master_id
+""", nativeQuery = true)
+    List<Map<String, Object>> getSeedDashboardDetails();
+    
+    
 }
+
+
