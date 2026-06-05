@@ -51,6 +51,18 @@ public class ExternalUnitRegistrationRequest extends RequestBody {
     @Schema(name = "lotNumberNomenclature", example = "Test")
     String lotNumberNomenclature;
 
+    @Schema(name = "bankName", example = "SBI")
+    String bankName;
+
+    @Schema(name = "bankAccountNumber", example = "1234567890")
+    String bankAccountNumber;
+
+    @Schema(name = "bankBranchName", example = "Bengaluru")
+    String bankBranchName;
+
+    @Schema(name = "bankIfscCode", example = "SBIN0005463")
+    String bankIfscCode;
+
     private List<ExternalUnitRegistrationDetailsRequest> externalUnitRegistrationDetailsRequests;
     @Column(name = "tsc_master_id")
     private Long tscMasterId;

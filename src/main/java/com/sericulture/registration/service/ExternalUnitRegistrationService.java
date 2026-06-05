@@ -178,6 +178,10 @@ public class ExternalUnitRegistrationService {
         externalUnitRegistration.setTalukId(externalUnitRegistrationRequest.getTalukId());
         externalUnitRegistration.setTscMasterId(externalUnitRegistrationRequest.getTscMasterId());
         externalUnitRegistration.setNameKan(externalUnitRegistrationRequest.getNameKan());
+        externalUnitRegistration.setBankName(externalUnitRegistrationRequest.getBankName());
+        externalUnitRegistration.setBankAccountNumber(externalUnitRegistrationRequest.getBankAccountNumber());
+        externalUnitRegistration.setBankBranchName(externalUnitRegistrationRequest.getBankBranchName());
+        externalUnitRegistration.setBankIfscCode(externalUnitRegistrationRequest.getBankIfscCode());
 
 //            // Set additional fields
 //            externalUnitRegistration.setVirtualAccountNumber(details.getVirtualAccountNumber());
@@ -585,6 +589,10 @@ public class ExternalUnitRegistrationService {
             externalUnitRegistration.setTalukId(externalUnitRegistrationRequest.getTalukId());
             externalUnitRegistration.setTscMasterId(externalUnitRegistrationRequest.getTscMasterId());
             externalUnitRegistration.setNameKan(externalUnitRegistrationRequest.getNameKan());
+            externalUnitRegistration.setBankName(externalUnitRegistrationRequest.getBankName());
+            externalUnitRegistration.setBankAccountNumber(externalUnitRegistrationRequest.getBankAccountNumber());
+            externalUnitRegistration.setBankBranchName(externalUnitRegistrationRequest.getBankBranchName());
+            externalUnitRegistration.setBankIfscCode(externalUnitRegistrationRequest.getBankIfscCode());
             externalUnitRegistration.setActive(true);
             ExternalUnitRegistration externalUnitRegistration1 = externalUnitRegistrationRepository.save(externalUnitRegistration);
 

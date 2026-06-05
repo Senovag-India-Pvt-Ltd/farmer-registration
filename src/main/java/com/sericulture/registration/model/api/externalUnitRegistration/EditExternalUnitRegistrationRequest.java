@@ -63,6 +63,18 @@ public class EditExternalUnitRegistrationRequest extends RequestBody {
     @Schema(name = "lotNumberNomenclature", example = "Test")
     String lotNumberNomenclature;
 
+    @Schema(name = "bankName", example = "SBI")
+    String bankName;
+
+    @Schema(name = "bankAccountNumber", example = "1234567890")
+    String bankAccountNumber;
+
+    @Schema(name = "bankBranchName", example = "Bengaluru")
+    String bankBranchName;
+
+    @Schema(name = "bankIfscCode", example = "SBIN0005463")
+    String bankIfscCode;
+
     @Schema(name = "lock", example = "1")
     Boolean lock;
 

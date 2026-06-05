@@ -59,6 +59,18 @@ public class ExternalUnitRegistration extends BaseEntity implements Serializable
 //    @Column(name = "ifsc_code")
 //    private String ifscCode;
 
+    @Column(name = "bank_name")
+    private String bankName;
+
+    @Column(name = "bank_account_number")
+    private String bankAccountNumber;
+
+    @Column(name = "bank_branch_name")
+    private String bankBranchName;
+
+    @Column(name = "bank_ifsc_code")
+    private String bankIfscCode;
+
     @Column(name = "lot_number_nomenclature")
     private String lotNumberNomenclature;
 

@@ -49,7 +49,11 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             " tscMaster.tscMasterId," +
             " district.districtId," +
             " taluk.talukId," +
-            " externalUnitRegistration.nameKan" +
+            " externalUnitRegistration.nameKan," +
+            " externalUnitRegistration.bankName," +
+            " externalUnitRegistration.bankAccountNumber," +
+            " externalUnitRegistration.bankBranchName," +
+            " externalUnitRegistration.bankIfscCode" +
             ") \n" +
             "from ExternalUnitRegistration externalUnitRegistration\n" +
             "left join external_unit_type_master externalUnitType\n" +
@@ -90,7 +94,11 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             " tscMaster.tscMasterId," +
             " district.districtId," +
             " taluk.talukId," +
-            " externalUnitRegistration.nameKan" +
+            " externalUnitRegistration.nameKan," +
+            " externalUnitRegistration.bankName," +
+            " externalUnitRegistration.bankAccountNumber," +
+            " externalUnitRegistration.bankBranchName," +
+            " externalUnitRegistration.bankIfscCode" +
             ") \n" +
             "from ExternalUnitRegistration externalUnitRegistration\n" +
             "left join external_unit_type_master externalUnitType\n" +
@@ -137,7 +145,11 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             " tscMaster.tscMasterId," +
             " district.districtId," +
             " taluk.talukId," +
-            " externalUnitRegistration.nameKan" +
+            " externalUnitRegistration.nameKan," +
+            " externalUnitRegistration.bankName," +
+            " externalUnitRegistration.bankAccountNumber," +
+            " externalUnitRegistration.bankBranchName," +
+            " externalUnitRegistration.bankIfscCode" +
             ") \n" +
             "from ExternalUnitRegistration externalUnitRegistration\n" +
             "left join external_unit_type_master externalUnitType\n" +
@@ -176,7 +188,11 @@ public interface ExternalUnitRegistrationRepository extends PagingAndSortingRepo
             " tscMaster.tscMasterId," +
             " district.districtId," +
             " taluk.talukId," +
-            " externalUnitRegistration.nameKan" +
+            " externalUnitRegistration.nameKan," +
+            " externalUnitRegistration.bankName," +
+            " externalUnitRegistration.bankAccountNumber," +
+            " externalUnitRegistration.bankBranchName," +
+            " externalUnitRegistration.bankIfscCode" +
             ") \n" +
             "from ExternalUnitRegistration externalUnitRegistration\n" +
             "left join external_unit_type_master externalUnitType\n" +

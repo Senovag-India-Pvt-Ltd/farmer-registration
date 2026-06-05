@@ -35,4 +35,9 @@ public class ExternalUnitRegistrationDTO {
     private Long talukId;
     private String nameKan;
 
+    private String bankName;
+    private String bankAccountNumber;
+    private String bankBranchName;
+    private String bankIfscCode;
+
 }
