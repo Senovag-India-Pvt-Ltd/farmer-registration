@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,8 +29,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -492,10 +490,10 @@ public class FarmerController {
                 @RequestParam(defaultValue = "0") int pageNumber,
                 @RequestParam(defaultValue = "50") int pageSize) {
             try {
-                FileInputStream fileInputStream = farmerService.kaFarmersWithoutFruitsIdsReport(
+                byte[] reportBytes = farmerService.kaFarmersWithoutFruitsIdsReport(
                         stateId, districtId, talukId, hobliId, casteId, isActive, pageNumber, pageSize
                 );
-                InputStreamResource resource = new InputStreamResource(fileInputStream);
+                ByteArrayResource resource = new ByteArrayResource(reportBytes);
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.add(HttpHeaders.CONTENT_DISPOSITION,
@@ -521,10 +519,10 @@ public class FarmerController {
                 @RequestParam(defaultValue = "0") int pageNumber,
                 @RequestParam(defaultValue = "50") int pageSize) {
             try {
-                FileInputStream fileInputStream = farmerService.nonKaFarmersReport(
+                byte[] reportBytes = farmerService.nonKaFarmersReport(
                         stateId, districtId, talukId, hobliId, casteId, isActive, pageNumber, pageSize
                 );
-                InputStreamResource resource = new InputStreamResource(fileInputStream);
+                ByteArrayResource resource = new ByteArrayResource(reportBytes);
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.add(HttpHeaders.CONTENT_DISPOSITION,
@@ -783,9 +781,9 @@ public ResponseEntity<?> primaryFarmerDetails(
                                           @RequestParam(defaultValue = "50") int pageSize) {
         try {
             System.out.println("enter to farmer report");
-            FileInputStream fileInputStream = farmerService.farmerReport(districtId, talukId, villageId, tscMasterId, casteId, landFilter, pageNumber, pageSize);
+            byte[] reportBytes = farmerService.farmerReport(districtId, talukId, villageId, tscMasterId, casteId, landFilter, pageNumber, pageSize);
 
-            InputStreamResource resource = new InputStreamResource(fileInputStream);
+            ByteArrayResource resource = new ByteArrayResource(reportBytes);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=farmer_report" + Util.getISTLocalDate() + ".csv");
@@ -869,8 +867,8 @@ public ResponseEntity<?> getFarmerDetailsByFruitsIdOrMobileNumberOrCsbRegisterNu
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "50") int pageSize) {
         try {
-            FileInputStream fileInputStream = farmerService.chowkiReport(districtId, talukId, villageId, tscMasterId, pageNumber, pageSize);
-            InputStreamResource resource = new InputStreamResource(fileInputStream);
+            byte[] reportBytes = farmerService.chowkiReport(districtId, talukId, villageId, tscMasterId, pageNumber, pageSize);
+            ByteArrayResource resource = new ByteArrayResource(reportBytes);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=chowki_report" + Util.getISTLocalDate() + ".xlsx");
@@ -905,8 +903,8 @@ public ResponseEntity<?> getFarmerDetailsByFruitsIdOrMobileNumberOrCsbRegisterNu
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "50") int pageSize) {
         try {
-            FileInputStream fileInputStream = farmerService.chowkiDistributionReport(districtId, talukId, villageId, tscMasterId, pageNumber, pageSize);
-            InputStreamResource resource = new InputStreamResource(fileInputStream);
+            byte[] reportBytes = farmerService.chowkiDistributionReport(districtId, talukId, villageId, tscMasterId, pageNumber, pageSize);
+            ByteArrayResource resource = new ByteArrayResource(reportBytes);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=chowki_distribution_report" + Util.getISTLocalDate() + ".xlsx");

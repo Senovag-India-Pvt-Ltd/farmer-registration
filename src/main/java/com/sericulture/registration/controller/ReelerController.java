@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -31,8 +31,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -763,10 +761,10 @@ public class ReelerController {
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "50") int pageSize) {
         try {
-            FileInputStream fileInputStream = reelerService.expiredReelerReport(
+            byte[] reportBytes = reelerService.expiredReelerReport(
                     districtId, talukId, villageId, marketId, renewalDate, expiryDate, pageNumber, pageSize);
 
-            InputStreamResource resource = new InputStreamResource(fileInputStream);
+            ByteArrayResource resource = new ByteArrayResource(reportBytes);
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=expired_reeler_report" + Util.getISTLocalDate() + ".xlsx");
             headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
@@ -790,9 +788,9 @@ public class ReelerController {
                                           @RequestParam(defaultValue = "50") int pageSize) {
         try {
             System.out.println("enter to reeler report");
-            FileInputStream fileInputStream = reelerService.reelerReport(districtId, talukId, villageId, marketId, casteId, pageNumber, pageSize);
+            byte[] reportBytes = reelerService.reelerReport(districtId, talukId, villageId, marketId, casteId, pageNumber, pageSize);
 
-            InputStreamResource resource = new InputStreamResource(fileInputStream);
+            ByteArrayResource resource = new ByteArrayResource(reportBytes);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reeler_report" + Util.getISTLocalDate() + ".csv");
@@ -824,10 +822,10 @@ public class ReelerController {
         try {
             System.out.println("enter to reeler report");
 
-            FileInputStream fileInputStream = reelerService.renewalReelerReport(
+            byte[] reportBytes = reelerService.renewalReelerReport(
                     districtId, talukId, villageId, marketId, renewalDate, expiryDate, pageNumber, pageSize);
 
-            InputStreamResource resource = new InputStreamResource(fileInputStream);
+            ByteArrayResource resource = new ByteArrayResource(reportBytes);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=renewal_reeler_report" + Util.getISTLocalDate() + ".csv");
@@ -860,9 +858,9 @@ public class ReelerController {
                                           @RequestParam(defaultValue = "50") int pageSize) {
         try {
             System.out.println("enter to reeler report");
-            FileInputStream fileInputStream = reelerService.reelerMarketReport(marketId, pageNumber, pageSize);
+            byte[] reportBytes = reelerService.reelerMarketReport(marketId, pageNumber, pageSize);
 
-            InputStreamResource resource = new InputStreamResource(fileInputStream);
+            ByteArrayResource resource = new ByteArrayResource(reportBytes);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reeler_market_report" + Util.getISTLocalDate() + ".csv");

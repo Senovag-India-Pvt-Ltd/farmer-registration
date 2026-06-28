@@ -19,7 +19,10 @@ public class CacheConfig {
             protected org.springframework.cache.concurrent.ConcurrentMapCache createConcurrentMapCache(String name) {
                 return new org.springframework.cache.concurrent.ConcurrentMapCache(
                         name,
-                        CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build().asMap(),
+                        CacheBuilder.newBuilder()
+                                .maximumSize(10_000)
+                                .expireAfterWrite(10, TimeUnit.MINUTES)
+                                .build().asMap(),
                         false);
             }
         };

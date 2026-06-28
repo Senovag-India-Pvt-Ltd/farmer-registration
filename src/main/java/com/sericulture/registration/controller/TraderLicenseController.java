@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,8 +25,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -316,10 +314,10 @@ public class TraderLicenseController {
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "50") int pageSize) {
         try {
-            FileInputStream fileInputStream = traderLicenseService.traderLicenseReport(
+            byte[] reportBytes = traderLicenseService.traderLicenseReport(
                     isActive, districtId, silkType, traderTypeMasterId, pageNumber, pageSize);
 
-            InputStreamResource resource = new InputStreamResource(fileInputStream);
+            ByteArrayResource resource = new ByteArrayResource(reportBytes);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=trader_license_report" + Util.getISTLocalDate() + ".xlsx");
