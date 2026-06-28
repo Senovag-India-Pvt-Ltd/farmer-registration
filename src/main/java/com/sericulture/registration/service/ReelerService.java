@@ -51,7 +51,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -103,6 +102,9 @@ public class ReelerService {
 
     @Autowired
     RequestInspectionMappingRepository requestInspectionMappingRepository;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Transactional
     public ReelerResponse insertReelerDetails(ReelerRequest reelerRequest) {
@@ -463,7 +465,7 @@ public class ReelerService {
                     genericCorporateAlertRequests.add(genericCorporateAlertRequest);
                     genericBankTransactionRequest.setGenericCorporateAlertRequest(genericCorporateAlertRequests);
 
-                    ObjectMapper mapper1 = new ObjectMapper();
+                    ObjectMapper mapper1 = this.objectMapper;
                     JsonNode jsonNode = mapper1.valueToTree(genericBankTransactionRequest);
                     log.debug("Request for reeler inital amount:", jsonNode);
                     bankTransactionController.creditTransaction(httpHeader, jsonNode);
@@ -1340,7 +1342,7 @@ public class ReelerService {
     }
 
 
-    public FileInputStream expiredReelerReport(Long districtId,
+    public byte[] expiredReelerReport(Long districtId,
                                                Long talukId,
                                                Long villageId,
                                                Long marketId,
@@ -1430,11 +1432,13 @@ public class ReelerService {
         }
         workbook.close();
 
-        return new FileInputStream(filePath.toString());
+        byte[] fileBytes = Files.readAllBytes(filePath);
+        Files.deleteIfExists(filePath);
+        return fileBytes;
     }
 
 
-//    public FileInputStream reelerReport(Long districtId,
+//    public byte[] reelerReport(Long districtId,
 //                                           Long talukId,
 //                                           Long villageId,
 //                                           Long marketId,
@@ -1545,7 +1549,7 @@ public class ReelerService {
     }
 
 
-    public FileInputStream reelerReport(Long districtId,
+    public byte[] reelerReport(Long districtId,
                                         Long talukId,
                                         Long villageId,
                                         Long marketId,
@@ -1637,7 +1641,9 @@ public class ReelerService {
         }
         workbook.close();
 
-        return new FileInputStream(filePath.toString());
+        byte[] fileBytes = Files.readAllBytes(filePath);
+        Files.deleteIfExists(filePath);
+        return fileBytes;
     }
 
     /**
@@ -1649,7 +1655,7 @@ public class ReelerService {
 
 
 
-    public FileInputStream renewalReelerReport(Long districtId,
+    public byte[] renewalReelerReport(Long districtId,
                                                Long talukId,
                                                Long villageId,
                                                Long marketId,
@@ -1740,7 +1746,9 @@ public class ReelerService {
         }
         workbook.close();
 
-        return new FileInputStream(filePath.toString());
+        byte[] fileBytes = Files.readAllBytes(filePath);
+        Files.deleteIfExists(filePath);
+        return fileBytes;
     }
 
 
@@ -1795,7 +1803,7 @@ public class ReelerService {
         }
     }
 
-    public FileInputStream reelerMarketReport(
+    public byte[] reelerMarketReport(
             Long marketId,
             int pageNumber, int pageSize) throws Exception {
         List<PrimaryReelerDetailsResponse> primaryDetailsResponseList = new ArrayList<>();
@@ -1875,13 +1883,14 @@ public class ReelerService {
         Files.createDirectories(directory);
         Path filePath = directory.resolve("reelers" + Util.getISTLocalDate() + ".xlsx");
 
-        // Write the workbook content to the specified file path
-        FileOutputStream fileOut = new FileOutputStream(filePath.toString());
-        FileInputStream fileIn = new FileInputStream(filePath.toString());
-        workbook.write(fileOut);
-        fileOut.close();
+        try (FileOutputStream fileOut = new FileOutputStream(filePath.toString())) {
+            workbook.write(fileOut);
+        }
         workbook.close();
-        return fileIn;
+
+        byte[] fileBytes = Files.readAllBytes(filePath);
+        Files.deleteIfExists(filePath);
+        return fileBytes;
     }
 
     public List<ReelerDetailsResponse> getReelerDetailsByUserMasterId(Long userId) {

@@ -58,7 +58,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -151,6 +150,9 @@ public class FarmerService {
     // FIX: Injected shared RestTemplate bean - avoids new instance per request (connection leak)
     @Autowired
     RestTemplate restTemplate;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Transactional
     public FarmerResponse insertFarmerDetails(FarmerRequest farmerRequest) {
@@ -924,7 +926,7 @@ public class FarmerService {
             //  GetFruitsResponse getFruitsResponse = fruitsApiService.getFarmerByFruitsIdWithResponse(fruitsFarmerDTO);
             String inputData = String.valueOf(fruitsApiService.getFarmerByFruitsId(fruitsFarmerDTO).getBody());
 
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = this.objectMapper;
             objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
             GetFruitsResponse getFruitsResponse = objectMapper.readValue(inputData, GetFruitsResponse.class);
 
@@ -1062,7 +1064,7 @@ public class FarmerService {
                 getFarmerResponse.setError_description("Farmer not found");
             } else {
 
-                ObjectMapper objectMapper = new ObjectMapper();
+                ObjectMapper objectMapper = this.objectMapper;
                 objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
                 GetFruitsResponse getFruitsResponse = objectMapper.readValue(inputData, GetFruitsResponse.class);
                 log.info("getFruitsResponse" + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(getFruitsResponse));
@@ -1325,7 +1327,7 @@ public class FarmerService {
             getFarmerResponse.setError_description("Farmer not found");
         } else {
 
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = this.objectMapper;
             objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
             GetFruitsResponse getFruitsResponse = objectMapper.readValue(inputData, GetFruitsResponse.class);
 
@@ -1552,22 +1554,15 @@ public class FarmerService {
         ResponseWrapper responseWrapper = new ResponseWrapper();
         try {
             String uri = "http://localhost:8001/master-data/v1/" + "caste/get-by-title";
-            //String uri = "http://13.200.62.144:8001/master-data/v1/" + "caste/get-by-title";
-
             log.info("Caste REQUEST BODY :" + body.toString());
 
-            RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            ObjectMapper mapper1 = new ObjectMapper();
-
+            ObjectMapper mapper1 = this.objectMapper;
             HttpEntity<String> request = new HttpEntity<>(mapper1.writeValueAsString(body), headers);
 
-            restTemplate.getMessageConverters().add(new ObjectToUrlEncodedConverter(mapper1));
-
             ResponseEntity<ResponseWrapper> result = restTemplate.postForEntity(uri, request, ResponseWrapper.class);
-
             return result.getBody();
 
         } catch (Exception e) {
@@ -1581,21 +1576,15 @@ public class FarmerService {
         ResponseWrapper responseWrapper = new ResponseWrapper();
         try {
             String uri = "http://localhost:8001/master-data/v1/" + "village/get-details-by-village-name";
-            //String uri = "http://13.200.62.144:8001/master-data/v1/" + "village/get-details-by-village-name";
-            log.info("Caste REQUEST BODY :" + body.toString());
+            log.info("Village REQUEST BODY :" + body.toString());
 
-            RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            ObjectMapper mapper1 = new ObjectMapper();
-
+            ObjectMapper mapper1 = this.objectMapper;
             HttpEntity<String> request = new HttpEntity<>(mapper1.writeValueAsString(body), headers);
 
-            restTemplate.getMessageConverters().add(new ObjectToUrlEncodedConverter(mapper1));
-
             ResponseEntity<ResponseWrapper> result = restTemplate.postForEntity(uri, request, ResponseWrapper.class);
-
             return result.getBody();
 
         } catch (Exception e) {
@@ -1839,7 +1828,7 @@ public class FarmerService {
 
 
 
-    public FileInputStream kaFarmersWithoutFruitsIdsReport(Long stateId, Long districtId, Long talukId, Long hobliId, Long casteId,
+    public byte[] kaFarmersWithoutFruitsIdsReport(Long stateId, Long districtId, Long talukId, Long hobliId, Long casteId,
                                                            boolean isActive, int pageNumber, int pageSize) throws Exception {
         stateId = normalizeFilter(stateId);
         districtId = normalizeFilter(districtId);
@@ -1855,7 +1844,7 @@ public class FarmerService {
 
     }
 
-    public FileInputStream nonKaFarmersReport(Long stateId, Long districtId, Long talukId, Long hobliId, Long casteId,
+    public byte[] nonKaFarmersReport(Long stateId, Long districtId, Long talukId, Long hobliId, Long casteId,
                                               boolean isActive, int pageNumber, int pageSize) throws Exception {
         stateId = normalizeFilter(stateId);
         districtId = normalizeFilter(districtId);
@@ -1896,7 +1885,7 @@ public class FarmerService {
         }
     }
 
-    private FileInputStream exportFarmerReport(List<FarmerDTO> farmers, String filePrefix) throws Exception {
+    private byte[] exportFarmerReport(List<FarmerDTO> farmers, String filePrefix) throws Exception {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Farmers");
 
@@ -1936,7 +1925,9 @@ public class FarmerService {
                 workbook.write(fileOut);
             }
 
-            return new FileInputStream(filePath.toFile());
+            byte[] fileBytes = Files.readAllBytes(filePath);
+            Files.deleteIfExists(filePath);
+            return fileBytes;
         }
     }
 
@@ -2760,7 +2751,7 @@ public class FarmerService {
         }
     }
 
-    public FileInputStream farmerReport(Long districtId,
+    public byte[] farmerReport(Long districtId,
                                         Long talukId,
                                         Long villageId,
                                         Long tscMasterId,
@@ -2877,13 +2868,14 @@ public class FarmerService {
         Files.createDirectories(directory);
         Path filePath = directory.resolve("farmers" + Util.getISTLocalDate() + ".xlsx");
 
-        // Write the workbook content to the specified file path
-        FileOutputStream fileOut = new FileOutputStream(filePath.toString());
-        FileInputStream fileIn = new FileInputStream(filePath.toString());
-        workbook.write(fileOut);
-        fileOut.close();
+        try (FileOutputStream fileOut = new FileOutputStream(filePath.toString())) {
+            workbook.write(fileOut);
+        }
         workbook.close();
-        return fileIn;
+
+        byte[] fileBytes = Files.readAllBytes(filePath);
+        Files.deleteIfExists(filePath);
+        return fileBytes;
     }
 
     public List<FarmerDetailsResponse> getFarmerDetailsByFruitsIdOrMobileNumberOrCsbRegisterNumber(SearchRequest searchRequest) throws Exception {
@@ -3036,7 +3028,7 @@ public class FarmerService {
         }
     }
 
-    public FileInputStream chowkiReport(Long districtId,
+    public byte[] chowkiReport(Long districtId,
                                         Long talukId,
                                         Long villageId,
                                         Long tscMasterId,
@@ -3118,12 +3110,14 @@ public class FarmerService {
         Files.createDirectories(Paths.get(directoryPath));
         Path filePath = Paths.get(directoryPath, "chowki_report" + Util.getISTLocalDate() + ".xlsx");
 
-        FileOutputStream fileOut = new FileOutputStream(filePath.toString());
-        FileInputStream fileIn = new FileInputStream(filePath.toString());
-        workbook.write(fileOut);
-        fileOut.close();
+        try (FileOutputStream fileOut = new FileOutputStream(filePath.toString())) {
+            workbook.write(fileOut);
+        }
         workbook.close();
-        return fileIn;
+
+        byte[] fileBytes = Files.readAllBytes(filePath);
+        Files.deleteIfExists(filePath);
+        return fileBytes;
     }
 
 
@@ -3152,7 +3146,7 @@ public class FarmerService {
         return ResponseEntity.ok(rw);
     }
 
-    public FileInputStream chowkiDistributionReport(Long districtId,
+    public byte[] chowkiDistributionReport(Long districtId,
                                                     Long talukId,
                                                     Long villageId,
                                                     Long tscMasterId,
@@ -3234,12 +3228,14 @@ public class FarmerService {
         Files.createDirectories(Paths.get(directoryPath));
         Path filePath = Paths.get(directoryPath, "chowki_distribution_report" + Util.getISTLocalDate() + ".xlsx");
 
-        FileOutputStream fileOut = new FileOutputStream(filePath.toString());
-        FileInputStream fileIn = new FileInputStream(filePath.toString());
-        workbook.write(fileOut);
-        fileOut.close();
+        try (FileOutputStream fileOut = new FileOutputStream(filePath.toString())) {
+            workbook.write(fileOut);
+        }
         workbook.close();
-        return fileIn;
+
+        byte[] fileBytes = Files.readAllBytes(filePath);
+        Files.deleteIfExists(filePath);
+        return fileBytes;
     }
 
 

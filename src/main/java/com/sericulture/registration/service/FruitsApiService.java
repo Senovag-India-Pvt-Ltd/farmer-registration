@@ -43,6 +43,12 @@ public class FruitsApiService {
     @Autowired
     Mapper mapper;
 
+    @Autowired
+    RestTemplate restTemplate;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
     // ---------------------------------------------------------------------------------
     // Token
     // ---------------------------------------------------------------------------------
@@ -53,13 +59,12 @@ public class FruitsApiService {
             log.info("FruitsApiService.getToken - url: {} | username: {} | password: {}",
                     uri, body != null ? body.getUsername() : null, mask(body != null ? body.getPassword() : null));
 
-            RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
             HttpEntity<FruitsTokenDTO> request = new HttpEntity<>(body, headers);
 
-            ObjectMapper mapper1 = new ObjectMapper();
+            ObjectMapper mapper1 = this.objectMapper;
             restTemplate.getMessageConverters().add(new ObjectToUrlEncodedConverter(mapper1));
 
             ResponseEntity<GetFruitsTokenResponse> result = restTemplate.postForEntity(uri, request, GetFruitsTokenResponse.class);
@@ -101,7 +106,6 @@ public class FruitsApiService {
             log.info("FruitsApiService.getFarmerByFruitsId - url: {} | username: {} | password: {} | token: {} | FarmerId: {}",
                     uri, fruitsUsername, mask(fruitsPassword), access_token, farmerId);
 
-            RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setBearerAuth(access_token);
@@ -134,7 +138,6 @@ public class FruitsApiService {
             log.info("FruitsApiService.getFarmerByFruitsIdWithResponse - url: {} | username: {} | password: {} | token: {} | FarmerId: {}",
                     uri, fruitsUsername, mask(fruitsPassword), access_token, farmerId);
 
-            RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setBearerAuth(access_token);
@@ -173,7 +176,6 @@ public class FruitsApiService {
             log.info("FruitsApiService.getFarmerByAadharHash - url: {} | username: {} | password: {} | token: {} | HashofAadhaar: {}",
                     uri, fruitsUsername, mask(fruitsPassword), access_token, hashOfAadhaar);
 
-            RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setBearerAuth(access_token);
@@ -211,7 +213,6 @@ public class FruitsApiService {
             log.info("FruitsApiService.getCropSurveyDataByYear - url: {} | username: {} | password: {} | token: {} | FarmerID: {} | YearCode: {} | SeasonCode: {}",
                     uri, fruitsUsername, mask(fruitsPassword), access_token, farmerId, yearCode, seasonCode);
 
-            RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setBearerAuth(access_token);

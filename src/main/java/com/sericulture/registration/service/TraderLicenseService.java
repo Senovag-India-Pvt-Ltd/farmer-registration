@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -276,7 +275,7 @@ public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest tra
     }
 
 
-    public FileInputStream traderLicenseReport(
+    public byte[] traderLicenseReport(
             boolean isActive,
             Long districtId,
             String silkType,
@@ -358,7 +357,9 @@ public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest tra
         }
         workbook.close();
 
-        return new FileInputStream(filePath.toString());
+        byte[] fileBytes = Files.readAllBytes(filePath);
+        Files.deleteIfExists(filePath);
+        return fileBytes;
     }
 
 

@@ -132,7 +132,6 @@ public class GovtSMSService {
             encryptedPassword = MD5(password);
             String genratedhashKey = hashGenerator(username, senderId, message, secureKey);
             List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>(1);
-            // List<namevaluepair> nameValuePairs = new ArrayList<namevaluepair>(1);
             nameValuePairs.add(new BasicNameValuePair("mobileno", mobileNumber));
             nameValuePairs.add(new BasicNameValuePair("senderid", senderId));
             nameValuePairs.add(new BasicNameValuePair("content", message));
@@ -144,14 +143,14 @@ public class GovtSMSService {
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             HttpResponse response = client.execute(post);
             BufferedReader bf = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            String line = "";
+            StringBuilder sb = new StringBuilder();
+            String line;
             while ((line = bf.readLine()) != null) {
-                responseString = responseString + line;
-
+                sb.append(line);
             }
+            responseString = sb.toString();
             System.out.println(responseString);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return responseString;
@@ -198,11 +197,12 @@ public class GovtSMSService {
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             HttpResponse response = client.execute(post);
             BufferedReader bf = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            String line = "";
+            StringBuilder sb = new StringBuilder();
+            String line;
             while ((line = bf.readLine()) != null) {
-                responseString = responseString + line;
-
+                sb.append(line);
             }
+            responseString = sb.toString();
             System.out.println(responseString);
         } catch (NoSuchAlgorithmException e) {
             // TODO Auto-generated catch block
@@ -273,11 +273,12 @@ public class GovtSMSService {
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             HttpResponse response = client.execute(post);
             BufferedReader bf = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            String line = "";
+            StringBuilder sb = new StringBuilder();
+            String line;
             while ((line = bf.readLine()) != null) {
-                responseString = responseString + line;
-
+                sb.append(line);
             }
+            responseString = sb.toString();
             System.out.println(responseString);
         } catch (NoSuchAlgorithmException e) {
             // TODO Auto-generated catch block
@@ -344,11 +345,12 @@ public class GovtSMSService {
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             HttpResponse response = client.execute(post);
             BufferedReader bf = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            String line = "";
+            StringBuilder sb = new StringBuilder();
+            String line;
             while ((line = bf.readLine()) != null) {
-                responseString = responseString + line;
-
+                sb.append(line);
             }
+            responseString = sb.toString();
             System.out.println(responseString);
         } catch (NoSuchAlgorithmException e) {
             // TODO Auto-generated catch block
@@ -422,11 +424,12 @@ public class GovtSMSService {
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             HttpResponse response = client.execute(post);
             BufferedReader bf = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            String line = "";
+            StringBuilder sb = new StringBuilder();
+            String line;
             while ((line = bf.readLine()) != null) {
-                responseString = responseString + line;
-
+                sb.append(line);
             }
+            responseString = sb.toString();
             System.out.println(responseString);
         } catch (NoSuchAlgorithmException e) {
             // TODO Auto-generated catch block

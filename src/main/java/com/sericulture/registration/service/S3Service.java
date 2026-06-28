@@ -57,13 +57,14 @@ public class S3Service {
             final String keyName
     ) throws IOException, AmazonClientException {
         S3Object s3Object = s3Client.getObject(bucketName, keyName);
-        InputStream inputStream = s3Object.getObjectContent();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        int len;
-        byte[] buffer = new byte[4096];
-        while ((len = inputStream.read(buffer, 0, buffer.length)) != -1) {
-            outputStream.write(buffer, 0, len);
+        try (InputStream inputStream = s3Object.getObjectContent()) {
+            int len;
+            byte[] buffer = new byte[4096];
+            while ((len = inputStream.read(buffer, 0, buffer.length)) != -1) {
+                outputStream.write(buffer, 0, len);
+            }
         }
 
         log.info("File downloaded from bucket({}): {}", bucketName, keyName);
