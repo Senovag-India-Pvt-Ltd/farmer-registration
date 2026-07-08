@@ -242,7 +242,7 @@ public class FarmerTemplateController {
                                 //Caste
                                 System.out.print("caste:" + cellValue + "\t");
                                 if (!cellValue.equals("") && cellValue != null) {
-                                    Caste caste = casteRepository.findByTitleAndActive(cellValue, true);
+                                    Caste caste = casteRepository.findFirstByTitleAndActive(cellValue, true);
                                     if (caste != null) {
                                         farmer.setCasteId(caste.getCasteId());
                                     }

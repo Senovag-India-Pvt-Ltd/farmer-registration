@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CasteRepository extends PagingAndSortingRepository<Caste, Long> {
-    public Caste findByTitleAndActive(String title,boolean isActive);
+    public Caste findFirstByTitleAndActive(String title,boolean isActive);
 
     public Caste save(Caste caste);
 }

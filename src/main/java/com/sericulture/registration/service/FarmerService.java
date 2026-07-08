@@ -924,6 +924,11 @@ public class FarmerService {
             //  GetFruitsResponse getFruitsResponse = fruitsApiService.getFarmerByFruitsIdWithResponse(fruitsFarmerDTO);
             String inputData = String.valueOf(fruitsApiService.getFarmerByFruitsId(fruitsFarmerDTO).getBody());
 
+            if (inputData == null || !inputData.trim().startsWith("{")) {
+                log.warn("getFarmerDetailsByFruitsId - FRUITS API did not return valid JSON for FruitsId: {} | response: {}", getFarmerRequest.getFruitsId(), inputData);
+                return getFarmerResponse;
+            }
+
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
             GetFruitsResponse getFruitsResponse = objectMapper.readValue(inputData, GetFruitsResponse.class);
@@ -1107,7 +1112,7 @@ public class FarmerService {
 
             farmer1.setCasteId(Long.valueOf(((LinkedHashMap) responseWrapper.getContent()).get("id").toString()));
 */
-                Caste caste = casteRepository.findByTitleAndActive(getFruitsResponse.getCaste(), true);
+                Caste caste = casteRepository.findFirstByTitleAndActive(getFruitsResponse.getCaste(), true);
                 if (caste != null) {
                     farmer1.setCasteId(caste.getCasteId());
                 } else {
@@ -1138,7 +1143,7 @@ public class FarmerService {
 //                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
 
                     log.info("District code: " + getLandDetailsResponse.getDistrictCode());
-                    District district = districtRepository.findByDistrictCodeAndActive(String.valueOf(getLandDetailsResponse.getDistrictCode()), true);
+                    District district = districtRepository.findFirstByDistrictCodeAndActive(String.valueOf(getLandDetailsResponse.getDistrictCode()), true);
                     if (district != null) {
                         log.info("District name: " + district.getDistrictName() + ":districtId:" + district.getDistrictId() + ":lgDist:" + district.getDistrictCode());
                         log.info("Taluk code: " + getLandDetailsResponse.getTalukCode());
@@ -1369,7 +1374,7 @@ public class FarmerService {
 
             farmer1.setCasteId(Long.valueOf(((LinkedHashMap) responseWrapper.getContent()).get("id").toString()));
 */
-            Caste caste = casteRepository.findByTitleAndActive(getFruitsResponse.getCaste(), true);
+            Caste caste = casteRepository.findFirstByTitleAndActive(getFruitsResponse.getCaste(), true);
             if (caste != null) {
                 farmer1.setCasteId(caste.getCasteId());
             } else {
@@ -1398,7 +1403,7 @@ public class FarmerService {
 //                villageDTO.setVillageName(getLandDetailsResponse.getVillageName());
 //                ResponseWrapper responseWrapper1 = getVillageDetails(villageDTO);
 
-//                District district = districtRepository.findByDistrictCodeAndActive(String.valueOf(farmerLandDetails.getDistrictCode()), true);
+//                District district = districtRepository.findFirstByDistrictCodeAndActive(String.valueOf(farmerLandDetails.getDistrictCode()), true);
 //                if (district != null) {
 //
 //                    Taluk taluk = talukRepository.findByDistrictIdAndTalukCodeAndActive(district.getDistrictId(), String.valueOf(farmerLandDetails.getTalukCode()), true);
@@ -1407,7 +1412,7 @@ public class FarmerService {
 //                        if (hobli != null) {
 //
 //                            Village village = villageRepository.findByHobliIdAndVillageCodeAndActive(hobli.getHobliId(), String.valueOf(farmerLandDetails.getVillageCode()), true);
-                District district = districtRepository.findByDistrictCodeAndActive(String.valueOf(getLandDetailsResponse.getDistrictCode()), true);
+                District district = districtRepository.findFirstByDistrictCodeAndActive(String.valueOf(getLandDetailsResponse.getDistrictCode()), true);
                 if (district != null) {
 
                     Taluk taluk = talukRepository.findByDistrictIdAndTalukCodeAndActive(district.getDistrictId(), String.valueOf(getLandDetailsResponse.getTalukCode()), true);
