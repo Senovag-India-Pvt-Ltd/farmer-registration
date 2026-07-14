@@ -37,9 +37,19 @@ import com.sericulture.registration.repository.*;
 import com.sericulture.registration.utils.ObjectToUrlEncodedConverter;
 import io.micrometer.core.instrument.MultiGauge;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -1902,8 +1912,23 @@ public class FarmerService {
     }
 
     private FileInputStream exportFarmerReport(List<FarmerDTO> farmers, String filePrefix) throws Exception {
-        try (Workbook workbook = new XSSFWorkbook()) {
+        // SXSSFWorkbook streams rows to a temp file instead of holding the whole
+        // workbook in heap memory, which is what was causing large exports to OOM the server.
+        SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+        workbook.setCompressTempFiles(true);
+        try {
             Sheet sheet = workbook.createSheet("Farmers");
+
+            // Fixed widths instead of autoSizeColumn: autoSizeColumn forces POI to render
+            // every cell with AWT font metrics, which is extremely slow/memory-heavy on
+            // large sheets (and doesn't work correctly with streaming rows anyway).
+            sheet.setColumnWidth(0, 8 * 256);
+            sheet.setColumnWidth(1, 20 * 256);
+            sheet.setColumnWidth(2, 25 * 256);
+            sheet.setColumnWidth(3, 15 * 256);
+            sheet.setColumnWidth(4, 18 * 256);
+            sheet.setColumnWidth(5, 20 * 256);
+            sheet.setColumnWidth(6, 18 * 256);
 
             // Header
             Row headerRow = sheet.createRow(0);
@@ -1930,8 +1955,6 @@ public class FarmerService {
 
             }
 
-            for (int i = 0; i <= 5; i++) sheet.autoSizeColumn(i);
-
             String userHome = System.getProperty("user.home");
             Path directory = Paths.get(userHome, "Downloads");
             Files.createDirectories(directory);
@@ -1942,6 +1965,10 @@ public class FarmerService {
             }
 
             return new FileInputStream(filePath.toFile());
+        } finally {
+            // dispose() removes the backing temp files SXSSF writes to disk while streaming
+            workbook.dispose();
+            workbook.close();
         }
     }
 
@@ -2782,92 +2809,199 @@ public class FarmerService {
         tscMasterId = (tscMasterId == 0) ? null : tscMasterId;
         casteId = (casteId == 0) ? null : casteId;
 
-        Pageable pageable = null;
+        Pageable pageable = Pageable.unpaged();
         applicablePage = farmerRepository.getPrimaryFarmerDetails(districtId, talukId, villageId, tscMasterId, casteId, pageable);
         List<FarmerPrimaryDetailsProjection> applicableList = applicablePage.getContent();
         farmerResponse(primaryDetailsResponseList, applicableList, pageNumber, pageSize);
 
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Sheet 1");
+        SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+        workbook.setCompressTempFiles(true);
+        Sheet sheet = workbook.createSheet("Farmer Registration Report");
+        String[] headerLabels = {
+            "First Name", "Middle Name",
+            // "Last Name",
+            "Fruits Id", "Farmer Number",
+            "Father Name",
+            // "Passbook Number", "Epic Number", "Ration Card Number",
+            "DOB",
+            "District Name", "Taluk Name",
+            // "Hobli Name", "Village Name", "Bank Name",
+            // "Bank Account Number", "Branch Name", "IFSC Code",
+            "Caste",
+            // "Mulberry Area", "Owner Name", "Survey Number", "Spacing", "Hissa",
+            // "Rearing House Details",
+            "Address",
+            // "Mulberry Variety Name",
+            "Mobile Number", "TSC Name"
+        };
+        final int TOTAL_COLS = headerLabels.length;
 
-        // Create a header row
-        Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("First Name");
-        headerRow.createCell(1).setCellValue("Middle Name");
-        headerRow.createCell(2).setCellValue("Last Name");
-        headerRow.createCell(3).setCellValue("Fruits Id");
-        headerRow.createCell(4).setCellValue("Farmer Number");
-        headerRow.createCell(5).setCellValue("Father Name");
-        headerRow.createCell(6).setCellValue("Passbook Number");
-        headerRow.createCell(7).setCellValue("Epic Number");
-        headerRow.createCell(8).setCellValue("Ration Card Number");
-        headerRow.createCell(9).setCellValue("DOB");
-        headerRow.createCell(10).setCellValue("District Name");
-        headerRow.createCell(11).setCellValue("Taluk Name");
-        headerRow.createCell(12).setCellValue("Hobli Name");
-        headerRow.createCell(13).setCellValue("Village Name");
-        headerRow.createCell(14).setCellValue("Bank Name");
-        headerRow.createCell(15).setCellValue("Bank Account Number");
-        headerRow.createCell(16).setCellValue("Branch Name");
-        headerRow.createCell(17).setCellValue("IFSC Code");
-        headerRow.createCell(18).setCellValue("Caste");
-        // 🆕 New Land + Mulberry Variety Columns
-        headerRow.createCell(19).setCellValue("Mulberry Area");
-        headerRow.createCell(20).setCellValue("Owner Name");
-        headerRow.createCell(21).setCellValue("Survey Number");
-        headerRow.createCell(22).setCellValue("Spacing");
-        headerRow.createCell(23).setCellValue("Hissa");
-        headerRow.createCell(24).setCellValue("Rearing House Details");
-        headerRow.createCell(25).setCellValue("Land Address");
-        headerRow.createCell(26).setCellValue("Mulberry Variety Name");
-        headerRow.createCell(27).setCellValue("Mobile Number");
-        headerRow.createCell(28).setCellValue("TSC Name");
+        // ── Colors (created once, safe with SXSSFWorkbook) ───────────────────
+        XSSFColor primaryBlue = new XSSFColor(new byte[]{(byte)26,  (byte)95,  (byte)158}, null);
+        XSSFColor darkNavy    = new XSSFColor(new byte[]{(byte)12,  (byte)74,  (byte)158}, null);
+        XSSFColor altRow      = new XSSFColor(new byte[]{(byte)247, (byte)250, (byte)253}, null);
+        XSSFColor white       = new XSSFColor(new byte[]{(byte)255, (byte)255, (byte)255}, null);
+        XSSFColor darkText    = new XSSFColor(new byte[]{(byte)30,  (byte)58,  (byte)95},  null);
 
+        // ── Fonts (created once) ─────────────────────────────────────────────
+        XSSFFont titleFont = (XSSFFont) workbook.createFont();
+        titleFont.setFontName("Calibri"); titleFont.setFontHeightInPoints((short)16);
+        titleFont.setBold(true); titleFont.setColor(white);
 
-        //Dynamic data binds here
-        //Starting 0th and 1st column cells are hardcoded, So dynamic data column starts from 2nd column
-        int dataStartsFrom = 1;
-        for (int i = 0; i < primaryDetailsResponseList.size(); i++) {
-            Row contentRow = sheet.createRow(dataStartsFrom);
-            PrimaryDetailsResponse primaryDetailsResponse = primaryDetailsResponseList.get(i);
-            contentRow.createCell(0).setCellValue(primaryDetailsResponse.getFirstName());
-            contentRow.createCell(1).setCellValue(primaryDetailsResponse.getMiddleName());
-            contentRow.createCell(2).setCellValue(primaryDetailsResponse.getLastName());
-            contentRow.createCell(3).setCellValue(primaryDetailsResponse.getFruitsId());
-            contentRow.createCell(4).setCellValue(primaryDetailsResponse.getFarmerNumber());
-            contentRow.createCell(5).setCellValue(primaryDetailsResponse.getFatherName());
-            contentRow.createCell(6).setCellValue(primaryDetailsResponse.getPassbookNumber());
-            contentRow.createCell(7).setCellValue(primaryDetailsResponse.getEpicNumber());
-            contentRow.createCell(8).setCellValue(primaryDetailsResponse.getRationCardNumber());
-            contentRow.createCell(9).setCellValue(primaryDetailsResponse.getDob());
-            contentRow.createCell(10).setCellValue(primaryDetailsResponse.getDistrictName());
-            contentRow.createCell(11).setCellValue(primaryDetailsResponse.getTalukName());
-            contentRow.createCell(12).setCellValue(primaryDetailsResponse.getHobliName());
-            contentRow.createCell(13).setCellValue(primaryDetailsResponse.getVillageName());
-            contentRow.createCell(14).setCellValue(primaryDetailsResponse.getFarmerBankName());
-            contentRow.createCell(15).setCellValue(primaryDetailsResponse.getFarmerBankAccountNumber());
-            contentRow.createCell(16).setCellValue(primaryDetailsResponse.getFarmerBankBranchName());
-            contentRow.createCell(17).setCellValue(primaryDetailsResponse.getFarmerBankIfscCode());
-            contentRow.createCell(18).setCellValue(primaryDetailsResponse.getCaste());
+        XSSFFont subFont = (XSSFFont) workbook.createFont();
+        subFont.setFontName("Calibri"); subFont.setFontHeightInPoints((short)11);
+        subFont.setColor(white);
 
-            // 🆕 Add new fields
-            contentRow.createCell(19).setCellValue(primaryDetailsResponse.getMulberryArea());
-            contentRow.createCell(20).setCellValue(primaryDetailsResponse.getOwnerName());
-            contentRow.createCell(21).setCellValue(primaryDetailsResponse.getSurveyNumber());
-            contentRow.createCell(22).setCellValue(primaryDetailsResponse.getSpacing());
-            contentRow.createCell(23).setCellValue(primaryDetailsResponse.getHissa());
-            contentRow.createCell(24).setCellValue(primaryDetailsResponse.getRearingHouseDetails());
-            contentRow.createCell(25).setCellValue(primaryDetailsResponse.getLandAddress());
-            contentRow.createCell(26).setCellValue(primaryDetailsResponse.getMulberryVarietyName());
-            contentRow.createCell(27).setCellValue(primaryDetailsResponse.getMobileNumber());
-            contentRow.createCell(28).setCellValue(primaryDetailsResponse.getTscName());
+        XSSFFont hdrFont = (XSSFFont) workbook.createFont();
+        hdrFont.setFontName("Calibri"); hdrFont.setFontHeightInPoints((short)11);
+        hdrFont.setBold(true); hdrFont.setColor(white);
 
-            dataStartsFrom = dataStartsFrom + 1;
+        XSSFFont dataFont = (XSSFFont) workbook.createFont();
+        dataFont.setFontName("Calibri"); dataFont.setFontHeightInPoints((short)10);
+        dataFont.setColor(darkText);
+
+        // ── Styles (created once before loop) ────────────────────────────────
+        XSSFColor black = new XSSFColor(new byte[]{(byte)0, (byte)0, (byte)0}, null);
+
+        XSSFCellStyle titleStyle = (XSSFCellStyle) workbook.createCellStyle();
+        titleStyle.setFont(titleFont);
+        titleStyle.setFillForegroundColor(darkNavy);
+        titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);
+        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        titleStyle.setBorderTop(BorderStyle.THIN);
+        titleStyle.setBorderBottom(BorderStyle.THIN);
+        titleStyle.setBorderLeft(BorderStyle.THIN);
+        titleStyle.setBorderRight(BorderStyle.THIN);
+        titleStyle.setTopBorderColor(black);
+        titleStyle.setBottomBorderColor(black);
+        titleStyle.setLeftBorderColor(black);
+        titleStyle.setRightBorderColor(black);
+
+        XSSFCellStyle subStyle = (XSSFCellStyle) workbook.createCellStyle();
+        subStyle.setFont(subFont);
+        subStyle.setFillForegroundColor(primaryBlue);
+        subStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        subStyle.setAlignment(HorizontalAlignment.CENTER);
+        subStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        subStyle.setBorderTop(BorderStyle.THIN);
+        subStyle.setBorderBottom(BorderStyle.THIN);
+        subStyle.setBorderLeft(BorderStyle.THIN);
+        subStyle.setBorderRight(BorderStyle.THIN);
+        subStyle.setTopBorderColor(black);
+        subStyle.setBottomBorderColor(black);
+        subStyle.setLeftBorderColor(black);
+        subStyle.setRightBorderColor(black);
+
+        XSSFCellStyle hdrStyle = (XSSFCellStyle) workbook.createCellStyle();
+        hdrStyle.setFont(hdrFont);
+        hdrStyle.setFillForegroundColor(primaryBlue);
+        hdrStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        hdrStyle.setAlignment(HorizontalAlignment.CENTER);
+        hdrStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        hdrStyle.setWrapText(true);
+        hdrStyle.setBorderTop(BorderStyle.THIN);
+        hdrStyle.setBorderBottom(BorderStyle.THIN);
+        hdrStyle.setBorderLeft(BorderStyle.THIN);
+        hdrStyle.setBorderRight(BorderStyle.THIN);
+        hdrStyle.setTopBorderColor(black);
+        hdrStyle.setBottomBorderColor(black);
+        hdrStyle.setLeftBorderColor(black);
+        hdrStyle.setRightBorderColor(black);
+
+        XSSFCellStyle dataWhite = (XSSFCellStyle) workbook.createCellStyle();
+        dataWhite.setFont(dataFont);
+        dataWhite.setAlignment(HorizontalAlignment.CENTER);
+        dataWhite.setVerticalAlignment(VerticalAlignment.CENTER);
+        dataWhite.setWrapText(true);
+        dataWhite.setBorderTop(BorderStyle.THIN);
+        dataWhite.setBorderBottom(BorderStyle.THIN);
+        dataWhite.setBorderLeft(BorderStyle.THIN);
+        dataWhite.setBorderRight(BorderStyle.THIN);
+        dataWhite.setTopBorderColor(black);
+        dataWhite.setBottomBorderColor(black);
+        dataWhite.setLeftBorderColor(black);
+        dataWhite.setRightBorderColor(black);
+
+        XSSFCellStyle dataAlt = (XSSFCellStyle) workbook.createCellStyle();
+        dataAlt.cloneStyleFrom(dataWhite);
+        dataAlt.setFillForegroundColor(altRow);
+        dataAlt.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        // ── Row 0: Department title ───────────────────────────────────────────
+        Row titleRow = sheet.createRow(0);
+        titleRow.setHeightInPoints(36);
+        Cell titleCell = titleRow.createCell(0);
+        titleCell.setCellValue("Department of Sericulture, Government of Karnataka");
+        titleCell.setCellStyle(titleStyle);
+        for (int c = 1; c < TOTAL_COLS; c++) { titleRow.createCell(c).setCellStyle(titleStyle); }
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, TOTAL_COLS - 1));
+
+        // ── Row 1: Report name ────────────────────────────────────────────────
+        Row reportRow = sheet.createRow(1);
+        reportRow.setHeightInPoints(24);
+        Cell reportCell = reportRow.createCell(0);
+        reportCell.setCellValue("FARMER REGISTRATION REPORT");
+        reportCell.setCellStyle(subStyle);
+        for (int c = 1; c < TOTAL_COLS; c++) { reportRow.createCell(c).setCellStyle(subStyle); }
+        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, TOTAL_COLS - 1));
+
+        // ── Row 2: Generated on ───────────────────────────────────────────────
+        Row genRow = sheet.createRow(2);
+        genRow.setHeightInPoints(20);
+        Cell genCell = genRow.createCell(0);
+        genCell.setCellValue("Generated On: " + new java.text.SimpleDateFormat("dd-MMM-yyyy HH:mm").format(new java.util.Date()));
+        genCell.setCellStyle(subStyle);
+        for (int c = 1; c < TOTAL_COLS; c++) { genRow.createCell(c).setCellStyle(subStyle); }
+        sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, TOTAL_COLS - 1));
+
+        // ── Row 3: Column headers ─────────────────────────────────────────────
+        Row headerRow = sheet.createRow(3);
+        headerRow.setHeightInPoints(36);
+        for (int i = 0; i < headerLabels.length; i++) {
+            Cell hCell = headerRow.createCell(i);
+            hCell.setCellValue(headerLabels[i]);
+            hCell.setCellStyle(hdrStyle);
         }
 
-        // Auto-size all columns
-        for (int columnIndex = 0; columnIndex <= 28; columnIndex++) {
-            sheet.autoSizeColumn(columnIndex, true);
+        // ── Rows 4+: Data (styles reused per row, not recreated) ─────────────
+        int dataStartsFrom = 4;
+        for (int i = 0; i < primaryDetailsResponseList.size(); i++) {
+            Row contentRow = sheet.createRow(dataStartsFrom);
+            // No fixed height here (unlike the title rows above): wrap text is on, so
+            // leaving row height unset lets Excel auto-expand the row for long values
+            // when the file is opened, instead of clipping wrapped text at a fixed 20pt.
+            PrimaryDetailsResponse p = primaryDetailsResponseList.get(i);
+            XSSFCellStyle rowStyle = (i % 2 != 0) ? dataAlt : dataWhite;
+            String[] values = {
+                p.getFirstName(), p.getMiddleName(),
+                // p.getLastName(),
+                p.getFruitsId(), p.getFarmerNumber(),
+                p.getFatherName(),
+                // p.getPassbookNumber(), p.getEpicNumber(), p.getRationCardNumber(),
+                p.getDob(),
+                p.getDistrictName(), p.getTalukName(),
+                // p.getHobliName(), p.getVillageName(), p.getFarmerBankName(),
+                // p.getFarmerBankAccountNumber(), p.getFarmerBankBranchName(), p.getFarmerBankIfscCode(),
+                p.getCaste(),
+                // p.getMulberryArea(), p.getOwnerName(), p.getSurveyNumber(), p.getSpacing(), p.getHissa(),
+                // p.getRearingHouseDetails(),
+                p.getLandAddress(),
+                // p.getMulberryVarietyName(),
+                p.getMobileNumber(), p.getTscName()
+            };
+            for (int c = 0; c < values.length; c++) {
+                Cell dataCell = contentRow.createCell(c);
+                dataCell.setCellValue(values[c] != null ? values[c] : "");
+                dataCell.setCellStyle(rowStyle);
+            }
+            dataStartsFrom++;
+        }
+
+        sheet.createFreezePane(0, 4);
+
+        for (int columnIndex = 0; columnIndex < TOTAL_COLS; columnIndex++) {
+            sheet.setColumnWidth(columnIndex, 20 * 256);
         }
 
         // Write the workbook content to a file
@@ -2883,12 +3017,16 @@ public class FarmerService {
         Path filePath = directory.resolve("farmers" + Util.getISTLocalDate() + ".xlsx");
 
         // Write the workbook content to the specified file path
-        FileOutputStream fileOut = new FileOutputStream(filePath.toString());
-        FileInputStream fileIn = new FileInputStream(filePath.toString());
-        workbook.write(fileOut);
-        fileOut.close();
-        workbook.close();
-        return fileIn;
+        try {
+            try (FileOutputStream fileOut = new FileOutputStream(filePath.toString())) {
+                workbook.write(fileOut);
+            }
+        } finally {
+            // dispose() removes the backing temp files SXSSF writes to disk while streaming
+            workbook.dispose();
+            workbook.close();
+        }
+        return new FileInputStream(filePath.toString());
     }
 
     public List<FarmerDetailsResponse> getFarmerDetailsByFruitsIdOrMobileNumberOrCsbRegisterNumber(SearchRequest searchRequest) throws Exception {

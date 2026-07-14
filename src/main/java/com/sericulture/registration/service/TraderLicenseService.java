@@ -17,10 +17,12 @@ import com.sericulture.registration.model.mapper.Mapper;
 import com.sericulture.registration.repository.SerialCounterRepository;
 import com.sericulture.registration.repository.TraderLicenseRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -296,55 +298,151 @@ public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest tra
 
         List<TraderLicenseDTO> licenses = applicablePage.getContent();
 
-        Workbook workbook = new XSSFWorkbook();
+        // ── Styled Excel (SXSSFWorkbook) ─────────────────────────────────────
+        String[] hdrLabels = { "S.No", "ARN Number", "Trader Type", "First Name",
+                //"Middle Name",
+                //"Last Name",
+                "Father Name", "District",
+                //"State",
+                "Market", "Silk Type", "Mobile Number"
+                //"Wallet Amount", "Virtual Account", "IFSC Code", "Branch Name"
+        };
+        final int TOTAL_COLS = hdrLabels.length;
+        SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+        workbook.setCompressTempFiles(true);
         Sheet sheet = workbook.createSheet("Trader Licenses");
+        sheet.createFreezePane(0, 4);
 
-        // ===== Header Row =====
-        Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("S.No");
-        headerRow.createCell(1).setCellValue("ARN Number");
-        headerRow.createCell(2).setCellValue("Trader Type");
-        headerRow.createCell(3).setCellValue("First Name");
-        headerRow.createCell(4).setCellValue("Middle Name");
-        headerRow.createCell(5).setCellValue("Last Name");
-        headerRow.createCell(6).setCellValue("Father Name");
-        headerRow.createCell(7).setCellValue("District");
-        headerRow.createCell(8).setCellValue("State");
-        headerRow.createCell(9).setCellValue("Market");
-        headerRow.createCell(10).setCellValue("Silk Type");
-        headerRow.createCell(11).setCellValue("Mobile Number");
-        headerRow.createCell(12).setCellValue("Wallet Amount");
-        headerRow.createCell(13).setCellValue("Virtual Account");
-        headerRow.createCell(14).setCellValue("IFSC Code");
-        headerRow.createCell(15).setCellValue("Branch Name");
+        // ── Colours ──────────────────────────────────────────────────────────
+        XSSFColor primaryBlue = new XSSFColor(new byte[]{(byte)28,  (byte)95,  (byte)158}, null);
+        XSSFColor darkNavy    = new XSSFColor(new byte[]{(byte)13,  (byte)51,  (byte)90},  null);
+        XSSFColor altRow      = new XSSFColor(new byte[]{(byte)247, (byte)250, (byte)253}, null);
+        XSSFColor darkText    = new XSSFColor(new byte[]{(byte)45,  (byte)55,  (byte)72},  null);
+        XSSFColor white       = new XSSFColor(new byte[]{(byte)255, (byte)255, (byte)255}, null);
+        XSSFColor black       = new XSSFColor(new byte[]{(byte)0,   (byte)0,   (byte)0},   null);
 
-        // ===== Data Rows =====
-        int rowIdx = 1;
-        int serialNo = 1;
-        for (TraderLicenseDTO dto : licenses) {
-            Row row = sheet.createRow(rowIdx++);
+        // ── Fonts ────────────────────────────────────────────────────────────
+        XSSFFont titleFont = (XSSFFont) workbook.createFont();
+        titleFont.setBold(true); titleFont.setFontHeightInPoints((short)16); titleFont.setColor(white);
 
-            row.createCell(0).setCellValue(serialNo++);
-            row.createCell(1).setCellValue(dto.getArnNumber());
-            row.createCell(2).setCellValue(dto.getTraderTypeMasterName());
-            row.createCell(3).setCellValue(dto.getFirstName());
-            row.createCell(4).setCellValue(dto.getMiddleName());
-            row.createCell(5).setCellValue(dto.getLastName());
-            row.createCell(6).setCellValue(dto.getFatherName());
-            row.createCell(7).setCellValue(dto.getDistrictName());
-            row.createCell(8).setCellValue(dto.getStateName());
-            row.createCell(9).setCellValue(dto.getMarketMasterName());
-            row.createCell(10).setCellValue(dto.getSilkType());
-            row.createCell(11).setCellValue(dto.getMobileNumber());
-            row.createCell(12).setCellValue(dto.getWalletAmount() != null ? dto.getWalletAmount().doubleValue() : 0.0);
-            row.createCell(13).setCellValue(dto.getVirtualAccountNumber());
-            row.createCell(14).setCellValue(dto.getIfscCode());
-            row.createCell(15).setCellValue(dto.getBranchName());
+        XSSFFont subFont = (XSSFFont) workbook.createFont();
+        subFont.setBold(false); subFont.setFontHeightInPoints((short)11); subFont.setColor(white);
+
+        XSSFFont hdrFont = (XSSFFont) workbook.createFont();
+        hdrFont.setBold(true); hdrFont.setFontHeightInPoints((short)11); hdrFont.setColor(white);
+
+        XSSFFont dataFont = (XSSFFont) workbook.createFont();
+        dataFont.setFontHeightInPoints((short)10); dataFont.setColor(darkText);
+
+        // ── Styles ───────────────────────────────────────────────────────────
+        XSSFCellStyle titleStyle = (XSSFCellStyle) workbook.createCellStyle();
+        titleStyle.setFillForegroundColor(darkNavy); titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        titleStyle.setAlignment(HorizontalAlignment.CENTER); titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        titleStyle.setFont(titleFont);
+        titleStyle.setBorderTop(BorderStyle.THIN);    titleStyle.setTopBorderColor(black);
+        titleStyle.setBorderBottom(BorderStyle.THIN); titleStyle.setBottomBorderColor(black);
+        titleStyle.setBorderLeft(BorderStyle.THIN);   titleStyle.setLeftBorderColor(black);
+        titleStyle.setBorderRight(BorderStyle.THIN);  titleStyle.setRightBorderColor(black);
+
+        XSSFCellStyle subStyle = (XSSFCellStyle) workbook.createCellStyle();
+        subStyle.setFillForegroundColor(primaryBlue); subStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        subStyle.setAlignment(HorizontalAlignment.CENTER); subStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        subStyle.setFont(subFont);
+        subStyle.setBorderTop(BorderStyle.THIN);    subStyle.setTopBorderColor(black);
+        subStyle.setBorderBottom(BorderStyle.THIN); subStyle.setBottomBorderColor(black);
+        subStyle.setBorderLeft(BorderStyle.THIN);   subStyle.setLeftBorderColor(black);
+        subStyle.setBorderRight(BorderStyle.THIN);  subStyle.setRightBorderColor(black);
+
+        XSSFCellStyle hdrStyle = (XSSFCellStyle) workbook.createCellStyle();
+        hdrStyle.setFillForegroundColor(primaryBlue); hdrStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        hdrStyle.setAlignment(HorizontalAlignment.CENTER); hdrStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        hdrStyle.setFont(hdrFont); hdrStyle.setWrapText(true);
+        hdrStyle.setBorderTop(BorderStyle.THIN);    hdrStyle.setTopBorderColor(black);
+        hdrStyle.setBorderBottom(BorderStyle.THIN); hdrStyle.setBottomBorderColor(black);
+        hdrStyle.setBorderLeft(BorderStyle.THIN);   hdrStyle.setLeftBorderColor(black);
+        hdrStyle.setBorderRight(BorderStyle.THIN);  hdrStyle.setRightBorderColor(black);
+
+        XSSFCellStyle dataWhite = (XSSFCellStyle) workbook.createCellStyle();
+        dataWhite.setFillForegroundColor(white); dataWhite.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        dataWhite.setFont(dataFont); dataWhite.setAlignment(HorizontalAlignment.CENTER);
+        dataWhite.setBorderTop(BorderStyle.THIN);    dataWhite.setTopBorderColor(black);
+        dataWhite.setBorderBottom(BorderStyle.THIN); dataWhite.setBottomBorderColor(black);
+        dataWhite.setBorderLeft(BorderStyle.THIN);   dataWhite.setLeftBorderColor(black);
+        dataWhite.setBorderRight(BorderStyle.THIN);  dataWhite.setRightBorderColor(black);
+
+        XSSFCellStyle dataAlt = (XSSFCellStyle) workbook.createCellStyle();
+        dataAlt.setFillForegroundColor(altRow); dataAlt.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        dataAlt.setFont(dataFont); dataAlt.setAlignment(HorizontalAlignment.CENTER);
+        dataAlt.setBorderTop(BorderStyle.THIN);    dataAlt.setTopBorderColor(black);
+        dataAlt.setBorderBottom(BorderStyle.THIN); dataAlt.setBottomBorderColor(black);
+        dataAlt.setBorderLeft(BorderStyle.THIN);   dataAlt.setLeftBorderColor(black);
+        dataAlt.setBorderRight(BorderStyle.THIN);  dataAlt.setRightBorderColor(black);
+
+        // ── Row 0: Title ──────────────────────────────────────────────────────
+        Row titleRow = sheet.createRow(0); titleRow.setHeightInPoints(36);
+        titleRow.createCell(0).setCellValue("Department of Sericulture, Government of Karnataka");
+        titleRow.getCell(0).setCellStyle(titleStyle);
+        for (int c = 1; c < TOTAL_COLS; c++) titleRow.createCell(c).setCellStyle(titleStyle);
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, TOTAL_COLS - 1));
+
+        // ── Row 1: Report name ────────────────────────────────────────────────
+        Row reportRow = sheet.createRow(1); reportRow.setHeightInPoints(28);
+        reportRow.createCell(0).setCellValue("TRADER LICENSE REPORT");
+        reportRow.getCell(0).setCellStyle(subStyle);
+        for (int c = 1; c < TOTAL_COLS; c++) reportRow.createCell(c).setCellStyle(subStyle);
+        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, TOTAL_COLS - 1));
+
+        // ── Row 2: Generated On ───────────────────────────────────────────────
+        Row genRow = sheet.createRow(2); genRow.setHeightInPoints(22);
+        genRow.createCell(0).setCellValue("Generated On: " + Util.getISTLocalDate());
+        genRow.getCell(0).setCellStyle(subStyle);
+        for (int c = 1; c < TOTAL_COLS; c++) genRow.createCell(c).setCellStyle(subStyle);
+        sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, TOTAL_COLS - 1));
+
+        // ── Row 3: Column headers ─────────────────────────────────────────────
+        Row hdrRow = sheet.createRow(3);
+        hdrRow.setHeightInPoints(30);
+        for (int c = 0; c < TOTAL_COLS; c++) {
+            Cell cell = hdrRow.createCell(c);
+            cell.setCellValue(hdrLabels[c]);
+            cell.setCellStyle(hdrStyle);
         }
 
-        // Auto-size columns
-        for (int i = 0; i <= 15; i++) {
-            sheet.autoSizeColumn(i);
+        // ── Data rows ─────────────────────────────────────────────────────────
+        int rowIdx = 4;
+        int serialNo = 1;
+        for (TraderLicenseDTO dto : licenses) {
+            Row row = sheet.createRow(rowIdx);
+            XSSFCellStyle rowStyle = (rowIdx % 2 == 0) ? dataAlt : dataWhite;
+            String[] values = {
+                String.valueOf(serialNo++),
+                safeStr(dto.getArnNumber()),
+                safeStr(dto.getTraderTypeMasterName()),
+                safeStr(dto.getFirstName()),
+                //safeStr(dto.getMiddleName()),
+                //safeStr(dto.getLastName()),
+                safeStr(dto.getFatherName()),
+                safeStr(dto.getDistrictName()),
+                //safeStr(dto.getStateName()),
+                safeStr(dto.getMarketMasterName()),
+                safeStr(dto.getSilkType()),
+                safeStr(dto.getMobileNumber())
+//                dto.getWalletAmount() != null ? String.valueOf(dto.getWalletAmount()) : "",
+//                safeStr(dto.getVirtualAccountNumber()),
+//                safeStr(dto.getIfscCode()),
+//                safeStr(dto.getBranchName())
+            };
+            for (int c = 0; c < values.length; c++) {
+                Cell dataCell = row.createCell(c);
+                dataCell.setCellValue(values[c]);
+                dataCell.setCellStyle(rowStyle);
+            }
+            rowIdx++;
+        }
+
+        sheet.createFreezePane(0, 4);
+        for (int c = 0; c < TOTAL_COLS; c++) {
+            sheet.setColumnWidth(c, 20 * 256);
         }
 
         // Save to file
@@ -357,8 +455,13 @@ public TraderLicenseResponse insertTraderLicenseDetails(TraderLicenseRequest tra
             workbook.write(fileOut);
         }
         workbook.close();
+        workbook.dispose();
 
         return new FileInputStream(filePath.toString());
+    }
+
+    private String safeStr(Object val) {
+        return val == null ? "" : val.toString().trim();
     }
 
 

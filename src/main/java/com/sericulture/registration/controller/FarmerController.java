@@ -788,8 +788,8 @@ public ResponseEntity<?> primaryFarmerDetails(
             InputStreamResource resource = new InputStreamResource(fileInputStream);
 
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=farmer_report" + Util.getISTLocalDate() + ".csv");
-            headers.setContentType(MediaType.parseMediaType("text/csv"));
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=farmer_report" + Util.getISTLocalDate() + ".xlsx");
+            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
 
             return ResponseEntity.ok()
                     .headers(headers)

@@ -19,10 +19,12 @@ import com.sericulture.registration.repository.ExternalUnitRegistrationRepositor
 import com.sericulture.registration.repository.MarketMasterRepository;
 import com.sericulture.registration.repository.SerialCounterRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -354,50 +356,147 @@ public class ExternalUnitRegistrationService {
 
         List<ExternalUnitRegistrationDTO> units = page.getContent();
 
-        Workbook workbook = new XSSFWorkbook();
+        // ── Styled Excel (SXSSFWorkbook) ─────────────────────────────────────
+        String[] hdrLabels = { "S.No", "Unit Name", "Address", "License Number", "External Unit Number",
+                "Organisation Name", "Capacity", "Unit Type Name",
+                //"Virtual Account", "IFSC Code", "Branch Name",
+                "Market",
+                //"Lot Number Nomenclature",
+                "Race" };
+        final int TOTAL_COLS = hdrLabels.length;
+        SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+        workbook.setCompressTempFiles(true);
         Sheet sheet = workbook.createSheet("External Units");
+        sheet.createFreezePane(0, 4);
 
-        // ===== Header Row =====
-        Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("S.No");
-        headerRow.createCell(1).setCellValue("Unit Name");
-        headerRow.createCell(2).setCellValue("Address");
-        headerRow.createCell(3).setCellValue("License Number");
-        headerRow.createCell(4).setCellValue("External Unit Number");
-        headerRow.createCell(5).setCellValue("Organisation Name");
-        headerRow.createCell(6).setCellValue("Capacity");
-        headerRow.createCell(7).setCellValue("Unit Type Name");
-//        headerRow.createCell(8).setCellValue("Virtual Account");
-//        headerRow.createCell(9).setCellValue("IFSC Code");
-//        headerRow.createCell(10).setCellValue("Branch Name");
-        headerRow.createCell(11).setCellValue("Market");
-        headerRow.createCell(12).setCellValue("Lot Number Nomenclature");
-        headerRow.createCell(13).setCellValue("Race");
+        // ── Colours ──────────────────────────────────────────────────────────
+        XSSFColor primaryBlue = new XSSFColor(new byte[]{(byte)28,  (byte)95,  (byte)158}, null);
+        XSSFColor darkNavy    = new XSSFColor(new byte[]{(byte)13,  (byte)51,  (byte)90},  null);
+        XSSFColor altRow      = new XSSFColor(new byte[]{(byte)247, (byte)250, (byte)253}, null);
+        XSSFColor darkText    = new XSSFColor(new byte[]{(byte)45,  (byte)55,  (byte)72},  null);
+        XSSFColor white       = new XSSFColor(new byte[]{(byte)255, (byte)255, (byte)255}, null);
+        XSSFColor black       = new XSSFColor(new byte[]{(byte)0,   (byte)0,   (byte)0},   null);
 
-        // ===== Data Rows =====
-        int rowIdx = 1;
-        int serialNo = 1;
-        for (ExternalUnitRegistrationDTO dto : units) {
-            Row row = sheet.createRow(rowIdx++);
-            row.createCell(0).setCellValue(serialNo++);
-            row.createCell(1).setCellValue(dto.getName() != null ? dto.getName() : "");
-            row.createCell(2).setCellValue(dto.getAddress() != null ? dto.getAddress() : "");
-            row.createCell(3).setCellValue(dto.getLicenseNumber() != null ? dto.getLicenseNumber() : "");
-            row.createCell(4).setCellValue(dto.getExternalUnitNumber() != null ? dto.getExternalUnitNumber() : "");
-            row.createCell(5).setCellValue(dto.getOrganisationName() != null ? dto.getOrganisationName() : "");
-            row.createCell(6).setCellValue(dto.getCapacity() != null ? dto.getCapacity() : "");
-            row.createCell(7).setCellValue(dto.getExternalUnitTypeName() != null ? dto.getExternalUnitTypeName() : "");
-//            row.createCell(8).setCellValue(dto.getVirtualAccountNumber() != null ? dto.getVirtualAccountNumber() : "");
-//            row.createCell(9).setCellValue(dto.getIfscCode() != null ? dto.getIfscCode() : "");
-//            row.createCell(10).setCellValue(dto.getBranchName() != null ? dto.getBranchName() : "");
-            row.createCell(11).setCellValue(dto.getMarketMasterName() != null ? dto.getMarketMasterName() : "");
-            row.createCell(12).setCellValue(dto.getLotNumberNomenclature() != null ? dto.getLotNumberNomenclature() : "");
-            row.createCell(13).setCellValue(dto.getRaceMasterName() != null ? dto.getRaceMasterName() : "");
+        // ── Fonts ────────────────────────────────────────────────────────────
+        XSSFFont titleFont = (XSSFFont) workbook.createFont();
+        titleFont.setBold(true); titleFont.setFontHeightInPoints((short)16); titleFont.setColor(white);
+
+        XSSFFont subFont = (XSSFFont) workbook.createFont();
+        subFont.setBold(false); subFont.setFontHeightInPoints((short)11); subFont.setColor(white);
+
+        XSSFFont hdrFont = (XSSFFont) workbook.createFont();
+        hdrFont.setBold(true); hdrFont.setFontHeightInPoints((short)11); hdrFont.setColor(white);
+
+        XSSFFont dataFont = (XSSFFont) workbook.createFont();
+        dataFont.setFontHeightInPoints((short)10); dataFont.setColor(darkText);
+
+        // ── Styles ───────────────────────────────────────────────────────────
+        XSSFCellStyle titleStyle = (XSSFCellStyle) workbook.createCellStyle();
+        titleStyle.setFillForegroundColor(darkNavy); titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        titleStyle.setAlignment(HorizontalAlignment.CENTER); titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        titleStyle.setFont(titleFont);
+        titleStyle.setBorderTop(BorderStyle.THIN);    titleStyle.setTopBorderColor(black);
+        titleStyle.setBorderBottom(BorderStyle.THIN); titleStyle.setBottomBorderColor(black);
+        titleStyle.setBorderLeft(BorderStyle.THIN);   titleStyle.setLeftBorderColor(black);
+        titleStyle.setBorderRight(BorderStyle.THIN);  titleStyle.setRightBorderColor(black);
+
+        XSSFCellStyle subStyle = (XSSFCellStyle) workbook.createCellStyle();
+        subStyle.setFillForegroundColor(primaryBlue); subStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        subStyle.setAlignment(HorizontalAlignment.CENTER); subStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        subStyle.setFont(subFont);
+        subStyle.setBorderTop(BorderStyle.THIN);    subStyle.setTopBorderColor(black);
+        subStyle.setBorderBottom(BorderStyle.THIN); subStyle.setBottomBorderColor(black);
+        subStyle.setBorderLeft(BorderStyle.THIN);   subStyle.setLeftBorderColor(black);
+        subStyle.setBorderRight(BorderStyle.THIN);  subStyle.setRightBorderColor(black);
+
+        XSSFCellStyle hdrStyle = (XSSFCellStyle) workbook.createCellStyle();
+        hdrStyle.setFillForegroundColor(primaryBlue); hdrStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        hdrStyle.setAlignment(HorizontalAlignment.CENTER); hdrStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        hdrStyle.setFont(hdrFont); hdrStyle.setWrapText(true);
+        hdrStyle.setBorderTop(BorderStyle.THIN);    hdrStyle.setTopBorderColor(black);
+        hdrStyle.setBorderBottom(BorderStyle.THIN); hdrStyle.setBottomBorderColor(black);
+        hdrStyle.setBorderLeft(BorderStyle.THIN);   hdrStyle.setLeftBorderColor(black);
+        hdrStyle.setBorderRight(BorderStyle.THIN);  hdrStyle.setRightBorderColor(black);
+
+        XSSFCellStyle dataWhite = (XSSFCellStyle) workbook.createCellStyle();
+        dataWhite.setFillForegroundColor(white); dataWhite.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        dataWhite.setFont(dataFont); dataWhite.setAlignment(HorizontalAlignment.CENTER);
+        dataWhite.setBorderTop(BorderStyle.THIN);    dataWhite.setTopBorderColor(black);
+        dataWhite.setBorderBottom(BorderStyle.THIN); dataWhite.setBottomBorderColor(black);
+        dataWhite.setBorderLeft(BorderStyle.THIN);   dataWhite.setLeftBorderColor(black);
+        dataWhite.setBorderRight(BorderStyle.THIN);  dataWhite.setRightBorderColor(black);
+
+        XSSFCellStyle dataAlt = (XSSFCellStyle) workbook.createCellStyle();
+        dataAlt.setFillForegroundColor(altRow); dataAlt.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        dataAlt.setFont(dataFont); dataAlt.setAlignment(HorizontalAlignment.CENTER);
+        dataAlt.setBorderTop(BorderStyle.THIN);    dataAlt.setTopBorderColor(black);
+        dataAlt.setBorderBottom(BorderStyle.THIN); dataAlt.setBottomBorderColor(black);
+        dataAlt.setBorderLeft(BorderStyle.THIN);   dataAlt.setLeftBorderColor(black);
+        dataAlt.setBorderRight(BorderStyle.THIN);  dataAlt.setRightBorderColor(black);
+
+        // ── Row 0: Title ──────────────────────────────────────────────────────
+        Row titleRow = sheet.createRow(0); titleRow.setHeightInPoints(36);
+        titleRow.createCell(0).setCellValue("Department of Sericulture, Government of Karnataka");
+        titleRow.getCell(0).setCellStyle(titleStyle);
+        for (int c = 1; c < TOTAL_COLS; c++) titleRow.createCell(c).setCellStyle(titleStyle);
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, TOTAL_COLS - 1));
+
+        // ── Row 1: Report name ────────────────────────────────────────────────
+        Row reportRow = sheet.createRow(1); reportRow.setHeightInPoints(28);
+        reportRow.createCell(0).setCellValue("EXTERNAL UNIT REGISTRATION REPORT");
+        reportRow.getCell(0).setCellStyle(subStyle);
+        for (int c = 1; c < TOTAL_COLS; c++) reportRow.createCell(c).setCellStyle(subStyle);
+        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, TOTAL_COLS - 1));
+
+        // ── Row 2: Generated On ───────────────────────────────────────────────
+        Row genRow = sheet.createRow(2); genRow.setHeightInPoints(22);
+        genRow.createCell(0).setCellValue("Generated On: " + Util.getISTLocalDate());
+        genRow.getCell(0).setCellStyle(subStyle);
+        for (int c = 1; c < TOTAL_COLS; c++) genRow.createCell(c).setCellStyle(subStyle);
+        sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, TOTAL_COLS - 1));
+
+        // ── Row 3: Column headers ─────────────────────────────────────────────
+        Row hdrRow = sheet.createRow(3);
+        hdrRow.setHeightInPoints(30);
+        for (int c = 0; c < TOTAL_COLS; c++) {
+            Cell cell = hdrRow.createCell(c);
+            cell.setCellValue(hdrLabels[c]);
+            cell.setCellStyle(hdrStyle);
         }
 
-        // Auto-size all columns
-        for (int i = 0; i <= 13; i++) {
-            sheet.autoSizeColumn(i);
+        // ── Data rows ─────────────────────────────────────────────────────────
+        int rowIdx = 4;
+        int serialNo = 1;
+        for (ExternalUnitRegistrationDTO dto : units) {
+            Row row = sheet.createRow(rowIdx);
+            XSSFCellStyle rowStyle = (rowIdx % 2 == 0) ? dataAlt : dataWhite;
+            String[] values = {
+                String.valueOf(serialNo++),
+                dto.getName()                   != null ? dto.getName()                   : "",
+                dto.getAddress()                != null ? dto.getAddress()                : "",
+                dto.getLicenseNumber()          != null ? dto.getLicenseNumber()          : "",
+                dto.getExternalUnitNumber()     != null ? dto.getExternalUnitNumber()     : "",
+                dto.getOrganisationName()       != null ? dto.getOrganisationName()       : "",
+                dto.getCapacity()               != null ? dto.getCapacity()               : "",
+                dto.getExternalUnitTypeName()   != null ? dto.getExternalUnitTypeName()   : "",
+                //dto.getBankAccountNumber()      != null ? dto.getBankAccountNumber()      : "",
+                //dto.getBankIfscCode()           != null ? dto.getBankIfscCode()           : "",
+                //dto.getBankBranchName()         != null ? dto.getBankBranchName()         : "",
+                dto.getMarketMasterName()       != null ? dto.getMarketMasterName()       : "",
+                //dto.getLotNumberNomenclature()  != null ? dto.getLotNumberNomenclature()  : "",
+                dto.getRaceMasterName()         != null ? dto.getRaceMasterName()         : ""
+            };
+            for (int c = 0; c < values.length; c++) {
+                Cell dataCell = row.createCell(c);
+                dataCell.setCellValue(values[c]);
+                dataCell.setCellStyle(rowStyle);
+            }
+            rowIdx++;
+        }
+
+        sheet.createFreezePane(0, 4);
+        for (int c = 0; c < TOTAL_COLS; c++) {
+            sheet.setColumnWidth(c, 20 * 256);
         }
 
         // Save to file
@@ -410,6 +509,7 @@ public class ExternalUnitRegistrationService {
             workbook.write(fileOut);
         }
         workbook.close();
+        workbook.dispose();
 
         return new FileInputStream(filePath.toString());
     }
