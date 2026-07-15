@@ -3444,63 +3444,171 @@ public class FarmerService {
 
         chowkiDistributionResponse(chowkiResponseList, applicablePage.getContent(), pageNumber, pageSize);
 
-        Workbook workbook = new XSSFWorkbook();
+        String[] headerLabels = {
+            "Sl.No", "Farmer Name", "Father Name", "Fruits Id",
+            "Source Of DFLs", "Race Of DFLs", "Race Name", "Numbers Of DFLs",
+            "Lot No RSP", "Lot No CRC", "Village Name", "District Name",
+            "State Name", "Taluk Name", "Hobli Name", "TSC Name",
+            "Sold After Mould", "Rate Per 100 DFLs", "Price",
+            "Hatching Date", "Dispatch Date", "Receipt No"
+        };
+        final int TOTAL_COLS = headerLabels.length;
+
+        SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+        workbook.setCompressTempFiles(true);
         Sheet sheet = workbook.createSheet("Chowki Distribution Report");
 
-        Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("Sl.No");
-        headerRow.createCell(1).setCellValue("Farmer Name");
-        headerRow.createCell(2).setCellValue("Father Name");
-        headerRow.createCell(3).setCellValue("Fruits Id");
-        headerRow.createCell(4).setCellValue("Source Of DFLs");
-        headerRow.createCell(5).setCellValue("Race Of DFLs");
-        headerRow.createCell(6).setCellValue("Race Name");
-        headerRow.createCell(7).setCellValue("Numbers Of DFLs");
-        headerRow.createCell(8).setCellValue("Lot No RSP");
-        headerRow.createCell(9).setCellValue("Lot No CRC");
-        headerRow.createCell(10).setCellValue("Village Name");
-        headerRow.createCell(11).setCellValue("District Name");
-        headerRow.createCell(12).setCellValue("State Name");
-        headerRow.createCell(13).setCellValue("Taluk Name");
-        headerRow.createCell(14).setCellValue("Hobli Name");
-        headerRow.createCell(15).setCellValue("TSC Name");
-        headerRow.createCell(16).setCellValue("Sold After Mould");
-        headerRow.createCell(17).setCellValue("Rate Per 100 DFLs");
-        headerRow.createCell(18).setCellValue("Price");
-        headerRow.createCell(19).setCellValue("Hatching Date");
-        headerRow.createCell(20).setCellValue("Dispatch Date");
-        headerRow.createCell(21).setCellValue("Receipt No");
+        // ── Colors ───────────────────────────────────────────────────────────
+        XSSFColor primaryBlue = new XSSFColor(new byte[]{(byte)26,  (byte)95,  (byte)158}, null);
+        XSSFColor darkNavy    = new XSSFColor(new byte[]{(byte)12,  (byte)74,  (byte)158}, null);
+        XSSFColor altRow      = new XSSFColor(new byte[]{(byte)247, (byte)250, (byte)253}, null);
+        XSSFColor white       = new XSSFColor(new byte[]{(byte)255, (byte)255, (byte)255}, null);
+        XSSFColor darkText    = new XSSFColor(new byte[]{(byte)30,  (byte)58,  (byte)95},  null);
+        XSSFColor black       = new XSSFColor(new byte[]{(byte)0,   (byte)0,   (byte)0},   null);
 
-        int dataRow = 1;
-        int serialNo = 1;
-        for (ChowkiManagementResponse c : chowkiResponseList) {
-            Row row = sheet.createRow(dataRow++);
-            row.createCell(0).setCellValue(serialNo++);
-            row.createCell(1).setCellValue(c.getFarmerName());
-            row.createCell(2).setCellValue(c.getFatherName());
-            row.createCell(3).setCellValue(c.getFruitsId());
-            row.createCell(4).setCellValue(c.getDflsSource());
-            row.createCell(5).setCellValue(c.getRaceId());
-            row.createCell(6).setCellValue(c.getRaceName());
-            row.createCell(7).setCellValue(c.getNumbersOfDfls());
-            row.createCell(8).setCellValue(c.getLotNumberRsp());
-            row.createCell(9).setCellValue(c.getLotNumberCrc());
-            row.createCell(10).setCellValue(c.getVillageName());
-            row.createCell(11).setCellValue(c.getDistrictName());
-            row.createCell(12).setCellValue(c.getStateName());
-            row.createCell(13).setCellValue(c.getTalukName());
-            row.createCell(14).setCellValue(c.getHobliName());
-            row.createCell(15).setCellValue(c.getTscName());
-            row.createCell(16).setCellValue(c.getSoldAfter1stOr2ndMould());
-            row.createCell(17).setCellValue(c.getRatePer100Dfls());
-            row.createCell(18).setCellValue(c.getPrice());
-            row.createCell(19).setCellValue(c.getHatchingDate());
-            row.createCell(20).setCellValue(c.getDispatchDate());
-            row.createCell(21).setCellValue(c.getReceiptNo());
+        // ── Fonts ────────────────────────────────────────────────────────────
+        XSSFFont titleFont = (XSSFFont) workbook.createFont();
+        titleFont.setFontName("Calibri"); titleFont.setFontHeightInPoints((short)16);
+        titleFont.setBold(true); titleFont.setColor(white);
+
+        XSSFFont subFont = (XSSFFont) workbook.createFont();
+        subFont.setFontName("Calibri"); subFont.setFontHeightInPoints((short)11);
+        subFont.setColor(white);
+
+        XSSFFont hdrFont = (XSSFFont) workbook.createFont();
+        hdrFont.setFontName("Calibri"); hdrFont.setFontHeightInPoints((short)11);
+        hdrFont.setBold(true); hdrFont.setColor(white);
+
+        XSSFFont dataFont = (XSSFFont) workbook.createFont();
+        dataFont.setFontName("Calibri"); dataFont.setFontHeightInPoints((short)10);
+        dataFont.setColor(darkText);
+
+        // ── Styles ───────────────────────────────────────────────────────────
+        XSSFCellStyle titleStyle = (XSSFCellStyle) workbook.createCellStyle();
+        titleStyle.setFont(titleFont);
+        titleStyle.setFillForegroundColor(darkNavy);
+        titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);
+        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        titleStyle.setBorderTop(BorderStyle.THIN); titleStyle.setBorderBottom(BorderStyle.THIN);
+        titleStyle.setBorderLeft(BorderStyle.THIN); titleStyle.setBorderRight(BorderStyle.THIN);
+        titleStyle.setTopBorderColor(black); titleStyle.setBottomBorderColor(black);
+        titleStyle.setLeftBorderColor(black); titleStyle.setRightBorderColor(black);
+
+        XSSFCellStyle subStyle = (XSSFCellStyle) workbook.createCellStyle();
+        subStyle.setFont(subFont);
+        subStyle.setFillForegroundColor(primaryBlue);
+        subStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        subStyle.setAlignment(HorizontalAlignment.CENTER);
+        subStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        subStyle.setBorderTop(BorderStyle.THIN); subStyle.setBorderBottom(BorderStyle.THIN);
+        subStyle.setBorderLeft(BorderStyle.THIN); subStyle.setBorderRight(BorderStyle.THIN);
+        subStyle.setTopBorderColor(black); subStyle.setBottomBorderColor(black);
+        subStyle.setLeftBorderColor(black); subStyle.setRightBorderColor(black);
+
+        XSSFCellStyle hdrStyle = (XSSFCellStyle) workbook.createCellStyle();
+        hdrStyle.setFont(hdrFont);
+        hdrStyle.setFillForegroundColor(primaryBlue);
+        hdrStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        hdrStyle.setAlignment(HorizontalAlignment.CENTER);
+        hdrStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        hdrStyle.setWrapText(true);
+        hdrStyle.setBorderTop(BorderStyle.THIN); hdrStyle.setBorderBottom(BorderStyle.THIN);
+        hdrStyle.setBorderLeft(BorderStyle.THIN); hdrStyle.setBorderRight(BorderStyle.THIN);
+        hdrStyle.setTopBorderColor(black); hdrStyle.setBottomBorderColor(black);
+        hdrStyle.setLeftBorderColor(black); hdrStyle.setRightBorderColor(black);
+
+        XSSFCellStyle dataWhite = (XSSFCellStyle) workbook.createCellStyle();
+        dataWhite.setFont(dataFont);
+        dataWhite.setAlignment(HorizontalAlignment.CENTER);
+        dataWhite.setVerticalAlignment(VerticalAlignment.CENTER);
+        dataWhite.setWrapText(true);
+        dataWhite.setBorderTop(BorderStyle.THIN); dataWhite.setBorderBottom(BorderStyle.THIN);
+        dataWhite.setBorderLeft(BorderStyle.THIN); dataWhite.setBorderRight(BorderStyle.THIN);
+        dataWhite.setTopBorderColor(black); dataWhite.setBottomBorderColor(black);
+        dataWhite.setLeftBorderColor(black); dataWhite.setRightBorderColor(black);
+
+        XSSFCellStyle dataAlt = (XSSFCellStyle) workbook.createCellStyle();
+        dataAlt.cloneStyleFrom(dataWhite);
+        dataAlt.setFillForegroundColor(altRow);
+        dataAlt.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        // ── Row 0: Department title ───────────────────────────────────────────
+        Row titleRow = sheet.createRow(0);
+        titleRow.setHeightInPoints(36);
+        Cell titleCell = titleRow.createCell(0);
+        titleCell.setCellValue("Department of Sericulture, Government of Karnataka");
+        titleCell.setCellStyle(titleStyle);
+        for (int c = 1; c < TOTAL_COLS; c++) { titleRow.createCell(c).setCellStyle(titleStyle); }
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, TOTAL_COLS - 1));
+
+        // ── Row 1: Report name ────────────────────────────────────────────────
+        Row reportRow = sheet.createRow(1);
+        reportRow.setHeightInPoints(24);
+        Cell reportCell = reportRow.createCell(0);
+        reportCell.setCellValue("CHOWKI DISTRIBUTION REPORT");
+        reportCell.setCellStyle(subStyle);
+        for (int c = 1; c < TOTAL_COLS; c++) { reportRow.createCell(c).setCellStyle(subStyle); }
+        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, TOTAL_COLS - 1));
+
+        // ── Row 2: Generated on ───────────────────────────────────────────────
+        Row genRow = sheet.createRow(2);
+        genRow.setHeightInPoints(20);
+        Cell genCell = genRow.createCell(0);
+        genCell.setCellValue("Generated On: " + new java.text.SimpleDateFormat("dd-MMM-yyyy HH:mm").format(new java.util.Date()));
+        genCell.setCellStyle(subStyle);
+        for (int c = 1; c < TOTAL_COLS; c++) { genRow.createCell(c).setCellStyle(subStyle); }
+        sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, TOTAL_COLS - 1));
+
+        // ── Row 3: Column headers ─────────────────────────────────────────────
+        Row headerRow = sheet.createRow(3);
+        headerRow.setHeightInPoints(36);
+        for (int i = 0; i < TOTAL_COLS; i++) {
+            Cell hCell = headerRow.createCell(i);
+            hCell.setCellValue(headerLabels[i]);
+            hCell.setCellStyle(hdrStyle);
         }
 
-        for (int col = 0; col <= 21; col++) {
-            sheet.autoSizeColumn(col, true);
+        // ── Rows 4+: Data rows ────────────────────────────────────────────────
+        int dataStartsFrom = 4;
+        for (int i = 0; i < chowkiResponseList.size(); i++) {
+            ChowkiManagementResponse c = chowkiResponseList.get(i);
+            Row row = sheet.createRow(dataStartsFrom + i);
+            XSSFCellStyle rowStyle = (i % 2 != 0) ? dataAlt : dataWhite;
+            String[] values = {
+                String.valueOf(c.getSerialNumber()),
+                c.getFarmerName(),
+                c.getFatherName(),
+                c.getFruitsId(),
+                c.getDflsSource(),
+                c.getRaceId() != null ? String.valueOf(c.getRaceId()) : "",
+                c.getRaceName(),
+                c.getNumbersOfDfls() != null ? String.valueOf(c.getNumbersOfDfls()) : "",
+                c.getLotNumberRsp(),
+                c.getLotNumberCrc(),
+                c.getVillageName(),
+                c.getDistrictName(),
+                c.getStateName(),
+                c.getTalukName(),
+                c.getHobliName(),
+                c.getTscName(),
+                c.getSoldAfter1stOr2ndMould(),
+                c.getRatePer100Dfls() != null ? String.valueOf(c.getRatePer100Dfls()) : "",
+                c.getPrice() != null ? String.valueOf(c.getPrice()) : "",
+                c.getHatchingDate() != null ? new java.text.SimpleDateFormat("dd-MM-yyyy").format(c.getHatchingDate()) : "",
+                c.getDispatchDate() != null ? new java.text.SimpleDateFormat("dd-MM-yyyy").format(c.getDispatchDate()) : "",
+                c.getReceiptNo()
+            };
+            for (int col = 0; col < TOTAL_COLS; col++) {
+                Cell cell = row.createCell(col);
+                cell.setCellValue(values[col] != null ? values[col] : "");
+                cell.setCellStyle(rowStyle);
+            }
+        }
+
+        sheet.createFreezePane(0, 4);
+        for (int col = 0; col < TOTAL_COLS; col++) {
+            sheet.setColumnWidth(col, 20 * 256);
         }
 
         String userHome = System.getProperty("user.home");
@@ -3509,10 +3617,10 @@ public class FarmerService {
         Path filePath = Paths.get(directoryPath, "chowki_distribution_report" + Util.getISTLocalDate() + ".xlsx");
 
         FileOutputStream fileOut = new FileOutputStream(filePath.toString());
-        FileInputStream fileIn = new FileInputStream(filePath.toString());
         workbook.write(fileOut);
         fileOut.close();
         workbook.close();
+        FileInputStream fileIn = new FileInputStream(filePath.toString());
         return fileIn;
     }
 
