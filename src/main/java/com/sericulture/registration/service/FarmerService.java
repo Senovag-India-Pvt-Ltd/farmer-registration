@@ -2763,7 +2763,7 @@ public class FarmerService {
                     .passbookNumber(p.getPassbookNumber())
                     .epicNumber(p.getEpicNumber())
                     .rationCardNumber(p.getRationCardNumber())
-                    .dob(Util.objectToString(p.getDob()))
+                    .dob(p.getDob() != null ? new java.text.SimpleDateFormat("dd-MM-yyyy").format(p.getDob()) : "")
                     .districtName(p.getDistrictName())
                     .talukName(p.getTalukName())
                     .hobliName(p.getHobliName())

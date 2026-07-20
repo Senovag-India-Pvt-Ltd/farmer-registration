@@ -781,6 +781,9 @@ public ResponseEntity<?> primaryFarmerDetails(
                                           @RequestParam(required = false) String landFilter,
                                           @RequestParam(defaultValue = "0") int pageNumber,
                                           @RequestParam(defaultValue = "50") int pageSize) {
+        if (districtId == null || districtId == 0) {
+            return new ResponseEntity<>("District is mandatory to export the farmer report".getBytes(StandardCharsets.UTF_8), HttpStatus.BAD_REQUEST);
+        }
         try {
             System.out.println("enter to farmer report");
             FileInputStream fileInputStream = farmerService.farmerReport(districtId, talukId, villageId, tscMasterId, casteId, landFilter, pageNumber, pageSize);
