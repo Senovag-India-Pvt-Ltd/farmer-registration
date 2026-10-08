@@ -676,7 +676,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
             "where reeler.active = :isActive AND " +
             "(:joinColumn = 'reeler.mobileNumber' AND reeler.mobileNumber LIKE :searchText) OR " +
             "(:joinColumn = 'reeler.reelingLicenseNumber' AND reeler.reelingLicenseNumber LIKE :searchText) OR " +
-            "(:joinColumn = 'reeler.bankAccountNumber' AND reeler.bankAccountNumber LIKE :searchText)"
+            "(:joinColumn = 'reeler.bankAccountNumber' AND reeler.bankAccountNumber LIKE :searchText) OR " +
+            "(:joinColumn = 'reeler.fruitsId' AND reeler.fruitsId LIKE :searchText)"
     )
     public Page<ReelerDTO> getSortedReelers(@Param("joinColumn") String joinColumn, @Param("searchText") String searchText, @Param("isActive") boolean isActive, Pageable pageable);
 
