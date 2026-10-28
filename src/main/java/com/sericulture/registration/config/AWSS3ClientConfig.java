@@ -1,7 +1,7 @@
+
 package com.sericulture.registration.config;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
@@ -16,52 +16,38 @@ import org.springframework.context.annotation.Profile;
 @Slf4j
 public class AWSS3ClientConfig {
 
-    @Value("${aws.accessKeyId}")
-    private String accessKey;
-
-    @Value("${aws.secretKey}")
-    private String secretKey;
-
     @Value("${aws.region}")
     private String region;
 
-    @Value("${aws.host}")
+    @Value("${aws.host:}")
     private String host;
 
     @Bean
     @Profile("dev")
     public AmazonS3 devs3client() {
-        log.info("Inside devs3client");
-        BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
+        log.info("Initializing AWS S3 client for dev profile");
+
         return AmazonS3ClientBuilder.standard()
                 .withRegion(Regions.fromName(region))
-                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+                .withCredentials(
+                        DefaultAWSCredentialsProviderChain.getInstance()
+                )
                 .build();
     }
 
-//    @Bean
-//    @Profile("prod")
-//            public AmazonS3 prods3client() {
-//                log.info("Inside prods3client");
-//                AwsClientBuilder.EndpointConfiguration  endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(host,"");
-////                String[] parts = host.split("\\.");
-//                BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
-//                return AmazonS3ClientBuilder.standard()
-////                       .withRegion(Regions.fromName(parts[1]))
-//                        .withRegion(Regions.fromName(region))
-//                        .withEndpointConfiguration(endpointConfiguration)
-//                        .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-//                        .build();
-//        }
     @Bean
     @Profile("prod")
     public AmazonS3 prods3client() {
-        log.info("Inside prods3client");
-        AwsClientBuilder.EndpointConfiguration endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(host, "");
-        BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
+        log.info("Initializing AWS S3 client for prod profile");
+
+        AwsClientBuilder.EndpointConfiguration endpointConfiguration =
+                new AwsClientBuilder.EndpointConfiguration(host, region);
+
         return AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(endpointConfiguration)
-                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+                .withCredentials(
+                        DefaultAWSCredentialsProviderChain.getInstance()
+                )
                 .build();
     }
 }
