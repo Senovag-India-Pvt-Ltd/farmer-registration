@@ -62,17 +62,26 @@ public class SevaSindhuFarmerService {
     private static final Pattern PINCODE = Pattern.compile("^5[6-9]\\d{4}$");
     private static final Pattern TEXT = Pattern.compile("^[\\p{L}\\p{M}0-9 .,()&'/-]{2,100}$");
 
+    static final String BENEFICIARY_FARMER = "Farmer";
+    static final String BENEFICIARY_REELER = "Reeler";
+
     private final SevaSindhuCitizenRequestRepository requestRepository;
     private final FarmerRepository farmerRepository;
+    private final com.sericulture.registration.repository.ReelerRepository reelerRepository;
     private final FarmerService farmerService;
     private final long sessionIdleMinutes;
 
+    @org.springframework.beans.factory.annotation.Autowired
+    com.sericulture.registration.service.FarmerChangeHistoryService farmerChangeHistoryService;
+
     public SevaSindhuFarmerService(SevaSindhuCitizenRequestRepository requestRepository,
                                    FarmerRepository farmerRepository,
+                                   com.sericulture.registration.repository.ReelerRepository reelerRepository,
                                    FarmerService farmerService,
                                    @Value("${SEVASINDHU_SESSION_IDLE_MINUTES:60}") long sessionIdleMinutes) {
         this.requestRepository = requestRepository;
         this.farmerRepository = farmerRepository;
+        this.reelerRepository = reelerRepository;
         this.farmerService = farmerService;
         this.sessionIdleMinutes = sessionIdleMinutes;
     }
@@ -123,8 +132,17 @@ public class SevaSindhuFarmerService {
                 throw new CitizenException(409, "ALREADY_LINKED",
                         "This Seva Sindhu request is already linked to FRUITS ID " + request.getFruitsId() + ".");
             }
+            if (BENEFICIARY_REELER.equals(request.getBeneficiaryType())) {
+                return registeredReeler(reelerRepository.findByReelerIdAndActive(request.getFarmerId(), true), request);
+            }
             Farmer linked = farmerRepository.findByFarmerIdAndActive(request.getFarmerId(), true);
             return registered(linked, request);
+        }
+        // The FRUITS ID Seva Sindhu sent (URL 1 key1) is authoritative: the citizen cannot apply for another one.
+        if (request.getFruitsId() != null && !fruitsId.equals(request.getFruitsId())) {
+            throw new CitizenException(409, "FRUITS_ID_MISMATCH",
+                    "This application was started in Seva Sindhu for FRUITS ID " + request.getFruitsId()
+                            + ". Please continue with that FRUITS ID, or start a new application in Seva Sindhu.");
         }
         if (SevaSindhuCitizenRequest.STATUS_SUBMITTED.equals(request.getRequestStatus())) {
             throw new CitizenException(409, "ALREADY_SUBMITTED", "An application has already been submitted for this Seva Sindhu request.");
@@ -147,6 +165,34 @@ public class SevaSindhuFarmerService {
             return registered(farmer, request);
         }
 
+        // Not a farmer: an existing reeler with this FRUITS ID can apply. Registration through Seva Sindhu is for farmers only.
+        com.sericulture.registration.model.entity.Reeler reeler = reelerRepository.findByFruitsIdAndActive(fruitsId, true);
+        if (reeler != null) {
+            String reelerMobile = reeler.getMobileNumber() == null ? null : reeler.getMobileNumber().trim();
+            boolean confirmed = Boolean.TRUE.equals(request.getAssistedMode())
+                    || (request.getMobileNumber() != null && request.getMobileNumber().equals(reelerMobile));
+            if (!confirmed) {
+                log.info("Seva Sindhu request {}: FRUITS id registered as reeler but mobile does not match", request.getId());
+                return CheckResponse.builder()
+                        .status("MOBILE_MISMATCH")
+                        .beneficiaryType(BENEFICIARY_REELER)
+                        .fruitsId(fruitsId)
+                        .registeredMobile(mask(reelerMobile))
+                        .message("This FRUITS ID is registered in e-Reshme as a reeler with a different mobile number. "
+                                + "Please apply with the mobile number registered with the Department of Sericulture, "
+                                + "or visit your nearest Sericulture office or Seva Sindhu centre.")
+                        .build();
+            }
+            request.setFarmerId(reeler.getReelerId());
+            request.setFruitsId(reeler.getFruitsId());
+            request.setBeneficiaryType(BENEFICIARY_REELER);
+            request.setRequestStatus(SevaSindhuCitizenRequest.STATUS_FARMER_REGISTERED);
+            request.setModifiedDate(new Date());
+            requestRepository.save(request);
+            log.info("Seva Sindhu request {} linked to reeler {}", request.getId(), reeler.getReelerId());
+            return registeredReeler(reeler, request);
+        }
+
         GetFarmerResponse fruits = fetchFromFruits(fruitsId);
         // Remember which FRUITS ID registration is for; the registration call must use the same one.
         request.setFruitsId(fruitsId);
@@ -164,6 +210,7 @@ public class SevaSindhuFarmerService {
 
     private void link(SevaSindhuCitizenRequest request, Farmer farmer) {
         request.setFarmerId(farmer.getFarmerId());
+        request.setBeneficiaryType(BENEFICIARY_FARMER);
         request.setFruitsId(farmer.getFruitsId());
         request.setRequestStatus(SevaSindhuCitizenRequest.STATUS_FARMER_REGISTERED);
         request.setModifiedDate(new Date());
@@ -171,9 +218,22 @@ public class SevaSindhuFarmerService {
         log.info("Seva Sindhu request {} linked to farmer {}", request.getId(), farmer.getFarmerId());
     }
 
+    private CheckResponse registeredReeler(com.sericulture.registration.model.entity.Reeler reeler, SevaSindhuCitizenRequest request) {
+        return CheckResponse.builder()
+                .status("REGISTERED")
+                .beneficiaryType(BENEFICIARY_REELER)
+                .fruitsId(reeler == null ? request.getFruitsId() : reeler.getFruitsId())
+                .farmerName(reeler == null ? null : blankToNull(reeler.getReelerName()))
+                .farmerNameInKannada(reeler == null ? null : blankToNull(reeler.getReelerNameKannada()))
+                .registeredMobile(reeler == null ? null : mask(reeler.getMobileNumber()))
+                .message("You are registered with the e-Reshme Portal as a reeler. You can continue with your application.")
+                .build();
+    }
+
     private CheckResponse registered(Farmer farmer, SevaSindhuCitizenRequest request) {
         return CheckResponse.builder()
                 .status("REGISTERED")
+                .beneficiaryType(BENEFICIARY_FARMER)
                 .fruitsId(farmer == null ? request.getFruitsId() : farmer.getFruitsId())
                 .farmerName(farmer == null ? null : fullName(farmer.getFirstName(), farmer.getLastName()))
                 .farmerNameInKannada(farmer == null ? null : blankToNull(farmer.getNameKan()))
@@ -331,6 +391,8 @@ public class SevaSindhuFarmerService {
             throw new CitizenException(409, "REGISTRATION_REFUSED", friendlySaveError(reason));
         }
         Farmer created = farmerRepository.findByFarmerIdAndActive(saved.getFarmerId(), true);
+        // Keep the original FRUITS values so later manual corrections never lose them.
+        farmerChangeHistoryService.recordImport(created);
         link(request, created);
         log.info("Seva Sindhu request {}: farmer {} self-registered", request.getId(), saved.getFarmerId());
         CheckResponse response = registered(created, request);

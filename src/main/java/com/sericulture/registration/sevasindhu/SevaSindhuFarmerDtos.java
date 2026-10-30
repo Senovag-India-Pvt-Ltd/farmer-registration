@@ -38,6 +38,8 @@ public final class SevaSindhuFarmerDtos {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class CheckResponse {
         private String status;
+        /** Farmer or Reeler. */
+        private String beneficiaryType;
         private String message;
         private String fruitsId;
         private String farmerName;

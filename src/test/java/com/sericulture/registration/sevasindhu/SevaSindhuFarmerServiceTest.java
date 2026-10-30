@@ -38,12 +38,17 @@ class SevaSindhuFarmerServiceTest {
     private FarmerRepository farmerRepository;
     @Mock
     private FarmerService farmerService;
+    @Mock
+    private com.sericulture.registration.repository.ReelerRepository reelerRepository;
+    @Mock
+    private com.sericulture.registration.service.FarmerChangeHistoryService changeHistoryService;
 
     private SevaSindhuFarmerService service;
 
     @BeforeEach
     void setUp() {
-        service = new SevaSindhuFarmerService(requestRepository, farmerRepository, farmerService, 60);
+        service = new SevaSindhuFarmerService(requestRepository, farmerRepository, reelerRepository, farmerService, 60);
+        service.farmerChangeHistoryService = changeHistoryService;
     }
 
     static SevaSindhuCitizenRequest request(String mobile, boolean assisted) {
@@ -317,5 +322,62 @@ class SevaSindhuFarmerServiceTest {
         l.setGunta(20L);
         l.setFGunta(160d);
         assertEquals(0, new BigDecimal("2.75").compareTo(SevaSindhuFarmerService.acres(l).setScale(2, java.math.RoundingMode.HALF_UP)));
+    }
+
+    // ---------------------------------------------------------------- spec v2: key1 lock and reelers
+
+    @Test
+    void fruitsIdSentBySevaSindhu_cannotBeReplacedByTheCitizen() {
+        SevaSindhuCitizenRequest req = request("7624939949", false);
+        req.setFruitsId(FID);   // key1 from URL 1
+        SevaSindhuFarmerService.CitizenException e = assertThrows(SevaSindhuFarmerService.CitizenException.class, () -> service.check(req, "FID1111111111111"));
+        assertEquals("FRUITS_ID_MISMATCH", e.getCode());
+        verifyNoInteractions(farmerRepository, reelerRepository, farmerService);
+    }
+
+    static com.sericulture.registration.model.entity.Reeler reeler(String mobile) {
+        com.sericulture.registration.model.entity.Reeler r = new com.sericulture.registration.model.entity.Reeler();
+        r.setReelerId(55L);
+        r.setFruitsId(FID);
+        r.setReelerName("Shiddappa");
+        r.setMobileNumber(mobile);
+        return r;
+    }
+
+    @Test
+    void existingReeler_withMatchingMobile_isLinkedAsReeler() {
+        SevaSindhuCitizenRequest req = request("7857805206", false);
+        req.setFruitsId(FID);
+        when(farmerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(null);
+        when(reelerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(reeler("7857805206"));
+        saveReturnsArgument();
+        CheckResponse res = service.check(req, FID);
+        assertEquals("REGISTERED", res.getStatus());
+        assertEquals("Reeler", res.getBeneficiaryType());
+        assertEquals(55L, req.getFarmerId());
+        assertEquals("Reeler", req.getBeneficiaryType());
+        assertEquals(SevaSindhuCitizenRequest.STATUS_FARMER_REGISTERED, req.getRequestStatus());
+        verifyNoInteractions(farmerService);
+    }
+
+    @Test
+    void existingReeler_withAnotherMobile_isNotLinked() {
+        SevaSindhuCitizenRequest req = request("9999999999", false);
+        when(farmerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(null);
+        when(reelerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(reeler("7857805206"));
+        CheckResponse res = service.check(req, FID);
+        assertEquals("MOBILE_MISMATCH", res.getStatus());
+        assertNull(req.getFarmerId());
+        verify(requestRepository, never()).save(any());
+    }
+
+    @Test
+    void linkedFarmer_isRecordedAsFarmer() {
+        SevaSindhuCitizenRequest req = request("7624939949", false);
+        when(farmerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(farmer("7624939949"));
+        saveReturnsArgument();
+        CheckResponse res = service.check(req, FID);
+        assertEquals("Farmer", req.getBeneficiaryType());
+        assertEquals("Farmer", res.getBeneficiaryType());
     }
 }

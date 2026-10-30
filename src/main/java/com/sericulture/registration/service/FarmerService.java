@@ -84,6 +84,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FarmerService {
 
+    @org.springframework.beans.factory.annotation.Autowired
+    FarmerChangeHistoryService farmerChangeHistoryService;
+
+
     @Autowired
     FarmerRepository farmerRepository;
 
@@ -647,6 +651,9 @@ public class FarmerService {
 
         Farmer farmer = farmerRepository.findByFarmerIdAndActiveIn(farmerRequest.getFarmerId(), Set.of(true, false));
         if (Objects.nonNull(farmer)) {
+            // Farmers registered through Seva Sindhu keep an audit of every change to their FRUITS-imported details.
+            java.util.Map<String, String> before = "SEVA_SINDHU".equals(farmer.getRegistrationSource())
+                    ? farmerChangeHistoryService.snapshot(farmer) : null;
             farmer.setFarmerNumber(farmerRequest.getFarmerNumber());
             farmer.setFruitsId(farmerRequest.getFruitsId());
             farmer.setFirstName(farmerRequest.getFirstName());
@@ -681,6 +688,9 @@ public class FarmerService {
 
             farmer.setActive(true);
             Farmer farmer1 = farmerRepository.save(farmer);
+            if (before != null) {
+                farmerChangeHistoryService.recordEdit(farmer1.getFarmerId(), before, farmerChangeHistoryService.snapshot(farmer1));
+            }
             farmerResponse = mapper.farmerEntityToObject(farmer1, FarmerResponse.class);
 
             if (farmerResponse.getFarmerId() > 0) {

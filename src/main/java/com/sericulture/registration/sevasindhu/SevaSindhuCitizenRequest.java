@@ -45,6 +45,10 @@ public class SevaSindhuCitizenRequest {
     @Column(name = "request_status")
     private String requestStatus;
 
+    /** Farmer or Reeler; farmerId holds reeler.reeler_id for a reeler. */
+    @Column(name = "beneficiary_type")
+    private String beneficiaryType;
+
     @Column(name = "farmer_id")
     private Long farmerId;
 
