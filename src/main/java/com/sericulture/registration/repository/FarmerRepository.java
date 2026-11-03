@@ -218,10 +218,10 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "left join UserMaster userMaster\n" +
             "on farmer.assignToInspectId = userMaster.userMasterId " +
             "where farmer.active = :isActive and " +
-            "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
+            "((:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.fruitsId' AND farmer.fruitsId LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.mobileNumber' AND farmer.mobileNumber LIKE :searchText) OR" +
-            "(:joinColumn = 'farmerBankAccount.farmerBankAccountNumber' AND farmerBankAccount.farmerBankAccountNumber LIKE :searchText) " +
+            "(:joinColumn = 'farmerBankAccount.farmerBankAccountNumber' AND farmerBankAccount.farmerBankAccountNumber LIKE :searchText)) " +
             "ORDER BY farmer.farmerNumber ASC"
     )
     Page<FarmerDTO> getByActiveOrderByFarmerIdAsc(@Param("isActive") boolean isActive, @Param("joinColumn") String joinColumn, @Param("searchText") String searchText, final Pageable pageable);
@@ -284,9 +284,9 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "left join UserMaster userMaster\n" +
             "on farmer.assignToInspectId = userMaster.userMasterId " +
             "where farmer.active = :isActive and farmer.isOtherStateFarmer = true and " +
-            "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
+            "((:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.mobileNumber' AND farmer.mobileNumber LIKE :searchText) OR" +
-            "(:joinColumn = 'farmerBankAccount.farmerBankAccountNumber' AND farmerBankAccount.farmerBankAccountNumber LIKE :searchText) " +
+            "(:joinColumn = 'farmerBankAccount.farmerBankAccountNumber' AND farmerBankAccount.farmerBankAccountNumber LIKE :searchText)) " +
             "ORDER BY farmer.farmerNumber ASC"
     )
     Page<FarmerDTO> getByActiveOrderByFarmerIdAscForNonKAFarmers(@Param("isActive") boolean isActive, @Param("joinColumn") String joinColumn, @Param("searchText") String searchText, final Pageable pageable);
@@ -349,10 +349,10 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "left join UserMaster userMaster\n" +
             "on farmer.assignToInspectId = userMaster.userMasterId " +
             "where farmer.active = :isActive and (farmer.isOtherStateFarmer = false or farmer.isOtherStateFarmer is null) and (farmer.fruitsId != '' and farmer.fruitsId is not null) and  " +
-            "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
+            "((:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.fruitsId' AND farmer.fruitsId LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.mobileNumber' AND farmer.mobileNumber LIKE :searchText) OR" +
-            "(:joinColumn = 'farmerBankAccount.farmerBankAccountNumber' AND farmerBankAccount.farmerBankAccountNumber LIKE :searchText) " +
+            "(:joinColumn = 'farmerBankAccount.farmerBankAccountNumber' AND farmerBankAccount.farmerBankAccountNumber LIKE :searchText)) " +
             "ORDER BY farmer.farmerNumber ASC"
     )
     Page<FarmerDTO> getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(@Param("isActive") boolean isActive, @Param("joinColumn") String joinColumn, @Param("searchText") String searchText, final Pageable pageable);
@@ -415,9 +415,9 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "left join UserMaster userMaster\n" +
             "on farmer.assignToInspectId = userMaster.userMasterId " +
             "where farmer.active = :isActive and (farmer.isOtherStateFarmer = false or farmer.isOtherStateFarmer is NULL) and (farmer.fruitsId = '' or farmer.fruitsId is null) and " +
-            "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
+            "((:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.mobileNumber' AND farmer.mobileNumber LIKE :searchText) OR" +
-            "(:joinColumn = 'farmerBankAccount.farmerBankAccountNumber' AND farmerBankAccount.farmerBankAccountNumber LIKE :searchText) " +
+            "(:joinColumn = 'farmerBankAccount.farmerBankAccountNumber' AND farmerBankAccount.farmerBankAccountNumber LIKE :searchText)) " +
             "ORDER BY farmer.farmerNumber ASC"
     )
     Page<FarmerDTO> getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(@Param("isActive") boolean isActive, @Param("joinColumn") String joinColumn, @Param("searchText") String searchText, final Pageable pageable);
@@ -760,10 +760,10 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
             "left join UserMaster userMaster\n" +
             "on farmer.assignToInspectId = userMaster.userMasterId " +
             "where farmer.active = :isActive AND " +
-            "(:joinColumn = 'farmer.fruitsId' AND farmer.fruitsId LIKE :searchText) OR " +
+            "((:joinColumn = 'farmer.fruitsId' AND farmer.fruitsId LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.farmerNumber' AND farmer.farmerNumber LIKE :searchText) OR " +
             "(:joinColumn = 'farmer.mobileNumber' AND farmer.mobileNumber LIKE :searchText)OR" +
-            "(:joinColumn = 'farmerBankAccount.farmerBankAccountNumber' AND farmerBankAccount.farmerBankAccountNumber LIKE :searchText) "
+            "(:joinColumn = 'farmerBankAccount.farmerBankAccountNumber' AND farmerBankAccount.farmerBankAccountNumber LIKE :searchText)) "
     )
     public Page<FarmerDTO> getSortedFarmers(@Param("joinColumn") String joinColumn, @Param("searchText") String searchText, @Param("isActive") boolean isActive, Pageable pageable);
 
