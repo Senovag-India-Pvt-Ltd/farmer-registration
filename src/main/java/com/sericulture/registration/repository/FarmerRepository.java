@@ -36,6 +36,9 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
 
     public Farmer findByFruitsIdAndActive(String fruitsid, boolean isActive);
 
+    /** All active farmers with this FRUITS ID (the data has some duplicates), oldest first. */
+    List<Farmer> findByFruitsIdAndActiveOrderByFarmerIdAsc(String fruitsId, boolean isActive);
+
     public Farmer findByMobileNumberAndActive(String mobileNumber, boolean isActive);
 
     @Query("select new com.sericulture.registration.model.dto.farmer.FarmerDTO(" +

@@ -56,7 +56,8 @@ public class SevaSindhuTestHarnessService {
         // "already registered" check); fall back to mobile number when it isn't.
         Farmer farmer = null;
         if (!isBlank(request.getFruitsId())) {
-            farmer = farmerRepository.findByFruitsIdAndActive(request.getFruitsId(), true);
+            farmer = farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(request.getFruitsId(), true)
+                    .stream().findFirst().orElse(null);
         }
         if (farmer == null && !isBlank(request.getMobileNumber())) {
             java.util.List<Farmer> byMobile = farmerRepository.findByMobileNumber(request.getMobileNumber());

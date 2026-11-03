@@ -149,7 +149,7 @@ class SevaSindhuFarmerServiceTest {
     @Test
     void registeredFarmer_withMatchingSevaSindhuMobile_isLinked() {
         SevaSindhuCitizenRequest req = request("7624939949", false);
-        when(farmerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(farmer("7624939949"));
+        when(farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(FID, true)).thenReturn(List.of(farmer("7624939949")));
         saveReturnsArgument();
         CheckResponse res = service.check(req, " fid2806000049272 ");
         assertEquals("REGISTERED", res.getStatus());
@@ -160,8 +160,28 @@ class SevaSindhuFarmerServiceTest {
     }
 
     @Test
+    void duplicateFruitsId_picksTheFarmerWithTheSevaSindhuMobile_insteadOfFailing() {
+        Farmer older = farmer("9000000001");
+        older.setFarmerId(100L);
+        Farmer mine = farmer("7624939949");
+        mine.setFarmerId(200L);
+        when(farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(FID, true)).thenReturn(List.of(older, mine));
+        saveReturnsArgument();
+
+        SevaSindhuCitizenRequest req = request("7624939949", false);
+        assertEquals("REGISTERED", service.check(req, FID).getStatus());
+        assertEquals(200L, req.getFarmerId());
+
+        // No record has the citizen's mobile: the oldest is used, and the mobile rule still applies.
+        SevaSindhuCitizenRequest other = request("9999999999", false);
+        CheckResponse res = service.check(other, FID);
+        assertEquals("MOBILE_MISMATCH", res.getStatus());
+        assertEquals("90XXXXXX01", res.getRegisteredMobile());
+    }
+
+    @Test
     void registeredFarmer_withDifferentOrMissingMobile_isNotLinked() {
-        when(farmerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(farmer("7624939949"));
+        when(farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(FID, true)).thenReturn(List.of(farmer("7624939949")));
         SevaSindhuCitizenRequest other = request("9999999999", false);
         assertEquals("MOBILE_MISMATCH", service.check(other, FID).getStatus());
         assertNull(other.getFarmerId());
@@ -173,7 +193,7 @@ class SevaSindhuFarmerServiceTest {
     @Test
     void registeredFarmer_inAssistedMode_isLinked() {
         SevaSindhuCitizenRequest req = request(null, true);
-        when(farmerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(farmer("7624939949"));
+        when(farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(FID, true)).thenReturn(List.of(farmer("7624939949")));
         saveReturnsArgument();
         assertEquals("REGISTERED", service.check(req, FID).getStatus());
         assertEquals(124380L, req.getFarmerId());
@@ -182,7 +202,7 @@ class SevaSindhuFarmerServiceTest {
     @Test
     void unregisteredFarmer_getsFruitsPrefill_andRequestRemembersTheFruitsId() throws Exception {
         SevaSindhuCitizenRequest req = request("9876543210", false);
-        when(farmerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(null);
+        when(farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(FID, true)).thenReturn(List.of());
         when(farmerService.getDetailsByFruitsId(any())).thenReturn(fruits());
         saveReturnsArgument();
         CheckResponse res = service.check(req, FID);
@@ -200,7 +220,7 @@ class SevaSindhuFarmerServiceTest {
 
     @Test
     void fruitsDown_or_unknownInFruits_givesClearErrors() throws Exception {
-        when(farmerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(null);
+        when(farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(FID, true)).thenReturn(List.of());
         when(farmerService.getDetailsByFruitsId(any())).thenThrow(new RuntimeException("timeout"));
         assertEquals(503, assertThrows(SevaSindhuFarmerService.CitizenException.class, () -> service.check(request(null, false), FID)).getStatus());
 
@@ -249,7 +269,7 @@ class SevaSindhuFarmerServiceTest {
     void register_usesFruitsData_sevaSindhuMobile_andExistingSave_thenLinks() throws Exception {
         SevaSindhuCitizenRequest req = request("9876543210", false);
         req.setFruitsId(FID);
-        when(farmerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(null);
+        when(farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(FID, true)).thenReturn(List.of());
         when(farmerRepository.findByMobileNumber("9876543210")).thenReturn(Collections.emptyList());
         when(farmerRepository.findByFarmerNumber(any())).thenReturn(Collections.emptyList());
         when(farmerService.getDetailsByFruitsId(any())).thenReturn(fruits());
@@ -291,7 +311,7 @@ class SevaSindhuFarmerServiceTest {
     void register_mobileAlreadyUsedByAnotherFarmer_isRefused() {
         SevaSindhuCitizenRequest req = request(null, false);
         req.setFruitsId(FID);
-        when(farmerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(null);
+        when(farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(FID, true)).thenReturn(List.of());
         when(farmerRepository.findByMobileNumber("9876543210")).thenReturn(List.of(new Farmer()));
         var e = assertThrows(SevaSindhuFarmerService.CitizenException.class, () -> service.register(req, validRegistration()));
         assertEquals("MOBILE_IN_USE", e.getCode());
@@ -302,7 +322,7 @@ class SevaSindhuFarmerServiceTest {
     void register_whenSaveRefuses_reportsAFriendlyReason_andDoesNotLink() throws Exception {
         SevaSindhuCitizenRequest req = request(null, false);
         req.setFruitsId(FID);
-        when(farmerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(null);
+        when(farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(FID, true)).thenReturn(List.of());
         when(farmerRepository.findByMobileNumber(any())).thenReturn(Collections.emptyList());
         when(farmerRepository.findByFarmerNumber(any())).thenReturn(Collections.emptyList());
         when(farmerService.getDetailsByFruitsId(any())).thenReturn(fruits());
@@ -348,8 +368,8 @@ class SevaSindhuFarmerServiceTest {
     void existingReeler_withMatchingMobile_isLinkedAsReeler() {
         SevaSindhuCitizenRequest req = request("7857805206", false);
         req.setFruitsId(FID);
-        when(farmerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(null);
-        when(reelerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(reeler("7857805206"));
+        when(farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(FID, true)).thenReturn(List.of());
+        when(reelerRepository.findByFruitsIdAndActiveOrderByReelerIdAsc(FID, true)).thenReturn(List.of(reeler("7857805206")));
         saveReturnsArgument();
         CheckResponse res = service.check(req, FID);
         assertEquals("REGISTERED", res.getStatus());
@@ -363,8 +383,8 @@ class SevaSindhuFarmerServiceTest {
     @Test
     void existingReeler_withAnotherMobile_isNotLinked() {
         SevaSindhuCitizenRequest req = request("9999999999", false);
-        when(farmerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(null);
-        when(reelerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(reeler("7857805206"));
+        when(farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(FID, true)).thenReturn(List.of());
+        when(reelerRepository.findByFruitsIdAndActiveOrderByReelerIdAsc(FID, true)).thenReturn(List.of(reeler("7857805206")));
         CheckResponse res = service.check(req, FID);
         assertEquals("MOBILE_MISMATCH", res.getStatus());
         assertNull(req.getFarmerId());
@@ -374,7 +394,7 @@ class SevaSindhuFarmerServiceTest {
     @Test
     void linkedFarmer_isRecordedAsFarmer() {
         SevaSindhuCitizenRequest req = request("7624939949", false);
-        when(farmerRepository.findByFruitsIdAndActive(FID, true)).thenReturn(farmer("7624939949"));
+        when(farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(FID, true)).thenReturn(List.of(farmer("7624939949")));
         saveReturnsArgument();
         CheckResponse res = service.check(req, FID);
         assertEquals("Farmer", req.getBeneficiaryType());

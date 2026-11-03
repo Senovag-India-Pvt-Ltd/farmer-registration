@@ -148,7 +148,7 @@ public class SevaSindhuFarmerService {
             throw new CitizenException(409, "ALREADY_SUBMITTED", "An application has already been submitted for this Seva Sindhu request.");
         }
 
-        Farmer farmer = farmerRepository.findByFruitsIdAndActive(fruitsId, true);
+        Farmer farmer = farmerByFruitsId(fruitsId, request.getMobileNumber());
         if (farmer != null) {
             if (!identityConfirmed(request, farmer)) {
                 log.info("Seva Sindhu request {}: FRUITS id registered but mobile does not match", request.getId());
@@ -166,7 +166,7 @@ public class SevaSindhuFarmerService {
         }
 
         // Not a farmer: an existing reeler with this FRUITS ID can apply. Registration through Seva Sindhu is for farmers only.
-        com.sericulture.registration.model.entity.Reeler reeler = reelerRepository.findByFruitsIdAndActive(fruitsId, true);
+        com.sericulture.registration.model.entity.Reeler reeler = reelerByFruitsId(fruitsId, request.getMobileNumber());
         if (reeler != null) {
             String reelerMobile = reeler.getMobileNumber() == null ? null : reeler.getMobileNumber().trim();
             boolean confirmed = Boolean.TRUE.equals(request.getAssistedMode())
@@ -202,6 +202,31 @@ public class SevaSindhuFarmerService {
     }
 
     /** Existing farmer may be linked only with Seva Sindhu's mobile matching, or in assisted mode. */
+    /**
+     * The data holds some FRUITS IDs on more than one active farmer. Prefer the record with the citizen's mobile
+     * (so the identity check can pass), otherwise the oldest; never fail the citizen on the duplicate.
+     */
+    Farmer farmerByFruitsId(String fruitsId, String mobile) {
+        List<Farmer> all = farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(fruitsId, true);
+        if (all.isEmpty()) return null;
+        if (all.size() > 1) {
+            log.warn("FRUITS ID {} is on {} active farmers ({}); using the one matching the Seva Sindhu mobile, else the oldest",
+                    fruitsId, all.size(), all.stream().map(Farmer::getFarmerId).toList());
+        }
+        return all.stream().filter(f -> mobile != null && mobile.equals(trim(f.getMobileNumber()))).findFirst().orElse(all.get(0));
+    }
+
+    /** Same as {@link #farmerByFruitsId} for reelers. */
+    com.sericulture.registration.model.entity.Reeler reelerByFruitsId(String fruitsId, String mobile) {
+        List<com.sericulture.registration.model.entity.Reeler> all = reelerRepository.findByFruitsIdAndActiveOrderByReelerIdAsc(fruitsId, true);
+        if (all.isEmpty()) return null;
+        if (all.size() > 1) {
+            log.warn("FRUITS ID {} is on {} active reelers ({}); using the one matching the Seva Sindhu mobile, else the oldest",
+                    fruitsId, all.size(), all.stream().map(com.sericulture.registration.model.entity.Reeler::getReelerId).toList());
+        }
+        return all.stream().filter(r -> mobile != null && mobile.equals(trim(r.getMobileNumber()))).findFirst().orElse(all.get(0));
+    }
+
     static boolean identityConfirmed(SevaSindhuCitizenRequest request, Farmer farmer) {
         if (Boolean.TRUE.equals(request.getAssistedMode())) return true;
         String ss = request.getMobileNumber();
@@ -309,7 +334,7 @@ public class SevaSindhuFarmerService {
         validate(in, mobile);
 
         // Registered meanwhile (another tab, an office registration, or a retried request)?
-        Farmer existing = farmerRepository.findByFruitsIdAndActive(fruitsId, true);
+        Farmer existing = farmerByFruitsId(fruitsId, mobile);
         if (existing != null) {
             if (identityConfirmed(request, existing) || Objects.equals(mobile, trim(existing.getMobileNumber()))) {
                 link(request, existing);
