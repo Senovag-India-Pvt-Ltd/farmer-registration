@@ -1790,9 +1790,7 @@ public class FarmerService {
             case 2:
                 page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
                 break;
-            case 3:
-                page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithFruitsId(true, joinColumn, searchText, pageable);
-                break;
+            case 3: // Farmer without FRUITS ID list (was wrongly returning the with-FRUITS list)
             default:
                 page = farmerRepository.getByActiveOrderByFarmerIdAscForKAFarmersWithoutFruitsId(true, joinColumn, searchText, pageable);
                 break;

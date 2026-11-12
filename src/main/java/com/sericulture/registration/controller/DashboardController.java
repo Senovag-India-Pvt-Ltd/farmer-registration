@@ -44,6 +44,9 @@ public class DashboardController {
         Map<String, Object> body = new HashMap<>();
         // Sensible defaults so a partial failure still renders the panel.
         body.put("farmers", 0);
+        body.put("farmers_with_fruits", 0);
+        body.put("farmers_without_fruits", 0);
+        body.put("farmers_other_state", 0);
         body.put("reelers", 0);
         body.put("traders", 0);
         body.put("rsp", 0);
