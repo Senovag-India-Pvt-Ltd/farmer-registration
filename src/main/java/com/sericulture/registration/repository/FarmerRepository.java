@@ -767,8 +767,9 @@ public interface FarmerRepository extends PagingAndSortingRepository<Farmer, Lon
     )
     public Page<FarmerDTO> getSortedFarmers(@Param("joinColumn") String joinColumn, @Param("searchText") String searchText, @Param("isActive") boolean isActive, Pageable pageable);
 
+    // Active farmers only, the same definition as the home page "registered farmers".
     @Query(nativeQuery = true, value = "select COUNT(farmer_id) as total_farmer_count\n" +
-            "from farmer;\n")
+            "from farmer where active = 1;\n")
     public List<Object[]> getFarmerCountDetails();
 
 //    @Query(nativeQuery = true,value = "select d.district_name, COUNT(f.farmer_id) as farmer_count\n" +

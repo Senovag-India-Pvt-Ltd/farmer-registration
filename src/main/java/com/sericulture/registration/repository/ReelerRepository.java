@@ -702,8 +702,9 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
     )
     public List<ReelerSearchDTO> getReelerBySearchText(@Param("searchText") String searchText, @Param("joinColumn") String joinColumn);
 
+    // Active reelers only, the same definition as the home page "registered reelers".
     @Query(nativeQuery = true, value = "select COUNT(reeler_id) as total_reeler_count\n" +
-            "from reeler;\n")
+            "from reeler where active = 1;\n")
     public List<Object[]> getReelerCountDetails();
 
 

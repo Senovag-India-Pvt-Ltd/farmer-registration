@@ -20,7 +20,15 @@ public interface HomeStatsRepository extends JpaRepository<Farmer, Long> {
 
     @Query(nativeQuery = true, value = """
         SELECT
+            -- Registered farmers = every active farmer. The three groups below always add up to it and
+            -- match the three farmer lists (Farmer list / Farmer without FRUITS / Other State Farmer).
             (SELECT COUNT(*) FROM farmer WHERE active = 1)                                 AS farmers,
+            (SELECT COUNT(*) FROM farmer WHERE active = 1
+                AND ISNULL(is_other_state_farmer, 0) = 0 AND ISNULL(fruits_id, '') <> '')  AS farmers_with_fruits,
+            (SELECT COUNT(*) FROM farmer WHERE active = 1
+                AND ISNULL(is_other_state_farmer, 0) = 0 AND ISNULL(fruits_id, '') = '')   AS farmers_without_fruits,
+            (SELECT COUNT(*) FROM farmer WHERE active = 1
+                AND ISNULL(is_other_state_farmer, 0) = 1)                                   AS farmers_other_state,
             (SELECT COUNT(*) FROM reeler WHERE active = 1)                                 AS reelers,
             (SELECT COUNT(*) FROM trader_license WHERE active = 1)                         AS traders,
             (SELECT COUNT(*)
