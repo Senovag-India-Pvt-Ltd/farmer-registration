@@ -119,6 +119,13 @@ public class ReelerService {
         ReelerResponse reelerResponse = new ReelerResponse();
         Reeler reeler = mapper.reelerObjectToEntity(reelerRequest, Reeler.class);
         validator.validate(reeler);
+        // One active reeler per FRUITS ID - block a second (double) entry
+        if (reeler.getFruitsId() != null && !reeler.getFruitsId().isBlank()
+                && reelerRepository.existsByFruitsIdAndActive(reeler.getFruitsId().trim(), true)) {
+            reelerResponse.setError(true);
+            reelerResponse.setError_description("Reeler with this FRUITS ID already exists");
+            return reelerResponse;
+        }
         List<Reeler> reelerListByLicenseNumber = reelerRepository.findByReelingLicenseNumberAndActive(reeler.getReelingLicenseNumber(), true);
         if (!reelerListByLicenseNumber.isEmpty() && reelerListByLicenseNumber.stream().filter(Reeler::getActive).findAny().isPresent()) {
             reelerResponse.setError(true);

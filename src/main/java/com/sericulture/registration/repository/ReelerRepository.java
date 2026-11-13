@@ -47,6 +47,8 @@ public interface ReelerRepository extends PagingAndSortingRepository<Reeler, Lon
 
     public Reeler findByFruitsIdAndActive(String fruitsId, boolean active);
 
+    public boolean existsByFruitsIdAndActive(String fruitsId, boolean active);
+
 //    public Reeler findByReelingLicenseNumberAndActive(String reelingLicenseNumber, boolean isActive);
 
     List<Reeler> findByActiveAndIsActivatedOrderByReelerNameAsc(boolean isActive, int isActivated);
