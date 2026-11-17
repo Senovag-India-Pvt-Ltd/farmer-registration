@@ -167,6 +167,9 @@ public class FarmerResponse {
     private String hobliName;
     private String stateName;
 
+    @Schema(name = "registrationSource", example = "SEVA_SINDHU")
+    private String registrationSource;
+
 
 
 

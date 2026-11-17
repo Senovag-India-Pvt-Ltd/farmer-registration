@@ -120,4 +120,9 @@ public class Farmer extends BaseEntity implements Serializable {
 
     @Column(name = "user_master_id")
     private Long assignToInspectId;
+
+    // Where this registration originated -- e.g. "SEVA_SINDHU" when the citizen
+    // arrived via the Seva Sindhu portal. NULL/blank means a direct registration.
+    @Column(name = "registration_source")
+    private String registrationSource;
 }

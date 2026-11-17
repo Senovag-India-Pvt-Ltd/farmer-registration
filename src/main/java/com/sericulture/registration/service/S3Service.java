@@ -20,12 +20,6 @@ import java.util.List;
 @Slf4j
 public class S3Service {
 
-    @Value("${aws.accessKeyId}")
-    private String accessKey;
-
-    @Value("${aws.secretKey}")
-    private String secretKey;
-
     @Value("${aws.region}")
     private String region;
 
