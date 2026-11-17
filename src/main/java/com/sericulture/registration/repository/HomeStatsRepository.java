@@ -20,15 +20,7 @@ public interface HomeStatsRepository extends JpaRepository<Farmer, Long> {
 
     @Query(nativeQuery = true, value = """
         SELECT
-            -- Registered farmers = every active farmer. The three groups below always add up to it and
-            -- match the three farmer lists (Farmer list / Farmer without FRUITS / Other State Farmer).
             (SELECT COUNT(*) FROM farmer WHERE active = 1)                                 AS farmers,
-            (SELECT COUNT(*) FROM farmer WHERE active = 1
-                AND ISNULL(is_other_state_farmer, 0) = 0 AND ISNULL(fruits_id, '') <> '')  AS farmers_with_fruits,
-            (SELECT COUNT(*) FROM farmer WHERE active = 1
-                AND ISNULL(is_other_state_farmer, 0) = 0 AND ISNULL(fruits_id, '') = '')   AS farmers_without_fruits,
-            (SELECT COUNT(*) FROM farmer WHERE active = 1
-                AND ISNULL(is_other_state_farmer, 0) = 1)                                   AS farmers_other_state,
             (SELECT COUNT(*) FROM reeler WHERE active = 1)                                 AS reelers,
             (SELECT COUNT(*) FROM trader_license WHERE active = 1)                         AS traders,
             (SELECT COUNT(*)
@@ -70,4 +62,17 @@ public interface HomeStatsRepository extends JpaRepository<Farmer, Long> {
             (SELECT COUNT(*) FROM sc_sub_scheme_details WHERE active = 1)                      AS schemes
     """)
     List<Map<String, Object>> getHomeStatsCounts();
+
+    // Farmer breakdown for the farmer list pages: one pass over farmer, no other tables.
+    // farmers = farmers_with_fruits + farmers_without_fruits + farmers_other_state
+    @Query(nativeQuery = true, value = """
+        SELECT
+            COUNT(*) AS farmers,
+            SUM(CASE WHEN ISNULL(is_other_state_farmer, 0) = 0 AND ISNULL(fruits_id, '') <> '' THEN 1 ELSE 0 END) AS farmers_with_fruits,
+            SUM(CASE WHEN ISNULL(is_other_state_farmer, 0) = 0 AND ISNULL(fruits_id, '') = '' THEN 1 ELSE 0 END) AS farmers_without_fruits,
+            SUM(CASE WHEN ISNULL(is_other_state_farmer, 0) = 1 THEN 1 ELSE 0 END) AS farmers_other_state
+        FROM farmer
+        WHERE active = 1
+    """)
+    List<Map<String, Object>> getFarmerCounts();
 }

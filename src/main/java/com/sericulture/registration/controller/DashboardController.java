@@ -39,14 +39,32 @@ public class DashboardController {
      * Path is under /v1/dashboard/** which the auth module's SecurityConfig
      * already lists in permitAll().
      */
+    // Light count strip on the three farmer list pages (single pass over farmer).
+    @GetMapping("/farmer-counts")
+    public ResponseEntity<Map<String, Object>> getFarmerCounts() {
+        Map<String, Object> body = new HashMap<>();
+        body.put("farmers", 0);
+        body.put("farmers_with_fruits", 0);
+        body.put("farmers_without_fruits", 0);
+        body.put("farmers_other_state", 0);
+        try {
+            List<Map<String, Object>> rows = homeStatsRepository.getFarmerCounts();
+            if (rows != null && !rows.isEmpty() && rows.get(0) != null) {
+                for (Map.Entry<String, Object> e : rows.get(0).entrySet()) {
+                    if (e.getValue() != null) body.put(e.getKey().toLowerCase(), e.getValue());
+                }
+            }
+        } catch (Exception ex) {
+            body.put("error", ex.getMessage());
+        }
+        return ResponseEntity.ok(body);
+    }
+
     @GetMapping("/home-stats")
     public ResponseEntity<Map<String, Object>> getHomeStats() {
         Map<String, Object> body = new HashMap<>();
         // Sensible defaults so a partial failure still renders the panel.
         body.put("farmers", 0);
-        body.put("farmers_with_fruits", 0);
-        body.put("farmers_without_fruits", 0);
-        body.put("farmers_other_state", 0);
         body.put("reelers", 0);
         body.put("traders", 0);
         body.put("rsp", 0);
