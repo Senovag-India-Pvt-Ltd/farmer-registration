@@ -113,7 +113,7 @@ public class SevaSindhuFarmerController {
         } catch (SevaSindhuFarmerService.CitizenException e) {
             return error(e.getStatus(), e.getCode(), e.getMessage());
         } catch (DataAccessException e) {
-            log.error("Seva Sindhu farmer endpoint failed on the database", e);
+            log.error("SevaOne farmer endpoint failed on the database", e);
             return error(503, "SERVICE_UNAVAILABLE", "The service is temporarily unavailable. Please try again later.");
         }
     }

@@ -283,7 +283,7 @@ class SevaSindhuFarmerServiceTest {
         saveReturnsArgument();
 
         RegisterRequest in = validRegistration();
-        in.setMobileNumber("6000000000"); // ignored: Seva Sindhu supplied the mobile
+        in.setMobileNumber("6000000000"); // ignored: SevaOne supplied the mobile
         CheckResponse res = service.register(req, in);
 
         ArgumentCaptor<FarmerSaveRequest> sent = ArgumentCaptor.forClass(FarmerSaveRequest.class);

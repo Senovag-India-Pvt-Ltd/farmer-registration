@@ -110,13 +110,13 @@ public class SevaSindhuFarmerService {
 
     public SevaSindhuCitizenRequest requireSession(String sessionToken) {
         if (sessionToken == null || !sessionToken.matches("^[A-Za-z0-9_-]{43}$")) {
-            throw new CitizenException(401, "SESSION_INVALID", "Your session is not valid. Please start again from Seva Sindhu.");
+            throw new CitizenException(401, "SESSION_INVALID", "Your session is not valid. Please start again from SevaOne.");
         }
         SevaSindhuCitizenRequest request = requestRepository.findBySessionHashAndActive(sha256Hex(sessionToken), true)
-                .orElseThrow(() -> new CitizenException(401, "SESSION_INVALID", "Your session is not valid. Please start again from Seva Sindhu."));
+                .orElseThrow(() -> new CitizenException(401, "SESSION_INVALID", "Your session is not valid. Please start again from SevaOne."));
         Date now = new Date();
         if (request.getSessionExpiresAt() == null || request.getSessionExpiresAt().before(now)) {
-            throw new CitizenException(401, "SESSION_INVALID", "Your session has expired. Please start again from Seva Sindhu.");
+            throw new CitizenException(401, "SESSION_INVALID", "Your session has expired. Please start again from SevaOne.");
         }
         request.setSessionExpiresAt(new Date(now.getTime() + sessionIdleMinutes * 60_000L));
         return requestRepository.save(request);
@@ -130,7 +130,7 @@ public class SevaSindhuFarmerService {
         if (request.getFarmerId() != null) {
             if (!fruitsId.equals(request.getFruitsId())) {
                 throw new CitizenException(409, "ALREADY_LINKED",
-                        "This Seva Sindhu request is already linked to FRUITS ID " + request.getFruitsId() + ".");
+                        "This SevaOne request is already linked to FRUITS ID " + request.getFruitsId() + ".");
             }
             if (BENEFICIARY_REELER.equals(request.getBeneficiaryType())) {
                 return registeredReeler(reelerRepository.findByReelerIdAndActive(request.getFarmerId(), true), request);
@@ -141,24 +141,24 @@ public class SevaSindhuFarmerService {
         // The FRUITS ID Seva Sindhu sent (URL 1 key1) is authoritative: the citizen cannot apply for another one.
         if (request.getFruitsId() != null && !fruitsId.equals(request.getFruitsId())) {
             throw new CitizenException(409, "FRUITS_ID_MISMATCH",
-                    "This application was started in Seva Sindhu for FRUITS ID " + request.getFruitsId()
-                            + ". Please continue with that FRUITS ID, or start a new application in Seva Sindhu.");
+                    "This application was started in SevaOne for FRUITS ID " + request.getFruitsId()
+                            + ". Please continue with that FRUITS ID, or start a new application in SevaOne.");
         }
         if (SevaSindhuCitizenRequest.STATUS_SUBMITTED.equals(request.getRequestStatus())) {
-            throw new CitizenException(409, "ALREADY_SUBMITTED", "An application has already been submitted for this Seva Sindhu request.");
+            throw new CitizenException(409, "ALREADY_SUBMITTED", "An application has already been submitted for this SevaOne request.");
         }
 
         Farmer farmer = farmerByFruitsId(fruitsId, request.getMobileNumber());
         if (farmer != null) {
             if (!identityConfirmed(request, farmer)) {
-                log.info("Seva Sindhu request {}: FRUITS id registered but mobile does not match", request.getId());
+                log.info("SevaOne request {}: FRUITS id registered but mobile does not match", request.getId());
                 return CheckResponse.builder()
                         .status("MOBILE_MISMATCH")
                         .fruitsId(fruitsId)
                         .registeredMobile(mask(farmer.getMobileNumber()))
                         .message("This FRUITS ID is registered in e-Reshme with a different mobile number. "
                                 + "Please apply with the mobile number registered with the Department of Sericulture, "
-                                + "or visit your nearest Sericulture office or Seva Sindhu centre.")
+                                + "or visit your nearest Sericulture office or SevaOne centre.")
                         .build();
             }
             link(request, farmer);
@@ -172,7 +172,7 @@ public class SevaSindhuFarmerService {
             boolean confirmed = Boolean.TRUE.equals(request.getAssistedMode())
                     || (request.getMobileNumber() != null && request.getMobileNumber().equals(reelerMobile));
             if (!confirmed) {
-                log.info("Seva Sindhu request {}: FRUITS id registered as reeler but mobile does not match", request.getId());
+                log.info("SevaOne request {}: FRUITS id registered as reeler but mobile does not match", request.getId());
                 return CheckResponse.builder()
                         .status("MOBILE_MISMATCH")
                         .beneficiaryType(BENEFICIARY_REELER)
@@ -180,7 +180,7 @@ public class SevaSindhuFarmerService {
                         .registeredMobile(mask(reelerMobile))
                         .message("This FRUITS ID is registered in e-Reshme as a reeler with a different mobile number. "
                                 + "Please apply with the mobile number registered with the Department of Sericulture, "
-                                + "or visit your nearest Sericulture office or Seva Sindhu centre.")
+                                + "or visit your nearest Sericulture office or SevaOne centre.")
                         .build();
             }
             request.setFarmerId(reeler.getReelerId());
@@ -189,7 +189,7 @@ public class SevaSindhuFarmerService {
             request.setRequestStatus(SevaSindhuCitizenRequest.STATUS_FARMER_REGISTERED);
             request.setModifiedDate(new Date());
             requestRepository.save(request);
-            log.info("Seva Sindhu request {} linked to reeler {}", request.getId(), reeler.getReelerId());
+            log.info("SevaOne request {} linked to reeler {}", request.getId(), reeler.getReelerId());
             return registeredReeler(reeler, request);
         }
 
@@ -210,7 +210,7 @@ public class SevaSindhuFarmerService {
         List<Farmer> all = farmerRepository.findByFruitsIdAndActiveOrderByFarmerIdAsc(fruitsId, true);
         if (all.isEmpty()) return null;
         if (all.size() > 1) {
-            log.warn("FRUITS ID {} is on {} active farmers ({}); using the one matching the Seva Sindhu mobile, else the oldest",
+            log.warn("FRUITS ID {} is on {} active farmers ({}); using the one matching the SevaOne mobile, else the oldest",
                     fruitsId, all.size(), all.stream().map(Farmer::getFarmerId).toList());
         }
         return all.stream().filter(f -> mobile != null && mobile.equals(trim(f.getMobileNumber()))).findFirst().orElse(all.get(0));
@@ -221,7 +221,7 @@ public class SevaSindhuFarmerService {
         List<com.sericulture.registration.model.entity.Reeler> all = reelerRepository.findByFruitsIdAndActiveOrderByReelerIdAsc(fruitsId, true);
         if (all.isEmpty()) return null;
         if (all.size() > 1) {
-            log.warn("FRUITS ID {} is on {} active reelers ({}); using the one matching the Seva Sindhu mobile, else the oldest",
+            log.warn("FRUITS ID {} is on {} active reelers ({}); using the one matching the SevaOne mobile, else the oldest",
                     fruitsId, all.size(), all.stream().map(com.sericulture.registration.model.entity.Reeler::getReelerId).toList());
         }
         return all.stream().filter(r -> mobile != null && mobile.equals(trim(r.getMobileNumber()))).findFirst().orElse(all.get(0));
@@ -240,7 +240,7 @@ public class SevaSindhuFarmerService {
         request.setRequestStatus(SevaSindhuCitizenRequest.STATUS_FARMER_REGISTERED);
         request.setModifiedDate(new Date());
         requestRepository.save(request);
-        log.info("Seva Sindhu request {} linked to farmer {}", request.getId(), farmer.getFarmerId());
+        log.info("SevaOne request {} linked to farmer {}", request.getId(), farmer.getFarmerId());
     }
 
     private CheckResponse registeredReeler(com.sericulture.registration.model.entity.Reeler reeler, SevaSindhuCitizenRequest request) {
@@ -325,7 +325,7 @@ public class SevaSindhuFarmerService {
         }
         String fruitsId = normaliseFruitsId(in.getFruitsId());
         if (request.getFarmerId() != null) {
-            throw new CitizenException(409, "ALREADY_LINKED", "You are already registered for this Seva Sindhu request.");
+            throw new CitizenException(409, "ALREADY_LINKED", "You are already registered for this SevaOne request.");
         }
         if (!fruitsId.equals(request.getFruitsId())) {
             throw new CitizenException(409, "CHECK_FIRST", "Please verify your FRUITS ID again before registering.");
@@ -412,16 +412,16 @@ public class SevaSindhuFarmerService {
         FarmerResponse saved = farmerService.insertCompleteFarmerDetails(save);
         if (saved == null || Boolean.TRUE.equals(saved.getError()) || saved.getFarmerId() == null) {
             String reason = saved == null ? null : saved.getError_description();
-            log.warn("Seva Sindhu request {}: farmer save refused: {}", request.getId(), reason);
+            log.warn("SevaOne request {}: farmer save refused: {}", request.getId(), reason);
             throw new CitizenException(409, "REGISTRATION_REFUSED", friendlySaveError(reason));
         }
         Farmer created = farmerRepository.findByFarmerIdAndActive(saved.getFarmerId(), true);
         // Keep the original FRUITS values so later manual corrections never lose them.
         farmerChangeHistoryService.recordImport(created);
         link(request, created);
-        log.info("Seva Sindhu request {}: farmer {} self-registered", request.getId(), saved.getFarmerId());
+        log.info("SevaOne request {}: farmer {} self-registered", request.getId(), saved.getFarmerId());
         CheckResponse response = registered(created, request);
-        response.setMessage("Farmer registration completed successfully. You can now continue with your Seva Sindhu application.");
+        response.setMessage("Farmer registration completed successfully. You can now continue with your SevaOne application.");
         return response;
     }
 
@@ -462,7 +462,7 @@ public class SevaSindhuFarmerService {
         try {
             res = farmerService.getDetailsByFruitsId(req);
         } catch (Exception e) {
-            log.error("FRUITS lookup failed for a Seva Sindhu registration", e);
+            log.error("FRUITS lookup failed for a SevaOne registration", e);
             throw new CitizenException(503, "FRUITS_UNAVAILABLE",
                     "We could not fetch your details from FRUITS right now. Please try again in a little while.");
         }
